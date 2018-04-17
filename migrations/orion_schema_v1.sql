@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Apr 17, 2018 at 08:19 PM
+-- Generation Time: Apr 17, 2018 at 09:07 PM
 -- Server version: 10.2.13-MariaDB-10.2.13+maria~jessie
 -- PHP Version: 7.1.9
 
@@ -93,6 +93,7 @@ CREATE TABLE `file_submissions` (
   `id` int(10) UNSIGNED NOT NULL,
   `master_id_key` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `file_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `submitter_id` int(10) UNSIGNED NOT NULL,
   `file_format_id` int(10) UNSIGNED NOT NULL,
   `device_vendor_id` int(10) UNSIGNED NOT NULL,
   `post_process_protocol_id` int(10) UNSIGNED NOT NULL,
@@ -336,6 +337,7 @@ ALTER TABLE `file_submissions`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `file_submissions_master_id_key_unique` (`master_id_key`),
   ADD KEY `file_submissions_master_id_key_index` (`master_id_key`),
+  ADD KEY `file_submissions_submitter_id_foreign` (`submitter_id`),
   ADD KEY `file_submissions_file_format_id_foreign` (`file_format_id`),
   ADD KEY `file_submissions_device_vendor_id_foreign` (`device_vendor_id`),
   ADD KEY `file_submissions_post_process_protocol_id_foreign` (`post_process_protocol_id`),
@@ -557,6 +559,7 @@ ALTER TABLE `file_submissions`
   ADD CONSTRAINT `file_submissions_magnification_level_id_foreign` FOREIGN KEY (`magnification_level_id`) REFERENCES `magnification_levels` (`id`),
   ADD CONSTRAINT `file_submissions_matrix_format_id_foreign` FOREIGN KEY (`matrix_format_id`) REFERENCES `matrix_formats` (`id`),
   ADD CONSTRAINT `file_submissions_post_process_protocol_id_foreign` FOREIGN KEY (`post_process_protocol_id`) REFERENCES `post_process_protocols` (`id`),
+  ADD CONSTRAINT `file_submissions_submitter_id_foreign` FOREIGN KEY (`submitter_id`) REFERENCES `file_submissions` (`id`),
   ADD CONSTRAINT `file_submissions_viewer_id_foreign` FOREIGN KEY (`viewer_id`) REFERENCES `viewers` (`id`);
 
 --
