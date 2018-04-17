@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Apr 17, 2018 at 09:07 PM
+-- Generation Time: Apr 17, 2018 at 09:24 PM
 -- Server version: 10.2.13-MariaDB-10.2.13+maria~jessie
 -- PHP Version: 7.1.9
 
@@ -559,7 +559,7 @@ ALTER TABLE `file_submissions`
   ADD CONSTRAINT `file_submissions_magnification_level_id_foreign` FOREIGN KEY (`magnification_level_id`) REFERENCES `magnification_levels` (`id`),
   ADD CONSTRAINT `file_submissions_matrix_format_id_foreign` FOREIGN KEY (`matrix_format_id`) REFERENCES `matrix_formats` (`id`),
   ADD CONSTRAINT `file_submissions_post_process_protocol_id_foreign` FOREIGN KEY (`post_process_protocol_id`) REFERENCES `post_process_protocols` (`id`),
-  ADD CONSTRAINT `file_submissions_submitter_id_foreign` FOREIGN KEY (`submitter_id`) REFERENCES `file_submissions` (`id`),
+  ADD CONSTRAINT `file_submissions_submitter_id_foreign` FOREIGN KEY (`submitter_id`) REFERENCES `submitter_demographics` (`id`),
   ADD CONSTRAINT `file_submissions_viewer_id_foreign` FOREIGN KEY (`viewer_id`) REFERENCES `viewers` (`id`);
 
 --
