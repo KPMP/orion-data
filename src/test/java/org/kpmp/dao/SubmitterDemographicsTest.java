@@ -2,7 +2,9 @@ package org.kpmp.dao;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -59,6 +61,13 @@ public class SubmitterDemographicsTest {
 		Date updatedAt = new Date();
 		submitter.setUpdatedAt(updatedAt);
 		assertEquals(updatedAt, submitter.getUpdatedAt());
+	}
+
+	@Test
+	public void testSetFileSumbissions() throws Exception {
+		List<FileSubmissions> submissions = Arrays.asList(new FileSubmissions());
+		submitter.setFileSubmissions(submissions);
+		assertEquals(submissions, submitter.getFileSubmissions());
 	}
 
 }

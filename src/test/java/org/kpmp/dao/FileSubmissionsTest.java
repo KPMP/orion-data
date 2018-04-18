@@ -1,7 +1,8 @@
 package org.kpmp.dao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 import org.junit.After;
@@ -55,4 +56,24 @@ public class FileSubmissionsTest {
 		assertEquals(deletedAt, fileSubmission.getDeletedAt());
 	}
 
+	@Test
+	public void testSetSubmitter() throws Exception {
+		SubmitterDemographics submitter = new SubmitterDemographics();
+		fileSubmission.setSubmitter(submitter);
+		assertEquals(submitter, fileSubmission.getSubmitter());
+	}
+
+	@Test
+	public void testSetFileSize() throws Exception {
+		BigInteger fileSize = new BigInteger("455");
+		fileSubmission.setFileSize(fileSize);
+		assertEquals(fileSize, fileSubmission.getFileSize());
+	}
+
+	@Test
+	public void testSetFileFormat() throws Exception {
+		FileFormats fileFormat = new FileFormats();
+		fileSubmission.setFileFormat(fileFormat);
+		assertEquals(fileFormat, fileSubmission.getFileFormat());
+	}
 }

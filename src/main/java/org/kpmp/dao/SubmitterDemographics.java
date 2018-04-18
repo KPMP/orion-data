@@ -1,10 +1,13 @@
 package org.kpmp.dao;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -24,6 +27,9 @@ public class SubmitterDemographics {
 	private Date deletedAt;
 	@Column(name = "updated_at")
 	private Date updatedAt;
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "submitter")
+	private List<FileSubmissions> fileSubmissions;
 
 	public int getId() {
 		return id;
@@ -71,6 +77,14 @@ public class SubmitterDemographics {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public List<FileSubmissions> getFileSubmissions() {
+		return fileSubmissions;
+	}
+
+	public void setFileSubmissions(List<FileSubmissions> fileSubmissions) {
+		this.fileSubmissions = fileSubmissions;
 	}
 
 }
