@@ -1,7 +1,9 @@
 package org.kpmp.dao;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,6 +39,13 @@ public class InstitutionDemographicsTest {
 	public void testSetId() {
 		institution.setId(565);
 		assertEquals(565, institution.getId());
+	}
+
+	@Test
+	public void testSetFileSubmissions() throws Exception {
+		List<FileSubmissions> fileSubmissions = Arrays.asList(new FileSubmissions());
+		institution.setFileSubmissions(fileSubmissions);
+		assertEquals(fileSubmissions, institution.getFileSubmissions());
 	}
 
 }

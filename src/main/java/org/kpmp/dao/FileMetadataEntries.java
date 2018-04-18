@@ -4,7 +4,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -22,6 +25,10 @@ public class FileMetadataEntries {
 	private Date createdAt;
 	@Column(name = "updated_at")
 	private Date updatedAt;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id", referencedColumnName = "file_meta_entries_id", insertable = false, updatable = false)
+	private FileSubmissions fileSubmission;
 
 	public int getId() {
 		return id;
@@ -61,6 +68,14 @@ public class FileMetadataEntries {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public FileSubmissions getFileSubmission() {
+		return fileSubmission;
+	}
+
+	public void setFileSubmission(FileSubmissions fileSubmission) {
+		this.fileSubmission = fileSubmission;
 	}
 
 }

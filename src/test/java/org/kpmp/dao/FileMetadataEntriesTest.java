@@ -55,4 +55,10 @@ public class FileMetadataEntriesTest {
 		assertEquals(updatedAt, fileMetadata.getUpdatedAt());
 	}
 
+	@Test
+	public void testSetFileSubmission() throws Exception {
+		FileSubmissions fileSubmission = new FileSubmissions();
+		fileMetadata.setFileSubmission(fileSubmission);
+		assertEquals(fileSubmission, fileMetadata.getFileSubmission());
+	}
 }

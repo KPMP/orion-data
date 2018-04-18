@@ -76,4 +76,25 @@ public class FileSubmissionsTest {
 		fileSubmission.setFileFormat(fileFormat);
 		assertEquals(fileFormat, fileSubmission.getFileFormat());
 	}
+
+	@Test
+	public void testSetUploadPackage() throws Exception {
+		CaseDemographics uploadPackage = new CaseDemographics();
+		fileSubmission.setUploadPackage(uploadPackage);
+		assertEquals(uploadPackage, fileSubmission.getUploadPackage());
+	}
+
+	@Test
+	public void testSetFileMetadata() throws Exception {
+		FileMetadataEntries fileMetadata = new FileMetadataEntries();
+		fileSubmission.setFileMetadata(fileMetadata);
+		assertEquals(fileMetadata, fileSubmission.getFileMetadata());
+	}
+
+	@Test
+	public void testSetInstitution() throws Exception {
+		InstitutionDemographics institution = new InstitutionDemographics();
+		fileSubmission.setInstitution(institution);
+		assertEquals(institution, fileSubmission.getInstitution());
+	}
 }

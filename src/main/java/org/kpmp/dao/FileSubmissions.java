@@ -5,9 +5,11 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -28,6 +30,10 @@ public class FileSubmissions {
 	@Column(name = "deleted_at")
 	private Date deletedAt;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "file_meta_entries_id", referencedColumnName = "id", insertable = false, updatable = false)
+	private FileMetadataEntries fileMetadata;
+
 	@ManyToOne
 	@JoinColumn(name = "file_format_id", referencedColumnName = "id")
 	private FileFormats fileFormat;
@@ -35,6 +41,14 @@ public class FileSubmissions {
 	@ManyToOne
 	@JoinColumn(name = "submitter_demographics_id", referencedColumnName = "id")
 	private SubmitterDemographics submitter;
+
+	@ManyToOne
+	@JoinColumn(name = "case_demographics_id", referencedColumnName = "id")
+	private CaseDemographics uploadPackage;
+
+	@ManyToOne
+	@JoinColumn(name = "institution_demographics_id", referencedColumnName = "id")
+	private InstitutionDemographics institution;
 
 	public int getId() {
 		return id;
@@ -98,6 +112,30 @@ public class FileSubmissions {
 
 	public void setFileFormat(FileFormats fileFormat) {
 		this.fileFormat = fileFormat;
+	}
+
+	public CaseDemographics getUploadPackage() {
+		return uploadPackage;
+	}
+
+	public void setUploadPackage(CaseDemographics uploadPackage) {
+		this.uploadPackage = uploadPackage;
+	}
+
+	public FileMetadataEntries getFileMetadata() {
+		return fileMetadata;
+	}
+
+	public void setFileMetadata(FileMetadataEntries fileMetadata) {
+		this.fileMetadata = fileMetadata;
+	}
+
+	public InstitutionDemographics getInstitution() {
+		return institution;
+	}
+
+	public void setInstitution(InstitutionDemographics institution) {
+		this.institution = institution;
 	}
 
 }
