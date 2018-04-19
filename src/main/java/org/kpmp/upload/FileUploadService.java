@@ -48,8 +48,7 @@ public class FileUploadService {
 			fileMetadata.setMetadata(fileMetadataString);
 
 			// I think we are actually going to want to look up the institution,
-			// but
-			// I am creating a new one
+			// but I am creating a new one
 			// here to make sure mappings are working correctly.
 			InstitutionDemographics institution = new InstitutionDemographics();
 			institution.setInstitutionName(packageInfo.getInstitutionName());
