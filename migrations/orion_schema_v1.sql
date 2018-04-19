@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Apr 18, 2018 at 08:06 PM
+-- Generation Time: Apr 19, 2018 at 03:29 PM
 -- Server version: 10.2.13-MariaDB-10.2.13+maria~jessie
 -- PHP Version: 7.1.9
 
@@ -21,7 +21,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `orion`
 --
-CREATE DATABASE IF NOT EXISTS `orion` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE DATABASE IF NOT EXISTS `orion` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `orion`;
 
 -- --------------------------------------------------------
@@ -96,6 +96,7 @@ CREATE TABLE `file_submissions` (
   `case_id` int(10) UNSIGNED NOT NULL,
   `institution_id` int(10) UNSIGNED NOT NULL,
   `submitter_id` int(10) UNSIGNED NOT NULL,
+  `file_meta_entry_id` int(10) UNSIGNED NOT NULL,
   `file_format_id` int(10) UNSIGNED NOT NULL,
   `device_vendor_id` int(10) UNSIGNED NOT NULL,
   `post_process_protocol_id` int(10) UNSIGNED NOT NULL,
@@ -221,20 +222,6 @@ CREATE TABLE `roles` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `submissions_file_meta_entries`
---
-
-CREATE TABLE `submissions_file_meta_entries` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `submission_id` int(10) UNSIGNED NOT NULL,
-  `file_meta_id` int(10) UNSIGNED NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `submitter_demographics`
 --
 
@@ -298,6 +285,7 @@ ALTER TABLE `file_submissions`
   ADD KEY `file_submissions_case_id_foreign` (`case_id`),
   ADD KEY `file_submissions_institution_id_foreign` (`institution_id`),
   ADD KEY `file_submissions_submitter_id_foreign` (`submitter_id`),
+  ADD KEY `file_submissions_file_meta_entry_id_foreign` (`file_meta_entry_id`),
   ADD KEY `file_submissions_file_format_id_foreign` (`file_format_id`),
   ADD KEY `file_submissions_device_vendor_id_foreign` (`device_vendor_id`),
   ADD KEY `file_submissions_post_process_protocol_id_foreign` (`post_process_protocol_id`),
@@ -347,14 +335,6 @@ ALTER TABLE `post_process_protocols`
 --
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `submissions_file_meta_entries`
---
-ALTER TABLE `submissions_file_meta_entries`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `submissions_file_meta_entries_submission_id_foreign` (`submission_id`),
-  ADD KEY `submissions_file_meta_entries_file_meta_id_foreign` (`file_meta_id`);
 
 --
 -- Indexes for table `submitter_demographics`
@@ -431,7 +411,7 @@ ALTER TABLE `matrix_formats`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `post_process_protocols`
@@ -443,12 +423,6 @@ ALTER TABLE `post_process_protocols`
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `submissions_file_meta_entries`
---
-ALTER TABLE `submissions_file_meta_entries`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -474,6 +448,7 @@ ALTER TABLE `file_submissions`
   ADD CONSTRAINT `file_submissions_case_id_foreign` FOREIGN KEY (`case_id`) REFERENCES `case_demographics` (`id`),
   ADD CONSTRAINT `file_submissions_device_vendor_id_foreign` FOREIGN KEY (`device_vendor_id`) REFERENCES `device_vendors` (`id`),
   ADD CONSTRAINT `file_submissions_file_format_id_foreign` FOREIGN KEY (`file_format_id`) REFERENCES `file_formats` (`id`),
+  ADD CONSTRAINT `file_submissions_file_meta_entry_id_foreign` FOREIGN KEY (`file_meta_entry_id`) REFERENCES `file_meta_entries` (`id`),
   ADD CONSTRAINT `file_submissions_institution_id_foreign` FOREIGN KEY (`institution_id`) REFERENCES `institution_demographics` (`id`),
   ADD CONSTRAINT `file_submissions_instrument_id_foreign` FOREIGN KEY (`instrument_id`) REFERENCES `instruments` (`id`),
   ADD CONSTRAINT `file_submissions_magnification_level_id_foreign` FOREIGN KEY (`magnification_level_id`) REFERENCES `magnification_levels` (`id`),
@@ -481,13 +456,6 @@ ALTER TABLE `file_submissions`
   ADD CONSTRAINT `file_submissions_post_process_protocol_id_foreign` FOREIGN KEY (`post_process_protocol_id`) REFERENCES `post_process_protocols` (`id`),
   ADD CONSTRAINT `file_submissions_submitter_id_foreign` FOREIGN KEY (`submitter_id`) REFERENCES `submitter_demographics` (`id`),
   ADD CONSTRAINT `file_submissions_viewer_id_foreign` FOREIGN KEY (`viewer_id`) REFERENCES `viewers` (`id`);
-
---
--- Constraints for table `submissions_file_meta_entries`
---
-ALTER TABLE `submissions_file_meta_entries`
-  ADD CONSTRAINT `submissions_file_meta_entries_file_meta_id_foreign` FOREIGN KEY (`file_meta_id`) REFERENCES `file_meta_entries` (`id`),
-  ADD CONSTRAINT `submissions_file_meta_entries_submission_id_foreign` FOREIGN KEY (`submission_id`) REFERENCES `file_submissions` (`id`);
 
 --
 -- Constraints for table `submitter_demographics`
