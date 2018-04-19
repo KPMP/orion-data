@@ -1,8 +1,8 @@
 package org.kpmp.dao;
 
-import java.math.BigInteger;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -25,7 +25,7 @@ public class FileSubmissions {
 	@Column(name = "id")
 	private int id;
 	@Column(name = "file_size")
-	private BigInteger fileSize;
+	private Long fileSize;
 	@Column(name = "filename")
 	private String filename;
 	@Column(name = "created_at")
@@ -35,23 +35,23 @@ public class FileSubmissions {
 	@Column(name = "deleted_at")
 	private Date deletedAt;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "file_meta_entries_id", referencedColumnName = "id", insertable = false, updatable = false)
 	private FileMetadataEntries fileMetadata;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "file_format_id", referencedColumnName = "id")
 	private FileFormats fileFormat;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "submitter_demographics_id", referencedColumnName = "id")
 	private SubmitterDemographics submitter;
 
 	@ManyToOne
 	@JoinColumn(name = "case_demographics_id", referencedColumnName = "id")
-	private CaseDemographics uploadPackage;
+	private UploadPackage uploadPackage;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "institution_demographics_id", referencedColumnName = "id")
 	private InstitutionDemographics institution;
 
@@ -103,11 +103,11 @@ public class FileSubmissions {
 		this.submitter = submitter;
 	}
 
-	public BigInteger getFileSize() {
+	public Long getFileSize() {
 		return fileSize;
 	}
 
-	public void setFileSize(BigInteger fileSize) {
+	public void setFileSize(Long fileSize) {
 		this.fileSize = fileSize;
 	}
 
@@ -119,11 +119,11 @@ public class FileSubmissions {
 		this.fileFormat = fileFormat;
 	}
 
-	public CaseDemographics getUploadPackage() {
+	public UploadPackage getUploadPackage() {
 		return uploadPackage;
 	}
 
-	public void setUploadPackage(CaseDemographics uploadPackage) {
+	public void setUploadPackage(UploadPackage uploadPackage) {
 		this.uploadPackage = uploadPackage;
 	}
 

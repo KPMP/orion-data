@@ -2,7 +2,6 @@ package org.kpmp.dao;
 
 import static org.junit.Assert.assertEquals;
 
-import java.math.BigInteger;
 import java.util.Date;
 
 import org.junit.After;
@@ -65,9 +64,8 @@ public class FileSubmissionsTest {
 
 	@Test
 	public void testSetFileSize() throws Exception {
-		BigInteger fileSize = new BigInteger("455");
-		fileSubmission.setFileSize(fileSize);
-		assertEquals(fileSize, fileSubmission.getFileSize());
+		fileSubmission.setFileSize(455l);
+		assertEquals(new Long(455), fileSubmission.getFileSize());
 	}
 
 	@Test
@@ -79,7 +77,7 @@ public class FileSubmissionsTest {
 
 	@Test
 	public void testSetUploadPackage() throws Exception {
-		CaseDemographics uploadPackage = new CaseDemographics();
+		UploadPackage uploadPackage = new UploadPackage();
 		fileSubmission.setUploadPackage(uploadPackage);
 		assertEquals(uploadPackage, fileSubmission.getUploadPackage());
 	}

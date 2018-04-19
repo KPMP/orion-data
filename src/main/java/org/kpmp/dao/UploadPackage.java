@@ -15,7 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "case_demographics")
-public class CaseDemographics {
+public class UploadPackage {
 
 	@Id
 	@GenericGenerator(name = "generator", strategy = "increment")

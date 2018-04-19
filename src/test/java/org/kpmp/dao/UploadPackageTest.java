@@ -10,13 +10,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CaseDemographicsTest {
+public class UploadPackageTest {
 
-	private CaseDemographics caseDemographics;
+	private UploadPackage caseDemographics;
 
 	@Before
 	public void setUp() throws Exception {
-		caseDemographics = new CaseDemographics();
+		caseDemographics = new UploadPackage();
 	}
 
 	@After
