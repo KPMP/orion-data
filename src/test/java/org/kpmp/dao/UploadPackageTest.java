@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.upload.PackageInformation;
 
 public class UploadPackageTest {
 
@@ -22,6 +23,17 @@ public class UploadPackageTest {
 	@After
 	public void tearDown() throws Exception {
 		caseDemographics = null;
+	}
+
+	@Test
+	public void testConstructor_packageInformation() throws Exception {
+		Date experimentDate = new Date();
+		PackageInformation packageInformation = new PackageInformation();
+		packageInformation.setExperimentDate(experimentDate);
+		packageInformation.setExperimentId("experimentId");
+		packageInformation.setPackageType("packageType");
+		packageInformation.setSubjectId("subjectId");
+		UploadPackage uploadPackage = new UploadPackage(packageInformation);
 	}
 
 	@Test

@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.kpmp.upload.PackageInformation;
 
 @Entity
 @Table(name = "case_demographics")
@@ -30,6 +31,13 @@ public class UploadPackage {
 	private Date experimentDate;
 	@Column(name = "created_at")
 	private Date createdAt;
+
+	public UploadPackage() {
+	}
+
+	public UploadPackage(PackageInformation packageInformation) {
+
+	}
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "uploadPackage")
 	private List<FileSubmissions> fileSubmissions;

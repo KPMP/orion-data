@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class FileUploadService {
+public class UploadService {
 
 	@Value("${file.base.path}")
 	private String basePath;
@@ -22,11 +22,15 @@ public class FileUploadService {
 	private FileSubmissionsRepository fileSubmissionsRepository;
 
 	@Autowired
-	public FileUploadService(UploadPackageRepository uploadPackageRepository,
+	public UploadService(UploadPackageRepository uploadPackageRepository,
 			FileSubmissionsRepository fileSubmissionsRepository) {
 		this.uploadPackageRepository = uploadPackageRepository;
 		this.fileSubmissionsRepository = fileSubmissionsRepository;
 
+	}
+
+	public int saveUploadPackage(PackageInformation packageInfo) {
+		return -1;
 	}
 
 	public void uploadPackage(MultipartFile file, PackageInformation packageInfo, String fileMetadataString) {
