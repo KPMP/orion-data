@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.kpmp.dao.FileMetadataEntries;
 import org.kpmp.dao.FileSubmission;
 import org.kpmp.dao.InstitutionDemographics;
+import org.kpmp.dao.PackageType;
 import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
 import org.mockito.ArgumentCaptor;
@@ -34,13 +35,15 @@ public class UploadServiceTest {
 	private InstitutionRepository institutionRepository;
 	@Mock
 	private FileMetadataRepository fileMetadataRepository;
+	@Mock
+	private PackageTypeRepository packageTypeRepository;
 	private UploadService service;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		service = new UploadService(uploadPackageRepository, fileSubmissionsRepository, submitterRepository,
-				institutionRepository, fileMetadataRepository);
+				institutionRepository, fileMetadataRepository, packageTypeRepository);
 		ReflectionTestUtils.setField(service, "basePath", "/data");
 	}
 
@@ -55,8 +58,11 @@ public class UploadServiceTest {
 		UploadPackage savedPackage = mock(UploadPackage.class);
 		when(savedPackage.getId()).thenReturn(5);
 		when(uploadPackageRepository.save(any(UploadPackage.class))).thenReturn(savedPackage);
+		PackageType packageType = mock(PackageType.class);
+		when(packageTypeRepository.findByPackageType("packageType")).thenReturn(packageType);
 		PackageInformation packageInformation = new PackageInformation();
 		packageInformation.setExperimentDate(experimentDate);
+		packageInformation.setPackageType("packageType");
 
 		int packageId = service.saveUploadPackage(packageInformation);
 
@@ -64,6 +70,7 @@ public class UploadServiceTest {
 		ArgumentCaptor<UploadPackage> packageCaptor = ArgumentCaptor.forClass(UploadPackage.class);
 		verify(uploadPackageRepository).save(packageCaptor.capture());
 		assertEquals(experimentDate, packageCaptor.getValue().getExperimentDate());
+		assertEquals(packageType, packageCaptor.getValue().getPackageType());
 	}
 
 	@Test
@@ -104,6 +111,8 @@ public class UploadServiceTest {
 		when(submitterRepository.findById(2)).thenReturn(submitter);
 		InstitutionDemographics institution = mock(InstitutionDemographics.class);
 		when(institutionRepository.findById(3)).thenReturn(institution);
+		FileMetadataEntries fileMetadataEntries = mock(FileMetadataEntries.class);
+		when(fileMetadataRepository.save(any(FileMetadataEntries.class))).thenReturn(fileMetadataEntries);
 		MultipartFile file = mock(MultipartFile.class);
 		when(file.getOriginalFilename()).thenReturn("filename.txt");
 		when(file.getSize()).thenReturn(444l);
@@ -118,14 +127,15 @@ public class UploadServiceTest {
 		verify(fileSubmissionsRepository).save(fileSubmissionCaptor.capture());
 		FileSubmission fileSubmission = fileSubmissionCaptor.getValue();
 		assertEquals("/data/package1/filename.txt", fileSubmission.getFilePath());
-		FileMetadataEntries fileMetadata = fileSubmission.getFileMetadata();
-		assertEquals("fileMetadataString", fileMetadata.getMetadata());
+		assertEquals(fileMetadataEntries, fileSubmission.getFileMetadata());
 		assertEquals("filename.txt", fileSubmission.getFilename());
 		assertEquals(new Long(444), fileSubmission.getFileSize());
 		assertEquals(uploadPackage, fileSubmission.getUploadPackage());
 		assertEquals(submitter, fileSubmission.getSubmitter());
 		assertEquals(institution, fileSubmission.getInstitution());
-		verify(fileMetadataRepository).save(fileMetadata);
+		ArgumentCaptor<FileMetadataEntries> fileMetadataCaptor = ArgumentCaptor.forClass(FileMetadataEntries.class);
+		verify(fileMetadataRepository).save(fileMetadataCaptor.capture());
+		assertEquals("fileMetadataString", fileMetadataCaptor.getValue().getMetadata());
 	}
 
 }

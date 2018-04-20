@@ -8,6 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -31,6 +33,10 @@ public class UploadPackage {
 	private Date experimentDate;
 	@Column(name = "created_at")
 	private Date createdAt;
+
+	@ManyToOne
+	@JoinColumn(name = "package_type_id", referencedColumnName = "id")
+	private PackageType packageType;
 
 	public UploadPackage() {
 	}
@@ -91,5 +97,13 @@ public class UploadPackage {
 
 	public void setFileSubmissions(List<FileSubmission> fileSubmissions) {
 		this.fileSubmissions = fileSubmissions;
+	}
+
+	public PackageType getPackageType() {
+		return packageType;
+	}
+
+	public void setPackageType(PackageType packageType) {
+		this.packageType = packageType;
 	}
 }

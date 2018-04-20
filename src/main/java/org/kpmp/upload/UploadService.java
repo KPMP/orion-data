@@ -7,6 +7,7 @@ import java.util.Date;
 import org.kpmp.dao.FileMetadataEntries;
 import org.kpmp.dao.FileSubmission;
 import org.kpmp.dao.InstitutionDemographics;
+import org.kpmp.dao.PackageType;
 import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,21 +25,26 @@ public class UploadService {
 	private SubmitterRepository submitterRepository;
 	private InstitutionRepository institutionRepository;
 	private FileMetadataRepository fileMetadataRepository;
+	private PackageTypeRepository packageTypeRepository;
 
 	@Autowired
 	public UploadService(UploadPackageRepository uploadPackageRepository,
 			FileSubmissionsRepository fileSubmissionsRepository, SubmitterRepository submitterRepository,
-			InstitutionRepository institutionRepository, FileMetadataRepository fileMetadataRepository) {
+			InstitutionRepository institutionRepository, FileMetadataRepository fileMetadataRepository,
+			PackageTypeRepository packageTypeRepository) {
 		this.uploadPackageRepository = uploadPackageRepository;
 		this.fileSubmissionsRepository = fileSubmissionsRepository;
 		this.submitterRepository = submitterRepository;
 		this.institutionRepository = institutionRepository;
 		this.fileMetadataRepository = fileMetadataRepository;
+		this.packageTypeRepository = packageTypeRepository;
 
 	}
 
 	public int saveUploadPackage(PackageInformation packageInfo) {
+		PackageType packageType = packageTypeRepository.findByPackageType(packageInfo.getPackageType());
 		UploadPackage uploadPackage = new UploadPackage(packageInfo, new Date());
+		uploadPackage.setPackageType(packageType);
 		UploadPackage savedPackage = uploadPackageRepository.save(uploadPackage);
 		return savedPackage.getId();
 	}
@@ -60,11 +66,8 @@ public class UploadService {
 		Date createdDate = new Date();
 
 		UploadPackage uploadPackage = uploadPackageRepository.findById(packageIds.getPackageId());
-		System.err.println(uploadPackage.getId());
 		SubmitterDemographics submitter = submitterRepository.findById(packageIds.getSubmitterId());
-		System.err.println(submitter.getId());
 		InstitutionDemographics institution = institutionRepository.findById(packageIds.getInstitutionId());
-		System.err.println(institution.getId());
 
 		File packageDirectory = new File(basePath + File.separator + "package" + packageIds.getPackageId());
 		if (!packageDirectory.exists()) {

@@ -36,6 +36,7 @@ CREATE TABLE `case_demographics` (
   `experiment_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `performed_at` datetime NOT NULL,
   `version_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `package_type_id` INT(10) NOT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -511,3 +512,13 @@ ADD CONSTRAINT `file_submissions_post_process_protocol_id_foreign`
 ADD CONSTRAINT `file_submissions_viewer_id_foreign`
   FOREIGN KEY (`viewer_id`)
   REFERENCES `orion`.`viewers` (`id`);
+
+  
+create table package_type (
+	`id` int(10) unsigned not null,
+    `package_type` varchar(255) not null
+)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+alter table package_type
+	add primary key (`id`);

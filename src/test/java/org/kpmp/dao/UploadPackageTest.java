@@ -80,4 +80,10 @@ public class UploadPackageTest {
 		assertEquals(fileSubmissions, caseDemographics.getFileSubmissions());
 	}
 
+	@Test
+	public void testSetPackageType() throws Exception {
+		PackageType packageType = new PackageType();
+		caseDemographics.setPackageType(packageType);
+		assertEquals(packageType, caseDemographics.getPackageType());
+	}
 }
