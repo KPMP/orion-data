@@ -92,7 +92,6 @@ public class UploadService {
 
 			fileSubmissionsRepository.save(fileSubmission);
 		} catch (Exception e) {
-			uploadPackageRepository.delete(updatedPackage);
 			e.printStackTrace();
 		}
 

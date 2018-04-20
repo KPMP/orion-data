@@ -1,5 +1,7 @@
 package org.kpmp.upload;
 
+import javax.transaction.Transactional;
+
 import org.kpmp.dao.SubmitterDemographics;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -9,6 +11,7 @@ public interface SubmitterRepository extends CrudRepository<SubmitterDemographic
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@Transactional
 	public SubmitterDemographics save(SubmitterDemographics submitter);
 
 }
