@@ -9,6 +9,15 @@ public class UploadPackageIds {
 	private int submitterId;
 	private int institutionId;
 
+	public UploadPackageIds(int packageId, int submitterId, int institutionId) {
+		this.packageId = packageId;
+		this.submitterId = submitterId;
+		this.institutionId = institutionId;
+	}
+
+	public UploadPackageIds() {
+	}
+
 	public int getPackageId() {
 		return packageId;
 	}

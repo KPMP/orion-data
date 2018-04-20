@@ -1,5 +1,7 @@
 package org.kpmp.upload;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,14 +37,13 @@ public class UploadController {
 	}
 
 	@RequestMapping(value = "/upload", consumes = { "multipart/form-data" }, method = RequestMethod.POST)
-	public String handleFileUpload(@RequestParam("file") MultipartFile file,
-			@RequestParam("fileMetadata") String fileMetadata, @RequestParam("packageId") int packageId) {
-		String responseString = "Success! You uploaded: ";
-		responseString += file.getOriginalFilename() + " (" + file.getSize() + " bytes) ";
-		System.out.println(responseString);
-		System.out.println(fileMetadata);
-		System.out.println(packageId);
-		return "{\"message\": \"" + responseString + "\"}";
+	public void handleFileUpload(@RequestParam("file") MultipartFile file,
+			@RequestParam("fileMetadata") String fileMetadata, @RequestParam("packageId") int packageId,
+			@RequestParam("submitterId") int submitterId, @RequestParam("institutionId") int institutionId)
+			throws IllegalStateException, IOException {
+
+		UploadPackageIds packageIds = new UploadPackageIds(packageId, submitterId, institutionId);
+		uploadService.addFileToPackage(file, fileMetadata, packageIds);
 	}
 
 }

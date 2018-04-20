@@ -14,4 +14,6 @@ public interface UploadPackageRepository extends CrudRepository<UploadPackage, I
 	@Override
 	public UploadPackage save(UploadPackage uploadPackage);
 
+	public UploadPackage findById(int id);
+
 }

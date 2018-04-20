@@ -26,7 +26,7 @@ public class FileSubmissions {
 	private int id;
 	@Column(name = "file_size")
 	private Long fileSize;
-	@Column(name = "filename")
+	@Column(name = "file_name")
 	private String filename;
 	@Column(name = "created_at")
 	private Date createdAt;
@@ -34,6 +34,8 @@ public class FileSubmissions {
 	private Date updatedAt;
 	@Column(name = "deleted_at")
 	private Date deletedAt;
+	@Column(name = "file_path")
+	private String filePath;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "file_meta_entries_id", referencedColumnName = "id", insertable = false, updatable = false)
@@ -43,16 +45,16 @@ public class FileSubmissions {
 	@JoinColumn(name = "file_format_id", referencedColumnName = "id")
 	private FileFormats fileFormat;
 
-	@ManyToOne(cascade = CascadeType.PERSIST)
-	@JoinColumn(name = "submitter_demographics_id", referencedColumnName = "id")
+	@ManyToOne
+	@JoinColumn(name = "submitter_id", referencedColumnName = "id")
 	private SubmitterDemographics submitter;
 
 	@ManyToOne
-	@JoinColumn(name = "case_demographics_id", referencedColumnName = "id")
+	@JoinColumn(name = "case_id", referencedColumnName = "id")
 	private UploadPackage uploadPackage;
 
-	@ManyToOne(cascade = CascadeType.PERSIST)
-	@JoinColumn(name = "institution_demographics_id", referencedColumnName = "id")
+	@ManyToOne
+	@JoinColumn(name = "institution_id", referencedColumnName = "id")
 	private InstitutionDemographics institution;
 
 	public int getId() {
@@ -141,6 +143,14 @@ public class FileSubmissions {
 
 	public void setInstitution(InstitutionDemographics institution) {
 		this.institution = institution;
+	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 
 }

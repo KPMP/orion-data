@@ -1,6 +1,7 @@
 package org.kpmp.upload;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 import org.kpmp.dao.FileMetadataEntries;
@@ -52,48 +53,39 @@ public class UploadService {
 		return institution.getId();
 	}
 
-	public void uploadPackage(MultipartFile file, PackageInformation packageInfo, String fileMetadataString) {
+	public void addFileToPackage(MultipartFile file, String fileMetadataString, UploadPackageIds packageIds)
+			throws IllegalStateException, IOException {
 		Date createdDate = new Date();
 
-		UploadPackage uploadPackage = new UploadPackage();
-		uploadPackage.setCreatedAt(createdDate);
-		uploadPackage.setExperimentDate(packageInfo.getExperimentDate());
-		uploadPackage.setExperimentId(packageInfo.getExperimentId());
-		uploadPackage.setSubjectId(packageInfo.getSubjectId());
-		UploadPackage updatedPackage = uploadPackageRepository.save(uploadPackage);
+		UploadPackage uploadPackage = uploadPackageRepository.findById(packageIds.getPackageId());
+		SubmitterDemographics submitter = submitterRepository.findById(packageIds.getSubmitterId());
+		InstitutionDemographics institution = institutionRepository.findById(packageIds.getInstitutionId());
+
+		File packageDirectory = new File(basePath + File.separator + "package" + packageIds.getPackageId());
+		if (!packageDirectory.exists()) {
+			packageDirectory.mkdirs();
+		}
 
 		File fileToSave = new File(
-				basePath + File.separator + "package" + updatedPackage.getId() + File.separator + file.getName());
-		try {
-			file.transferTo(fileToSave);
-			FileMetadataEntries fileMetadata = new FileMetadataEntries();
-			fileMetadata.setCreatedAt(createdDate);
-			fileMetadata.setMetadata(fileMetadataString);
+				basePath + File.separator + "package" + packageIds.getPackageId() + File.separator + file.getName());
+		// check to see if package directory exists, if not create it
+		file.transferTo(fileToSave);
 
-			// I think we are actually going to want to look up the institution,
-			// but I am creating a new one
-			// here to make sure mappings are working correctly.
-			InstitutionDemographics institution = new InstitutionDemographics();
-			institution.setInstitutionName(packageInfo.getInstitutionName());
+		FileMetadataEntries fileMetadata = new FileMetadataEntries();
+		fileMetadata.setCreatedAt(createdDate);
+		fileMetadata.setMetadata(fileMetadataString);
 
-			SubmitterDemographics submitter = new SubmitterDemographics();
-			submitter.setCreatedAt(createdDate);
-			submitter.setFirstName(packageInfo.getFirstName());
-			submitter.setLastName(packageInfo.getLastName());
+		FileSubmissions fileSubmission = new FileSubmissions();
+		fileSubmission.setCreatedAt(createdDate);
+		fileSubmission.setFilename(file.getOriginalFilename());
+		fileSubmission.setFileSize(file.getSize());
+		fileSubmission.setFileMetadata(fileMetadata);
+		fileSubmission.setFilePath(fileToSave.getPath());
+		fileSubmission.setInstitution(institution);
+		fileSubmission.setSubmitter(submitter);
+		fileSubmission.setUploadPackage(uploadPackage);
 
-			FileSubmissions fileSubmission = new FileSubmissions();
-			fileSubmission.setCreatedAt(createdDate);
-			fileSubmission.setFilename(file.getOriginalFilename());
-			fileSubmission.setFileSize(file.getSize());
-			fileSubmission.setFileMetadata(fileMetadata);
-			fileSubmission.setInstitution(institution);
-			fileSubmission.setSubmitter(submitter);
-			fileSubmission.setUploadPackage(uploadPackage);
-
-			fileSubmissionsRepository.save(fileSubmission);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		fileSubmissionsRepository.save(fileSubmission);
 
 	}
 

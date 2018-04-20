@@ -95,4 +95,10 @@ public class FileSubmissionsTest {
 		fileSubmission.setInstitution(institution);
 		assertEquals(institution, fileSubmission.getInstitution());
 	}
+
+	@Test
+	public void testSetFilePath() throws Exception {
+		fileSubmission.setFilePath("filePath");
+		assertEquals("filePath", fileSubmission.getFilePath());
+	}
 }

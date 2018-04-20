@@ -21,6 +21,14 @@ public class UploadPackageIdsTest {
 	}
 
 	@Test
+	public void testConstructor() throws Exception {
+		UploadPackageIds packageIds = new UploadPackageIds(1, 2, 3);
+		assertEquals(1, packageIds.getPackageId());
+		assertEquals(2, packageIds.getSubmitterId());
+		assertEquals(3, packageIds.getInstitutionId());
+	}
+
+	@Test
 	public void testSetPackageId() {
 		ids.setPackageId(5);
 		assertEquals(5, ids.getPackageId());

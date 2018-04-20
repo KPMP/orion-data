@@ -11,12 +11,15 @@ import java.util.Date;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.dao.FileSubmissions;
 import org.kpmp.dao.InstitutionDemographics;
 import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 public class UploadServiceTest {
 
@@ -35,6 +38,7 @@ public class UploadServiceTest {
 		MockitoAnnotations.initMocks(this);
 		service = new UploadService(uploadPackageRepository, fileSubmissionsRepository, submitterRepository,
 				institutionRepository);
+		ReflectionTestUtils.setField(service, "basePath", "/data");
 	}
 
 	@After
@@ -87,6 +91,37 @@ public class UploadServiceTest {
 
 		assertEquals(66, institutionId);
 		verify(institutionRepository).findByInstitutionName("institutionName");
+	}
+
+	@Test
+	public void testAddFileToPackage() throws Exception {
+		UploadPackage uploadPackage = mock(UploadPackage.class);
+		when(uploadPackageRepository.findById(1)).thenReturn(uploadPackage);
+		SubmitterDemographics submitter = mock(SubmitterDemographics.class);
+		when(submitterRepository.findById(2)).thenReturn(submitter);
+		InstitutionDemographics institution = mock(InstitutionDemographics.class);
+		when(institutionRepository.findById(3)).thenReturn(institution);
+		MultipartFile file = mock(MultipartFile.class);
+		when(file.getName()).thenReturn("filename.txt");
+		when(file.getOriginalFilename()).thenReturn("filename.txt");
+		when(file.getSize()).thenReturn(444l);
+		UploadPackageIds packageIds = new UploadPackageIds();
+		packageIds.setPackageId(1);
+		packageIds.setSubmitterId(2);
+		packageIds.setInstitutionId(3);
+
+		service.addFileToPackage(file, "fileMetadataString", packageIds);
+
+		ArgumentCaptor<FileSubmissions> fileSubmissionCaptor = ArgumentCaptor.forClass(FileSubmissions.class);
+		verify(fileSubmissionsRepository).save(fileSubmissionCaptor.capture());
+		FileSubmissions fileSubmission = fileSubmissionCaptor.getValue();
+		assertEquals("/data/package1/filename.txt", fileSubmission.getFilePath());
+		assertEquals("fileMetadataString", fileSubmission.getFileMetadata().getMetadata());
+		assertEquals("filename.txt", fileSubmission.getFilename());
+		assertEquals(new Long(444), fileSubmission.getFileSize());
+		assertEquals(uploadPackage, fileSubmission.getUploadPackage());
+		assertEquals(submitter, fileSubmission.getSubmitter());
+		assertEquals(institution, fileSubmission.getInstitution());
 	}
 
 }

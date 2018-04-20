@@ -9,4 +9,6 @@ public interface InstitutionRepository extends CrudRepository<InstitutionDemogra
 
 	public InstitutionDemographics findByInstitutionName(String institutionName);
 
+	public InstitutionDemographics findById(int id);
+
 }

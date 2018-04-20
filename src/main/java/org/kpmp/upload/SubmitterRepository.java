@@ -14,4 +14,6 @@ public interface SubmitterRepository extends CrudRepository<SubmitterDemographic
 	@Transactional
 	public SubmitterDemographics save(SubmitterDemographics submitter);
 
+	public SubmitterDemographics findById(int id);
+
 }
