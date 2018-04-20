@@ -80,7 +80,7 @@ public class SubmitterDemographicsTest {
 
 	@Test
 	public void testSetFileSumbissions() throws Exception {
-		List<FileSubmissions> submissions = Arrays.asList(new FileSubmissions());
+		List<FileSubmission> submissions = Arrays.asList(new FileSubmission());
 		submitter.setFileSubmissions(submissions);
 		assertEquals(submissions, submitter.getFileSubmissions());
 	}

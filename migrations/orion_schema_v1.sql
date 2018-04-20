@@ -104,7 +104,6 @@ CREATE TABLE `file_submissions` (
   `instrument_id` int(10) UNSIGNED NOT NULL,
   `viewer_id` int(10) UNSIGNED NOT NULL,
   `matrix_format_id` int(10) UNSIGNED NOT NULL,
-  `file_created_at` datetime NOT NULL,
   `file_size` bigint(20) NOT NULL,
   `is_open` tinyint(1) NOT NULL,
   `is_raw` tinyint(1) NOT NULL,
@@ -458,7 +457,57 @@ ALTER TABLE `file_submissions`
   ADD CONSTRAINT `file_submissions_viewer_id_foreign` FOREIGN KEY (`viewer_id`) REFERENCES `viewers` (`id`);
 
 
-ALTER TABLE `orion`.`submitter_demographics` 
+ALTER TABLE `submitter_demographics` 
 ADD CONSTRAINT `submitter_demographics_role_id_foreign`
   FOREIGN KEY (`role_id`)
-  REFERENCES `orion`.`roles` (`id`);
+  REFERENCES `roles` (`id`);
+  
+ALTER TABLE `file_submissions` 
+DROP FOREIGN KEY `file_submissions_device_vendor_id_foreign`,
+DROP FOREIGN KEY `file_submissions_file_format_id_foreign`,
+DROP FOREIGN KEY `file_submissions_instrument_id_foreign`,
+DROP FOREIGN KEY `file_submissions_magnification_level_id_foreign`,
+DROP FOREIGN KEY `file_submissions_matrix_format_id_foreign`,
+DROP FOREIGN KEY `file_submissions_post_process_protocol_id_foreign`,
+DROP FOREIGN KEY `file_submissions_viewer_id_foreign`;
+ALTER TABLE `file_submissions` 
+CHANGE COLUMN `file_format_id` `file_format_id` INT(10) UNSIGNED NULL ,
+CHANGE COLUMN `device_vendor_id` `device_vendor_id` INT(10) UNSIGNED NULL ,
+CHANGE COLUMN `post_process_protocol_id` `post_process_protocol_id` INT(10) UNSIGNED NULL ,
+CHANGE COLUMN `magnification_level_id` `magnification_level_id` INT(10) UNSIGNED NULL ,
+CHANGE COLUMN `instrument_id` `instrument_id` INT(10) UNSIGNED NULL ,
+CHANGE COLUMN `viewer_id` `viewer_id` INT(10) UNSIGNED NULL ,
+CHANGE COLUMN `matrix_format_id` `matrix_format_id` INT(10) UNSIGNED NULL ,
+CHANGE COLUMN `is_open` `is_open` TINYINT(1) NULL ,
+CHANGE COLUMN `is_raw` `is_raw` TINYINT(1) NULL ,
+CHANGE COLUMN `is_post_proccessing` `is_post_proccessing` TINYINT(1) NULL ,
+CHANGE COLUMN `is_multiplane` `is_multiplane` TINYINT(1) NULL ,
+CHANGE COLUMN `is_pyramid` `is_pyramid` TINYINT(1) NULL ,
+CHANGE COLUMN `spatial_res` `spatial_res` DOUBLE(8,2) NULL ,
+CHANGE COLUMN `channels` `channels` BIGINT(20) NULL ,
+CHANGE COLUMN `bit_depth` `bit_depth` BIGINT(20) NULL ,
+CHANGE COLUMN `x_extent_pixels` `x_extent_pixels` BIGINT(20) NULL ,
+CHANGE COLUMN `y_exttent_pixels` `y_exttent_pixels` BIGINT(20) NULL ,
+CHANGE COLUMN `z_plane_extent_layers` `z_plane_extent_layers` BIGINT(20) NULL ;
+ALTER TABLE `file_submissions` 
+ADD CONSTRAINT `file_submissions_device_vendor_id_foreign`
+  FOREIGN KEY (`device_vendor_id`)
+  REFERENCES `device_vendors` (`id`),
+ADD CONSTRAINT `file_submissions_file_format_id_foreign`
+  FOREIGN KEY (`file_format_id`)
+  REFERENCES `orion`.`file_formats` (`id`),
+ADD CONSTRAINT `file_submissions_instrument_id_foreign`
+  FOREIGN KEY (`instrument_id`)
+  REFERENCES `orion`.`instruments` (`id`),
+ADD CONSTRAINT `file_submissions_magnification_level_id_foreign`
+  FOREIGN KEY (`magnification_level_id`)
+  REFERENCES `orion`.`magnification_levels` (`id`),
+ADD CONSTRAINT `file_submissions_matrix_format_id_foreign`
+  FOREIGN KEY (`matrix_format_id`)
+  REFERENCES `orion`.`matrix_formats` (`id`),
+ADD CONSTRAINT `file_submissions_post_process_protocol_id_foreign`
+  FOREIGN KEY (`post_process_protocol_id`)
+  REFERENCES `orion`.`post_process_protocols` (`id`),
+ADD CONSTRAINT `file_submissions_viewer_id_foreign`
+  FOREIGN KEY (`viewer_id`)
+  REFERENCES `orion`.`viewers` (`id`);

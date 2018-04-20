@@ -8,13 +8,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class FileSubmissionsTest {
+public class FileSubmissionTest {
 
-	private FileSubmissions fileSubmission;
+	private FileSubmission fileSubmission;
 
 	@Before
 	public void setUp() throws Exception {
-		fileSubmission = new FileSubmissions();
+		fileSubmission = new FileSubmission();
 	}
 
 	@After

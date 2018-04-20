@@ -43,7 +43,7 @@ public class UploadPackage {
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "uploadPackage")
-	private List<FileSubmissions> fileSubmissions;
+	private List<FileSubmission> fileSubmissions;
 
 	public int getId() {
 		return id;
@@ -85,11 +85,11 @@ public class UploadPackage {
 		this.createdAt = createdAt;
 	}
 
-	public List<FileSubmissions> getFileSubmissions() {
+	public List<FileSubmission> getFileSubmissions() {
 		return fileSubmissions;
 	}
 
-	public void setFileSubmissions(List<FileSubmissions> fileSubmissions) {
+	public void setFileSubmissions(List<FileSubmission> fileSubmissions) {
 		this.fileSubmissions = fileSubmissions;
 	}
 }

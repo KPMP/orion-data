@@ -43,7 +43,7 @@ public class InstitutionDemographicsTest {
 
 	@Test
 	public void testSetFileSubmissions() throws Exception {
-		List<FileSubmissions> fileSubmissions = Arrays.asList(new FileSubmissions());
+		List<FileSubmission> fileSubmissions = Arrays.asList(new FileSubmission());
 		institution.setFileSubmissions(fileSubmissions);
 		assertEquals(fileSubmissions, institution.getFileSubmissions());
 	}

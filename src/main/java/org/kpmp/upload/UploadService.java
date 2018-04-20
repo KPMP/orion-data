@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.kpmp.dao.FileMetadataEntries;
-import org.kpmp.dao.FileSubmissions;
+import org.kpmp.dao.FileSubmission;
 import org.kpmp.dao.InstitutionDemographics;
 import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
@@ -23,15 +23,17 @@ public class UploadService {
 	private FileSubmissionsRepository fileSubmissionsRepository;
 	private SubmitterRepository submitterRepository;
 	private InstitutionRepository institutionRepository;
+	private FileMetadataRepository fileMetadataRepository;
 
 	@Autowired
 	public UploadService(UploadPackageRepository uploadPackageRepository,
 			FileSubmissionsRepository fileSubmissionsRepository, SubmitterRepository submitterRepository,
-			InstitutionRepository institutionRepository) {
+			InstitutionRepository institutionRepository, FileMetadataRepository fileMetadataRepository) {
 		this.uploadPackageRepository = uploadPackageRepository;
 		this.fileSubmissionsRepository = fileSubmissionsRepository;
 		this.submitterRepository = submitterRepository;
 		this.institutionRepository = institutionRepository;
+		this.fileMetadataRepository = fileMetadataRepository;
 
 	}
 
@@ -58,29 +60,32 @@ public class UploadService {
 		Date createdDate = new Date();
 
 		UploadPackage uploadPackage = uploadPackageRepository.findById(packageIds.getPackageId());
+		System.err.println(uploadPackage.getId());
 		SubmitterDemographics submitter = submitterRepository.findById(packageIds.getSubmitterId());
+		System.err.println(submitter.getId());
 		InstitutionDemographics institution = institutionRepository.findById(packageIds.getInstitutionId());
+		System.err.println(institution.getId());
 
 		File packageDirectory = new File(basePath + File.separator + "package" + packageIds.getPackageId());
 		if (!packageDirectory.exists()) {
 			packageDirectory.mkdirs();
 		}
 
-		File fileToSave = new File(
-				basePath + File.separator + "package" + packageIds.getPackageId() + File.separator + file.getName());
-		// check to see if package directory exists, if not create it
+		File fileToSave = new File(basePath + File.separator + "package" + packageIds.getPackageId() + File.separator
+				+ file.getOriginalFilename());
 		file.transferTo(fileToSave);
 
 		FileMetadataEntries fileMetadata = new FileMetadataEntries();
 		fileMetadata.setCreatedAt(createdDate);
 		fileMetadata.setMetadata(fileMetadataString);
+		FileMetadataEntries savedMetadata = fileMetadataRepository.save(fileMetadata);
 
-		FileSubmissions fileSubmission = new FileSubmissions();
+		FileSubmission fileSubmission = new FileSubmission();
 		fileSubmission.setCreatedAt(createdDate);
 		fileSubmission.setFilename(file.getOriginalFilename());
 		fileSubmission.setFileSize(file.getSize());
-		fileSubmission.setFileMetadata(fileMetadata);
 		fileSubmission.setFilePath(fileToSave.getPath());
+		fileSubmission.setFileMetadata(savedMetadata);
 		fileSubmission.setInstitution(institution);
 		fileSubmission.setSubmitter(submitter);
 		fileSubmission.setUploadPackage(uploadPackage);

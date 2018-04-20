@@ -33,7 +33,7 @@ public class FileMetadataEntries {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id", referencedColumnName = "file_meta_entries_id", insertable = false, updatable = false)
-	private FileSubmissions fileSubmission;
+	private FileSubmission fileSubmission;
 
 	public int getId() {
 		return id;
@@ -75,11 +75,11 @@ public class FileMetadataEntries {
 		this.updatedAt = updatedAt;
 	}
 
-	public FileSubmissions getFileSubmission() {
+	public FileSubmission getFileSubmission() {
 		return fileSubmission;
 	}
 
-	public void setFileSubmission(FileSubmissions fileSubmission) {
+	public void setFileSubmission(FileSubmission fileSubmission) {
 		this.fileSubmission = fileSubmission;
 	}
 

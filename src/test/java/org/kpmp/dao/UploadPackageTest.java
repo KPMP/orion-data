@@ -75,7 +75,7 @@ public class UploadPackageTest {
 
 	@Test
 	public void testSetFileSubmissions() throws Exception {
-		List<FileSubmissions> fileSubmissions = Arrays.asList(new FileSubmissions());
+		List<FileSubmission> fileSubmissions = Arrays.asList(new FileSubmission());
 		caseDemographics.setFileSubmissions(fileSubmissions);
 		assertEquals(fileSubmissions, caseDemographics.getFileSubmissions());
 	}

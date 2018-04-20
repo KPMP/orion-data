@@ -35,7 +35,7 @@ public class SubmitterDemographics {
 	private Date updatedAt;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "submitter")
-	private List<FileSubmissions> fileSubmissions;
+	private List<FileSubmission> fileSubmissions;
 
 	public SubmitterDemographics() {
 	}
@@ -94,11 +94,11 @@ public class SubmitterDemographics {
 		this.updatedAt = updatedAt;
 	}
 
-	public List<FileSubmissions> getFileSubmissions() {
+	public List<FileSubmission> getFileSubmissions() {
 		return fileSubmissions;
 	}
 
-	public void setFileSubmissions(List<FileSubmissions> fileSubmissions) {
+	public void setFileSubmissions(List<FileSubmission> fileSubmissions) {
 		this.fileSubmissions = fileSubmissions;
 	}
 

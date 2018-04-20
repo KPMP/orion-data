@@ -22,7 +22,7 @@ public class InstitutionDemographics {
 	private String institutionShortName;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "institution")
-	private List<FileSubmissions> fileSubmissions;
+	private List<FileSubmission> fileSubmissions;
 
 	public String getInstitutionShortName() {
 		return institutionShortName;
@@ -48,11 +48,11 @@ public class InstitutionDemographics {
 		this.id = id;
 	}
 
-	public List<FileSubmissions> getFileSubmissions() {
+	public List<FileSubmission> getFileSubmissions() {
 		return fileSubmissions;
 	}
 
-	public void setFileSubmissions(List<FileSubmissions> fileSubmissions) {
+	public void setFileSubmissions(List<FileSubmission> fileSubmissions) {
 		this.fileSubmissions = fileSubmissions;
 	}
 

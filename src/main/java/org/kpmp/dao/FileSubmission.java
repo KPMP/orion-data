@@ -2,10 +2,8 @@ package org.kpmp.dao;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -17,7 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "file_submissions")
-public class FileSubmissions {
+public class FileSubmission {
 
 	@Id
 	@GenericGenerator(name = "generator", strategy = "increment")
@@ -37,11 +35,11 @@ public class FileSubmissions {
 	@Column(name = "file_path")
 	private String filePath;
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-	@JoinColumn(name = "file_meta_entries_id", referencedColumnName = "id", insertable = false, updatable = false)
+	@OneToOne
+	@JoinColumn(name = "file_meta_entry_id", referencedColumnName = "id")
 	private FileMetadataEntries fileMetadata;
 
-	@ManyToOne(cascade = CascadeType.PERSIST)
+	@ManyToOne
 	@JoinColumn(name = "file_format_id", referencedColumnName = "id")
 	private FileFormats fileFormat;
 
