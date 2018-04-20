@@ -20,7 +20,6 @@ import org.kpmp.dao.UploadPackage;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 public class UploadServiceTest {
@@ -37,14 +36,15 @@ public class UploadServiceTest {
 	private FileMetadataRepository fileMetadataRepository;
 	@Mock
 	private PackageTypeRepository packageTypeRepository;
+	@Mock
+	private FileHandler fileHandler;
 	private UploadService service;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		service = new UploadService(uploadPackageRepository, fileSubmissionsRepository, submitterRepository,
-				institutionRepository, fileMetadataRepository, packageTypeRepository);
-		ReflectionTestUtils.setField(service, "basePath", "/data");
+				institutionRepository, fileMetadataRepository, packageTypeRepository, fileHandler);
 	}
 
 	@After
@@ -120,6 +120,7 @@ public class UploadServiceTest {
 		packageIds.setPackageId(1);
 		packageIds.setSubmitterId(2);
 		packageIds.setInstitutionId(3);
+		when(fileHandler.saveFile(file, 1)).thenReturn("/data/package1/filename.txt");
 
 		service.addFileToPackage(file, "fileMetadataString", packageIds);
 

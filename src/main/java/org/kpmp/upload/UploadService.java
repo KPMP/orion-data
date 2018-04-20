@@ -1,6 +1,5 @@
 package org.kpmp.upload;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
@@ -11,33 +10,32 @@ import org.kpmp.dao.PackageType;
 import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UploadService {
 
-	@Value("${file.base.path}")
-	private String basePath;
 	private UploadPackageRepository uploadPackageRepository;
 	private FileSubmissionsRepository fileSubmissionsRepository;
 	private SubmitterRepository submitterRepository;
 	private InstitutionRepository institutionRepository;
 	private FileMetadataRepository fileMetadataRepository;
 	private PackageTypeRepository packageTypeRepository;
+	private FileHandler fileHandler;
 
 	@Autowired
 	public UploadService(UploadPackageRepository uploadPackageRepository,
 			FileSubmissionsRepository fileSubmissionsRepository, SubmitterRepository submitterRepository,
 			InstitutionRepository institutionRepository, FileMetadataRepository fileMetadataRepository,
-			PackageTypeRepository packageTypeRepository) {
+			PackageTypeRepository packageTypeRepository, FileHandler fileHandler) {
 		this.uploadPackageRepository = uploadPackageRepository;
 		this.fileSubmissionsRepository = fileSubmissionsRepository;
 		this.submitterRepository = submitterRepository;
 		this.institutionRepository = institutionRepository;
 		this.fileMetadataRepository = fileMetadataRepository;
 		this.packageTypeRepository = packageTypeRepository;
+		this.fileHandler = fileHandler;
 
 	}
 
@@ -69,14 +67,7 @@ public class UploadService {
 		SubmitterDemographics submitter = submitterRepository.findById(packageIds.getSubmitterId());
 		InstitutionDemographics institution = institutionRepository.findById(packageIds.getInstitutionId());
 
-		File packageDirectory = new File(basePath + File.separator + "package" + packageIds.getPackageId());
-		if (!packageDirectory.exists()) {
-			packageDirectory.mkdirs();
-		}
-
-		File fileToSave = new File(basePath + File.separator + "package" + packageIds.getPackageId() + File.separator
-				+ file.getOriginalFilename());
-		file.transferTo(fileToSave);
+		String filePath = fileHandler.saveFile(file, packageIds.getPackageId());
 
 		FileMetadataEntries fileMetadata = new FileMetadataEntries();
 		fileMetadata.setCreatedAt(createdDate);
@@ -87,7 +78,7 @@ public class UploadService {
 		fileSubmission.setCreatedAt(createdDate);
 		fileSubmission.setFilename(file.getOriginalFilename());
 		fileSubmission.setFileSize(file.getSize());
-		fileSubmission.setFilePath(fileToSave.getPath());
+		fileSubmission.setFilePath(filePath);
 		fileSubmission.setFileMetadata(savedMetadata);
 		fileSubmission.setInstitution(institution);
 		fileSubmission.setSubmitter(submitter);
