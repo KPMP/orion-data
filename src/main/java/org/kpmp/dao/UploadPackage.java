@@ -35,8 +35,11 @@ public class UploadPackage {
 	public UploadPackage() {
 	}
 
-	public UploadPackage(PackageInformation packageInformation) {
-
+	public UploadPackage(PackageInformation packageInformation, Date createdDate) {
+		this.experimentDate = packageInformation.getExperimentDate();
+		this.subjectId = packageInformation.getSubjectId();
+		this.experimentId = packageInformation.getExperimentId();
+		this.createdAt = createdDate;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "uploadPackage")

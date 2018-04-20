@@ -27,13 +27,18 @@ public class UploadPackageTest {
 
 	@Test
 	public void testConstructor_packageInformation() throws Exception {
+		Date createdDate = new Date();
 		Date experimentDate = new Date();
 		PackageInformation packageInformation = new PackageInformation();
 		packageInformation.setExperimentDate(experimentDate);
 		packageInformation.setExperimentId("experimentId");
-		packageInformation.setPackageType("packageType");
 		packageInformation.setSubjectId("subjectId");
-		UploadPackage uploadPackage = new UploadPackage(packageInformation);
+		UploadPackage uploadPackage = new UploadPackage(packageInformation, createdDate);
+
+		assertEquals(experimentDate, uploadPackage.getExperimentDate());
+		assertEquals("experimentId", uploadPackage.getExperimentId());
+		assertEquals("subjectId", uploadPackage.getSubjectId());
+		assertEquals(createdDate, uploadPackage.getCreatedAt());
 	}
 
 	@Test

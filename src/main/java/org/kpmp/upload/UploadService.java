@@ -20,17 +20,36 @@ public class UploadService {
 	private String basePath;
 	private UploadPackageRepository uploadPackageRepository;
 	private FileSubmissionsRepository fileSubmissionsRepository;
+	private SubmitterRepository submitterRepository;
+	private InstitutionRepository institutionRepository;
 
 	@Autowired
 	public UploadService(UploadPackageRepository uploadPackageRepository,
-			FileSubmissionsRepository fileSubmissionsRepository) {
+			FileSubmissionsRepository fileSubmissionsRepository, SubmitterRepository submitterRepository,
+			InstitutionRepository institutionRepository) {
 		this.uploadPackageRepository = uploadPackageRepository;
 		this.fileSubmissionsRepository = fileSubmissionsRepository;
+		this.submitterRepository = submitterRepository;
+		this.institutionRepository = institutionRepository;
 
 	}
 
 	public int saveUploadPackage(PackageInformation packageInfo) {
-		return -1;
+		UploadPackage uploadPackage = new UploadPackage(packageInfo, new Date());
+		UploadPackage savedPackage = uploadPackageRepository.save(uploadPackage);
+		return savedPackage.getId();
+	}
+
+	public int saveSubmitterInfo(PackageInformation packageInformation) {
+		SubmitterDemographics submitter = new SubmitterDemographics(packageInformation, new Date());
+		SubmitterDemographics savedSubmitter = submitterRepository.save(submitter);
+		return savedSubmitter.getId();
+	}
+
+	public int findInstitutionId(PackageInformation packageInformation) {
+		InstitutionDemographics institution = institutionRepository
+				.findByInstitutionName(packageInformation.getInstitutionName());
+		return institution.getId();
 	}
 
 	public void uploadPackage(MultipartFile file, PackageInformation packageInfo, String fileMetadataString) {
