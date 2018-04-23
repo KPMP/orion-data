@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.kpmp.upload.PackageInformation;
 
 @Entity
 @Table(name = "submitter_demographics")
@@ -34,7 +35,16 @@ public class SubmitterDemographics {
 	private Date updatedAt;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "submitter")
-	private List<FileSubmissions> fileSubmissions;
+	private List<FileSubmission> fileSubmissions;
+
+	public SubmitterDemographics() {
+	}
+
+	public SubmitterDemographics(PackageInformation packageInformation, Date createdDate) {
+		this.firstName = packageInformation.getFirstName();
+		this.lastName = packageInformation.getLastName();
+		this.createdAt = createdDate;
+	}
 
 	public int getId() {
 		return id;
@@ -84,11 +94,11 @@ public class SubmitterDemographics {
 		this.updatedAt = updatedAt;
 	}
 
-	public List<FileSubmissions> getFileSubmissions() {
+	public List<FileSubmission> getFileSubmissions() {
 		return fileSubmissions;
 	}
 
-	public void setFileSubmissions(List<FileSubmissions> fileSubmissions) {
+	public void setFileSubmissions(List<FileSubmission> fileSubmissions) {
 		this.fileSubmissions = fileSubmissions;
 	}
 

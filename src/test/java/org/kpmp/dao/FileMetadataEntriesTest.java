@@ -57,7 +57,7 @@ public class FileMetadataEntriesTest {
 
 	@Test
 	public void testSetFileSubmission() throws Exception {
-		FileSubmissions fileSubmission = new FileSubmissions();
+		FileSubmission fileSubmission = new FileSubmission();
 		fileMetadata.setFileSubmission(fileSubmission);
 		assertEquals(fileSubmission, fileMetadata.getFileSubmission());
 	}

@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.upload.PackageInformation;
 
 public class SubmitterDemographicsTest {
 
@@ -22,6 +23,20 @@ public class SubmitterDemographicsTest {
 	@After
 	public void tearDown() throws Exception {
 		submitter = null;
+	}
+
+	@Test
+	public void testConstructor_packageInfo() throws Exception {
+		PackageInformation packageInfo = new PackageInformation();
+		packageInfo.setFirstName("firstName");
+		packageInfo.setLastName("lastName");
+		Date createdDate = new Date();
+
+		SubmitterDemographics submitterDemographics = new SubmitterDemographics(packageInfo, createdDate);
+
+		assertEquals("firstName", submitterDemographics.getFirstName());
+		assertEquals("lastName", submitterDemographics.getLastName());
+		assertEquals(createdDate, submitterDemographics.getCreatedAt());
 	}
 
 	@Test
@@ -65,7 +80,7 @@ public class SubmitterDemographicsTest {
 
 	@Test
 	public void testSetFileSumbissions() throws Exception {
-		List<FileSubmissions> submissions = Arrays.asList(new FileSubmissions());
+		List<FileSubmission> submissions = Arrays.asList(new FileSubmission());
 		submitter.setFileSubmissions(submissions);
 		assertEquals(submissions, submitter.getFileSubmissions());
 	}

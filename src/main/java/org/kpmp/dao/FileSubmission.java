@@ -1,11 +1,9 @@
 package org.kpmp.dao;
 
-import java.math.BigInteger;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -17,7 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "file_submissions")
-public class FileSubmissions {
+public class FileSubmission {
 
 	@Id
 	@GenericGenerator(name = "generator", strategy = "increment")
@@ -25,8 +23,8 @@ public class FileSubmissions {
 	@Column(name = "id")
 	private int id;
 	@Column(name = "file_size")
-	private BigInteger fileSize;
-	@Column(name = "filename")
+	private Long fileSize;
+	@Column(name = "file_name")
 	private String filename;
 	@Column(name = "created_at")
 	private Date createdAt;
@@ -34,9 +32,11 @@ public class FileSubmissions {
 	private Date updatedAt;
 	@Column(name = "deleted_at")
 	private Date deletedAt;
+	@Column(name = "file_path")
+	private String filePath;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "file_meta_entries_id", referencedColumnName = "id", insertable = false, updatable = false)
+	@OneToOne
+	@JoinColumn(name = "file_meta_entry_id", referencedColumnName = "id")
 	private FileMetadataEntries fileMetadata;
 
 	@ManyToOne
@@ -44,15 +44,15 @@ public class FileSubmissions {
 	private FileFormats fileFormat;
 
 	@ManyToOne
-	@JoinColumn(name = "submitter_demographics_id", referencedColumnName = "id")
+	@JoinColumn(name = "submitter_id", referencedColumnName = "id")
 	private SubmitterDemographics submitter;
 
 	@ManyToOne
-	@JoinColumn(name = "case_demographics_id", referencedColumnName = "id")
-	private CaseDemographics uploadPackage;
+	@JoinColumn(name = "case_id", referencedColumnName = "id")
+	private UploadPackage uploadPackage;
 
 	@ManyToOne
-	@JoinColumn(name = "institution_demographics_id", referencedColumnName = "id")
+	@JoinColumn(name = "institution_id", referencedColumnName = "id")
 	private InstitutionDemographics institution;
 
 	public int getId() {
@@ -103,11 +103,11 @@ public class FileSubmissions {
 		this.submitter = submitter;
 	}
 
-	public BigInteger getFileSize() {
+	public Long getFileSize() {
 		return fileSize;
 	}
 
-	public void setFileSize(BigInteger fileSize) {
+	public void setFileSize(Long fileSize) {
 		this.fileSize = fileSize;
 	}
 
@@ -119,11 +119,11 @@ public class FileSubmissions {
 		this.fileFormat = fileFormat;
 	}
 
-	public CaseDemographics getUploadPackage() {
+	public UploadPackage getUploadPackage() {
 		return uploadPackage;
 	}
 
-	public void setUploadPackage(CaseDemographics uploadPackage) {
+	public void setUploadPackage(UploadPackage uploadPackage) {
 		this.uploadPackage = uploadPackage;
 	}
 
@@ -141,6 +141,14 @@ public class FileSubmissions {
 
 	public void setInstitution(InstitutionDemographics institution) {
 		this.institution = institution;
+	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 
 }

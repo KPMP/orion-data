@@ -8,14 +8,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.kpmp.upload.PackageInformation;
 
 @Entity
 @Table(name = "case_demographics")
-public class CaseDemographics {
+public class UploadPackage {
 
 	@Id
 	@GenericGenerator(name = "generator", strategy = "increment")
@@ -31,8 +34,22 @@ public class CaseDemographics {
 	@Column(name = "created_at")
 	private Date createdAt;
 
+	@ManyToOne
+	@JoinColumn(name = "package_type_id", referencedColumnName = "id")
+	private PackageType packageType;
+
+	public UploadPackage() {
+	}
+
+	public UploadPackage(PackageInformation packageInformation, Date createdDate) {
+		this.experimentDate = packageInformation.getExperimentDate();
+		this.subjectId = packageInformation.getSubjectId();
+		this.experimentId = packageInformation.getExperimentId();
+		this.createdAt = createdDate;
+	}
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "uploadPackage")
-	private List<FileSubmissions> fileSubmissions;
+	private List<FileSubmission> fileSubmissions;
 
 	public int getId() {
 		return id;
@@ -74,11 +91,19 @@ public class CaseDemographics {
 		this.createdAt = createdAt;
 	}
 
-	public List<FileSubmissions> getFileSubmissions() {
+	public List<FileSubmission> getFileSubmissions() {
 		return fileSubmissions;
 	}
 
-	public void setFileSubmissions(List<FileSubmissions> fileSubmissions) {
+	public void setFileSubmissions(List<FileSubmission> fileSubmissions) {
 		this.fileSubmissions = fileSubmissions;
+	}
+
+	public PackageType getPackageType() {
+		return packageType;
+	}
+
+	public void setPackageType(PackageType packageType) {
+		this.packageType = packageType;
 	}
 }
