@@ -37,13 +37,14 @@ public class UploadController {
 	}
 
 	@RequestMapping(value = "/upload", consumes = { "multipart/form-data" }, method = RequestMethod.POST)
-	public void handleFileUpload(@RequestParam("file") MultipartFile file,
+	public String handleFileUpload(@RequestParam("qqfile") MultipartFile file,
 			@RequestParam("fileMetadata") String fileMetadata, @RequestParam("packageId") int packageId,
 			@RequestParam("submitterId") int submitterId, @RequestParam("institutionId") int institutionId)
 			throws IllegalStateException, IOException {
 
 		UploadPackageIds packageIds = new UploadPackageIds(packageId, submitterId, institutionId);
 		uploadService.addFileToPackage(file, fileMetadata, packageIds);
+		return "{\"Status\": \"success\"}";
 	}
 
 }

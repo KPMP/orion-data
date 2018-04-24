@@ -34,7 +34,7 @@ CREATE TABLE `case_demographics` (
   `id` int(10) UNSIGNED NOT NULL,
   `subject_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `experiment_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `performed_at` datetime NOT NULL,
+  `performed_at` datetime DEFAULT NULL,
   `version_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `package_type_id` INT(10) NOT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
