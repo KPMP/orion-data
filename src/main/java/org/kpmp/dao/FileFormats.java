@@ -25,7 +25,7 @@ public class FileFormats {
 	private String formatType;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "fileFormat")
-	private List<FileSubmissions> fileSubmissions;
+	private List<FileSubmission> fileSubmissions;
 
 	public String getFormatType() {
 		return formatType;
@@ -43,11 +43,11 @@ public class FileFormats {
 		this.id = id;
 	}
 
-	public List<FileSubmissions> getFileSubmissions() {
+	public List<FileSubmission> getFileSubmissions() {
 		return fileSubmissions;
 	}
 
-	public void setFileSubmissions(List<FileSubmissions> fileSubmissions) {
+	public void setFileSubmissions(List<FileSubmission> fileSubmissions) {
 		this.fileSubmissions = fileSubmissions;
 	}
 }

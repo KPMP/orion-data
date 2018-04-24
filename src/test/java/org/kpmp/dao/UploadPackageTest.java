@@ -9,19 +9,36 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.upload.PackageInformation;
 
-public class CaseDemographicsTest {
+public class UploadPackageTest {
 
-	private CaseDemographics caseDemographics;
+	private UploadPackage caseDemographics;
 
 	@Before
 	public void setUp() throws Exception {
-		caseDemographics = new CaseDemographics();
+		caseDemographics = new UploadPackage();
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		caseDemographics = null;
+	}
+
+	@Test
+	public void testConstructor_packageInformation() throws Exception {
+		Date createdDate = new Date();
+		Date experimentDate = new Date();
+		PackageInformation packageInformation = new PackageInformation();
+		packageInformation.setExperimentDate(experimentDate);
+		packageInformation.setExperimentId("experimentId");
+		packageInformation.setSubjectId("subjectId");
+		UploadPackage uploadPackage = new UploadPackage(packageInformation, createdDate);
+
+		assertEquals(experimentDate, uploadPackage.getExperimentDate());
+		assertEquals("experimentId", uploadPackage.getExperimentId());
+		assertEquals("subjectId", uploadPackage.getSubjectId());
+		assertEquals(createdDate, uploadPackage.getCreatedAt());
 	}
 
 	@Test
@@ -58,9 +75,15 @@ public class CaseDemographicsTest {
 
 	@Test
 	public void testSetFileSubmissions() throws Exception {
-		List<FileSubmissions> fileSubmissions = Arrays.asList(new FileSubmissions());
+		List<FileSubmission> fileSubmissions = Arrays.asList(new FileSubmission());
 		caseDemographics.setFileSubmissions(fileSubmissions);
 		assertEquals(fileSubmissions, caseDemographics.getFileSubmissions());
 	}
 
+	@Test
+	public void testSetPackageType() throws Exception {
+		PackageType packageType = new PackageType();
+		caseDemographics.setPackageType(packageType);
+		assertEquals(packageType, caseDemographics.getPackageType());
+	}
 }
