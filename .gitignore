@@ -1,4 +1,5 @@
 *.iml
+.*_history
 .project
 .idea
 .gradle
