@@ -1,6 +1,7 @@
-package org.kpmp.upload;
+package org.kpmp.dao;
 
-import org.kpmp.dao.FileSubmission;
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,6 @@ public interface FileSubmissionsRepository extends CrudRepository<FileSubmission
 
 	@SuppressWarnings("unchecked")
 	public FileSubmission save(FileSubmission fileSubmission);
+
+	public List<FileSubmission> findAll();
 }
