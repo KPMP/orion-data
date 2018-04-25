@@ -44,7 +44,7 @@ public class UploadController {
 
 		UploadPackageIds packageIds = new UploadPackageIds(packageId, submitterId, institutionId);
 		uploadService.addFileToPackage(file, fileMetadata, packageIds);
-		return "{\"Status\": \"success\"}";
+		return "{\"success\": " + true + "}";
 	}
 
 }

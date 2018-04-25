@@ -14,6 +14,7 @@ public class FileUpload {
 	private Date experimentDate;
 	private String subjectId;
 	private String experimentId;
+	private String filename;
 
 	public FileUpload(FileSubmission fileSubmission) {
 		this.researcher = fileSubmission.getSubmitter().getFirstName() + " "
@@ -21,6 +22,9 @@ public class FileUpload {
 		this.institution = fileSubmission.getInstitution().getInstitutionName();
 		this.packageType = fileSubmission.getUploadPackage().getPackageType().getPackageType();
 		this.experimentDate = fileSubmission.getUploadPackage().getExperimentDate();
+		this.subjectId = fileSubmission.getUploadPackage().getSubjectId();
+		this.experimentId = fileSubmission.getUploadPackage().getExperimentId();
+		this.filename = fileSubmission.getFilename();
 	}
 
 	public FileUpload() {
@@ -73,6 +77,14 @@ public class FileUpload {
 
 	public void setSubjectId(String subjectId) {
 		this.subjectId = subjectId;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 
 }

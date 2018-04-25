@@ -33,6 +33,7 @@ public class FileUploadTest {
 	public void testConstructor_fileSubmission() throws Exception {
 
 		FileSubmission fileSubmission = mock(FileSubmission.class);
+		when(fileSubmission.getFilename()).thenReturn("filename");
 		SubmitterDemographics submitter = mock(SubmitterDemographics.class);
 		when(submitter.getFirstName()).thenReturn("John");
 		when(submitter.getLastName()).thenReturn("Doe");
@@ -46,6 +47,8 @@ public class FileUploadTest {
 		PackageType packageType = mock(PackageType.class);
 		when(packageType.getPackageType()).thenReturn("envelope");
 		when(uploadPackage.getPackageType()).thenReturn(packageType);
+		when(uploadPackage.getSubjectId()).thenReturn("subjectId");
+		when(uploadPackage.getExperimentId()).thenReturn("experimentId");
 		when(fileSubmission.getUploadPackage()).thenReturn(uploadPackage);
 
 		FileUpload fileUpload = new FileUpload(fileSubmission);
@@ -54,6 +57,15 @@ public class FileUploadTest {
 		assertEquals("University of Michigan", fileUpload.getInstitution());
 		assertEquals(experimentDate, fileUpload.getExperimentDate());
 		assertEquals("envelope", fileUpload.getPackageType());
+		assertEquals("subjectId", fileUpload.getSubjectId());
+		assertEquals("experimentId", fileUpload.getExperimentId());
+		assertEquals("filename", fileUpload.getFilename());
+	}
+
+	@Test
+	public void testSetFilename() throws Exception {
+		upload.setFilename("filename");
+		assertEquals("filename", upload.getFilename());
 	}
 
 	@Test
