@@ -43,8 +43,8 @@ public class UploadController {
 	public String handleFileUpload(@RequestParam("qqfile") MultipartFile file,
 			@RequestParam("fileMetadata") String fileMetadata, @RequestParam("packageId") int packageId,
 			@RequestParam("submitterId") int submitterId, @RequestParam("institutionId") int institutionId,
-			@RequestParam("qqfilename") String filename, @RequestParam("qqtotalparts") int chunks,
-			@RequestParam("qqpartindex") int chunk) throws IllegalStateException, IOException {
+			@RequestParam("qqfilename") String filename, @RequestParam(name = "qqtotalparts", defaultValue = "1") int chunks,
+			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk) throws IllegalStateException, IOException {
 
 		boolean fullFile = false;
 		if ((chunk == 0 && chunks == 1)) {
