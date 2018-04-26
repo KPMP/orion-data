@@ -1,5 +1,6 @@
 package org.kpmp.upload;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
@@ -12,7 +13,6 @@ import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UploadService {
@@ -60,15 +60,13 @@ public class UploadService {
 		return institution.getId();
 	}
 
-	public void addFileToPackage(MultipartFile file, String fileMetadataString, UploadPackageIds packageIds)
+	public void addFileToPackage(File file, String fileMetadataString, UploadPackageIds packageIds)
 			throws IllegalStateException, IOException {
 		Date createdDate = new Date();
 
 		UploadPackage uploadPackage = uploadPackageRepository.findById(packageIds.getPackageId());
 		SubmitterDemographics submitter = submitterRepository.findById(packageIds.getSubmitterId());
 		InstitutionDemographics institution = institutionRepository.findById(packageIds.getInstitutionId());
-
-		String filePath = fileHandler.saveFile(file, packageIds.getPackageId());
 
 		FileMetadataEntries fileMetadata = new FileMetadataEntries();
 		fileMetadata.setCreatedAt(createdDate);
@@ -77,9 +75,9 @@ public class UploadService {
 
 		FileSubmission fileSubmission = new FileSubmission();
 		fileSubmission.setCreatedAt(createdDate);
-		fileSubmission.setFilename(file.getOriginalFilename());
-		fileSubmission.setFileSize(file.getSize());
-		fileSubmission.setFilePath(filePath);
+		fileSubmission.setFilename(file.getName());
+		fileSubmission.setFileSize(file.length());
+		fileSubmission.setFilePath(file.getPath());
 		fileSubmission.setFileMetadata(savedMetadata);
 		fileSubmission.setInstitution(institution);
 		fileSubmission.setSubmitter(submitter);

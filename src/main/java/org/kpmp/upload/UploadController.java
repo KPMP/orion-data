@@ -1,5 +1,6 @@
 package org.kpmp.upload;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class UploadController {
 
 	private UploadService uploadService;
+	private FileHandler fileHandler;
 
 	@Autowired
-	public UploadController(UploadService uploadService) {
+	public UploadController(UploadService uploadService, FileHandler fileHandler) {
 		this.uploadService = uploadService;
+		this.fileHandler = fileHandler;
 	}
 
 	@RequestMapping(value = "/upload/packageInfo", consumes = { "application/json" }, method = RequestMethod.POST)
@@ -39,11 +42,21 @@ public class UploadController {
 	@RequestMapping(value = "/upload", consumes = { "multipart/form-data" }, method = RequestMethod.POST)
 	public String handleFileUpload(@RequestParam("qqfile") MultipartFile file,
 			@RequestParam("fileMetadata") String fileMetadata, @RequestParam("packageId") int packageId,
-			@RequestParam("submitterId") int submitterId, @RequestParam("institutionId") int institutionId)
-			throws IllegalStateException, IOException {
+			@RequestParam("submitterId") int submitterId, @RequestParam("institutionId") int institutionId,
+			@RequestParam("qqfilename") String filename, @RequestParam("qqtotalparts") int chunks,
+			@RequestParam("qqpartindex") int chunk) throws IllegalStateException, IOException {
 
-		UploadPackageIds packageIds = new UploadPackageIds(packageId, submitterId, institutionId);
-		uploadService.addFileToPackage(file, fileMetadata, packageIds);
+		boolean fullFile = false;
+		if ((chunk == 0 && chunks == 1)) {
+			fullFile = true;
+		}
+
+		File savedFile = fileHandler.saveMultipartFile(file, packageId, filename, fullFile);
+
+		if (chunk == chunks - 1) {
+			UploadPackageIds packageIds = new UploadPackageIds(packageId, submitterId, institutionId);
+			uploadService.addFileToPackage(savedFile, fileMetadata, packageIds);
+		}
 		return "{\"success\": " + true + "}";
 	}
 

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.util.Date;
 
 import org.junit.After;
@@ -21,7 +22,6 @@ import org.kpmp.dao.UploadPackage;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.multipart.MultipartFile;
 
 public class UploadServiceTest {
 
@@ -114,14 +114,14 @@ public class UploadServiceTest {
 		when(institutionRepository.findById(3)).thenReturn(institution);
 		FileMetadataEntries fileMetadataEntries = mock(FileMetadataEntries.class);
 		when(fileMetadataRepository.save(any(FileMetadataEntries.class))).thenReturn(fileMetadataEntries);
-		MultipartFile file = mock(MultipartFile.class);
-		when(file.getOriginalFilename()).thenReturn("filename.txt");
-		when(file.getSize()).thenReturn(444l);
+		File file = mock(File.class);
+		when(file.getName()).thenReturn("filename.txt");
+		when(file.getPath()).thenReturn("/data/package1/filename.txt");
+		when(file.length()).thenReturn(444l);
 		UploadPackageIds packageIds = new UploadPackageIds();
 		packageIds.setPackageId(1);
 		packageIds.setSubmitterId(2);
 		packageIds.setInstitutionId(3);
-		when(fileHandler.saveFile(file, 1)).thenReturn("/data/package1/filename.txt");
 
 		service.addFileToPackage(file, "fileMetadataString", packageIds);
 

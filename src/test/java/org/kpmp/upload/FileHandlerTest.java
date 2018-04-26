@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.After;
@@ -28,18 +29,33 @@ public class FileHandlerTest {
 	}
 
 	@Test
-	public void testSaveFile() throws IllegalStateException, IOException {
+	public void testSaveMultipartFile_fullFile() throws IllegalStateException, IOException {
 		// We acknowledge that we are not testing that this code is saving the
 		// file/creating missing directories, etc
 		// this is more of an integration level test. We will cover this in an
 		// integration test at a later point
 
 		MultipartFile file = mock(MultipartFile.class);
-		when(file.getOriginalFilename()).thenReturn("filename.txt");
+		when(file.getBytes()).thenReturn(new byte[4]);
 
-		String path = fileHandler.saveFile(file, 4);
+		File savedFile = fileHandler.saveMultipartFile(file, 4, "filename.txt", true);
 
-		assertEquals("/data/package4/filename.txt", path);
+		assertEquals("/data/package4/filename.txt", savedFile.getPath());
+	}
+
+	@Test
+	public void testSaveMultipartFile_partialFile() throws IllegalStateException, IOException {
+		// We acknowledge that we are not testing that this code is saving the
+		// file/creating missing directories, etc
+		// this is more of an integration level test. We will cover this in an
+		// integration test at a later point
+
+		MultipartFile file = mock(MultipartFile.class);
+		when(file.getBytes()).thenReturn(new byte[4]);
+
+		File savedFile = fileHandler.saveMultipartFile(file, 4, "filename.txt", false);
+
+		assertEquals("/data/package4/filename.txt", savedFile.getPath());
 	}
 
 }
