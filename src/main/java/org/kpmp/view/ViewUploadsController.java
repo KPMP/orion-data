@@ -24,7 +24,7 @@ public class ViewUploadsController {
 	@RequestMapping(value = "/viewUploads", method = RequestMethod.GET)
 	public @ResponseBody List<FileUpload> getFileUploads() {
 		List<FileUpload> files = new ArrayList<>();
-		List<FileSubmission> submissions = fileSubmissionsRepository.findAll();
+		List<FileSubmission> submissions = fileSubmissionsRepository.findAllByOrderByCreatedAtDesc();
 		for (FileSubmission fileSubmission : submissions) {
 			FileUpload file = new FileUpload(fileSubmission);
 			files.add(file);
