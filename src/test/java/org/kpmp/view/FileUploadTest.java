@@ -44,6 +44,8 @@ public class FileUploadTest {
 		UploadPackage uploadPackage = mock(UploadPackage.class);
 		Date experimentDate = new Date();
 		when(uploadPackage.getExperimentDate()).thenReturn(experimentDate);
+		Date createdAt = new Date();
+		when(uploadPackage.getCreatedAt()).thenReturn(createdAt);
 		PackageType packageType = mock(PackageType.class);
 		when(packageType.getPackageType()).thenReturn("envelope");
 		when(uploadPackage.getPackageType()).thenReturn(packageType);
@@ -56,6 +58,7 @@ public class FileUploadTest {
 		assertEquals("John Doe", fileUpload.getResearcher());
 		assertEquals("University of Michigan", fileUpload.getInstitution());
 		assertEquals(experimentDate, fileUpload.getExperimentDate());
+		assertEquals(createdAt, fileUpload.getCreatedAt());
 		assertEquals("envelope", fileUpload.getPackageType());
 		assertEquals("subjectId", fileUpload.getSubjectId());
 		assertEquals("experimentId", fileUpload.getExperimentId());
@@ -91,6 +94,13 @@ public class FileUploadTest {
 		Date experimentDate = new Date();
 		upload.setExperimentDate(experimentDate);
 		assertEquals(experimentDate, upload.getExperimentDate());
+	}
+
+	@Test
+	public void testSetCreatedAt() {
+		Date createdAt = new Date();
+		upload.setCreatedAt(createdAt);
+		assertEquals(createdAt, upload.getCreatedAt());
 	}
 
 	@Test
