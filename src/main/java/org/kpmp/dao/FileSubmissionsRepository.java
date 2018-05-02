@@ -12,4 +12,7 @@ public interface FileSubmissionsRepository extends CrudRepository<FileSubmission
 	public FileSubmission save(FileSubmission fileSubmission);
 
 	public List<FileSubmission> findAll();
+
+	public List<FileSubmission> findAllByOrderByCreatedAtDesc();
+
 }
