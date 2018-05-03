@@ -54,9 +54,29 @@ public class UploadControllerTest {
 	public void testHandleFileUpload_oneChunk() throws IllegalStateException, IOException {
 		MultipartFile file = mock(MultipartFile.class);
 		File savedFile = mock(File.class);
-		when(fileHandler.saveMultipartFile(file, 1, "filename", true)).thenReturn(savedFile);
+		when(fileHandler.saveMultipartFile(file, 1, "filename", false)).thenReturn(savedFile);
 
 		controller.handleFileUpload(file, "fileMetadata", 1, 2, 3, "filename", 1, 0);
+
+		ArgumentCaptor<UploadPackageIds> idCaptor = ArgumentCaptor.forClass(UploadPackageIds.class);
+		ArgumentCaptor<File> fileCaptor = ArgumentCaptor.forClass(File.class);
+		ArgumentCaptor<String> metadataCaptor = ArgumentCaptor.forClass(String.class);
+		verify(uploadService).addFileToPackage(fileCaptor.capture(), metadataCaptor.capture(), idCaptor.capture());
+		UploadPackageIds ids = idCaptor.getValue();
+		assertEquals(1, ids.getPackageId());
+		assertEquals(2, ids.getSubmitterId());
+		assertEquals(3, ids.getInstitutionId());
+		assertEquals(savedFile, fileCaptor.getValue());
+		assertEquals("fileMetadata", metadataCaptor.getValue());
+	}
+
+	@Test
+	public void testHandleFileUpload_secondChunk() throws IllegalStateException, IOException {
+		MultipartFile file = mock(MultipartFile.class);
+		File savedFile = mock(File.class);
+		when(fileHandler.saveMultipartFile(file, 1, "filename", true)).thenReturn(savedFile);
+
+		controller.handleFileUpload(file, "fileMetadata", 1, 2, 3, "filename", 2, 1);
 
 		ArgumentCaptor<UploadPackageIds> idCaptor = ArgumentCaptor.forClass(UploadPackageIds.class);
 		ArgumentCaptor<File> fileCaptor = ArgumentCaptor.forClass(File.class);
