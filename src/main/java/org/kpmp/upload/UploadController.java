@@ -43,15 +43,17 @@ public class UploadController {
 	public String handleFileUpload(@RequestParam("qqfile") MultipartFile file,
 			@RequestParam("fileMetadata") String fileMetadata, @RequestParam("packageId") int packageId,
 			@RequestParam("submitterId") int submitterId, @RequestParam("institutionId") int institutionId,
-			@RequestParam("qqfilename") String filename, @RequestParam(name = "qqtotalparts", defaultValue = "1") int chunks,
-			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk) throws IllegalStateException, IOException {
+			@RequestParam("qqfilename") String filename,
+			@RequestParam(name = "qqtotalparts", defaultValue = "1") int chunks,
+			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk)
+			throws IllegalStateException, IOException {
 
-		boolean fullFile = false;
-		if ((chunk == 0 && chunks == 1)) {
-			fullFile = true;
+		boolean shouldAppend = false;
+		if (chunk != 0) {
+			shouldAppend = true;
 		}
 
-		File savedFile = fileHandler.saveMultipartFile(file, packageId, filename, fullFile);
+		File savedFile = fileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 
 		if (chunk == chunks - 1) {
 			UploadPackageIds packageIds = new UploadPackageIds(packageId, submitterId, institutionId);

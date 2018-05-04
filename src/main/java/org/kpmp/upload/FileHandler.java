@@ -14,7 +14,7 @@ class FileHandler {
 	@Value("${file.base.path}")
 	private String basePath;
 
-	public File saveMultipartFile(MultipartFile file, int packageId, String filename, boolean fullFile)
+	public File saveMultipartFile(MultipartFile file, int packageId, String filename, boolean shouldAppend)
 			throws IOException {
 		File packageDirectory = new File(basePath + File.separator + "package" + packageId);
 		if (!packageDirectory.exists()) {
@@ -22,7 +22,7 @@ class FileHandler {
 		}
 		File fileToSave = new File(basePath + File.separator + "package" + packageId + File.separator + filename);
 
-		if (!fullFile) {
+		if (shouldAppend) {
 			FileUtils.writeByteArrayToFile(fileToSave, file.getBytes(), true);
 		} else {
 			FileUtils.writeByteArrayToFile(fileToSave, file.getBytes());
