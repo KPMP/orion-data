@@ -71,4 +71,11 @@ public class PackageInformation {
 		this.institutionName = institutionName;
 	}
 
+	@Override
+	public String toString() {
+		return "firstName: " + firstName + "  lastName: " + lastName + "  packageType: " + packageType + "  subjectId: "
+				+ subjectId + "  experimentId: " + experimentId + "  experimentdate: " + experimentDate
+				+ "  institutionName: " + institutionName;
+	}
+
 }
