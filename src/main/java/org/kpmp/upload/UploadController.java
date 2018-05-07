@@ -3,6 +3,7 @@ package org.kpmp.upload;
 import java.io.File;
 import java.io.IOException;
 
+import org.kpmp.dao.PackageTypeOther;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,12 @@ public class UploadController {
 	@RequestMapping(value = "/upload/packageInfo", consumes = { "application/json" }, method = RequestMethod.POST)
 	public UploadPackageIds uploadPackageInfo(@RequestBody PackageInformation packageInformation) {
 		UploadPackageIds ids = new UploadPackageIds();
+
+		PackageTypeOther packageTypeOther = null;
+		if ("Other".equals(packageInformation.getPackageType()) && !"".equals(packageInformation.getPackageTypeOther())
+				&& packageInformation.getPackageTypeOther() != null) {
+			packageTypeOther = uploadService.savePackageTypeOther(packageInformation.getPackageTypeOther());
+		}
 
 		int uploadPackageId = uploadService.saveUploadPackage(packageInformation);
 		ids.setPackageId(uploadPackageId);

@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -39,7 +40,7 @@ public class UploadPackage {
 	@JoinColumn(name = "package_type_id", referencedColumnName = "id")
 	private PackageType packageType;
 
-	@ManyToOne
+	@OneToOne
 	@JoinTable(name = "upload_package_to_package_type_other", joinColumns = {
 			@JoinColumn(name = "upload_package_id", referencedColumnName = "id") }, inverseJoinColumns = {
 					@JoinColumn(name = "package_type_other_id", referencedColumnName = "id") })

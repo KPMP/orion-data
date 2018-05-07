@@ -14,6 +14,7 @@ public class PackageInformation {
 	private String experimentId;
 	private Date experimentDate;
 	private String institutionName;
+	private String packageTypeOther;
 
 	public String getFirstName() {
 		return firstName;
@@ -69,6 +70,14 @@ public class PackageInformation {
 
 	public void setInstitutionName(String institutionName) {
 		this.institutionName = institutionName;
+	}
+
+	public String getPackageTypeOther() {
+		return packageTypeOther;
+	}
+
+	public void setPackageTypeOther(String packageTypeOther) {
+		this.packageTypeOther = packageTypeOther;
 	}
 
 }
