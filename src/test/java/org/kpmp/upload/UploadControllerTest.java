@@ -1,6 +1,7 @@
 package org.kpmp.upload;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.dao.PackageTypeOther;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -41,13 +43,13 @@ public class UploadControllerTest {
 	public void testUploadPackageInfo_whenPackageTypeIsNotOther() {
 		PackageInformation packageInformation = mock(PackageInformation.class);
 		when(packageInformation.getPackageType()).thenReturn("something");
-		when(uploadService.saveUploadPackage(packageInformation)).thenReturn(5);
+		when(uploadService.saveUploadPackage(packageInformation, null)).thenReturn(5);
 		when(uploadService.saveSubmitterInfo(packageInformation)).thenReturn(55);
 		when(uploadService.findInstitutionId(packageInformation)).thenReturn(66);
 
 		UploadPackageIds packageIds = controller.uploadPackageInfo(packageInformation);
 
-		verify(uploadService).saveUploadPackage(packageInformation);
+		verify(uploadService).saveUploadPackage(packageInformation, null);
 		verify(uploadService).saveSubmitterInfo(packageInformation);
 		verify(uploadService).findInstitutionId(packageInformation);
 		verify(uploadService, times(0)).savePackageTypeOther(any(String.class));
@@ -61,19 +63,17 @@ public class UploadControllerTest {
 		PackageInformation packageInformation = mock(PackageInformation.class);
 		when(packageInformation.getPackageType()).thenReturn("Other");
 		when(packageInformation.getPackageTypeOther()).thenReturn("");
-		when(uploadService.saveUploadPackage(packageInformation)).thenReturn(5);
-		when(uploadService.saveSubmitterInfo(packageInformation)).thenReturn(55);
-		when(uploadService.findInstitutionId(packageInformation)).thenReturn(66);
 
-		UploadPackageIds packageIds = controller.uploadPackageInfo(packageInformation);
-
-		verify(uploadService).saveUploadPackage(packageInformation);
-		verify(uploadService).saveSubmitterInfo(packageInformation);
-		verify(uploadService).findInstitutionId(packageInformation);
-		verify(uploadService, times(0)).savePackageTypeOther(any(String.class));
-		assertEquals(5, packageIds.getPackageId());
-		assertEquals(55, packageIds.getSubmitterId());
-		assertEquals(66, packageIds.getInstitutionId());
+		try {
+			controller.uploadPackageInfo(packageInformation);
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Package type 'Other' selected, but not defined further.", e.getMessage());
+			verify(uploadService, times(0)).saveUploadPackage(packageInformation, null);
+			verify(uploadService, times(0)).saveSubmitterInfo(packageInformation);
+			verify(uploadService, times(0)).findInstitutionId(packageInformation);
+			verify(uploadService, times(0)).savePackageTypeOther(any(String.class));
+		}
 
 	}
 
@@ -82,19 +82,18 @@ public class UploadControllerTest {
 		PackageInformation packageInformation = mock(PackageInformation.class);
 		when(packageInformation.getPackageType()).thenReturn("Other");
 		when(packageInformation.getPackageTypeOther()).thenReturn(null);
-		when(uploadService.saveUploadPackage(packageInformation)).thenReturn(5);
-		when(uploadService.saveSubmitterInfo(packageInformation)).thenReturn(55);
-		when(uploadService.findInstitutionId(packageInformation)).thenReturn(66);
 
-		UploadPackageIds packageIds = controller.uploadPackageInfo(packageInformation);
+		try {
+			controller.uploadPackageInfo(packageInformation);
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Package type 'Other' selected, but not defined further.", e.getMessage());
+			verify(uploadService, times(0)).saveUploadPackage(packageInformation, null);
+			verify(uploadService, times(0)).saveSubmitterInfo(packageInformation);
+			verify(uploadService, times(0)).findInstitutionId(packageInformation);
+			verify(uploadService, times(0)).savePackageTypeOther(any(String.class));
+		}
 
-		verify(uploadService).saveUploadPackage(packageInformation);
-		verify(uploadService).saveSubmitterInfo(packageInformation);
-		verify(uploadService).findInstitutionId(packageInformation);
-		verify(uploadService, times(0)).savePackageTypeOther(any(String.class));
-		assertEquals(5, packageIds.getPackageId());
-		assertEquals(55, packageIds.getSubmitterId());
-		assertEquals(66, packageIds.getInstitutionId());
 	}
 
 	@Test
@@ -102,13 +101,15 @@ public class UploadControllerTest {
 		PackageInformation packageInformation = mock(PackageInformation.class);
 		when(packageInformation.getPackageType()).thenReturn("Other");
 		when(packageInformation.getPackageTypeOther()).thenReturn("my special package");
-		when(uploadService.saveUploadPackage(packageInformation)).thenReturn(5);
+		PackageTypeOther packageTypeOther = new PackageTypeOther();
+		when(uploadService.savePackageTypeOther("my special package")).thenReturn(packageTypeOther);
+		when(uploadService.saveUploadPackage(packageInformation, packageTypeOther)).thenReturn(5);
 		when(uploadService.saveSubmitterInfo(packageInformation)).thenReturn(55);
 		when(uploadService.findInstitutionId(packageInformation)).thenReturn(66);
 
 		UploadPackageIds packageIds = controller.uploadPackageInfo(packageInformation);
 
-		verify(uploadService).saveUploadPackage(packageInformation);
+		verify(uploadService).saveUploadPackage(packageInformation, packageTypeOther);
 		verify(uploadService).saveSubmitterInfo(packageInformation);
 		verify(uploadService).findInstitutionId(packageInformation);
 		verify(uploadService).savePackageTypeOther("my special package");

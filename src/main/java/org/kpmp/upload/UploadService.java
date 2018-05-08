@@ -47,9 +47,10 @@ public class UploadService {
 		return packageTypeOtherRepository.save(packageTypeOther);
 	}
 
-	public int saveUploadPackage(PackageInformation packageInfo) {
+	public int saveUploadPackage(PackageInformation packageInfo, PackageTypeOther packageTypeOther) {
 		PackageType packageType = packageTypeRepository.findByPackageType(packageInfo.getPackageType());
 		UploadPackage uploadPackage = new UploadPackage(packageInfo, new Date());
+		uploadPackage.setPackageTypeOther(packageTypeOther);
 		uploadPackage.setPackageType(packageType);
 		UploadPackage savedPackage = uploadPackageRepository.save(uploadPackage);
 		return savedPackage.getId();

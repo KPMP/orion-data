@@ -66,14 +66,16 @@ public class UploadServiceTest {
 		PackageInformation packageInformation = new PackageInformation();
 		packageInformation.setExperimentDate(experimentDate);
 		packageInformation.setPackageType("packageType");
+		PackageTypeOther packageTypeOther = new PackageTypeOther();
 
-		int packageId = service.saveUploadPackage(packageInformation);
+		int packageId = service.saveUploadPackage(packageInformation, packageTypeOther);
 
 		assertEquals(5, packageId);
 		ArgumentCaptor<UploadPackage> packageCaptor = ArgumentCaptor.forClass(UploadPackage.class);
 		verify(uploadPackageRepository).save(packageCaptor.capture());
 		assertEquals(experimentDate, packageCaptor.getValue().getExperimentDate());
 		assertEquals(packageType, packageCaptor.getValue().getPackageType());
+		assertEquals(packageTypeOther, packageCaptor.getValue().getPackageTypeOther());
 	}
 
 	@Test
