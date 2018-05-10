@@ -3,6 +3,7 @@ package org.kpmp.upload;
 import java.io.File;
 import java.io.IOException;
 
+import org.kpmp.dao.PackageTypeOther;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +28,14 @@ public class UploadController {
 	public UploadPackageIds uploadPackageInfo(@RequestBody PackageInformation packageInformation) {
 		UploadPackageIds ids = new UploadPackageIds();
 
-		int uploadPackageId = uploadService.saveUploadPackage(packageInformation);
+		if ("Other".equals(packageInformation.getPackageType()) && ("".equals(packageInformation.getPackageTypeOther())
+				|| packageInformation.getPackageTypeOther() == null)) {
+			throw new IllegalArgumentException("Package type 'Other' selected, but not defined further.");
+		}
+		PackageTypeOther packageTypeOther = uploadService
+				.savePackageTypeOther(packageInformation.getPackageTypeOther());
+
+		int uploadPackageId = uploadService.saveUploadPackage(packageInformation, packageTypeOther);
 		ids.setPackageId(uploadPackageId);
 
 		int submitterId = uploadService.saveSubmitterInfo(packageInformation);

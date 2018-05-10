@@ -13,16 +13,16 @@ import org.kpmp.upload.PackageInformation;
 
 public class UploadPackageTest {
 
-	private UploadPackage caseDemographics;
+	private UploadPackage uploadPackage;
 
 	@Before
 	public void setUp() throws Exception {
-		caseDemographics = new UploadPackage();
+		uploadPackage = new UploadPackage();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		caseDemographics = null;
+		uploadPackage = null;
 	}
 
 	@Test
@@ -43,47 +43,54 @@ public class UploadPackageTest {
 
 	@Test
 	public void testSetId() {
-		caseDemographics.setId(5);
-		assertEquals(5, caseDemographics.getId());
+		uploadPackage.setId(5);
+		assertEquals(5, uploadPackage.getId());
 	}
 
 	@Test
 	public void testSetSubjectId() {
-		caseDemographics.setSubjectId("subjectId");
-		assertEquals("subjectId", caseDemographics.getSubjectId());
+		uploadPackage.setSubjectId("subjectId");
+		assertEquals("subjectId", uploadPackage.getSubjectId());
 	}
 
 	@Test
 	public void testSetExperimentId() {
-		caseDemographics.setExperimentId("experimentId");
-		assertEquals("experimentId", caseDemographics.getExperimentId());
+		uploadPackage.setExperimentId("experimentId");
+		assertEquals("experimentId", uploadPackage.getExperimentId());
 	}
 
 	@Test
 	public void testSetExperimentDate() {
 		Date experimentDate = new Date();
-		caseDemographics.setExperimentDate(experimentDate);
-		assertEquals(experimentDate, caseDemographics.getExperimentDate());
+		uploadPackage.setExperimentDate(experimentDate);
+		assertEquals(experimentDate, uploadPackage.getExperimentDate());
 	}
 
 	@Test
 	public void testSetCreatedAt() {
 		Date createdAt = new Date();
-		caseDemographics.setCreatedAt(createdAt);
-		assertEquals(createdAt, caseDemographics.getCreatedAt());
+		uploadPackage.setCreatedAt(createdAt);
+		assertEquals(createdAt, uploadPackage.getCreatedAt());
 	}
 
 	@Test
 	public void testSetFileSubmissions() throws Exception {
 		List<FileSubmission> fileSubmissions = Arrays.asList(new FileSubmission());
-		caseDemographics.setFileSubmissions(fileSubmissions);
-		assertEquals(fileSubmissions, caseDemographics.getFileSubmissions());
+		uploadPackage.setFileSubmissions(fileSubmissions);
+		assertEquals(fileSubmissions, uploadPackage.getFileSubmissions());
 	}
 
 	@Test
 	public void testSetPackageType() throws Exception {
 		PackageType packageType = new PackageType();
-		caseDemographics.setPackageType(packageType);
-		assertEquals(packageType, caseDemographics.getPackageType());
+		uploadPackage.setPackageType(packageType);
+		assertEquals(packageType, uploadPackage.getPackageType());
+	}
+
+	@Test
+	public void testSetPackageTypeOther() {
+		PackageTypeOther packageTypeOther = new PackageTypeOther();
+		uploadPackage.setPackageTypeOther(packageTypeOther);
+		assertEquals(packageTypeOther, uploadPackage.getPackageTypeOther());
 	}
 }
