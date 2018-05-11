@@ -9,6 +9,7 @@ import org.kpmp.dao.FileSubmission;
 import org.kpmp.dao.FileSubmissionsRepository;
 import org.kpmp.dao.InstitutionDemographics;
 import org.kpmp.dao.PackageType;
+import org.kpmp.dao.PackageTypeOther;
 import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,26 +24,33 @@ public class UploadService {
 	private InstitutionRepository institutionRepository;
 	private FileMetadataRepository fileMetadataRepository;
 	private PackageTypeRepository packageTypeRepository;
-	private FileHandler fileHandler;
+	private PackageTypeOtherRepository packageTypeOtherRepository;
 
 	@Autowired
 	public UploadService(UploadPackageRepository uploadPackageRepository,
 			FileSubmissionsRepository fileSubmissionsRepository, SubmitterRepository submitterRepository,
 			InstitutionRepository institutionRepository, FileMetadataRepository fileMetadataRepository,
-			PackageTypeRepository packageTypeRepository, FileHandler fileHandler) {
+			PackageTypeRepository packageTypeRepository, PackageTypeOtherRepository packageTypeOtherRepository) {
 		this.uploadPackageRepository = uploadPackageRepository;
 		this.fileSubmissionsRepository = fileSubmissionsRepository;
 		this.submitterRepository = submitterRepository;
 		this.institutionRepository = institutionRepository;
 		this.fileMetadataRepository = fileMetadataRepository;
 		this.packageTypeRepository = packageTypeRepository;
-		this.fileHandler = fileHandler;
+		this.packageTypeOtherRepository = packageTypeOtherRepository;
 
 	}
 
-	public int saveUploadPackage(PackageInformation packageInfo) {
+	public PackageTypeOther savePackageTypeOther(String packageTypeOtherValue) {
+		PackageTypeOther packageTypeOther = new PackageTypeOther();
+		packageTypeOther.setPackageType(packageTypeOtherValue);
+		return packageTypeOtherRepository.save(packageTypeOther);
+	}
+
+	public int saveUploadPackage(PackageInformation packageInfo, PackageTypeOther packageTypeOther) {
 		PackageType packageType = packageTypeRepository.findByPackageType(packageInfo.getPackageType());
 		UploadPackage uploadPackage = new UploadPackage(packageInfo, new Date());
+		uploadPackage.setPackageTypeOther(packageTypeOther);
 		uploadPackage.setPackageType(packageType);
 		UploadPackage savedPackage = uploadPackageRepository.save(uploadPackage);
 		return savedPackage.getId();

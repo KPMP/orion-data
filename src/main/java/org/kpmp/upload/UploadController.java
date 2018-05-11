@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 
+import org.kpmp.dao.PackageTypeOther;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,14 @@ public class UploadController {
 		log.info(packageInfoRequest.format(new Object[] { "uploadPackageInfo", packageInformation }));
 		UploadPackageIds ids = new UploadPackageIds();
 
-		int uploadPackageId = uploadService.saveUploadPackage(packageInformation);
+		if ("Other".equals(packageInformation.getPackageType()) && ("".equals(packageInformation.getPackageTypeOther())
+				|| packageInformation.getPackageTypeOther() == null)) {
+			throw new IllegalArgumentException("Package type 'Other' selected, but not defined further.");
+		}
+		PackageTypeOther packageTypeOther = uploadService
+				.savePackageTypeOther(packageInformation.getPackageTypeOther());
+
+		int uploadPackageId = uploadService.saveUploadPackage(packageInformation, packageTypeOther);
 		ids.setPackageId(uploadPackageId);
 
 		int submitterId = uploadService.saveSubmitterInfo(packageInformation);

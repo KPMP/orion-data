@@ -64,4 +64,10 @@ public class PackageInformationTest {
 		packageInfo.setInstitutionName("name");
 		assertEquals("name", packageInfo.getInstitutionName());
 	}
+
+	@Test
+	public void testSetPackageTypeOther() throws Exception {
+		packageInfo.setPackageTypeOther("packageTypeOther");
+		assertEquals("packageTypeOther", packageInfo.getPackageTypeOther());
+	}
 }

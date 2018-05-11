@@ -48,7 +48,7 @@ public class FileSubmission {
 	private SubmitterDemographics submitter;
 
 	@ManyToOne
-	@JoinColumn(name = "case_id", referencedColumnName = "id")
+	@JoinColumn(name = "upload_package_id", referencedColumnName = "id")
 	private UploadPackage uploadPackage;
 
 	@ManyToOne

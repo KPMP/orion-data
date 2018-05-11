@@ -17,6 +17,7 @@ import org.kpmp.dao.FileSubmission;
 import org.kpmp.dao.FileSubmissionsRepository;
 import org.kpmp.dao.InstitutionDemographics;
 import org.kpmp.dao.PackageType;
+import org.kpmp.dao.PackageTypeOther;
 import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
 import org.mockito.ArgumentCaptor;
@@ -38,14 +39,15 @@ public class UploadServiceTest {
 	@Mock
 	private PackageTypeRepository packageTypeRepository;
 	@Mock
-	private FileHandler fileHandler;
+	private PackageTypeOtherRepository packageTypeOtherRepository;
+
 	private UploadService service;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		service = new UploadService(uploadPackageRepository, fileSubmissionsRepository, submitterRepository,
-				institutionRepository, fileMetadataRepository, packageTypeRepository, fileHandler);
+				institutionRepository, fileMetadataRepository, packageTypeRepository, packageTypeOtherRepository);
 	}
 
 	@After
@@ -64,14 +66,16 @@ public class UploadServiceTest {
 		PackageInformation packageInformation = new PackageInformation();
 		packageInformation.setExperimentDate(experimentDate);
 		packageInformation.setPackageType("packageType");
+		PackageTypeOther packageTypeOther = new PackageTypeOther();
 
-		int packageId = service.saveUploadPackage(packageInformation);
+		int packageId = service.saveUploadPackage(packageInformation, packageTypeOther);
 
 		assertEquals(5, packageId);
 		ArgumentCaptor<UploadPackage> packageCaptor = ArgumentCaptor.forClass(UploadPackage.class);
 		verify(uploadPackageRepository).save(packageCaptor.capture());
 		assertEquals(experimentDate, packageCaptor.getValue().getExperimentDate());
 		assertEquals(packageType, packageCaptor.getValue().getPackageType());
+		assertEquals(packageTypeOther, packageCaptor.getValue().getPackageTypeOther());
 	}
 
 	@Test
@@ -138,6 +142,19 @@ public class UploadServiceTest {
 		ArgumentCaptor<FileMetadataEntries> fileMetadataCaptor = ArgumentCaptor.forClass(FileMetadataEntries.class);
 		verify(fileMetadataRepository).save(fileMetadataCaptor.capture());
 		assertEquals("fileMetadataString", fileMetadataCaptor.getValue().getMetadata());
+	}
+
+	@Test
+	public void testSavePackageTypeOther() throws Exception {
+		PackageTypeOther savedPackageTypeOther = mock(PackageTypeOther.class);
+		when(packageTypeOtherRepository.save(any(PackageTypeOther.class))).thenReturn(savedPackageTypeOther);
+
+		PackageTypeOther result = service.savePackageTypeOther("packageTypeOther");
+
+		assertEquals(savedPackageTypeOther, result);
+		ArgumentCaptor<PackageTypeOther> packageTypeOtherCaptor = ArgumentCaptor.forClass(PackageTypeOther.class);
+		verify(packageTypeOtherRepository).save(packageTypeOtherCaptor.capture());
+		assertEquals("packageTypeOther", packageTypeOtherCaptor.getValue().getPackageType());
 	}
 
 }
