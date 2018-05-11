@@ -71,13 +71,20 @@ public class PackageInformation {
 	public void setInstitutionName(String institutionName) {
 		this.institutionName = institutionName;
 	}
-
+	
 	public String getPackageTypeOther() {
 		return packageTypeOther;
 	}
 
 	public void setPackageTypeOther(String packageTypeOther) {
 		this.packageTypeOther = packageTypeOther;
+	}
+
+	@Override
+	public String toString() {
+		return "firstName: " + firstName + "  lastName: " + lastName + "  packageType: " + packageType + "  subjectId: "
+				+ subjectId + "  experimentId: " + experimentId + "  experimentdate: " + experimentDate
+				+ "  institutionName: " + institutionName;
 	}
 
 }
