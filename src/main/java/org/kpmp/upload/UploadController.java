@@ -36,13 +36,15 @@ public class UploadController {
 
 		log.info(packageInfoRequest.format(new Object[] { "uploadPackageInfo", packageInformation }));
 		UploadPackageIds ids = new UploadPackageIds();
+		PackageTypeOther packageTypeOther = null;
 
 		if ("Other".equals(packageInformation.getPackageType()) && ("".equals(packageInformation.getPackageTypeOther())
 				|| packageInformation.getPackageTypeOther() == null)) {
 			throw new IllegalArgumentException("Package type 'Other' selected, but not defined further.");
 		}
-		PackageTypeOther packageTypeOther = uploadService
-				.savePackageTypeOther(packageInformation.getPackageTypeOther());
+		if ("Other".equals(packageInformation.getPackageType())) {
+			packageTypeOther = uploadService.savePackageTypeOther(packageInformation.getPackageTypeOther());
+		}
 
 		int uploadPackageId = uploadService.saveUploadPackage(packageInformation, packageTypeOther);
 		ids.setPackageId(uploadPackageId);
