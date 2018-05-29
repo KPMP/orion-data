@@ -1,0 +1,8 @@
+*.iml
+.*_history
+.project
+.idea
+.gradle
+.mvn
+build
+/bin/
