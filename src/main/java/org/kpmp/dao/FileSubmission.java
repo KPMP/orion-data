@@ -13,6 +13,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "file_submissions")
 public class FileSubmission {
@@ -37,22 +39,27 @@ public class FileSubmission {
 
 	@OneToOne
 	@JoinColumn(name = "file_meta_entry_id", referencedColumnName = "id")
+	@JsonIgnoreProperties("fileSubmission")
 	private FileMetadataEntries fileMetadata;
 
 	@ManyToOne
 	@JoinColumn(name = "file_format_id", referencedColumnName = "id")
+	@JsonIgnoreProperties("fileSubmissions")
 	private FileFormats fileFormat;
 
 	@ManyToOne
 	@JoinColumn(name = "submitter_id", referencedColumnName = "id")
+	@JsonIgnoreProperties("fileSubmissions")
 	private SubmitterDemographics submitter;
 
 	@ManyToOne
 	@JoinColumn(name = "upload_package_id", referencedColumnName = "id")
+	@JsonIgnoreProperties("fileSubmissions")
 	private UploadPackage uploadPackage;
 
 	@ManyToOne
 	@JoinColumn(name = "institution_id", referencedColumnName = "id")
+	@JsonIgnoreProperties("fileSubmissions")
 	private InstitutionDemographics institution;
 
 	public int getId() {
