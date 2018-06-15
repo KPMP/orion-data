@@ -17,7 +17,6 @@ public class UploadPackageMetadata {
     private String packageType;
     private String submitterFirstName;
     private String submitterLastName;
-    private PackageTypeOther packageTypeOther;
     private List<FileSubmissionJSON> files;
     private String institution;
 
@@ -38,6 +37,10 @@ public class UploadPackageMetadata {
             return size;
         }
 
+        public String getFileName() {
+            return fileName;
+        }
+
         public String getDescription() {
             return description;
         }
@@ -48,9 +51,10 @@ public class UploadPackageMetadata {
     }
 
     public UploadPackageMetadata(UploadPackage uploadPackage) {
+        this.id = uploadPackage.getId();
         this.subjectId = uploadPackage.getSubjectId();
         this.experimentId = uploadPackage.getExperimentId();
-        SimpleDateFormat dt = new SimpleDateFormat("yyyyy-mm-dd hh:mm:ss");
+        SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         this.experimentDate = dt.format(uploadPackage.getExperimentDate());
         this.createdAt = dt.format(uploadPackage.getCreatedAt());
         if (uploadPackage.getPackageTypeOther() != null) {
@@ -148,14 +152,6 @@ public class UploadPackageMetadata {
 
     public void setInstitution(String institution) {
         this.institution = institution;
-    }
-
-    public PackageTypeOther getPackageTypeOther() {
-        return packageTypeOther;
-    }
-
-    public void setPackageTypeOther(PackageTypeOther packageTypeOther) {
-        this.packageTypeOther = packageTypeOther;
     }
 
     public List<FileSubmissionJSON> getFiles() {

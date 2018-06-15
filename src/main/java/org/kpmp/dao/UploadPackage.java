@@ -60,7 +60,7 @@ public class UploadPackage {
 		this.createdAt = createdDate;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "uploadPackage", fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "uploadPackage", fetch = FetchType.LAZY)
 	private List<FileSubmission> fileSubmissions;
 
 	public int getId() {
