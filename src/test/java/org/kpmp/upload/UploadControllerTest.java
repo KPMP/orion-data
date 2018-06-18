@@ -27,13 +27,11 @@ public class UploadControllerTest {
 	@Mock
 	private FileHandler fileHandler;
 	private UploadController controller;
-	private UploadPackageRepository uploadPackageRepository;
-	private MetadataHandler metadataHandler;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		controller = new UploadController(uploadService, fileHandler, uploadPackageRepository, metadataHandler);
+		controller = new UploadController(uploadService, fileHandler);
 	}
 
 	@After

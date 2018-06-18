@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 import org.kpmp.dao.PackageTypeOther;
-import org.kpmp.dao.UploadPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,6 @@ public class UploadController {
 
 	private UploadService uploadService;
 	private FileHandler fileHandler;
-	private UploadPackageRepository uploadPackageRepository;
-	private MetadataHandler metadataHandler;
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -30,11 +27,9 @@ public class UploadController {
 	private static final MessageFormat fileUploadRequest = new MessageFormat("Request|{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}");
 
 	@Autowired
-	public UploadController(UploadService uploadService, FileHandler fileHandler, UploadPackageRepository uploadPackageRepository, MetadataHandler metadataHandler) {
+	public UploadController(UploadService uploadService, FileHandler fileHandler) {
 		this.uploadService = uploadService;
 		this.fileHandler = fileHandler;
-		this.uploadPackageRepository = uploadPackageRepository;
-		this.metadataHandler = metadataHandler;
 	}
 
 	@RequestMapping(value = "/upload/packageInfo", consumes = { "application/json" }, method = RequestMethod.POST)
@@ -91,14 +86,6 @@ public class UploadController {
 					e);
 			return "{\"success\": " + false + "}";
 		}
-		UploadPackage uploadPackage = uploadPackageRepository.findById(packageId);
-		try {
-			metadataHandler.saveUploadPackageMetadata(uploadPackage);
-		} catch (IOException e) {
-			log.error("Unable to save metadata: " + e.getMessage());
-			return "{\"success\": " + false + "}";
-		}
-
 		return "{\"success\": " + true + "}";
 	}
 
