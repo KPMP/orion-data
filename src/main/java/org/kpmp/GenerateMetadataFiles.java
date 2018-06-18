@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.kpmp.dao.UploadPackage;
 import org.kpmp.dao.UploadPackageMetadata;
+import org.kpmp.upload.FilePathHelper;
 import org.kpmp.upload.MetadataHandler;
 import org.kpmp.upload.UploadPackageRepository;
 import org.slf4j.Logger;
@@ -21,14 +22,17 @@ public class GenerateMetadataFiles implements CommandLineRunner {
 
     private UploadPackageRepository uploadPackageRepository;
     private MetadataHandler metadataHandler;
+    private FilePathHelper filePathHelper;
+
 
     private static final MessageFormat logMessage = new MessageFormat("metadata for package {0} created");
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    public GenerateMetadataFiles(UploadPackageRepository uploadPackageRepository, MetadataHandler metadataHandler) {
+    public GenerateMetadataFiles(UploadPackageRepository uploadPackageRepository, MetadataHandler metadataHandler, FilePathHelper filePathHelper) {
         this.uploadPackageRepository = uploadPackageRepository;
         this.metadataHandler = metadataHandler;
+        this.filePathHelper = filePathHelper;
     }
 
     public static void main(String[] args) {
@@ -40,7 +44,7 @@ public class GenerateMetadataFiles implements CommandLineRunner {
         List<UploadPackage> packages = uploadPackageRepository.findAll();
         int packageCount = 0;
         for (UploadPackage uploadPackage : packages) {
-            String filePath = metadataHandler.getFilePathFromUploadPackage(uploadPackage);
+            String filePath = filePathHelper.getPackagePath("", Integer.toString(uploadPackage.getId())) + filePathHelper.getMetadataFileName();
             UploadPackageMetadata uploadPackageMetadata = new UploadPackageMetadata(uploadPackage);
             metadataHandler.saveUploadPackageMetadata(uploadPackageMetadata, filePath);
             log.info(logMessage.format(new Object[]{uploadPackage.getId()}));

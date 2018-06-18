@@ -16,11 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileHandlerTest {
 
 	private FileHandler fileHandler;
+	private FilePathHelper filePathHelper;
 
 	@Before
 	public void setUp() throws Exception {
-		fileHandler = new FileHandler();
-		ReflectionTestUtils.setField(fileHandler, "basePath", "/data");
+		filePathHelper = new FilePathHelper();
+		ReflectionTestUtils.setField(filePathHelper, "basePath", File.separator + "data");
+		fileHandler = new FileHandler(filePathHelper);
 	}
 
 	@After
@@ -40,7 +42,7 @@ public class FileHandlerTest {
 
 		File savedFile = fileHandler.saveMultipartFile(file, 4, "filename.txt", true);
 
-		assertEquals("/data/package4/filename.txt", savedFile.getPath());
+		assertEquals(File.separator + "data" + File.separator + "package4" + File.separator + "filename.txt", savedFile.getPath());
 	}
 
 	@Test
@@ -55,7 +57,7 @@ public class FileHandlerTest {
 
 		File savedFile = fileHandler.saveMultipartFile(file, 4, "filename.txt", false);
 
-		assertEquals("/data/package4/filename.txt", savedFile.getPath());
+		assertEquals(File.separator + "data" + File.separator + "package4" + File.separator + "filename.txt", savedFile.getPath());
 	}
 
 }
