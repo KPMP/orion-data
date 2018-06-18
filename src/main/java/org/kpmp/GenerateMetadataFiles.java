@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import org.kpmp.dao.UploadPackage;
+import org.kpmp.dao.UploadPackageMetadata;
 import org.kpmp.upload.MetadataHandler;
 import org.kpmp.upload.UploadPackageRepository;
 import org.slf4j.Logger;
@@ -39,7 +40,9 @@ public class GenerateMetadataFiles implements CommandLineRunner {
         List<UploadPackage> packages = uploadPackageRepository.findAll();
         int packageCount = 0;
         for (UploadPackage uploadPackage : packages) {
-            metadataHandler.saveUploadPackageMetadata(uploadPackage);
+            String filePath = metadataHandler.getFilePathFromUploadPackage(uploadPackage);
+            UploadPackageMetadata uploadPackageMetadata = new UploadPackageMetadata(uploadPackage);
+            metadataHandler.saveUploadPackageMetadata(uploadPackageMetadata, filePath);
             log.info(logMessage.format(new Object[]{uploadPackage.getId()}));
             packageCount++;
         }
