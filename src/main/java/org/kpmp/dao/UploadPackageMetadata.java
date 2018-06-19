@@ -17,8 +17,8 @@ public class UploadPackageMetadata {
     private String packageType;
     private String submitterFirstName;
     private String submitterLastName;
-    private List<FileSubmissionJSON> files;
     private String institution;
+    private List<FileSubmissionJSON> files;
 
     private static final class FileSubmissionJSON {
         private final String path;
