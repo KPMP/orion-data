@@ -20,8 +20,9 @@ public class FileHandlerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		filePathHelper = new FilePathHelper();
+		filePathHelper = mock(FilePathHelper.class);
 		ReflectionTestUtils.setField(filePathHelper, "basePath", File.separator + "data");
+		when(filePathHelper.getPackagePath("", "4")).thenReturn("/data/package4/");
 		fileHandler = new FileHandler(filePathHelper);
 	}
 

@@ -99,7 +99,7 @@ public class UploadPackageMetadataTest {
         String date = dateFormat.format(now);
         String expected = "{\"id\":1,\"subjectId\":\"42\",\"experimentId\":\"23\",\"experimentDate\":\"" + date + "\",\"createdAt\":\"" + date
                 + "\",\"packageType\":\"Big Data\",\"submitterFirstName\":\"Mattie\",\"submitterLastName\":\"Dayta\"," +
-                "\"files\":[{\"path\":\"/package1/filename\",\"size\":12345,\"fileName\":\"filename\",\"description\":\"file description\"}],\"institution\":\"Mars University\"}";
+                "\"institution\":\"Mars University\",\"files\":[{\"path\":\"/package1/filename\",\"size\":12345,\"fileName\":\"filename\",\"description\":\"file description\"}]}";
         assertEquals(expected, actual);
     }
 
