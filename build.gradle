@@ -45,3 +45,7 @@ dependencies {
 bootRun {
     systemProperty 'spring.profiles.active', System.properties['spring.profiles.active']
 }
+
+springBoot {
+    mainClassName = "org.kpmp.Application"
+}
