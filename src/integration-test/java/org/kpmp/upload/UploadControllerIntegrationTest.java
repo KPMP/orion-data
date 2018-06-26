@@ -1,4 +1,4 @@
-package org.kpmp.view;
+package org.kpmp.upload;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -23,7 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class ViewUploadsControllerDocumentation {
+public class UploadControllerIntegrationTest {
 
 	@Rule
 	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
@@ -44,9 +44,15 @@ public class ViewUploadsControllerDocumentation {
 	}
 
 	@Test
-	public void viewUploads() throws Exception {
-		mockMvc.perform(RestDocumentationRequestBuilders.get("/viewUploads")).andExpect(status().isOk())
-				.andDo(document("viewUploads"));
+	public void uploadPackageInfo() throws Exception {
+		mockMvc.perform(RestDocumentationRequestBuilders.post("/upload/packageInfo")).andExpect(status().isOk())
+				.andDo(document("uploadPackageInfo"));
+	}
+
+	@Test
+	public void upload() throws Exception {
+		mockMvc.perform(RestDocumentationRequestBuilders.post("/upload")).andExpect(status().isOk())
+				.andDo(document("upload"));
 	}
 
 }
