@@ -20,6 +20,7 @@ public class UploadController {
 
 	private UploadService uploadService;
 	private FileHandler fileHandler;
+
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private static final MessageFormat packageInfoRequest = new MessageFormat("Request|{0}|{1}");
@@ -85,7 +86,6 @@ public class UploadController {
 					e);
 			return "{\"success\": " + false + "}";
 		}
-
 		return "{\"success\": " + true + "}";
 	}
 

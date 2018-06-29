@@ -4,23 +4,28 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 class FileHandler {
 
-	@Value("${file.base.path}")
-	private String basePath;
+	FilePathHelper filePathHelper;
+
+	@Autowired
+	public FileHandler(FilePathHelper filePathHelper) {
+		this.filePathHelper = filePathHelper;
+	}
 
 	public File saveMultipartFile(MultipartFile file, int packageId, String filename, boolean shouldAppend)
 			throws IOException {
-		File packageDirectory = new File(basePath + File.separator + "package" + packageId);
+		String filePath = filePathHelper.getPackagePath("", Integer.toString(packageId));
+		File packageDirectory = new File(filePath);
 		if (!packageDirectory.exists()) {
 			packageDirectory.mkdirs();
 		}
-		File fileToSave = new File(basePath + File.separator + "package" + packageId + File.separator + filename);
+		File fileToSave = new File(filePath + filename);
 
 		if (shouldAppend) {
 			FileUtils.writeByteArrayToFile(fileToSave, file.getBytes(), true);
