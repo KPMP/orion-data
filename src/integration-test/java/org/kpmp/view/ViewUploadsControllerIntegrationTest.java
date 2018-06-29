@@ -2,6 +2,8 @@ package org.kpmp.view;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.After;
@@ -46,7 +48,26 @@ public class ViewUploadsControllerIntegrationTest {
 	@Test
 	public void viewUploads() throws Exception {
 		mockMvc.perform(RestDocumentationRequestBuilders.get("/viewUploads")).andExpect(status().isOk())
-				.andDo(document("viewUploads"));
+				.andDo(document("viewUploads", responseFields(
+						fieldWithPath("[]").description("The list of files that have been uploaded to the data lake"),
+						fieldWithPath("[].researcher").description(
+								"The first name and last name of the researcher who uploaded this package"),
+						fieldWithPath("[].institution")
+								.description("The name of the institution where this package was generated"),
+						fieldWithPath("[].packageType")
+								.description("The package type (or package type other) provided by the uploader"),
+						fieldWithPath("[].experimentDate")
+								.description(
+										"The date of the experiment associated with this package (or null if none provided)")
+								.optional(),
+						fieldWithPath("[].createdAt").description("The date/timestamp when this package was created"),
+						fieldWithPath("[].subjectId")
+								.description("The subjectId provided for this package (or null if none provided)")
+								.optional(),
+						fieldWithPath("[].experimentId")
+								.description("The experimentId provided for this package (or null if none provided")
+								.optional(),
+						fieldWithPath("[].filename").description("The name of the file uploaded"))));
 	}
 
 }

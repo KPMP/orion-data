@@ -2,9 +2,14 @@ package org.kpmp.upload;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
@@ -60,10 +65,34 @@ public class UploadControllerIntegrationTest {
 		packageInformation.setLastName("bob");
 		packageInformation.setPackageType("DNA Methylation");
 		packageInformation.setInstitutionName("Indiana (IU/OSU TIS)");
+		packageInformation.setSubjectId("subjectId");
+		packageInformation.setExperimentId("experimentId");
+		packageInformation.setExperimentDate(new Date());
+		packageInformation.setPackageTypeOther("something");
 
 		mockMvc.perform(RestDocumentationRequestBuilders.post("/upload/packageInfo")
 				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(packageInformation)))
-				.andExpect(status().isOk()).andDo(document("uploadPackageInfo"));
+				.andExpect(status().isOk())
+				.andDo(document("uploadPackageInfo", requestFields(
+						fieldWithPath("firstName").description("The first name of the submitter"),
+						fieldWithPath("lastName").description("The last name of the submitter"),
+						fieldWithPath("packageType")
+								.description("One of a pre-defined set of package-types, example: DNA Methylation"),
+						fieldWithPath("subjectId").description(
+								"Optional: The subjectId associated with the set of data being uploaded in this package"),
+						fieldWithPath("experimentId").description(
+								"Optional: The experimentId associated with the data being uploaded in this package"),
+						fieldWithPath("experimentDate").description("Optional: The date this experiment was performed"),
+						fieldWithPath("institutionName")
+								.description("The name of the institution where this package was produced"),
+						fieldWithPath("packageTypeOther").description(
+								"Used only when 'Other' is selected from packageType.  Allows users to specify a new type of package")),
+						responseFields(
+								fieldWithPath("packageId").description("The generated id for this package of data"),
+								fieldWithPath("submitterId")
+										.description("The generated id for the submitter of this package."),
+								fieldWithPath("institutionId")
+										.description("The id for the institution associated with this package"))));
 	}
 
 	@Test
@@ -89,7 +118,9 @@ public class UploadControllerIntegrationTest {
 						parameterWithName("qqtotalparts").description(
 								"The total number of parts this file is divided into.  Used for large file uploads, is optional if file is uploaded in one request."),
 						parameterWithName("qqpartindex").description(
-								"The index of this portion of the file.  Used for large file uploads, is optional if file is uploaded in on request."))));
+								"The index of this portion of the file.  Used for large file uploads, is optional if file is uploaded in on request.")),
+						responseFields(
+								fieldWithPath("success").description("Whether the file was successfully uploaded."))));
 
 	}
 
