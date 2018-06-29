@@ -24,7 +24,6 @@ public class GenerateMetadataFiles implements CommandLineRunner {
     private MetadataHandler metadataHandler;
     private FilePathHelper filePathHelper;
 
-
     private static final MessageFormat logMessage = new MessageFormat("metadata for package {0} created");
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
