@@ -1,0 +1,8 @@
+*Example Http Request:*
+include::{snippets}/upload/httpie-request.adoc[]
+
+*Request Parameters Explained:*
+include::{snippets}/upload/request-parameters.adoc[]
+
+*Example Http Response:*
+include::{snippets}/upload/http-response.adoc[]

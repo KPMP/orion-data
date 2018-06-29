@@ -1,0 +1,5 @@
+Example Http Request:
+include::{snippets}/uploadPackageInfo/http-request.adoc[]
+
+Example Http Response:
+include::{snippets}/uploadPackageInfo/http-response.adoc[]

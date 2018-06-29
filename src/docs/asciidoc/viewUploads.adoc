@@ -1,0 +1,5 @@
+Example Http Request:
+include::{snippets}/viewUploads/http-request.adoc[]
+
+Example Http Response:
+include::{snippets}/viewUploads/http-response.adoc[]

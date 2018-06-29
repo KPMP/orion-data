@@ -2,6 +2,8 @@ package org.kpmp.upload;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.After;
@@ -71,8 +73,23 @@ public class UploadControllerIntegrationTest {
 
 		mockMvc.perform(MockMvcRequestBuilders.multipart("/upload").file(firstFile)
 				.param("fileMetadata", "This is a greate file").param("packageId", "1").param("submitterId", "1")
-				.param("institutionId", "1").param("qqfilename", "filename")).andExpect(status().isOk())
-				.andDo(document("upload"));
+				.param("institutionId", "1").param("qqfilename", "filename").param("qqtotalparts", "1")
+				.param("qqpartindex", "0"))
+				.andExpect(status().isOk())
+				.andDo(document("upload", requestParameters(
+						parameterWithName("fileMetadata")
+								.description("Individual metadata associated with the file upload"),
+						parameterWithName("packageId").description(
+								"The id of the package this file belongs to.  In order to get a packageId, you must first call upload/packageInfo"),
+						parameterWithName("submitterId").description(
+								"The id of the submitter of this package.  In order to get your submitterId, you must first call upload/packageInfo"),
+						parameterWithName("institutionId").description(
+								"The id of the institution associated with this package.  In order to get the institutionId, you must first call upload/packageInfo"),
+						parameterWithName("qqfilename").description("The name of the file being submitted"),
+						parameterWithName("qqtotalparts").description(
+								"The total number of parts this file is divided into.  Used for large file uploads, is optional if file is uploaded in one request."),
+						parameterWithName("qqpartindex").description(
+								"The index of this portion of the file.  Used for large file uploads, is optional if file is uploaded in on request."))));
 
 	}
 
