@@ -101,4 +101,10 @@ public class FileSubmissionTest {
 		fileSubmission.setFilePath("filePath");
 		assertEquals("filePath", fileSubmission.getFilePath());
 	}
+
+	@Test
+	public void testSetUniversalId() throws Exception {
+		fileSubmission.setUniversalId("universalId");
+		assertEquals("universalId", fileSubmission.getUniversalId());
+	}
 }

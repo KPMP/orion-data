@@ -36,6 +36,8 @@ public class FileSubmission {
 	private Date deletedAt;
 	@Column(name = "file_path")
 	private String filePath;
+	@Column(name = "uuid")
+	private String universalId;
 
 	@OneToOne
 	@JoinColumn(name = "file_meta_entry_id", referencedColumnName = "id")
@@ -156,6 +158,14 @@ public class FileSubmission {
 
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
+	}
+
+	public String getUniversalId() {
+		return universalId;
+	}
+
+	public void setUniversalId(String universalId) {
+		this.universalId = universalId;
 	}
 
 }

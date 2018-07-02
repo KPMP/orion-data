@@ -19,7 +19,8 @@ ALTER TABLE `upload_package_to_package_type_other`
 ALTER TABLE `upload_package_to_package_type_other`
 	ADD CONSTRAINT `upload_package_to_ptother_package_type_other_id_foreign`
 	  FOREIGN KEY (`package_type_other_id`)
-	  REFERENCES `package_type_other` (`id`)
+	  REFERENCES `package_type_other` (`id`);
+ALTER TABLE  `upload_package_to_package_type_other`
 	ADD CONSTRAINT `upload_package_to_ptother_upload_package_id_foreign`
 	  FOREIGN KEY (`upload_package_id`)
 	  REFERENCES `upload_package` (`id`);

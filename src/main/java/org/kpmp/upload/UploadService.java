@@ -52,6 +52,9 @@ public class UploadService {
 		UploadPackage uploadPackage = new UploadPackage(packageInfo, new Date());
 		uploadPackage.setPackageTypeOther(packageTypeOther);
 		uploadPackage.setPackageType(packageType);
+
+		// TODO: Generate and add universal id to the package
+
 		UploadPackage savedPackage = uploadPackageRepository.save(uploadPackage);
 		return savedPackage.getId();
 	}
