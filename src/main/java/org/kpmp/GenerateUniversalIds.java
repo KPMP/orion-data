@@ -8,8 +8,11 @@ import org.kpmp.upload.UploadPackageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
+@SpringBootApplication
 @ComponentScan(basePackages = { "org.kpmp" })
 public class GenerateUniversalIds implements CommandLineRunner {
 
@@ -23,7 +26,9 @@ public class GenerateUniversalIds implements CommandLineRunner {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(GenerateUniversalIds.class, args);
+		SpringApplication app = new SpringApplication(GenerateUniversalIds.class);
+		app.setWebApplicationType(WebApplicationType.NONE);
+		app.run(args);
 	}
 
 	@Override

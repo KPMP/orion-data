@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import org.kpmp.UniversalIdGenerator;
 import org.kpmp.dao.FileMetadataEntries;
 import org.kpmp.dao.FileSubmission;
 import org.kpmp.dao.FileSubmissionsRepository;
@@ -25,12 +26,14 @@ public class UploadService {
 	private FileMetadataRepository fileMetadataRepository;
 	private PackageTypeRepository packageTypeRepository;
 	private PackageTypeOtherRepository packageTypeOtherRepository;
+	private UniversalIdGenerator uuidGenerator;
 
 	@Autowired
 	public UploadService(UploadPackageRepository uploadPackageRepository,
 			FileSubmissionsRepository fileSubmissionsRepository, SubmitterRepository submitterRepository,
 			InstitutionRepository institutionRepository, FileMetadataRepository fileMetadataRepository,
-			PackageTypeRepository packageTypeRepository, PackageTypeOtherRepository packageTypeOtherRepository) {
+			PackageTypeRepository packageTypeRepository, PackageTypeOtherRepository packageTypeOtherRepository,
+			UniversalIdGenerator uuidGenerator) {
 		this.uploadPackageRepository = uploadPackageRepository;
 		this.fileSubmissionsRepository = fileSubmissionsRepository;
 		this.submitterRepository = submitterRepository;
@@ -38,6 +41,7 @@ public class UploadService {
 		this.fileMetadataRepository = fileMetadataRepository;
 		this.packageTypeRepository = packageTypeRepository;
 		this.packageTypeOtherRepository = packageTypeOtherRepository;
+		this.uuidGenerator = uuidGenerator;
 
 	}
 
@@ -52,8 +56,7 @@ public class UploadService {
 		UploadPackage uploadPackage = new UploadPackage(packageInfo, new Date());
 		uploadPackage.setPackageTypeOther(packageTypeOther);
 		uploadPackage.setPackageType(packageType);
-
-		// TODO: Generate and add universal id to the package
+		uploadPackage.setUniversalId(uuidGenerator.generateUniversalId());
 
 		UploadPackage savedPackage = uploadPackageRepository.save(uploadPackage);
 		return savedPackage.getId();
@@ -85,6 +88,7 @@ public class UploadService {
 		FileMetadataEntries savedMetadata = fileMetadataRepository.save(fileMetadata);
 
 		FileSubmission fileSubmission = new FileSubmission();
+		fileSubmission.setUniversalId(uuidGenerator.generateUniversalId());
 		fileSubmission.setCreatedAt(createdDate);
 		fileSubmission.setFilename(file.getName());
 		fileSubmission.setFileSize(file.length());
