@@ -94,6 +94,7 @@ public class UploadController {
 	public String handleFileUpload(@RequestParam("qqfile") MultipartFile file,
 			@RequestParam("fileMetadata") String fileMetadataString, @RequestParam("packageId") int packageId,
 			@RequestParam("submitterId") int submitterId, @RequestParam("institutionId") int institutionId,
+			@RequestParam("fileId") int fileId, @RequestParam("totalFiles") int totalFiles,
 			@RequestParam("qqfilename") String filename,
 			@RequestParam(name = "qqtotalparts", defaultValue = "1") int chunks,
 			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk) {
@@ -105,12 +106,28 @@ public class UploadController {
 			shouldAppend = true;
 		}
 
+		Date createdDate = new Date();
 		File savedFile;
+		InstitutionDemographics institution = (InstitutionDemographics) session.getAttribute("institution");
+		SubmitterDemographics submitter = (SubmitterDemographics) session.getAttribute("submitter");
+		UploadPackage uploadPackage = (UploadPackage) session.getAttribute("uploadPackage");
+
 		try {
 			savedFile = fileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 			if (chunk == chunks - 1) {
 				UploadPackageIds packageIds = new UploadPackageIds(packageId, submitterId, institutionId);
 				uploadService.addFileToPackage(savedFile, fileMetadataString, packageIds);
+				FileMetadataEntries fileMetadata = new FileMetadataEntries();
+				fileMetadata.setCreatedAt(createdDate);
+				fileMetadata.setMetadata(fileMetadataString);
+
+				List<FileSubmission> fileSubmissions = uploadPackage.getFileSubmissions();
+
+				FileSubmission fileSubmission = uploadService.createFileSubmission(savedFile, fileMetadata, institution, submitter, uploadPackage);
+				fileSubmissions.add(fileSubmission);
+				uploadPackage.setFileSubmissions(fileSubmissions);
+				session.setAttribute("uploadPackage", uploadPackage);
+
 			}
 		} catch (IOException e) {
 			log.error("Unable to save multipart file with information: name: " + filename + " packageId: " + packageId,
@@ -118,31 +135,18 @@ public class UploadController {
 			return "{\"success\": " + false + "}";
 		}
 
-		try {
-			Date createdDate = new Date();
-			String filePath = filePathHelper.getPackagePath("", Integer.toString(packageId)) + filePathHelper.getMetadataFileName();
+		if (fileId + 1 == totalFiles) {
+			try {
+				String filePath = filePathHelper.getPackagePath("", Integer.toString(packageId)) + filePathHelper.getMetadataFileName();
 
-			FileMetadataEntries fileMetadata = new FileMetadataEntries();
-			fileMetadata.setCreatedAt(createdDate);
-			fileMetadata.setMetadata(fileMetadataString);
-
-			InstitutionDemographics institution = (InstitutionDemographics) session.getAttribute("institution");
-			SubmitterDemographics submitter = (SubmitterDemographics) session.getAttribute("submitter");
-			UploadPackage uploadPackage = (UploadPackage) session.getAttribute("uploadPackage");
-			List<FileSubmission> fileSubmissions = uploadPackage.getFileSubmissions();
-
-			FileSubmission fileSubmission = uploadService.createFileSubmission(savedFile, fileMetadata, institution, submitter, uploadPackage);
-			fileSubmissions.add(fileSubmission);
-			uploadPackage.setFileSubmissions(fileSubmissions);
-
-			UploadPackageMetadata uploadPackageMetadata = new UploadPackageMetadata(uploadPackage);
-			metadataHandler.saveUploadPackageMetadata(uploadPackageMetadata, filePath);
-			log.info(saveMetadata.format(new Object[]{uploadPackage.getId()}));
-		} catch (IOException e) {
-			log.error("Unable to save metadata", e);
-			return "{\"success\": " + false + "}";
+				UploadPackageMetadata uploadPackageMetadata = new UploadPackageMetadata(uploadPackage);
+				metadataHandler.saveUploadPackageMetadata(uploadPackageMetadata, filePath);
+				log.info(saveMetadata.format(new Object[]{uploadPackage.getId()}));
+			} catch (IOException e) {
+				log.error("Unable to save metadata", e);
+				return "{\"success\": " + false + "}";
+			}
 		}
-
 
 		return "{\"success\": " + true + "}";
 	}
