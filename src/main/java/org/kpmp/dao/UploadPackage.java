@@ -38,6 +38,8 @@ public class UploadPackage {
 	private Date experimentDate;
 	@Column(name = "created_at")
 	private Date createdAt;
+	@Column(name = "uuid")
+	private String universalId;
 
 	@ManyToOne
 	@JoinColumn(name = "package_type_id", referencedColumnName = "id")
@@ -125,5 +127,13 @@ public class UploadPackage {
 
 	public void setPackageTypeOther(PackageTypeOther packageTypeOther) {
 		this.packageTypeOther = packageTypeOther;
+	}
+
+	public String getUniversalId() {
+		return universalId;
+	}
+
+	public void setUniversalId(String universalId) {
+		this.universalId = universalId;
 	}
 }

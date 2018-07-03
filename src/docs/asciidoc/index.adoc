@@ -1,0 +1,43 @@
+= KPMP Data Lake Uploader Documentation
+:toc: left
+:sectnums:
+
+== Introduction
+This tool is used to upload data to the KPMP Data Lake.
+
+== Upload Package Information Endpoint
+This endpoint must be called first, as it will generate the packageId, submitterId, and return the institutionId needed as input when you call the upload endpoint to add files to a package.
+
+=== Sample Request
+include::{snippets}/uploadPackageInfo/httpie-request.adoc[]
+
+include::{snippets}/uploadPackageInfo/request-fields.adoc[]
+
+=== Sample Response
+include::{snippets}/uploadPackageInfo/http-response.adoc[]
+
+include::{snippets}/uploadPackageInfo/response-fields.adoc[]
+
+== Upload Endpoint
+After you have created a package, you may upload one or more files to be included in that package.
+
+=== Sample Request
+include::{snippets}/upload/httpie-request.adoc[]
+
+include::{snippets}/upload/request-parameters.adoc[]
+
+=== Sample Response
+include::{snippets}/upload/http-response.adoc[]
+
+include::{snippets}/upload/response-fields.adoc[]
+
+== View Uploads Endpoint
+Will return the list of files that have been uploaded to the KPMP Data Lake
+
+=== Sample Request
+include::{snippets}/viewUploads/httpie-request.adoc[]
+
+=== Sample Response
+include::{snippets}/viewUploads/http-response.adoc[]
+
+include::{snippets}/viewUploads/response-fields.adoc[]
