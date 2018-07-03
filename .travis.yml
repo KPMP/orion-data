@@ -7,3 +7,9 @@ install: true
 
 script:
   - ./gradlew build -x integrationTest
+
+notifications:
+  email:
+    - rlreamy@umich.edu
+    - zwright@umich.edu
+    - royerbr@med.umich.edu
