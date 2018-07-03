@@ -127,7 +127,6 @@ public class UploadController {
 				fileSubmissions.add(fileSubmission);
 				uploadPackage.setFileSubmissions(fileSubmissions);
 				session.setAttribute("uploadPackage", uploadPackage);
-
 			}
 		} catch (IOException e) {
 			log.error("Unable to save multipart file with information: name: " + filename + " packageId: " + packageId,
@@ -135,7 +134,7 @@ public class UploadController {
 			return "{\"success\": " + false + "}";
 		}
 
-		if (fileId + 1 == totalFiles) {
+		if ((fileId + 1 == totalFiles) && (chunk == chunks - 1)) {
 			try {
 				String filePath = filePathHelper.getPackagePath("", Integer.toString(packageId)) + filePathHelper.getMetadataFileName();
 
@@ -151,4 +150,11 @@ public class UploadController {
 		return "{\"success\": " + true + "}";
 	}
 
+	public HttpSession getSession() {
+		return session;
+	}
+
+	public void setSession(HttpSession session) {
+		this.session = session;
+	}
 }
