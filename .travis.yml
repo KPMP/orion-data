@@ -3,6 +3,5 @@ language: java
 jdk:
   - oraclejdk8
 
-env:
-  global:
-    - TMPDIR=/data
+script:
+  - ./gradlew build -x integrationTest
