@@ -140,6 +140,7 @@ public class UploadController {
 				UploadPackageMetadata uploadPackageMetadata = new UploadPackageMetadata(uploadPackage);
 				metadataHandler.saveUploadPackageMetadata(uploadPackageMetadata, filePath);
 				log.info(saveMetadata.format(new Object[]{uploadPackage.getId()}));
+				session.invalidate();
 			} catch (IOException e) {
 				log.error("Unable to save metadata", e);
 				return "{\"success\": " + false + "}";
