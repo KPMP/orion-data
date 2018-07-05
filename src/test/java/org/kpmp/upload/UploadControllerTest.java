@@ -150,11 +150,12 @@ public class UploadControllerTest {
 	public void testHandleFileUpload_oneChunk() throws IllegalStateException, IOException {
 		MultipartFile file = mock(MultipartFile.class);
 		File savedFile = mock(File.class);
-		when(fileHandler.saveMultipartFile(file, 1, "filename", false)).thenReturn(savedFile);
+		when(fileHandler.saveMultipartFile(file, "123_UUID", "filename", false)).thenReturn(savedFile);
 
 		UploadPackage uploadPackage = mock(UploadPackage.class);
 		when(uploadPackage.getCreatedAt()).thenReturn(new Date());
 		when(uploadPackage.getPackageType()).thenReturn(new PackageType());
+		when(uploadPackage.getUniversalId()).thenReturn("123_UUID");
 		InstitutionDemographics institutionDemographics = new InstitutionDemographics();
 		SubmitterDemographics submitterDemographics = new SubmitterDemographics();
 		when(session.getAttribute("institution")).thenReturn(institutionDemographics);
@@ -188,8 +189,10 @@ public class UploadControllerTest {
 		FileSubmission fileSubmission = mock(FileSubmission.class);
 		when(uploadPackage1.getCreatedAt()).thenReturn(new Date());
 		when(uploadPackage1.getPackageType()).thenReturn(new PackageType());
+		when(uploadPackage1.getUniversalId()).thenReturn("123_UUID");
 		when(uploadPackage2.getCreatedAt()).thenReturn(new Date());
 		when(uploadPackage2.getPackageType()).thenReturn(new PackageType());
+		when(uploadPackage2.getUniversalId()).thenReturn("123_UUID");
 		when(fileSubmission.getFileMetadata()).thenReturn(fileMetadataEntries);
 		when(fileSubmission.getFilePath()).thenReturn("/");
 		when(fileSubmission.getFileSize()).thenReturn(123L);
@@ -203,7 +206,7 @@ public class UploadControllerTest {
 
 		controller.setSession(session);
 
-		when(fileHandler.saveMultipartFile(file, 1, "filename", true)).thenReturn(savedFile);
+		when(fileHandler.saveMultipartFile(file, "123_UUID", "filename", true)).thenReturn(savedFile);
 
 		controller.handleFileUpload(file, "fileMetadata", 1, 2, 3, 0, 1, "filename", 2, 1);
 

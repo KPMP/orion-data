@@ -22,7 +22,7 @@ public class FileHandlerTest {
 	public void setUp() throws Exception {
 		filePathHelper = mock(FilePathHelper.class);
 		ReflectionTestUtils.setField(filePathHelper, "basePath", File.separator + "data");
-		when(filePathHelper.getPackagePath("", "4")).thenReturn("/data/package4/");
+		when(filePathHelper.getPackagePath("", "1234_UUID")).thenReturn("/data/package_1234_UUID/");
 		fileHandler = new FileHandler(filePathHelper);
 	}
 
@@ -41,9 +41,9 @@ public class FileHandlerTest {
 		MultipartFile file = mock(MultipartFile.class);
 		when(file.getBytes()).thenReturn(new byte[4]);
 
-		File savedFile = fileHandler.saveMultipartFile(file, 4, "filename.txt", true);
+		File savedFile = fileHandler.saveMultipartFile(file, "1234_UUID", "filename.txt", true);
 
-		assertEquals(File.separator + "data" + File.separator + "package4" + File.separator + "filename.txt", savedFile.getPath());
+		assertEquals(File.separator + "data" + File.separator + "package_1234_UUID" + File.separator + "filename.txt", savedFile.getPath());
 	}
 
 	@Test
@@ -56,9 +56,9 @@ public class FileHandlerTest {
 		MultipartFile file = mock(MultipartFile.class);
 		when(file.getBytes()).thenReturn(new byte[4]);
 
-		File savedFile = fileHandler.saveMultipartFile(file, 4, "filename.txt", false);
+		File savedFile = fileHandler.saveMultipartFile(file, "1234_UUID", "filename.txt", false);
 
-		assertEquals(File.separator + "data" + File.separator + "package4" + File.separator + "filename.txt", savedFile.getPath());
+		assertEquals(File.separator + "data" + File.separator + "package_1234_UUID" + File.separator + "filename.txt", savedFile.getPath());
 	}
 
 }

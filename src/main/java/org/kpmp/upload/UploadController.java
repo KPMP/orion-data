@@ -113,7 +113,7 @@ public class UploadController {
 		UploadPackage uploadPackage = (UploadPackage) session.getAttribute("uploadPackage");
 
 		try {
-			savedFile = fileHandler.saveMultipartFile(file, packageId, uploadPackage.getUniversalId(), filename, shouldAppend);
+			savedFile = fileHandler.saveMultipartFile(file, uploadPackage.getUniversalId(), filename, shouldAppend);
 			if (chunk == chunks - 1) {
 				UploadPackageIds packageIds = new UploadPackageIds(packageId, submitterId, institutionId);
 				uploadService.addFileToPackage(savedFile, fileMetadataString, packageIds);
@@ -135,10 +135,8 @@ public class UploadController {
 		}
 
 		if ((fileId + 1 == totalFiles) && (chunk == chunks - 1)) {
-			System.out.println(fileId + " : " + totalFiles);
 			try {
 				String filePath = filePathHelper.getPackagePath("", uploadPackage.getUniversalId()) + filePathHelper.getMetadataFileName();
-
 				UploadPackageMetadata uploadPackageMetadata = new UploadPackageMetadata(uploadPackage);
 				metadataHandler.saveUploadPackageMetadata(uploadPackageMetadata, filePath);
 				log.info(saveMetadata.format(new Object[]{uploadPackage.getId()}));

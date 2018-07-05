@@ -18,7 +18,7 @@ class FileHandler {
 		this.filePathHelper = filePathHelper;
 	}
 
-	public File saveMultipartFile(MultipartFile file, int packageId, String packageUid, String filename, boolean shouldAppend)
+	public File saveMultipartFile(MultipartFile file, String packageUid, String filename, boolean shouldAppend)
 			throws IOException {
 		String filePath = filePathHelper.getPackagePath("", packageUid);
 		File packageDirectory = new File(filePath);

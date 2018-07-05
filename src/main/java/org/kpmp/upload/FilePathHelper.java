@@ -15,7 +15,7 @@ public class FilePathHelper {
     private String metadataFileName;
 
     public String getPackagePath(String prefix, String suffix) {
-        return basePath + File.separator + prefix + "package" + suffix + File.separator;
+        return basePath + File.separator + prefix + "package_" + suffix + File.separator;
     }
 
     public String getMetadataFileName() {
