@@ -114,7 +114,9 @@ public class UploadControllerIntegrationTest {
 								"The id of the submitter of this package.  In order to get your submitterId, you must first call upload/packageInfo"),
 						parameterWithName("institutionId").description(
 								"The id of the institution associated with this package.  In order to get the institutionId, you must first call upload/packageInfo"),
-						parameterWithName("qqfilename").description("The name of the file being submitted"),
+								parameterWithName("fileId").description("The file index starting with 0"),
+								parameterWithName("totalFiles").description("The total number of files in this package"),
+								parameterWithName("qqfilename").description("The name of the file being submitted"),
 						parameterWithName("qqtotalparts").description(
 								"The total number of parts this file is divided into.  Used for large file uploads, is optional if file is uploaded in one request."),
 						parameterWithName("qqpartindex").description(
