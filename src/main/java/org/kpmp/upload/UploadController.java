@@ -3,9 +3,8 @@ package org.kpmp.upload;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpSession;
 
@@ -79,7 +78,7 @@ public class UploadController {
 		InstitutionDemographics institution = uploadService.findInstitution(packageInformation);
 		SubmitterDemographics submitter = new SubmitterDemographics(packageInformation, new Date());
 		UploadPackage uploadPackage = uploadService.createUploadPackage(packageInformation, packageTypeOther);
-		uploadPackage.setFileSubmissions(new ArrayList<FileSubmission>());
+		uploadPackage.setFileSubmissions(new CopyOnWriteArrayList<FileSubmission>());
 
 		session.setAttribute("institution", institution);
 		session.setAttribute("submitter", submitter);
@@ -121,30 +120,25 @@ public class UploadController {
 				fileMetadata.setCreatedAt(createdDate);
 				fileMetadata.setMetadata(fileMetadataString);
 
-				List<FileSubmission> fileSubmissions = uploadPackage.getFileSubmissions();
+				CopyOnWriteArrayList<FileSubmission> fileSubmissions = new CopyOnWriteArrayList<>(uploadPackage.getFileSubmissions());
 
 				FileSubmission fileSubmission = uploadService.createFileSubmission(savedFile, fileMetadata, institution, submitter, uploadPackage);
 				fileSubmissions.add(fileSubmission);
 				uploadPackage.setFileSubmissions(fileSubmissions);
 				session.setAttribute("uploadPackage", uploadPackage);
+
+				if (fileId + 1 == totalFiles) {
+					String filePath = filePathHelper.getPackagePath("", uploadPackage.getUniversalId()) + filePathHelper.getMetadataFileName();
+					UploadPackageMetadata uploadPackageMetadata = new UploadPackageMetadata(uploadPackage);
+					metadataHandler.saveUploadPackageMetadata(uploadPackageMetadata, filePath);
+					log.info(saveMetadata.format(new Object[]{uploadPackage.getId()}));
+					session.invalidate();
+				}
 			}
 		} catch (IOException e) {
 			log.error("Unable to save multipart file with information: name: " + filename + " packageId: " + packageId,
 					e);
 			return "{\"success\": " + false + "}";
-		}
-
-		if ((fileId + 1 == totalFiles) && (chunk == chunks - 1)) {
-			try {
-				String filePath = filePathHelper.getPackagePath("", uploadPackage.getUniversalId()) + filePathHelper.getMetadataFileName();
-				UploadPackageMetadata uploadPackageMetadata = new UploadPackageMetadata(uploadPackage);
-				metadataHandler.saveUploadPackageMetadata(uploadPackageMetadata, filePath);
-				log.info(saveMetadata.format(new Object[]{uploadPackage.getId()}));
-				session.invalidate();
-			} catch (IOException e) {
-				log.error("Unable to save metadata", e);
-				return "{\"success\": " + false + "}";
-			}
 		}
 
 		return "{\"success\": " + true + "}";
