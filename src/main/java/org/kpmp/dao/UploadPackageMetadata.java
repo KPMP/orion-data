@@ -2,6 +2,7 @@ package org.kpmp.dao;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -79,11 +80,14 @@ public class UploadPackageMetadata {
 		List<FileSubmission> fileSubmissionList = uploadPackage.getFileSubmissions();
 		SubmitterDemographics submitter = new SubmitterDemographics();
 		InstitutionDemographics demographics = new InstitutionDemographics();
-		for (FileSubmission fileSubmission : fileSubmissionList) {
+
+		for(Iterator<FileSubmission> it = fileSubmissionList.iterator(); it.hasNext();) {
+			FileSubmission fileSubmission = it.next();
 			this.files.add(new FileSubmissionJSON(fileSubmission));
 			submitter = fileSubmission.getSubmitter();
 			demographics = fileSubmission.getInstitution();
 		}
+
 		this.submitterFirstName = submitter.getFirstName();
 		this.submitterLastName = submitter.getLastName();
 		this.institution = demographics.getInstitutionName();

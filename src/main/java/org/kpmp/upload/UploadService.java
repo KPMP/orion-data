@@ -52,14 +52,19 @@ public class UploadService {
 	}
 
 	public int saveUploadPackage(PackageInformation packageInfo, PackageTypeOther packageTypeOther) {
+		UploadPackage uploadPackage = createUploadPackage(packageInfo, packageTypeOther);
+		UploadPackage savedPackage = uploadPackageRepository.save(uploadPackage);
+		return savedPackage.getId();
+	}
+
+	public UploadPackage createUploadPackage(PackageInformation packageInfo, PackageTypeOther packageTypeOther) {
 		PackageType packageType = packageTypeRepository.findByPackageType(packageInfo.getPackageType());
 		UploadPackage uploadPackage = new UploadPackage(packageInfo, new Date());
 		uploadPackage.setPackageTypeOther(packageTypeOther);
 		uploadPackage.setPackageType(packageType);
 		uploadPackage.setUniversalId(uuidGenerator.generateUniversalId());
+		return uploadPackage;
 
-		UploadPackage savedPackage = uploadPackageRepository.save(uploadPackage);
-		return savedPackage.getId();
 	}
 
 	public int saveSubmitterInfo(PackageInformation packageInformation) {
@@ -72,6 +77,11 @@ public class UploadService {
 		InstitutionDemographics institution = institutionRepository
 				.findByInstitutionName(packageInformation.getInstitutionName());
 		return institution.getId();
+	}
+
+	public InstitutionDemographics findInstitution(PackageInformation packageInformation) {
+		return institutionRepository
+				.findByInstitutionName(packageInformation.getInstitutionName());
 	}
 
 	public void addFileToPackage(File file, String fileMetadataString, UploadPackageIds packageIds)
@@ -87,19 +97,30 @@ public class UploadService {
 		fileMetadata.setMetadata(fileMetadataString);
 		FileMetadataEntries savedMetadata = fileMetadataRepository.save(fileMetadata);
 
+		FileSubmission fileSubmission = createFileSubmission(file, savedMetadata, institution, submitter, uploadPackage);
+
+		fileSubmissionsRepository.save(fileSubmission);
+
+	}
+
+	public FileSubmission createFileSubmission(File file, FileMetadataEntries fileMetadata, InstitutionDemographics institution, SubmitterDemographics submitter, UploadPackage uploadPackage)
+			throws IllegalStateException, IOException {
+		Date createdDate = new Date();
+
 		FileSubmission fileSubmission = new FileSubmission();
 		fileSubmission.setUniversalId(uuidGenerator.generateUniversalId());
 		fileSubmission.setCreatedAt(createdDate);
 		fileSubmission.setFilename(file.getName());
 		fileSubmission.setFileSize(file.length());
 		fileSubmission.setFilePath(file.getPath());
-		fileSubmission.setFileMetadata(savedMetadata);
+		fileSubmission.setFileMetadata(fileMetadata);
 		fileSubmission.setInstitution(institution);
 		fileSubmission.setSubmitter(submitter);
 		fileSubmission.setUploadPackage(uploadPackage);
 
-		fileSubmissionsRepository.save(fileSubmission);
+		return fileSubmission;
 
 	}
+
 
 }
