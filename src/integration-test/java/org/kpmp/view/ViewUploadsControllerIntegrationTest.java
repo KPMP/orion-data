@@ -47,7 +47,7 @@ public class ViewUploadsControllerIntegrationTest {
 
 	@Test
 	public void viewUploads() throws Exception {
-		mockMvc.perform(RestDocumentationRequestBuilders.get("/viewUploads")).andExpect(status().isOk())
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/viewUploads")).andExpect(status().isOk())
 				.andDo(document("viewUploads", responseFields(
 						fieldWithPath("[]").description("The list of files that have been uploaded to the data lake"),
 						fieldWithPath("[].researcher").description(
