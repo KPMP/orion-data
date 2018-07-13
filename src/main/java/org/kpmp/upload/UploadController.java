@@ -50,7 +50,7 @@ public class UploadController {
 		this.metadataHandler = metadataHandler;
 	}
 
-	@RequestMapping(value = "/api/upload/packageInfo", consumes = { "application/json" }, method = RequestMethod.POST)
+	@RequestMapping(value = "/uploader/packageInfo", consumes = { "application/json" }, method = RequestMethod.POST)
 	public UploadPackageIds uploadPackageInfo(@RequestBody PackageInformation packageInformation,
 			HttpSession httpSession) {
 
@@ -91,7 +91,7 @@ public class UploadController {
 
 	}
 
-	@RequestMapping(value = "/api/upload", consumes = { "multipart/form-data" }, method = RequestMethod.POST)
+	@RequestMapping(value = "/uploader/fileChunk", consumes = { "multipart/form-data" }, method = RequestMethod.POST)
 	public String handleFileUpload(@RequestParam("qqfile") MultipartFile file,
 			@RequestParam("fileMetadata") String fileMetadataString, @RequestParam("packageId") int packageId,
 			@RequestParam("submitterId") int submitterId, @RequestParam("institutionId") int institutionId,
