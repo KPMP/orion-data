@@ -18,6 +18,7 @@ import org.kpmp.dao.FileSubmissionsRepository;
 import org.kpmp.dao.InstitutionDemographics;
 import org.kpmp.dao.PackageType;
 import org.kpmp.dao.PackageTypeOther;
+import org.kpmp.dao.Protocol;
 import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
 import org.mockito.ArgumentCaptor;
@@ -40,6 +41,8 @@ public class UploadServiceTest {
 	private PackageTypeRepository packageTypeRepository;
 	@Mock
 	private PackageTypeOtherRepository packageTypeOtherRepository;
+	@Mock
+	private ProtocolRepository protocolRepository;
 
 	private UploadService service;
 
@@ -47,7 +50,8 @@ public class UploadServiceTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		service = new UploadService(uploadPackageRepository, fileSubmissionsRepository, submitterRepository,
-				institutionRepository, fileMetadataRepository, packageTypeRepository, packageTypeOtherRepository);
+				institutionRepository, fileMetadataRepository, packageTypeRepository, packageTypeOtherRepository,
+				protocolRepository);
 	}
 
 	@After
@@ -66,6 +70,9 @@ public class UploadServiceTest {
 		PackageInformation packageInformation = new PackageInformation();
 		packageInformation.setExperimentDate(experimentDate);
 		packageInformation.setPackageType("packageType");
+		packageInformation.setProtocol("protocol");
+		Protocol protocol = mock(Protocol.class);
+		when(protocolRepository.findByProtocol("protocol")).thenReturn(protocol);
 		PackageTypeOther packageTypeOther = new PackageTypeOther();
 
 		int packageId = service.saveUploadPackage(packageInformation, packageTypeOther);
@@ -76,6 +83,7 @@ public class UploadServiceTest {
 		assertEquals(experimentDate, packageCaptor.getValue().getExperimentDate());
 		assertEquals(packageType, packageCaptor.getValue().getPackageType());
 		assertEquals(packageTypeOther, packageCaptor.getValue().getPackageTypeOther());
+		assertEquals(protocol, packageCaptor.getValue().getProtocol());
 	}
 
 	@Test

@@ -46,6 +46,10 @@ public class UploadPackage {
 					@JoinColumn(name = "package_type_other_id", referencedColumnName = "id") })
 	private PackageTypeOther packageTypeOther;
 
+	@ManyToOne
+	@JoinColumn(name = "protocol_id", referencedColumnName = "id")
+	private Protocol protocol;
+
 	public UploadPackage() {
 	}
 
@@ -121,5 +125,13 @@ public class UploadPackage {
 
 	public void setPackageTypeOther(PackageTypeOther packageTypeOther) {
 		this.packageTypeOther = packageTypeOther;
+	}
+
+	public Protocol getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(Protocol protocol) {
+		this.protocol = protocol;
 	}
 }

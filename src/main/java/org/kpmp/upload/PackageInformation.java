@@ -15,6 +15,7 @@ public class PackageInformation {
 	private Date experimentDate;
 	private String institutionName;
 	private String packageTypeOther;
+	private String protocol;
 
 	public String getFirstName() {
 		return firstName;
@@ -85,6 +86,14 @@ public class PackageInformation {
 		return "firstName: " + firstName + "  lastName: " + lastName + "  packageType: " + packageType + "  subjectId: "
 				+ subjectId + "  experimentId: " + experimentId + "  experimentdate: " + experimentDate
 				+ "  institutionName: " + institutionName + "  package type other: " + packageTypeOther;
+	}
+
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
 	}
 
 }

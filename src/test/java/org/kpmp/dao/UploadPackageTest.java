@@ -93,4 +93,11 @@ public class UploadPackageTest {
 		uploadPackage.setPackageTypeOther(packageTypeOther);
 		assertEquals(packageTypeOther, uploadPackage.getPackageTypeOther());
 	}
+
+	@Test
+	public void testSetProtocol() throws Exception {
+		Protocol protocol = new Protocol();
+		uploadPackage.setProtocol(protocol);
+		assertEquals(protocol, uploadPackage.getProtocol());
+	}
 }
