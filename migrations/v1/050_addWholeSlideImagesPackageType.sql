@@ -1,0 +1,1 @@
+insert into package_type (id, package_type) values (13, 'Whole Slide Images');
