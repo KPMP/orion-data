@@ -10,6 +10,7 @@ import org.kpmp.dao.FileSubmissionsRepository;
 import org.kpmp.dao.InstitutionDemographics;
 import org.kpmp.dao.PackageType;
 import org.kpmp.dao.PackageTypeOther;
+import org.kpmp.dao.Protocol;
 import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +26,14 @@ public class UploadService {
 	private FileMetadataRepository fileMetadataRepository;
 	private PackageTypeRepository packageTypeRepository;
 	private PackageTypeOtherRepository packageTypeOtherRepository;
+	private ProtocolRepository protocolRepository;
 
 	@Autowired
 	public UploadService(UploadPackageRepository uploadPackageRepository,
 			FileSubmissionsRepository fileSubmissionsRepository, SubmitterRepository submitterRepository,
 			InstitutionRepository institutionRepository, FileMetadataRepository fileMetadataRepository,
-			PackageTypeRepository packageTypeRepository, PackageTypeOtherRepository packageTypeOtherRepository) {
+			PackageTypeRepository packageTypeRepository, PackageTypeOtherRepository packageTypeOtherRepository,
+			ProtocolRepository protocolRepository) {
 		this.uploadPackageRepository = uploadPackageRepository;
 		this.fileSubmissionsRepository = fileSubmissionsRepository;
 		this.submitterRepository = submitterRepository;
@@ -38,6 +41,7 @@ public class UploadService {
 		this.fileMetadataRepository = fileMetadataRepository;
 		this.packageTypeRepository = packageTypeRepository;
 		this.packageTypeOtherRepository = packageTypeOtherRepository;
+		this.protocolRepository = protocolRepository;
 
 	}
 
@@ -49,9 +53,11 @@ public class UploadService {
 
 	public int saveUploadPackage(PackageInformation packageInfo, PackageTypeOther packageTypeOther) {
 		PackageType packageType = packageTypeRepository.findByPackageType(packageInfo.getPackageType());
+		Protocol protocol = protocolRepository.findByProtocol(packageInfo.getProtocol());
 		UploadPackage uploadPackage = new UploadPackage(packageInfo, new Date());
 		uploadPackage.setPackageTypeOther(packageTypeOther);
 		uploadPackage.setPackageType(packageType);
+		uploadPackage.setProtocol(protocol);
 		UploadPackage savedPackage = uploadPackageRepository.save(uploadPackage);
 		return savedPackage.getId();
 	}
