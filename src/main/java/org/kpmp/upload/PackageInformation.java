@@ -83,9 +83,10 @@ public class PackageInformation {
 
 	@Override
 	public String toString() {
-		return "firstName: " + firstName + "  lastName: " + lastName + "  packageType: " + packageType + "  subjectId: "
-				+ subjectId + "  experimentId: " + experimentId + "  experimentdate: " + experimentDate
-				+ "  institutionName: " + institutionName + "  package type other: " + packageTypeOther;
+		return "firstName: " + firstName + "  lastName: " + lastName + "  packageType: " + packageType + "   protocol: "
+				+ protocol + "  subjectId: " + subjectId + "  experimentId: " + experimentId + "  experimentdate: "
+				+ experimentDate + "  institutionName: " + institutionName + "  package type other: "
+				+ packageTypeOther;
 	}
 
 	public String getProtocol() {
