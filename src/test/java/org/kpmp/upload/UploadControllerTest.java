@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -196,7 +195,7 @@ public class UploadControllerTest {
 		when(fileSubmission.getFileMetadata()).thenReturn(fileMetadataEntries);
 		when(fileSubmission.getFilePath()).thenReturn("/");
 		when(fileSubmission.getFileSize()).thenReturn(123L);
-		when(uploadPackage2.getFileSubmissions()).thenReturn(new ArrayList(Arrays.asList(fileSubmission)));
+		when(uploadPackage2.getFileSubmissions()).thenReturn(Arrays.asList(fileSubmission));
 		InstitutionDemographics institutionDemographics = new InstitutionDemographics();
 		SubmitterDemographics submitterDemographics = new SubmitterDemographics();
 		when(session.getAttribute("institution")).thenReturn(institutionDemographics);
@@ -220,21 +219,6 @@ public class UploadControllerTest {
 		assertEquals(3, ids.getInstitutionId());
 		assertEquals(savedFile, fileCaptor.getValue());
 		assertEquals("fileMetadata", metadataCaptor.getValue());
-	}
-
-	@Test
-	public void testHandleFileUpload_whenException() throws Exception {
-		// doThrow(new
-		// IOException("BANG")).when(uploadService).addFileToPackage(any(MultipartFile.class),
-		// any(String.class), any(UploadPackageIds.class));
-		//
-		// try {
-		// controller.handleFileUpload(mock(MultipartFile.class),
-		// "fileMetadataString", 1, 2, 3);
-		// fail("Should have thrown exception");
-		// } catch (Exception expected) {
-		// assertEquals("BANG", expected.getMessage());
-		// }
 	}
 
 }

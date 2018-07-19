@@ -70,7 +70,7 @@ public class UploadControllerIntegrationTest {
 		packageInformation.setExperimentDate(new Date());
 		packageInformation.setPackageTypeOther("something");
 
-		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/upload/packageInfo")
+		mockMvc.perform(RestDocumentationRequestBuilders.post("/uploader/packageInfo")
 				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(packageInformation)))
 				.andExpect(status().isOk())
 				.andDo(document("uploadPackageInfo", requestFields(
@@ -100,7 +100,7 @@ public class UploadControllerIntegrationTest {
 		MockMultipartFile firstFile = new MockMultipartFile("qqfile", "file1.txt", "text/plain",
 				"some data".getBytes());
 
-		mockMvc.perform(MockMvcRequestBuilders.multipart("/api/upload").file(firstFile)
+		mockMvc.perform(MockMvcRequestBuilders.multipart("/uploader/fileChunk").file(firstFile)
 				.param("fileMetadata", "This is a greate file").param("packageId", "1").param("submitterId", "1")
 				.param("institutionId", "1").param("qqfilename", "filename").param("qqtotalparts", "1")
 				.param("qqpartindex", "0"))
