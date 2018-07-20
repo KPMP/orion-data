@@ -25,7 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class ViewUploadsControllerIntegrationTest {
+public class ViewControllerIntegrationTest {
 
 	@Rule
 	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();

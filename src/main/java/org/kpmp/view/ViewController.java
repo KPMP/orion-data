@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class ViewUploadsController {
+public class ViewController {
 
 	private FileSubmissionsRepository fileSubmissionsRepository;
 
 	@Autowired
-	public ViewUploadsController(FileSubmissionsRepository fileSubmissionsRepository) {
+	public ViewController(FileSubmissionsRepository fileSubmissionsRepository) {
 		this.fileSubmissionsRepository = fileSubmissionsRepository;
 	}
 
@@ -31,4 +31,10 @@ public class ViewUploadsController {
 		}
 		return files;
 	}
+
+	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
+	public List<UploadPackageInfo> getUploadPackages() {
+		return null;
+	}
+
 }

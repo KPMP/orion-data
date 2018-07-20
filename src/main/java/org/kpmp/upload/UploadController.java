@@ -42,7 +42,8 @@ public class UploadController {
 	private static final MessageFormat saveMetadata = new MessageFormat("metadata for package {0} created");
 
 	@Autowired
-	public UploadController(UploadService uploadService, FileHandler fileHandler, FilePathHelper filePathHelper, MetadataHandler metadataHandler) {
+	public UploadController(UploadService uploadService, FileHandler fileHandler, FilePathHelper filePathHelper,
+			MetadataHandler metadataHandler) {
 		this.uploadService = uploadService;
 		this.fileHandler = fileHandler;
 		this.filePathHelper = filePathHelper;
@@ -50,7 +51,8 @@ public class UploadController {
 	}
 
 	@RequestMapping(value = "/upload/packageInfo", consumes = { "application/json" }, method = RequestMethod.POST)
-	public UploadPackageIds uploadPackageInfo(@RequestBody PackageInformation packageInformation, HttpSession httpSession) {
+	public UploadPackageIds uploadPackageInfo(@RequestBody PackageInformation packageInformation,
+			HttpSession httpSession) {
 
 		session = httpSession;
 
@@ -120,18 +122,21 @@ public class UploadController {
 				fileMetadata.setCreatedAt(createdDate);
 				fileMetadata.setMetadata(fileMetadataString);
 
-				CopyOnWriteArrayList<FileSubmission> fileSubmissions = new CopyOnWriteArrayList<>(uploadPackage.getFileSubmissions());
+				CopyOnWriteArrayList<FileSubmission> fileSubmissions = new CopyOnWriteArrayList<>(
+						uploadPackage.getFileSubmissions());
 
-				FileSubmission fileSubmission = uploadService.createFileSubmission(savedFile, fileMetadata, institution, submitter, uploadPackage);
+				FileSubmission fileSubmission = uploadService.createFileSubmission(savedFile, fileMetadata, institution,
+						submitter, uploadPackage);
 				fileSubmissions.add(fileSubmission);
 				uploadPackage.setFileSubmissions(fileSubmissions);
 				session.setAttribute("uploadPackage", uploadPackage);
 
 				if (fileId + 1 == totalFiles) {
-					String filePath = filePathHelper.getPackagePath("", uploadPackage.getUniversalId()) + filePathHelper.getMetadataFileName();
+					String filePath = filePathHelper.getPackagePath("", uploadPackage.getUniversalId())
+							+ filePathHelper.getMetadataFileName();
 					UploadPackageMetadata uploadPackageMetadata = new UploadPackageMetadata(uploadPackage);
 					metadataHandler.saveUploadPackageMetadata(uploadPackageMetadata, filePath);
-					log.info(saveMetadata.format(new Object[]{uploadPackage.getId()}));
+					log.info(saveMetadata.format(new Object[] { uploadPackage.getId() }));
 					session.invalidate();
 				}
 			}
