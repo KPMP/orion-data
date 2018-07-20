@@ -1,3 +1,4 @@
+ALTER TABLE case_demographics RENAME TO upload_package;
 CREATE TABLE `upload_package_to_package_type_other` (
   `upload_package_id` INT UNSIGNED NOT NULL,
   `package_type_other_id` INT UNSIGNED NOT NULL,
@@ -25,8 +26,7 @@ ALTER TABLE  `upload_package_to_package_type_other`
 	  FOREIGN KEY (`upload_package_id`)
 	  REFERENCES `upload_package` (`id`);
 
-
-ALTER TABLE `file_submissions`
+ALTER TABLE `file_submissions` 
 	DROP FOREIGN KEY `file_submissions_case_id_foreign`;
 ALTER TABLE `file_submissions`
 	CHANGE COLUMN `case_id` `upload_package_id` INT(10) UNSIGNED NOT NULL ;

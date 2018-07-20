@@ -70,4 +70,10 @@ public class PackageInformationTest {
 		packageInfo.setPackageTypeOther("packageTypeOther");
 		assertEquals("packageTypeOther", packageInfo.getPackageTypeOther());
 	}
+
+	@Test
+	public void testSetProtocol() throws Exception {
+		packageInfo.setProtocol("protocol name");
+		assertEquals("protocol name", packageInfo.getProtocol());
+	}
 }
