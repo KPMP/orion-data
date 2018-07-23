@@ -70,7 +70,7 @@ public class UploadControllerIntegrationTest {
 		packageInformation.setExperimentDate(new Date());
 		packageInformation.setPackageTypeOther("something");
 
-		mockMvc.perform(RestDocumentationRequestBuilders.post("/upload/packageInfo")
+		mockMvc.perform(RestDocumentationRequestBuilders.post("/uploader/packageInfo")
 				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(packageInformation)))
 				.andExpect(status().isOk())
 				.andDo(document("uploadPackageInfo", requestFields(
@@ -90,7 +90,7 @@ public class UploadControllerIntegrationTest {
 						responseFields(
 								fieldWithPath("packageId").description("The generated id for this package of data"),
 								fieldWithPath("submitterId")
-										.description("The generated id for the submitter of this package."),
+										.description("The generated id for the submitter of this package"),
 								fieldWithPath("institutionId")
 										.description("The id for the institution associated with this package"))));
 	}
@@ -100,7 +100,7 @@ public class UploadControllerIntegrationTest {
 		MockMultipartFile firstFile = new MockMultipartFile("qqfile", "file1.txt", "text/plain",
 				"some data".getBytes());
 
-		mockMvc.perform(MockMvcRequestBuilders.multipart("/upload").file(firstFile)
+		mockMvc.perform(MockMvcRequestBuilders.multipart("/uploader/fileChunk").file(firstFile)
 				.param("fileMetadata", "This is a greate file").param("packageId", "1").param("submitterId", "1")
 				.param("institutionId", "1").param("qqfilename", "filename").param("qqtotalparts", "1")
 				.param("qqpartindex", "0"))
@@ -114,15 +114,15 @@ public class UploadControllerIntegrationTest {
 								"The id of the submitter of this package.  In order to get your submitterId, you must first call upload/packageInfo"),
 						parameterWithName("institutionId").description(
 								"The id of the institution associated with this package.  In order to get the institutionId, you must first call upload/packageInfo"),
-								parameterWithName("fileId").description("The file index starting with 0"),
-								parameterWithName("totalFiles").description("The total number of files in this package"),
-								parameterWithName("qqfilename").description("The name of the file being submitted"),
+						parameterWithName("fileId").description("The file index starting with 0"),
+						parameterWithName("totalFiles").description("The total number of files in this package"),
+						parameterWithName("qqfilename").description("The name of the file being submitted"),
 						parameterWithName("qqtotalparts").description(
-								"The total number of parts this file is divided into.  Used for large file uploads, is optional if file is uploaded in one request."),
+								"The total number of parts this file is divided into.  Used for large file uploads, is optional if file is uploaded in one request"),
 						parameterWithName("qqpartindex").description(
-								"The index of this portion of the file.  Used for large file uploads, is optional if file is uploaded in on request.")),
+								"The index of this portion of the file.  Used for large file uploads, is optional if file is uploaded in on request")),
 						responseFields(
-								fieldWithPath("success").description("Whether the file was successfully uploaded."))));
+								fieldWithPath("success").description("Whether the file was successfully uploaded"))));
 
 	}
 

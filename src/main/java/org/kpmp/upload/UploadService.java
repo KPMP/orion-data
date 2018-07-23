@@ -11,6 +11,7 @@ import org.kpmp.dao.FileSubmissionsRepository;
 import org.kpmp.dao.InstitutionDemographics;
 import org.kpmp.dao.PackageType;
 import org.kpmp.dao.PackageTypeOther;
+import org.kpmp.dao.Protocol;
 import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +28,14 @@ public class UploadService {
 	private PackageTypeRepository packageTypeRepository;
 	private PackageTypeOtherRepository packageTypeOtherRepository;
 	private UniversalIdGenerator uuidGenerator;
+	private ProtocolRepository protocolRepository;
 
 	@Autowired
 	public UploadService(UploadPackageRepository uploadPackageRepository,
 			FileSubmissionsRepository fileSubmissionsRepository, SubmitterRepository submitterRepository,
 			InstitutionRepository institutionRepository, FileMetadataRepository fileMetadataRepository,
 			PackageTypeRepository packageTypeRepository, PackageTypeOtherRepository packageTypeOtherRepository,
-			UniversalIdGenerator uuidGenerator) {
+			UniversalIdGenerator uuidGenerator, ProtocolRepository protocolRepository) {
 		this.uploadPackageRepository = uploadPackageRepository;
 		this.fileSubmissionsRepository = fileSubmissionsRepository;
 		this.submitterRepository = submitterRepository;
@@ -42,7 +44,7 @@ public class UploadService {
 		this.packageTypeRepository = packageTypeRepository;
 		this.packageTypeOtherRepository = packageTypeOtherRepository;
 		this.uuidGenerator = uuidGenerator;
-
+		this.protocolRepository = protocolRepository;
 	}
 
 	public PackageTypeOther savePackageTypeOther(String packageTypeOtherValue) {
@@ -59,12 +61,13 @@ public class UploadService {
 
 	public UploadPackage createUploadPackage(PackageInformation packageInfo, PackageTypeOther packageTypeOther) {
 		PackageType packageType = packageTypeRepository.findByPackageType(packageInfo.getPackageType());
+		Protocol protocol = protocolRepository.findByProtocol(packageInfo.getProtocol());
 		UploadPackage uploadPackage = new UploadPackage(packageInfo, new Date());
 		uploadPackage.setPackageTypeOther(packageTypeOther);
 		uploadPackage.setPackageType(packageType);
 		uploadPackage.setUniversalId(uuidGenerator.generateUniversalId());
+		uploadPackage.setProtocol(protocol);
 		return uploadPackage;
-
 	}
 
 	public int saveSubmitterInfo(PackageInformation packageInformation) {
@@ -80,8 +83,7 @@ public class UploadService {
 	}
 
 	public InstitutionDemographics findInstitution(PackageInformation packageInformation) {
-		return institutionRepository
-				.findByInstitutionName(packageInformation.getInstitutionName());
+		return institutionRepository.findByInstitutionName(packageInformation.getInstitutionName());
 	}
 
 	public void addFileToPackage(File file, String fileMetadataString, UploadPackageIds packageIds)
@@ -97,13 +99,15 @@ public class UploadService {
 		fileMetadata.setMetadata(fileMetadataString);
 		FileMetadataEntries savedMetadata = fileMetadataRepository.save(fileMetadata);
 
-		FileSubmission fileSubmission = createFileSubmission(file, savedMetadata, institution, submitter, uploadPackage);
+		FileSubmission fileSubmission = createFileSubmission(file, savedMetadata, institution, submitter,
+				uploadPackage);
 
 		fileSubmissionsRepository.save(fileSubmission);
 
 	}
 
-	public FileSubmission createFileSubmission(File file, FileMetadataEntries fileMetadata, InstitutionDemographics institution, SubmitterDemographics submitter, UploadPackage uploadPackage)
+	public FileSubmission createFileSubmission(File file, FileMetadataEntries fileMetadata,
+			InstitutionDemographics institution, SubmitterDemographics submitter, UploadPackage uploadPackage)
 			throws IllegalStateException, IOException {
 		Date createdDate = new Date();
 
@@ -121,6 +125,5 @@ public class UploadService {
 		return fileSubmission;
 
 	}
-
 
 }

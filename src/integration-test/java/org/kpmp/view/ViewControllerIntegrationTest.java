@@ -47,7 +47,7 @@ public class ViewControllerIntegrationTest {
 
 	@Test
 	public void viewUploads() throws Exception {
-		mockMvc.perform(RestDocumentationRequestBuilders.get("/viewUploads")).andExpect(status().isOk())
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/uploader/viewFiles")).andExpect(status().isOk())
 				.andDo(document("viewUploads", responseFields(
 						fieldWithPath("[]").description("The list of files that have been uploaded to the data lake"),
 						fieldWithPath("[].researcher").description(
@@ -65,7 +65,7 @@ public class ViewControllerIntegrationTest {
 								.description("The subjectId provided for this package (or null if none provided)")
 								.optional(),
 						fieldWithPath("[].experimentId")
-								.description("The experimentId provided for this package (or null if none provided")
+								.description("The experimentId provided for this package (or null if none provided)")
 								.optional(),
 						fieldWithPath("[].filename").description("The name of the file uploaded"))));
 	}

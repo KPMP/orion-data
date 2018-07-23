@@ -1,6 +1,6 @@
 package org.kpmp.dao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -98,5 +98,12 @@ public class UploadPackageTest {
 	public void testSetUniversalId() throws Exception {
 		uploadPackage.setUniversalId("universalId");
 		assertEquals("universalId", uploadPackage.getUniversalId());
+	}
+
+	@Test
+	public void testSetProtocol() throws Exception {
+		Protocol protocol = new Protocol();
+		uploadPackage.setProtocol(protocol);
+		assertEquals(protocol, uploadPackage.getProtocol());
 	}
 }
