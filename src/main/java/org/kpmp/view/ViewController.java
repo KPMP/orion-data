@@ -1,6 +1,8 @@
 package org.kpmp.view;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.kpmp.dao.FileSubmission;
@@ -33,8 +35,12 @@ public class ViewController {
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
-	public List<UploadPackageInfo> getUploadPackages() {
-		return null;
+	public @ResponseBody List<UploadPackageInfo> getUploadPackages() {
+
+		UploadPackageInfo package1 = new UploadPackageInfo("987987", "mRNA", new Date(), "Joe Schmoe", "Michigan");
+		UploadPackageInfo package2 = new UploadPackageInfo("98fsfsd7987", "mRNA stuff", new Date(), "Joe Schmoe, Jr.",
+				"Michigan");
+		return Arrays.asList(package1, package2);
 	}
 
 }
