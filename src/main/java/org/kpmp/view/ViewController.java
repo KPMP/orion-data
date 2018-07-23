@@ -38,8 +38,8 @@ public class ViewController {
 	public @ResponseBody List<UploadPackageInfo> getUploadPackages() {
 
 		UploadPackageInfo package1 = new UploadPackageInfo("987987", "mRNA", new Date(), "Joe Schmoe", "Michigan");
-		UploadPackageInfo package2 = new UploadPackageInfo("98fsfsd7987", "mRNA stuff", new Date(), "Joe Schmoe, Jr.",
-				"Michigan");
+		UploadPackageInfo package2 = new UploadPackageInfo("98fsfsd7987", "mRNA stuff",
+				new Date(new Date().getTime() - 1000000), "Joe Schmoe, Jr.", "Michigan");
 		return Arrays.asList(package1, package2);
 	}
 
