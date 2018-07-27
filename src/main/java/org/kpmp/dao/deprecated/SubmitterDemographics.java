@@ -12,7 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.kpmp.upload.PackageInformation;
+import org.kpmp.upload.deprecated.PackageInformation;
 
 @Entity
 @Table(name = "submitter_demographics")

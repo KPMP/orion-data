@@ -17,7 +17,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.kpmp.upload.PackageInformation;
+import org.kpmp.upload.deprecated.PackageInformation;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

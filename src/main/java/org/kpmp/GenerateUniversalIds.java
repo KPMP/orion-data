@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.kpmp.dao.deprecated.FileSubmission;
 import org.kpmp.dao.deprecated.UploadPackage;
-import org.kpmp.upload.UploadPackageMySQLRepository;
+import org.kpmp.upload.deprecated.UploadPackageMySQLRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

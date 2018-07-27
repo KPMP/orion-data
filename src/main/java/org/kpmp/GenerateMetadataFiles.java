@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.kpmp.dao.deprecated.UploadPackage;
 import org.kpmp.dao.deprecated.UploadPackageMetadata;
-import org.kpmp.upload.FilePathHelper;
-import org.kpmp.upload.MetadataHandler;
-import org.kpmp.upload.UploadPackageMySQLRepository;
+import org.kpmp.upload.deprecated.FilePathHelper;
+import org.kpmp.upload.deprecated.MetadataHandler;
+import org.kpmp.upload.deprecated.UploadPackageMySQLRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
