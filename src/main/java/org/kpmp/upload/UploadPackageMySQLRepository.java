@@ -4,12 +4,12 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.kpmp.dao.UploadPackage;
+import org.kpmp.dao.deprecated.UploadPackage;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UploadPackageRepository extends CrudRepository<UploadPackage, Integer> {
+public interface UploadPackageMySQLRepository extends CrudRepository<UploadPackage, Integer> {
 
 	@SuppressWarnings("unchecked")
 	@Transactional

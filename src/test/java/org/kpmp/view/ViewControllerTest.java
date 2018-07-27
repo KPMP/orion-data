@@ -11,12 +11,12 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.dao.FileSubmission;
-import org.kpmp.dao.FileSubmissionsRepository;
-import org.kpmp.dao.InstitutionDemographics;
-import org.kpmp.dao.PackageType;
-import org.kpmp.dao.SubmitterDemographics;
-import org.kpmp.dao.UploadPackage;
+import org.kpmp.dao.deprecated.FileSubmission;
+import org.kpmp.dao.deprecated.FileSubmissionsRepository;
+import org.kpmp.dao.deprecated.InstitutionDemographics;
+import org.kpmp.dao.deprecated.PackageType;
+import org.kpmp.dao.deprecated.SubmitterDemographics;
+import org.kpmp.dao.deprecated.UploadPackage;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 

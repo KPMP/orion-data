@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.kpmp.dao.UploadPackageMetadata;
+import org.kpmp.dao.deprecated.UploadPackageMetadata;
 import org.springframework.stereotype.Service;
 
 @Service

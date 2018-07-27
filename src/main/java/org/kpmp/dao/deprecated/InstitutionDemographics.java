@@ -1,4 +1,4 @@
-package org.kpmp.dao;
+package org.kpmp.dao.deprecated;
 
 import java.util.List;
 

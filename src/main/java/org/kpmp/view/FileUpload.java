@@ -2,7 +2,7 @@ package org.kpmp.view;
 
 import java.util.Date;
 
-import org.kpmp.dao.FileSubmission;
+import org.kpmp.dao.deprecated.FileSubmission;
 import org.springframework.stereotype.Component;
 
 @Component

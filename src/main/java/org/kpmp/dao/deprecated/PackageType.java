@@ -1,4 +1,4 @@
-package org.kpmp.dao;
+package org.kpmp.dao.deprecated;
 
 import java.util.List;
 
@@ -10,16 +10,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "protocol")
-public class Protocol {
+@Table(name = "package_type")
+public class PackageType {
 
 	@Id
 	@Column(name = "id")
 	private int id;
-	@Column(name = "protocol")
-	private String protocol;
+	@Column(name = "package_type")
+	private String packageType;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "protocol")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "packageType")
 	private List<UploadPackage> uploadPackages;
 
 	public int getId() {
@@ -30,12 +30,12 @@ public class Protocol {
 		this.id = id;
 	}
 
-	public String getProtocol() {
-		return protocol;
+	public String getPackageType() {
+		return packageType;
 	}
 
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
+	public void setPackageType(String packageType) {
+		this.packageType = packageType;
 	}
 
 	public List<UploadPackage> getUploadPackages() {

@@ -9,6 +9,11 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.dao.deprecated.FileSubmission;
+import org.kpmp.dao.deprecated.PackageType;
+import org.kpmp.dao.deprecated.PackageTypeOther;
+import org.kpmp.dao.deprecated.Protocol;
+import org.kpmp.dao.deprecated.UploadPackage;
 import org.kpmp.upload.PackageInformation;
 
 public class UploadPackageTest {

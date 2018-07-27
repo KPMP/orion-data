@@ -2,7 +2,7 @@ package org.kpmp.upload;
 
 import javax.transaction.Transactional;
 
-import org.kpmp.dao.FileMetadataEntries;
+import org.kpmp.dao.deprecated.FileMetadataEntries;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

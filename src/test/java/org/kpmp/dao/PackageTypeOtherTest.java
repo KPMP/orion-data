@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.dao.deprecated.PackageTypeOther;
 
 public class PackageTypeOtherTest {
 

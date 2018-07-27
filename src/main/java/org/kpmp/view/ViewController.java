@@ -1,12 +1,11 @@
 package org.kpmp.view;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
-import org.kpmp.dao.FileSubmission;
-import org.kpmp.dao.FileSubmissionsRepository;
+import org.kpmp.dao.UploadPackageRepository;
+import org.kpmp.dao.deprecated.FileSubmission;
+import org.kpmp.dao.deprecated.FileSubmissionsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,10 +16,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ViewController {
 
 	private FileSubmissionsRepository fileSubmissionsRepository;
+	private UploadPackageRepository uploadPackageRepository;
 
 	@Autowired
-	public ViewController(FileSubmissionsRepository fileSubmissionsRepository) {
+	public ViewController(FileSubmissionsRepository fileSubmissionsRepository,
+			UploadPackageRepository uploadPackageRepository) {
 		this.fileSubmissionsRepository = fileSubmissionsRepository;
+		this.uploadPackageRepository = uploadPackageRepository;
 	}
 
 	@RequestMapping(value = "/uploader/viewFiles", method = RequestMethod.GET)
@@ -35,12 +37,8 @@ public class ViewController {
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
-	public @ResponseBody List<UploadPackageInfo> getUploadPackages() {
-
-		UploadPackageInfo package1 = new UploadPackageInfo("987987", "mRNA", new Date(), "Joe Schmoe", "Michigan");
-		UploadPackageInfo package2 = new UploadPackageInfo("98fsfsd7987", "mRNA stuff",
-				new Date(new Date().getTime() - 1000000), "Joe Schmoe, Jr.", "Michigan");
-		return Arrays.asList(package1, package2);
+	public @ResponseBody List<UploadPackage> getUploadPackages() {
+		return uploadPackageRepository.findAll();
 	}
 
 }

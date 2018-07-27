@@ -13,6 +13,14 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.dao.deprecated.FileMetadataEntries;
+import org.kpmp.dao.deprecated.FileSubmission;
+import org.kpmp.dao.deprecated.InstitutionDemographics;
+import org.kpmp.dao.deprecated.PackageType;
+import org.kpmp.dao.deprecated.PackageTypeOther;
+import org.kpmp.dao.deprecated.SubmitterDemographics;
+import org.kpmp.dao.deprecated.UploadPackage;
+import org.kpmp.dao.deprecated.UploadPackageMetadata;
 import org.mockito.MockitoAnnotations;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

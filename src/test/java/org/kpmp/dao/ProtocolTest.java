@@ -8,6 +8,8 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.dao.deprecated.Protocol;
+import org.kpmp.dao.deprecated.UploadPackage;
 
 public class ProtocolTest extends Protocol {
 

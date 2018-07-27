@@ -2,22 +2,18 @@ package org.kpmp.view;
 
 import java.util.Date;
 
-public class UploadPackageInfo {
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "packages")
+public class UploadPackage {
+
+	@Id
 	private String packageId;
 	private String packageType;
-	private Date submitted;
+	private Date createdAt;
 	private String submitter;
 	private String institution;
-
-	public UploadPackageInfo(String packageId, String packageType, Date submitted, String submitter,
-			String institution) {
-		this.packageId = packageId;
-		this.packageType = packageType;
-		this.submitted = submitted;
-		this.submitter = submitter;
-		this.institution = institution;
-	}
 
 	public String getPackageId() {
 		return packageId;
@@ -35,12 +31,12 @@ public class UploadPackageInfo {
 		this.packageType = packageType;
 	}
 
-	public Date getSubmitted() {
-		return submitted;
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setSubmitted(Date submitted) {
-		this.submitted = submitted;
+	public void setCreatedAt(Date submitted) {
+		this.createdAt = submitted;
 	}
 
 	public String getSubmitter() {

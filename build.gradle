@@ -58,14 +58,16 @@ targetCompatibility = 1.8
 dependencies {
 	asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor:2.0.1.RELEASE'
 	compile 'org.springframework.restdocs:spring-restdocs-mockmvc:2.0.1.RELEASE'
-    compile("org.springframework.boot:spring-boot-starter-web")
-	compile('commons-io:commons-io:2.6')
-    compile("junit:junit")
+    compile 'org.springframework.boot:spring-boot-starter-web' 
+	compile 'commons-io:commons-io:2.6' 
+    compile 'junit:junit' 
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'mysql:mysql-connector-java:6.0.5'
 	compile 'org.hibernate:hibernate-core:5.2.16.Final'
-	compile('org.springframework.boot:spring-boot-starter-test')
-	compile('org.springframework:spring-test:5.0.5.RELEASE')
+	compile 'org.springframework.boot:spring-boot-starter-test'
+	compile 'org.springframework:spring-test:5.0.5.RELEASE'
+	compile 'org.springframework.data:spring-data-mongodb:2.0.8.RELEASE'
+	compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
 }
 
 ext {

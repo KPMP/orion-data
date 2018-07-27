@@ -8,13 +8,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpSession;
 
-import org.kpmp.dao.FileMetadataEntries;
-import org.kpmp.dao.FileSubmission;
-import org.kpmp.dao.InstitutionDemographics;
-import org.kpmp.dao.PackageTypeOther;
-import org.kpmp.dao.SubmitterDemographics;
-import org.kpmp.dao.UploadPackage;
-import org.kpmp.dao.UploadPackageMetadata;
+import org.kpmp.dao.deprecated.FileMetadataEntries;
+import org.kpmp.dao.deprecated.FileSubmission;
+import org.kpmp.dao.deprecated.InstitutionDemographics;
+import org.kpmp.dao.deprecated.PackageTypeOther;
+import org.kpmp.dao.deprecated.SubmitterDemographics;
+import org.kpmp.dao.deprecated.UploadPackage;
+import org.kpmp.dao.deprecated.UploadPackageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

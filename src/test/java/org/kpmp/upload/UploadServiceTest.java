@@ -13,15 +13,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.UniversalIdGenerator;
-import org.kpmp.dao.FileMetadataEntries;
-import org.kpmp.dao.FileSubmission;
-import org.kpmp.dao.FileSubmissionsRepository;
-import org.kpmp.dao.InstitutionDemographics;
-import org.kpmp.dao.PackageType;
-import org.kpmp.dao.PackageTypeOther;
-import org.kpmp.dao.Protocol;
-import org.kpmp.dao.SubmitterDemographics;
-import org.kpmp.dao.UploadPackage;
+import org.kpmp.dao.deprecated.FileMetadataEntries;
+import org.kpmp.dao.deprecated.FileSubmission;
+import org.kpmp.dao.deprecated.FileSubmissionsRepository;
+import org.kpmp.dao.deprecated.InstitutionDemographics;
+import org.kpmp.dao.deprecated.PackageType;
+import org.kpmp.dao.deprecated.PackageTypeOther;
+import org.kpmp.dao.deprecated.Protocol;
+import org.kpmp.dao.deprecated.SubmitterDemographics;
+import org.kpmp.dao.deprecated.UploadPackage;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -29,7 +29,7 @@ import org.mockito.MockitoAnnotations;
 public class UploadServiceTest {
 
 	@Mock
-	private UploadPackageRepository uploadPackageRepository;
+	private UploadPackageMySQLRepository uploadPackageRepository;
 	@Mock
 	private FileSubmissionsRepository fileSubmissionsRepository;
 	@Mock

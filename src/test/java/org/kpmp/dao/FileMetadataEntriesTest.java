@@ -7,6 +7,8 @@ import java.util.Date;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.dao.deprecated.FileMetadataEntries;
+import org.kpmp.dao.deprecated.FileSubmission;
 
 public class FileMetadataEntriesTest {
 
