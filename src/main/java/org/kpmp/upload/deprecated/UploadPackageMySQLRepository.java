@@ -17,6 +17,7 @@ public interface UploadPackageMySQLRepository extends CrudRepository<UploadPacka
 	public UploadPackage save(UploadPackage uploadPackage);
 
 	public UploadPackage findById(int id);
+
 	public List<UploadPackage> findAll();
 
 }
