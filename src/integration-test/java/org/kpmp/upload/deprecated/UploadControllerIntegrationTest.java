@@ -1,4 +1,4 @@
-package org.kpmp.upload;
+package org.kpmp.upload.deprecated;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;

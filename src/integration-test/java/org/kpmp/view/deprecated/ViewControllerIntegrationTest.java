@@ -1,4 +1,4 @@
-package org.kpmp.view;
+package org.kpmp.view.deprecated;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
