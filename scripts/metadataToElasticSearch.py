@@ -3,8 +3,8 @@
 import json
 import os
 
-rootdir = "/home/zwright/Documents/KPMP/data"
-output = open ("/home/zwright/Documents/KPMP/data/combinedMetadata.json", "w")
+rootdir = "/data"
+output = open ("/data/combinedMetadata.json", "w")
 
 for subdir, dirs, files in os.walk(rootdir):
     for potentialFile in files:
