@@ -5,39 +5,56 @@
 == Introduction
 This tool is used to upload data to the KPMP Data Lake.
 
-== Upload Package Information Endpoint
+== V2 Endpoints
+
+=== View Packages
+This will retrieve the list of packages that have been stored in Mongo and return the basic information
+to be displayed to the user.
+
+==== Sample Request
+include::{snippets}/packages/httpie-request.adoc[]
+
+==== Sample Response
+include::{snippets}/packages/http-response.adoc[]
+
+include::{snippets}/packages/response-fields.adoc[]
+
+== V1 Endpoints
+These endpoints are currently deprected and will be slowly removed in favor of the v2 versions.
+
+=== Upload Package Information Endpoint
 This endpoint must be called first, as it will generate the packageId, submitterId, and return the institutionId needed as input when you call the upload endpoint to add files to a package.
 
-=== Sample Request
+==== Sample Request
 include::{snippets}/uploadPackageInfo/httpie-request.adoc[]
 
 include::{snippets}/uploadPackageInfo/request-fields.adoc[]
 
-=== Sample Response
+==== Sample Response
 include::{snippets}/uploadPackageInfo/http-response.adoc[]
 
 include::{snippets}/uploadPackageInfo/response-fields.adoc[]
 
-== Upload Endpoint
+=== Upload Endpoint
 After you have created a package, you may upload one or more files to be included in that package.
 
-=== Sample Request
+==== Sample Request
 include::{snippets}/upload/httpie-request.adoc[]
 
 include::{snippets}/upload/request-parameters.adoc[]
 
-=== Sample Response
+==== Sample Response
 include::{snippets}/upload/http-response.adoc[]
 
 include::{snippets}/upload/response-fields.adoc[]
 
-== View Uploads Endpoint
+=== View Uploads Endpoint
 Will return the list of files that have been uploaded to the KPMP Data Lake
 
-=== Sample Request
+==== Sample Request
 include::{snippets}/viewUploads/httpie-request.adoc[]
 
-=== Sample Response
+==== Sample Response
 include::{snippets}/viewUploads/http-response.adoc[]
 
 include::{snippets}/viewUploads/response-fields.adoc[]

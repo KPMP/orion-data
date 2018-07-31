@@ -1,4 +1,3 @@
-ALTER TABLE case_demographics RENAME TO upload_package;
 CREATE TABLE `upload_package_to_package_type_other` (
   `upload_package_id` INT UNSIGNED NOT NULL,
   `package_type_other_id` INT UNSIGNED NOT NULL,

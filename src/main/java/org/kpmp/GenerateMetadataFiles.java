@@ -3,11 +3,11 @@ package org.kpmp;
 import java.text.MessageFormat;
 import java.util.List;
 
-import org.kpmp.dao.UploadPackage;
-import org.kpmp.dao.UploadPackageMetadata;
-import org.kpmp.upload.FilePathHelper;
-import org.kpmp.upload.MetadataHandler;
-import org.kpmp.upload.UploadPackageRepository;
+import org.kpmp.dao.deprecated.UploadPackage;
+import org.kpmp.dao.deprecated.UploadPackageMetadata;
+import org.kpmp.upload.deprecated.FilePathHelper;
+import org.kpmp.upload.deprecated.MetadataHandler;
+import org.kpmp.upload.deprecated.UploadPackageMySQLRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = { "org.kpmp" })
 public class GenerateMetadataFiles implements CommandLineRunner {
 
-	private UploadPackageRepository uploadPackageRepository;
+	private UploadPackageMySQLRepository uploadPackageRepository;
 	private MetadataHandler metadataHandler;
 	private FilePathHelper filePathHelper;
 
@@ -29,7 +29,7 @@ public class GenerateMetadataFiles implements CommandLineRunner {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
-	public GenerateMetadataFiles(UploadPackageRepository uploadPackageRepository, MetadataHandler metadataHandler,
+	public GenerateMetadataFiles(UploadPackageMySQLRepository uploadPackageRepository, MetadataHandler metadataHandler,
 			FilePathHelper filePathHelper) {
 		this.uploadPackageRepository = uploadPackageRepository;
 		this.metadataHandler = metadataHandler;

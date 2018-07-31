@@ -2,25 +2,25 @@ package org.kpmp;
 
 import java.util.List;
 
-import org.kpmp.dao.FileSubmission;
-import org.kpmp.dao.UploadPackage;
-import org.kpmp.upload.UploadPackageRepository;
+import org.kpmp.dao.deprecated.FileSubmission;
+import org.kpmp.dao.deprecated.UploadPackage;
+import org.kpmp.upload.deprecated.UploadPackageMySQLRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 
-@SpringBootApplication
+@EnableCaching
 @ComponentScan(basePackages = { "org.kpmp" })
 public class GenerateUniversalIds implements CommandLineRunner {
 
-	private UploadPackageRepository packageRepository;
+	private UploadPackageMySQLRepository packageRepository;
 	private UniversalIdGenerator uuidGenerator;
 
 	@Autowired
-	public GenerateUniversalIds(UploadPackageRepository packageRepository, UniversalIdGenerator uuidGenerator) {
+	public GenerateUniversalIds(UploadPackageMySQLRepository packageRepository, UniversalIdGenerator uuidGenerator) {
 		this.packageRepository = packageRepository;
 		this.uuidGenerator = uuidGenerator;
 	}

@@ -6,3 +6,4 @@
 .mvn
 build
 /bin/
+.embedmongo
