@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -17,6 +18,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.kpmp.upload.PackageInformation;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "upload_package")
@@ -35,9 +38,15 @@ public class UploadPackage {
 	private Date experimentDate;
 	@Column(name = "created_at")
 	private Date createdAt;
+	@Column(name = "uuid")
+	private String universalId;
+	@ManyToOne
+	@JoinColumn(name = "protocol_id", referencedColumnName = "id")
+	private Protocol protocol;
 
 	@ManyToOne
 	@JoinColumn(name = "package_type_id", referencedColumnName = "id")
+	@JsonIgnoreProperties("uploadPackages")
 	private PackageType packageType;
 
 	@OneToOne
@@ -45,10 +54,6 @@ public class UploadPackage {
 			@JoinColumn(name = "upload_package_id", referencedColumnName = "id") }, inverseJoinColumns = {
 					@JoinColumn(name = "package_type_other_id", referencedColumnName = "id") })
 	private PackageTypeOther packageTypeOther;
-
-	@ManyToOne
-	@JoinColumn(name = "protocol_id", referencedColumnName = "id")
-	private Protocol protocol;
 
 	public UploadPackage() {
 	}
@@ -60,7 +65,7 @@ public class UploadPackage {
 		this.createdAt = createdDate;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "uploadPackage")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "uploadPackage", fetch = FetchType.EAGER)
 	private List<FileSubmission> fileSubmissions;
 
 	public int getId() {
@@ -125,6 +130,14 @@ public class UploadPackage {
 
 	public void setPackageTypeOther(PackageTypeOther packageTypeOther) {
 		this.packageTypeOther = packageTypeOther;
+	}
+
+	public String getUniversalId() {
+		return universalId;
+	}
+
+	public void setUniversalId(String universalId) {
+		this.universalId = universalId;
 	}
 
 	public Protocol getProtocol() {

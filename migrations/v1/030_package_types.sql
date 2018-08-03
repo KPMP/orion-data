@@ -10,4 +10,3 @@ insert into package_type (id, package_type) values (9, '3-D tissue imaging');
 insert into package_type (id, package_type) values (10, 'Spatial Metabolomics');
 insert into package_type (id, package_type) values (11, 'Inflammatory Cells');
 insert into package_type (id, package_type) values (12, 'Other');
-insert into package_type (id, package_type) values (14, 'Segmental miRNA');

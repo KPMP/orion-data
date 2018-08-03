@@ -12,13 +12,13 @@ import java.util.Date;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.UniversalIdGenerator;
 import org.kpmp.dao.FileMetadataEntries;
 import org.kpmp.dao.FileSubmission;
 import org.kpmp.dao.FileSubmissionsRepository;
 import org.kpmp.dao.InstitutionDemographics;
 import org.kpmp.dao.PackageType;
 import org.kpmp.dao.PackageTypeOther;
-import org.kpmp.dao.Protocol;
 import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
 import org.mockito.ArgumentCaptor;
@@ -42,16 +42,18 @@ public class UploadServiceTest {
 	@Mock
 	private PackageTypeOtherRepository packageTypeOtherRepository;
 	@Mock
-	private ProtocolRepository protocolRepository;
-
+	private UniversalIdGenerator uuidGenerator;
 	private UploadService service;
+
+	@Mock
+	private ProtocolRepository protocolRepository;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		service = new UploadService(uploadPackageRepository, fileSubmissionsRepository, submitterRepository,
 				institutionRepository, fileMetadataRepository, packageTypeRepository, packageTypeOtherRepository,
-				protocolRepository);
+				uuidGenerator, protocolRepository);
 	}
 
 	@After
@@ -61,6 +63,7 @@ public class UploadServiceTest {
 
 	@Test
 	public void testSaveUploadPackage() {
+		when(uuidGenerator.generateUniversalId()).thenReturn("UUID");
 		Date experimentDate = new Date();
 		UploadPackage savedPackage = mock(UploadPackage.class);
 		when(savedPackage.getId()).thenReturn(5);
@@ -70,9 +73,6 @@ public class UploadServiceTest {
 		PackageInformation packageInformation = new PackageInformation();
 		packageInformation.setExperimentDate(experimentDate);
 		packageInformation.setPackageType("packageType");
-		packageInformation.setProtocol("protocol");
-		Protocol protocol = mock(Protocol.class);
-		when(protocolRepository.findByProtocol("protocol")).thenReturn(protocol);
 		PackageTypeOther packageTypeOther = new PackageTypeOther();
 
 		int packageId = service.saveUploadPackage(packageInformation, packageTypeOther);
@@ -80,10 +80,12 @@ public class UploadServiceTest {
 		assertEquals(5, packageId);
 		ArgumentCaptor<UploadPackage> packageCaptor = ArgumentCaptor.forClass(UploadPackage.class);
 		verify(uploadPackageRepository).save(packageCaptor.capture());
-		assertEquals(experimentDate, packageCaptor.getValue().getExperimentDate());
-		assertEquals(packageType, packageCaptor.getValue().getPackageType());
-		assertEquals(packageTypeOther, packageCaptor.getValue().getPackageTypeOther());
-		assertEquals(protocol, packageCaptor.getValue().getProtocol());
+		UploadPackage uploadedPackage = packageCaptor.getValue();
+		assertEquals(experimentDate, uploadedPackage.getExperimentDate());
+		assertEquals(packageType, uploadedPackage.getPackageType());
+		assertEquals(packageTypeOther, uploadedPackage.getPackageTypeOther());
+		verify(uuidGenerator).generateUniversalId();
+		assertEquals("UUID", uploadedPackage.getUniversalId());
 	}
 
 	@Test
@@ -134,6 +136,7 @@ public class UploadServiceTest {
 		packageIds.setPackageId(1);
 		packageIds.setSubmitterId(2);
 		packageIds.setInstitutionId(3);
+		when(uuidGenerator.generateUniversalId()).thenReturn("UUID");
 
 		service.addFileToPackage(file, "fileMetadataString", packageIds);
 
@@ -147,6 +150,7 @@ public class UploadServiceTest {
 		assertEquals(uploadPackage, fileSubmission.getUploadPackage());
 		assertEquals(submitter, fileSubmission.getSubmitter());
 		assertEquals(institution, fileSubmission.getInstitution());
+		assertEquals("UUID", fileSubmission.getUniversalId());
 		ArgumentCaptor<FileMetadataEntries> fileMetadataCaptor = ArgumentCaptor.forClass(FileMetadataEntries.class);
 		verify(fileMetadataRepository).save(fileMetadataCaptor.capture());
 		assertEquals("fileMetadataString", fileMetadataCaptor.getValue().getMetadata());
