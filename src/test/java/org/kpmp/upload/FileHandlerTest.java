@@ -39,8 +39,9 @@ public class FileHandlerTest {
 		when(file.getBytes()).thenReturn(new byte[4]);
 
 		File savedFile = fileHandler.saveMultipartFile(file, 4, "filename.txt", true);
+		File expectedFile = new File("/data/package4/filename.txt");
 
-		assertEquals("/data/package4/filename.txt", savedFile.getPath());
+		assertEquals(expectedFile.getPath(), savedFile.getPath());
 	}
 
 	@Test
@@ -54,8 +55,9 @@ public class FileHandlerTest {
 		when(file.getBytes()).thenReturn(new byte[4]);
 
 		File savedFile = fileHandler.saveMultipartFile(file, 4, "filename.txt", false);
+		File expectedFile = new File("/data/package4/filename.txt");
 
-		assertEquals("/data/package4/filename.txt", savedFile.getPath());
+		assertEquals(expectedFile.getPath(), savedFile.getPath());
 	}
 
 }

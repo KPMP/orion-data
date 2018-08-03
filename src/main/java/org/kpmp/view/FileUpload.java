@@ -14,7 +14,6 @@ public class FileUpload {
 	private Date experimentDate;
 	private Date createdAt;
 	private String subjectId;
-	private String experimentId;
 	private String filename;
 
 	public FileUpload(FileSubmission fileSubmission) {
@@ -25,7 +24,6 @@ public class FileUpload {
 		this.experimentDate = fileSubmission.getUploadPackage().getExperimentDate();
 		this.createdAt = fileSubmission.getUploadPackage().getCreatedAt();
 		this.subjectId = fileSubmission.getUploadPackage().getSubjectId();
-		this.experimentId = fileSubmission.getUploadPackage().getExperimentId();
 		this.filename = fileSubmission.getFilename();
 	}
 
@@ -71,14 +69,6 @@ public class FileUpload {
 
 	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
-	}
-
-	public String getExperimentId() {
-		return experimentId;
-	}
-
-	public void setExperimentId(String experimentId) {
-		this.experimentId = experimentId;
 	}
 
 	public String getSubjectId() {
