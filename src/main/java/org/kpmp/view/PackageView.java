@@ -8,36 +8,37 @@ import org.springframework.stereotype.Component;
 @Component
 public class PackageView {
 
-	private String name;
-	private String site;
+	private String researcher;
+	private String institution;
 	private String packageId;
 	private String packageType;
 	private String subjectId;
-	private Date uploadDate;
+	private Date createdAt;
 
 	public PackageView(FileSubmission fileSubmission) {
-		this.name = fileSubmission.getSubmitter().getFirstName() + " " + fileSubmission.getSubmitter().getLastName();
-		this.site = fileSubmission.getInstitution().getInstitutionName();
+		this.researcher = fileSubmission.getSubmitter().getFirstName() + " "
+				+ fileSubmission.getSubmitter().getLastName();
+		this.institution = fileSubmission.getInstitution().getInstitutionName();
 		this.packageId = "need universal Id";
 		this.packageType = fileSubmission.getUploadPackage().getPackageType().getPackageType();
 		this.subjectId = fileSubmission.getUploadPackage().getSubjectId();
-		this.uploadDate = fileSubmission.getUploadPackage().getCreatedAt();
+		this.createdAt = fileSubmission.getUploadPackage().getCreatedAt();
 	}
 
-	public String getName() {
-		return name;
+	public String getResearcher() {
+		return researcher;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setResearcher(String researcher) {
+		this.researcher = researcher;
 	}
 
-	public String getSite() {
-		return site;
+	public String getInstitution() {
+		return institution;
 	}
 
-	public void setSite(String site) {
-		this.site = site;
+	public void setInstitution(String institution) {
+		this.institution = institution;
 	}
 
 	public String getPackageType() {
@@ -56,12 +57,12 @@ public class PackageView {
 		this.subjectId = subjectId;
 	}
 
-	public Date getUploadDate() {
-		return uploadDate;
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setUploadDate(Date uploadDate) {
-		this.uploadDate = uploadDate;
+	public void setCreatedAt(Date uploadDate) {
+		this.createdAt = uploadDate;
 	}
 
 	public String getPackageId() {

@@ -56,24 +56,24 @@ public class PackageViewTest {
 
 		packageView = new PackageView(fileSubmission);
 
-		assertEquals("first last", packageView.getName());
-		assertEquals("institution", packageView.getSite());
+		assertEquals("first last", packageView.getResearcher());
+		assertEquals("institution", packageView.getInstitution());
 		assertEquals("need universal Id", packageView.getPackageId());
 		assertEquals("package Type", packageView.getPackageType());
 		assertEquals("subject id", packageView.getSubjectId());
-		assertEquals(createdDate, packageView.getUploadDate());
+		assertEquals(createdDate, packageView.getCreatedAt());
 	}
 
 	@Test
-	public void testSetName() {
-		packageView.setName("name");
-		assertEquals("name", packageView.getName());
+	public void testSetResearcher() {
+		packageView.setResearcher("name");
+		assertEquals("name", packageView.getResearcher());
 	}
 
 	@Test
-	public void testSetSite() {
-		packageView.setSite("site");
-		assertEquals("site", packageView.getSite());
+	public void testSetInstitution() {
+		packageView.setInstitution("site");
+		assertEquals("site", packageView.getInstitution());
 	}
 
 	@Test
@@ -89,10 +89,10 @@ public class PackageViewTest {
 	}
 
 	@Test
-	public void testSetUploadDate() {
+	public void testSetCreatedAt() {
 		Date uploadDate = new Date();
-		packageView.setUploadDate(uploadDate);
-		assertEquals(uploadDate, packageView.getUploadDate());
+		packageView.setCreatedAt(uploadDate);
+		assertEquals(uploadDate, packageView.getCreatedAt());
 	}
 
 	@Test

@@ -21,18 +21,20 @@ public class ViewUploadsController {
 		this.fileSubmissionsRepository = fileSubmissionsRepository;
 	}
 
-	@RequestMapping(value = "/viewUploads", method = RequestMethod.GET)
-	public @ResponseBody List<FileUpload> getFileUploads() {
-		List<FileUpload> files = new ArrayList<>();
-		List<FileSubmission> submissions = fileSubmissionsRepository.findAllByOrderByCreatedAtDesc();
-		for (FileSubmission fileSubmission : submissions) {
-			FileUpload file = new FileUpload(fileSubmission);
-			files.add(file);
-		}
-		return files;
-	}
+	// @RequestMapping(value = "/viewUploads", method = RequestMethod.GET)
+	// public @ResponseBody List<FileUpload> getFileUploads() {
+	// List<FileUpload> files = new ArrayList<>();
+	// List<FileSubmission> submissions =
+	// fileSubmissionsRepository.findAllByOrderByCreatedAtDesc();
+	// for (FileSubmission fileSubmission : submissions) {
+	// FileUpload file = new FileUpload(fileSubmission);
+	// files.add(file);
+	// }
+	// return files;
+	// }
 
-	public List<PackageView> getPackages() {
+	@RequestMapping(value = "/viewUploads", method = RequestMethod.GET)
+	public @ResponseBody List<PackageView> getPackages() {
 		List<PackageView> packages = new ArrayList<>();
 		List<Integer> packageIds = new ArrayList<>();
 		List<FileSubmission> submissions = fileSubmissionsRepository.findAllByOrderByCreatedAtDesc();
