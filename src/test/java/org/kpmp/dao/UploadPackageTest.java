@@ -95,6 +95,12 @@ public class UploadPackageTest {
 	}
 
 	@Test
+	public void testSetUniversalId() throws Exception {
+		uploadPackage.setUniversalId("universalId");
+		assertEquals("universalId", uploadPackage.getUniversalId());
+	}
+
+	@Test
 	public void testSetProtocol() throws Exception {
 		Protocol protocol = new Protocol();
 		uploadPackage.setProtocol(protocol);
