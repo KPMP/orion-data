@@ -19,6 +19,7 @@ import org.kpmp.dao.FileSubmissionsRepository;
 import org.kpmp.dao.InstitutionDemographics;
 import org.kpmp.dao.PackageType;
 import org.kpmp.dao.PackageTypeOther;
+import org.kpmp.dao.Protocol;
 import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
 import org.mockito.ArgumentCaptor;
@@ -73,6 +74,9 @@ public class UploadServiceTest {
 		PackageInformation packageInformation = new PackageInformation();
 		packageInformation.setExperimentDate(experimentDate);
 		packageInformation.setPackageType("packageType");
+		packageInformation.setProtocol("protocol");
+		Protocol protocol = mock(Protocol.class);
+		when(protocolRepository.findByProtocol("protocol")).thenReturn(protocol);
 		PackageTypeOther packageTypeOther = new PackageTypeOther();
 
 		int packageId = service.saveUploadPackage(packageInformation, packageTypeOther);
@@ -80,12 +84,10 @@ public class UploadServiceTest {
 		assertEquals(5, packageId);
 		ArgumentCaptor<UploadPackage> packageCaptor = ArgumentCaptor.forClass(UploadPackage.class);
 		verify(uploadPackageRepository).save(packageCaptor.capture());
-		UploadPackage uploadedPackage = packageCaptor.getValue();
-		assertEquals(experimentDate, uploadedPackage.getExperimentDate());
-		assertEquals(packageType, uploadedPackage.getPackageType());
-		assertEquals(packageTypeOther, uploadedPackage.getPackageTypeOther());
-		verify(uuidGenerator).generateUniversalId();
-		assertEquals("UUID", uploadedPackage.getUniversalId());
+		assertEquals(experimentDate, packageCaptor.getValue().getExperimentDate());
+		assertEquals(packageType, packageCaptor.getValue().getPackageType());
+		assertEquals(packageTypeOther, packageCaptor.getValue().getPackageTypeOther());
+		assertEquals(protocol, packageCaptor.getValue().getProtocol());
 	}
 
 	@Test
