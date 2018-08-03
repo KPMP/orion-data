@@ -50,7 +50,6 @@ public class FileUploadTest {
 		when(packageType.getPackageType()).thenReturn("envelope");
 		when(uploadPackage.getPackageType()).thenReturn(packageType);
 		when(uploadPackage.getSubjectId()).thenReturn("subjectId");
-		when(uploadPackage.getExperimentId()).thenReturn("experimentId");
 		when(fileSubmission.getUploadPackage()).thenReturn(uploadPackage);
 
 		FileUpload fileUpload = new FileUpload(fileSubmission);
@@ -61,7 +60,6 @@ public class FileUploadTest {
 		assertEquals(createdAt, fileUpload.getCreatedAt());
 		assertEquals("envelope", fileUpload.getPackageType());
 		assertEquals("subjectId", fileUpload.getSubjectId());
-		assertEquals("experimentId", fileUpload.getExperimentId());
 		assertEquals("filename", fileUpload.getFilename());
 	}
 
@@ -107,11 +105,5 @@ public class FileUploadTest {
 	public void testSetSubjectId() throws Exception {
 		upload.setSubjectId("subjectId");
 		assertEquals("subjectId", upload.getSubjectId());
-	}
-
-	@Test
-	public void testSetExperimentId() throws Exception {
-		upload.setExperimentId("experimentId");
-		assertEquals("experimentId", upload.getExperimentId());
 	}
 }

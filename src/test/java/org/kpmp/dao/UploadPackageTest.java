@@ -31,12 +31,10 @@ public class UploadPackageTest {
 		Date experimentDate = new Date();
 		PackageInformation packageInformation = new PackageInformation();
 		packageInformation.setExperimentDate(experimentDate);
-		packageInformation.setExperimentId("experimentId");
 		packageInformation.setSubjectId("subjectId");
 		UploadPackage uploadPackage = new UploadPackage(packageInformation, createdDate);
 
 		assertEquals(experimentDate, uploadPackage.getExperimentDate());
-		assertEquals("experimentId", uploadPackage.getExperimentId());
 		assertEquals("subjectId", uploadPackage.getSubjectId());
 		assertEquals(createdDate, uploadPackage.getCreatedAt());
 	}
@@ -51,12 +49,6 @@ public class UploadPackageTest {
 	public void testSetSubjectId() {
 		uploadPackage.setSubjectId("subjectId");
 		assertEquals("subjectId", uploadPackage.getSubjectId());
-	}
-
-	@Test
-	public void testSetExperimentId() {
-		uploadPackage.setExperimentId("experimentId");
-		assertEquals("experimentId", uploadPackage.getExperimentId());
 	}
 
 	@Test
