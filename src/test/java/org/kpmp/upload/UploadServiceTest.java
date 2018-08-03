@@ -84,10 +84,12 @@ public class UploadServiceTest {
 		assertEquals(5, packageId);
 		ArgumentCaptor<UploadPackage> packageCaptor = ArgumentCaptor.forClass(UploadPackage.class);
 		verify(uploadPackageRepository).save(packageCaptor.capture());
+		UploadPackage uploadedPackage = packageCaptor.getValue();
 		assertEquals(experimentDate, packageCaptor.getValue().getExperimentDate());
 		assertEquals(packageType, packageCaptor.getValue().getPackageType());
 		assertEquals(packageTypeOther, packageCaptor.getValue().getPackageTypeOther());
-		assertEquals(protocol, packageCaptor.getValue().getProtocol());
+		verify(uuidGenerator).generateUniversalId();
+		assertEquals("UUID", uploadedPackage.getUniversalId());
 	}
 
 	@Test
@@ -169,6 +171,73 @@ public class UploadServiceTest {
 		ArgumentCaptor<PackageTypeOther> packageTypeOtherCaptor = ArgumentCaptor.forClass(PackageTypeOther.class);
 		verify(packageTypeOtherRepository).save(packageTypeOtherCaptor.capture());
 		assertEquals("packageTypeOther", packageTypeOtherCaptor.getValue().getPackageType());
+	}
+
+	@Test
+	public void testCreateFileSubmission() throws Exception {
+
+		UploadPackage uploadPackage = mock(UploadPackage.class);
+		when(uploadPackageRepository.findById(1)).thenReturn(uploadPackage);
+		SubmitterDemographics submitter = mock(SubmitterDemographics.class);
+		when(submitterRepository.findById(2)).thenReturn(submitter);
+		InstitutionDemographics institution = mock(InstitutionDemographics.class);
+		when(institutionRepository.findById(3)).thenReturn(institution);
+		FileMetadataEntries fileMetadataEntries = mock(FileMetadataEntries.class);
+		when(fileMetadataRepository.save(any(FileMetadataEntries.class))).thenReturn(fileMetadataEntries);
+		File file = mock(File.class);
+		when(file.getName()).thenReturn("filename.txt");
+		when(file.getPath()).thenReturn("/data/package1/filename.txt");
+		when(file.length()).thenReturn(444l);
+		UploadPackageIds packageIds = new UploadPackageIds();
+		packageIds.setPackageId(1);
+		packageIds.setSubmitterId(2);
+		packageIds.setInstitutionId(3);
+		when(uuidGenerator.generateUniversalId()).thenReturn("UUID");
+
+		FileSubmission fileSubmission = service.createFileSubmission(file, fileMetadataEntries, institution, submitter, uploadPackage);
+
+		assertEquals("/data/package1/filename.txt", fileSubmission.getFilePath());
+		assertEquals(fileMetadataEntries, fileSubmission.getFileMetadata());
+		assertEquals("filename.txt", fileSubmission.getFilename());
+		assertEquals(new Long(444), fileSubmission.getFileSize());
+		assertEquals(uploadPackage, fileSubmission.getUploadPackage());
+		assertEquals(submitter, fileSubmission.getSubmitter());
+		assertEquals(institution, fileSubmission.getInstitution());
+		assertEquals("UUID", fileSubmission.getUniversalId());
+
+	}
+
+	@Test
+	public void testCreateUploadPackage() throws Exception {
+		UploadPackage uploadPackage = mock(UploadPackage.class);
+		when(uploadPackageRepository.findById(1)).thenReturn(uploadPackage);
+		SubmitterDemographics submitter = mock(SubmitterDemographics.class);
+		when(submitterRepository.findById(2)).thenReturn(submitter);
+		InstitutionDemographics institution = mock(InstitutionDemographics.class);
+		when(institutionRepository.findById(3)).thenReturn(institution);
+		FileMetadataEntries fileMetadataEntries = mock(FileMetadataEntries.class);
+		when(fileMetadataRepository.save(any(FileMetadataEntries.class))).thenReturn(fileMetadataEntries);
+		File file = mock(File.class);
+		when(file.getName()).thenReturn("filename.txt");
+		when(file.getPath()).thenReturn("/data/package1/filename.txt");
+		when(file.length()).thenReturn(444l);
+		UploadPackageIds packageIds = new UploadPackageIds();
+		packageIds.setPackageId(1);
+		packageIds.setSubmitterId(2);
+		packageIds.setInstitutionId(3);
+		when(uuidGenerator.generateUniversalId()).thenReturn("UUID");
+
+		FileSubmission fileSubmission = service.createFileSubmission(file, fileMetadataEntries, institution, submitter, uploadPackage);
+
+		assertEquals("/data/package1/filename.txt", fileSubmission.getFilePath());
+		assertEquals(fileMetadataEntries, fileSubmission.getFileMetadata());
+		assertEquals("filename.txt", fileSubmission.getFilename());
+		assertEquals(new Long(444), fileSubmission.getFileSize());
+		assertEquals(uploadPackage, fileSubmission.getUploadPackage());
+		assertEquals(submitter, fileSubmission.getSubmitter());
+		assertEquals(institution, fileSubmission.getInstitution());
+		assertEquals("UUID", fileSubmission.getUniversalId());
+
 	}
 
 }
