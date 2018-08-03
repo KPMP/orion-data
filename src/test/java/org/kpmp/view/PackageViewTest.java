@@ -52,13 +52,14 @@ public class PackageViewTest {
 		when(uploadPackage.getSubjectId()).thenReturn("subject id");
 		Date createdDate = new Date();
 		when(uploadPackage.getCreatedAt()).thenReturn(createdDate);
+		when(uploadPackage.getUniversalId()).thenReturn("universalId");
 		when(fileSubmission.getUploadPackage()).thenReturn(uploadPackage);
 
 		packageView = new PackageView(fileSubmission);
 
 		assertEquals("first last", packageView.getResearcher());
 		assertEquals("institution", packageView.getInstitution());
-		assertEquals("need universal Id", packageView.getPackageId());
+		assertEquals("universalId", packageView.getPackageId());
 		assertEquals("package Type", packageView.getPackageType());
 		assertEquals("subject id", packageView.getSubjectId());
 		assertEquals(createdDate, packageView.getCreatedAt());

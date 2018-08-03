@@ -60,7 +60,6 @@ public class UploadPackageMetadata {
 	public UploadPackageMetadata(UploadPackage uploadPackage) {
 		this.id = uploadPackage.getUniversalId();
 		this.subjectId = uploadPackage.getSubjectId();
-		this.experimentId = uploadPackage.getExperimentId();
 		SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		if (uploadPackage.getExperimentDate() != null) {
 			this.experimentDate = dt.format(uploadPackage.getExperimentDate());
@@ -76,7 +75,7 @@ public class UploadPackageMetadata {
 		SubmitterDemographics submitter = new SubmitterDemographics();
 		InstitutionDemographics demographics = new InstitutionDemographics();
 
-		for(Iterator<FileSubmission> it = fileSubmissionList.iterator(); it.hasNext();) {
+		for (Iterator<FileSubmission> it = fileSubmissionList.iterator(); it.hasNext();) {
 			FileSubmission fileSubmission = it.next();
 			this.files.add(new FileSubmissionJSON(fileSubmission));
 			submitter = fileSubmission.getSubmitter();
@@ -107,14 +106,6 @@ public class UploadPackageMetadata {
 
 	public void setSubjectId(String subjectId) {
 		this.subjectId = subjectId;
-	}
-
-	public String getExperimentId() {
-		return experimentId;
-	}
-
-	public void setExperimentId(String experimentId) {
-		this.experimentId = experimentId;
 	}
 
 	public String getExperimentDate() {
