@@ -19,10 +19,13 @@ public class PackageView {
 		this.researcher = fileSubmission.getSubmitter().getFirstName() + " "
 				+ fileSubmission.getSubmitter().getLastName();
 		this.institution = fileSubmission.getInstitution().getInstitutionName();
-		this.packageId = "need universal Id";
+		this.packageId = "NEED UNIVERSAL ID";
 		this.packageType = fileSubmission.getUploadPackage().getPackageType().getPackageType();
 		this.subjectId = fileSubmission.getUploadPackage().getSubjectId();
 		this.createdAt = fileSubmission.getUploadPackage().getCreatedAt();
+	}
+
+	public PackageView() {
 	}
 
 	public String getResearcher() {
