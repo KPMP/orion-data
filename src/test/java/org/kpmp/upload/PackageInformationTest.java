@@ -47,12 +47,6 @@ public class PackageInformationTest {
 	}
 
 	@Test
-	public void testSetExperimentId() {
-		packageInfo.setExperimentId("experimentId");
-		assertEquals("experimentId", packageInfo.getExperimentId());
-	}
-
-	@Test
 	public void testSetExperimentDate() {
 		Date experimentDate = new Date();
 		packageInfo.setExperimentDate(experimentDate);

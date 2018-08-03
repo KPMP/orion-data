@@ -29,8 +29,6 @@ public class UploadPackage {
 	private int id;
 	@Column(name = "subject_id")
 	private String subjectId;
-	@Column(name = "experiment_id")
-	private String experimentId;
 	@Column(name = "performed_at")
 	private Date experimentDate;
 	@Column(name = "created_at")
@@ -56,7 +54,6 @@ public class UploadPackage {
 	public UploadPackage(PackageInformation packageInformation, Date createdDate) {
 		this.experimentDate = packageInformation.getExperimentDate();
 		this.subjectId = packageInformation.getSubjectId();
-		this.experimentId = packageInformation.getExperimentId();
 		this.createdAt = createdDate;
 	}
 
@@ -77,14 +74,6 @@ public class UploadPackage {
 
 	public void setSubjectId(String subjectId) {
 		this.subjectId = subjectId;
-	}
-
-	public String getExperimentId() {
-		return experimentId;
-	}
-
-	public void setExperimentId(String experimentId) {
-		this.experimentId = experimentId;
 	}
 
 	public Date getExperimentDate() {

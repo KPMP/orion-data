@@ -11,7 +11,6 @@ public class PackageInformation {
 	private String lastName;
 	private String packageType;
 	private String subjectId;
-	private String experimentId;
 	private Date experimentDate;
 	private String institutionName;
 	private String packageTypeOther;
@@ -49,14 +48,6 @@ public class PackageInformation {
 		this.subjectId = subjectId;
 	}
 
-	public String getExperimentId() {
-		return experimentId;
-	}
-
-	public void setExperimentId(String experimentId) {
-		this.experimentId = experimentId;
-	}
-
 	public Date getExperimentDate() {
 		return experimentDate;
 	}
@@ -84,9 +75,8 @@ public class PackageInformation {
 	@Override
 	public String toString() {
 		return "firstName: " + firstName + "  lastName: " + lastName + "  packageType: " + packageType + "   protocol: "
-				+ protocol + "  subjectId: " + subjectId + "  experimentId: " + experimentId + "  experimentdate: "
-				+ experimentDate + "  institutionName: " + institutionName + "  package type other: "
-				+ packageTypeOther;
+				+ protocol + "  subjectId: " + subjectId + "  experimentdate: " + experimentDate + "  institutionName: "
+				+ institutionName + "  package type other: " + packageTypeOther;
 	}
 
 	public String getProtocol() {
