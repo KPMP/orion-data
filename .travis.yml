@@ -6,7 +6,8 @@ jdk:
 install: true
 
 script:
-  - ./gradlew build -PexcludeTests=FileHandlerTest
+  - sudo mkdir /data
+  - ./gradlew build
 
 notifications:
   email:
