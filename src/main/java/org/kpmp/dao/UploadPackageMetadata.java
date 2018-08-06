@@ -12,7 +12,6 @@ public class UploadPackageMetadata {
 
 	private String id;
 	private String subjectId;
-	private String experimentId;
 	private String experimentDate;
 	private String createdAt;
 	private String packageType;

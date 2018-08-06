@@ -97,8 +97,8 @@ public class UploadPackageMetadataTest {
 	public void testGenerateJSON() throws JsonProcessingException {
 		String actual = uploadPackageMetadata.generateJSON();
 		String date = dateFormat.format(now);
-		String expected = "{\"id\":\"uuid-package\",\"subjectId\":\"42\",\"experimentDate\":\"" + date
-				+ "\",\"createdAt\":\"" + date
+		String expected = "{\"id\":\"uuid-package\",\"subjectId\":\"42\",\"experimentDate\":\""
+				+ date + "\",\"createdAt\":\"" + date
 				+ "\",\"packageType\":\"Big Data\",\"submitterFirstName\":\"Mattie\",\"submitterLastName\":\"Dayta\","
 				+ "\"institution\":\"Mars University\",\"files\":[{\"path\":\"/package1/filename\",\"size\":12345,\"fileName\":\"filename\",\"description\":\"file description\",\"universalId\":\"uuid-file\"}]}";
 		assertEquals(expected, actual);
