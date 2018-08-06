@@ -36,7 +36,6 @@ public class UploadPackageMetadataTest {
 		when(uploadPackage.getExperimentDate()).thenReturn(now);
 		when(uploadPackage.getId()).thenReturn(1);
 		when(uploadPackage.getSubjectId()).thenReturn("42");
-		when(uploadPackage.getExperimentId()).thenReturn("23");
 		when(uploadPackage.getUniversalId()).thenReturn("uuid-package");
 
 		PackageType packageType = mock(PackageType.class);
@@ -77,7 +76,6 @@ public class UploadPackageMetadataTest {
 	public void testConstructor() throws Exception {
 		assertEquals(dateFormat.format(now), uploadPackageMetadata.getCreatedAt());
 		assertEquals(dateFormat.format(now), uploadPackageMetadata.getExperimentDate());
-		assertEquals("23", uploadPackageMetadata.getExperimentId());
 		assertEquals("Mars University", uploadPackageMetadata.getInstitution());
 		assertEquals("uuid-package", uploadPackageMetadata.getId());
 		assertEquals("Big Data", uploadPackageMetadata.getPackageType());
@@ -99,8 +97,8 @@ public class UploadPackageMetadataTest {
 	public void testGenerateJSON() throws JsonProcessingException {
 		String actual = uploadPackageMetadata.generateJSON();
 		String date = dateFormat.format(now);
-		String expected = "{\"id\":\"uuid-package\",\"subjectId\":\"42\",\"experimentId\":\"23\",\"experimentDate\":\""
-				+ date + "\",\"createdAt\":\"" + date
+		String expected = "{\"id\":\"uuid-package\",\"subjectId\":\"42\",\"experimentDate\":\"" + date
+				+ "\",\"createdAt\":\"" + date
 				+ "\",\"packageType\":\"Big Data\",\"submitterFirstName\":\"Mattie\",\"submitterLastName\":\"Dayta\","
 				+ "\"institution\":\"Mars University\",\"files\":[{\"path\":\"/package1/filename\",\"size\":12345,\"fileName\":\"filename\",\"description\":\"file description\",\"universalId\":\"uuid-file\"}]}";
 		assertEquals(expected, actual);
@@ -110,7 +108,6 @@ public class UploadPackageMetadataTest {
 	public void testSetters() throws Exception {
 		uploadPackageMetadata.setCreatedAt("2014-04-16");
 		uploadPackageMetadata.setExperimentDate("2017-07-08");
-		uploadPackageMetadata.setExperimentId("4");
 		uploadPackageMetadata.setId("9");
 		uploadPackageMetadata.setInstitution("Miskatonic University");
 		uploadPackageMetadata.setPackageType("Packagey Package");
@@ -120,7 +117,6 @@ public class UploadPackageMetadataTest {
 
 		assertEquals("2014-04-16", uploadPackageMetadata.getCreatedAt());
 		assertEquals("2017-07-08", uploadPackageMetadata.getExperimentDate());
-		assertEquals("4", uploadPackageMetadata.getExperimentId());
 		assertEquals("9", uploadPackageMetadata.getId());
 		assertEquals("Miskatonic University", uploadPackageMetadata.getInstitution());
 		assertEquals("Packagey Package", uploadPackageMetadata.getPackageType());
