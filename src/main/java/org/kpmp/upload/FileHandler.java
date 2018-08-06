@@ -28,7 +28,7 @@ class FileHandler {
 			packageDirectory.mkdirs();
 		}
 		if (Objects.equals(filename, filePathHelper.getMetadataFileName())) {
-			filename = filename + "_1";
+			filename = filename.replace(".", "_user.");
 		}
 		File fileToSave = new File(basePath + File.separator + "package" + packageId + File.separator + filename);
 

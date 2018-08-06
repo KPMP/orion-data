@@ -58,7 +58,7 @@ public class FileHandlerTest {
 		when(file.getBytes()).thenReturn(new byte[4]);
 
 		File savedFile = fileHandler.saveMultipartFile(file, 4, "metadata.json", true);
-		File expectedFile = new File("/data/package4/metadata.json_1");
+		File expectedFile = new File("/data/package4/metadata_user.json");
 
 		assertEquals(expectedFile.getPath(), savedFile.getPath());
 	}
