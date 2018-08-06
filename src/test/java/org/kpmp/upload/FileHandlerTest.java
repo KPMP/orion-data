@@ -64,6 +64,19 @@ public class FileHandlerTest {
 	}
 
 	@Test
+	public void testFileNameSameAsMetadataUppercase() throws IllegalStateException, IOException {
+
+		when(filePathHelper.getMetadataFileName()).thenReturn("metadata.json");
+		MultipartFile file = mock(MultipartFile.class);
+		when(file.getBytes()).thenReturn(new byte[4]);
+
+		File savedFile = fileHandler.saveMultipartFile(file, 4, "METADATA.JSON", true);
+		File expectedFile = new File("/data/package4/METADATA_user.JSON");
+
+		assertEquals(expectedFile.getPath(), savedFile.getPath());
+	}
+
+	@Test
 	public void testSaveMultipartFile_partialFile() throws IllegalStateException, IOException {
 		// We acknowledge that we are not testing that this code is saving the
 		// file/creating missing directories, etc

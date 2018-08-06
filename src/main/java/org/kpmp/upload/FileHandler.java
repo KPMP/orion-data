@@ -2,7 +2,6 @@ package org.kpmp.upload;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +26,7 @@ class FileHandler {
 		if (!packageDirectory.exists()) {
 			packageDirectory.mkdirs();
 		}
-		if (Objects.equals(filename, filePathHelper.getMetadataFileName())) {
+		if (filename.equalsIgnoreCase(filePathHelper.getMetadataFileName())) {
 			filename = filename.replace(".", "_user.");
 		}
 		File fileToSave = new File(basePath + File.separator + "package" + packageId + File.separator + filename);
