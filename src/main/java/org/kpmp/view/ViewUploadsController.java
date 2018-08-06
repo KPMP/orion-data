@@ -21,14 +21,32 @@ public class ViewUploadsController {
 		this.fileSubmissionsRepository = fileSubmissionsRepository;
 	}
 
+	// @RequestMapping(value = "/viewUploads", method = RequestMethod.GET)
+	// public @ResponseBody List<FileUpload> getFileUploads() {
+	// List<FileUpload> files = new ArrayList<>();
+	// List<FileSubmission> submissions =
+	// fileSubmissionsRepository.findAllByOrderByCreatedAtDesc();
+	// for (FileSubmission fileSubmission : submissions) {
+	// FileUpload file = new FileUpload(fileSubmission);
+	// files.add(file);
+	// }
+	// return files;
+	// }
+
 	@RequestMapping(value = "/viewUploads", method = RequestMethod.GET)
-	public @ResponseBody List<FileUpload> getFileUploads() {
-		List<FileUpload> files = new ArrayList<>();
+	public @ResponseBody List<PackageView> getPackages() {
+		List<PackageView> packages = new ArrayList<>();
+		List<Integer> packageIds = new ArrayList<>();
 		List<FileSubmission> submissions = fileSubmissionsRepository.findAllByOrderByCreatedAtDesc();
 		for (FileSubmission fileSubmission : submissions) {
-			FileUpload file = new FileUpload(fileSubmission);
-			files.add(file);
+			int packageId = fileSubmission.getUploadPackage().getId();
+			if (packageIds.contains(packageId)) {
+				continue;
+			}
+			PackageView packageView = new PackageView(fileSubmission);
+			packages.add(packageView);
+			packageIds.add(packageId);
 		}
-		return files;
+		return packages;
 	}
 }

@@ -74,7 +74,7 @@ public class UploadPackageMetadata {
 		SubmitterDemographics submitter = new SubmitterDemographics();
 		InstitutionDemographics demographics = new InstitutionDemographics();
 
-		for(Iterator<FileSubmission> it = fileSubmissionList.iterator(); it.hasNext();) {
+		for (Iterator<FileSubmission> it = fileSubmissionList.iterator(); it.hasNext();) {
 			FileSubmission fileSubmission = it.next();
 			this.files.add(new FileSubmissionJSON(fileSubmission));
 			submitter = fileSubmission.getSubmitter();
