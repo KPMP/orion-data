@@ -10,28 +10,49 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+
+import javax.servlet.http.HttpSession;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.dao.FileMetadataEntries;
+import org.kpmp.dao.FileSubmission;
+import org.kpmp.dao.InstitutionDemographics;
+import org.kpmp.dao.PackageType;
 import org.kpmp.dao.PackageTypeOther;
+import org.kpmp.dao.SubmitterDemographics;
+import org.kpmp.dao.UploadPackage;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 public class UploadControllerTest {
+
+	private UploadController controller;
 
 	@Mock
 	private UploadService uploadService;
 	@Mock
 	private FileHandler fileHandler;
-	private UploadController controller;
+	@Mock
+	private FilePathHelper filePathHelper;
+	@Mock
+	private MetadataHandler metadataHandler;
+	private HttpSession session;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		controller = new UploadController(uploadService, fileHandler);
+		controller = new UploadController(uploadService, fileHandler, filePathHelper, metadataHandler);
+		session = mock(HttpSession.class);
+		ReflectionTestUtils.setField(filePathHelper, "metadataFileName", "metadata.json");
+		ReflectionTestUtils.setField(filePathHelper, "basePath", File.separator + "data");
 	}
 
 	@After
@@ -46,9 +67,11 @@ public class UploadControllerTest {
 		when(uploadService.saveUploadPackage(packageInformation, null)).thenReturn(5);
 		when(uploadService.saveSubmitterInfo(packageInformation)).thenReturn(55);
 		when(uploadService.findInstitutionId(packageInformation)).thenReturn(66);
+		when(uploadService.createUploadPackage(packageInformation, null)).thenReturn(new UploadPackage());
 
-		UploadPackageIds packageIds = controller.uploadPackageInfo(packageInformation);
+		UploadPackageIds packageIds = controller.uploadPackageInfo(packageInformation, session);
 
+		verify(uploadService).createUploadPackage(packageInformation, null);
 		verify(uploadService).saveUploadPackage(packageInformation, null);
 		verify(uploadService).saveSubmitterInfo(packageInformation);
 		verify(uploadService).findInstitutionId(packageInformation);
@@ -63,12 +86,14 @@ public class UploadControllerTest {
 		PackageInformation packageInformation = mock(PackageInformation.class);
 		when(packageInformation.getPackageType()).thenReturn("Other");
 		when(packageInformation.getPackageTypeOther()).thenReturn("");
+		when(uploadService.createUploadPackage(packageInformation, null)).thenReturn(new UploadPackage());
 
 		try {
-			controller.uploadPackageInfo(packageInformation);
+			controller.uploadPackageInfo(packageInformation, session);
 			fail("Should have thrown an IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			assertEquals("Package type 'Other' selected, but not defined further.", e.getMessage());
+			verify(uploadService, times(0)).createUploadPackage(packageInformation, null);
 			verify(uploadService, times(0)).saveUploadPackage(packageInformation, null);
 			verify(uploadService, times(0)).saveSubmitterInfo(packageInformation);
 			verify(uploadService, times(0)).findInstitutionId(packageInformation);
@@ -84,10 +109,11 @@ public class UploadControllerTest {
 		when(packageInformation.getPackageTypeOther()).thenReturn(null);
 
 		try {
-			controller.uploadPackageInfo(packageInformation);
+			controller.uploadPackageInfo(packageInformation, session);
 			fail("Should have thrown an IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			assertEquals("Package type 'Other' selected, but not defined further.", e.getMessage());
+			verify(uploadService, times(0)).createUploadPackage(packageInformation, null);
 			verify(uploadService, times(0)).saveUploadPackage(packageInformation, null);
 			verify(uploadService, times(0)).saveSubmitterInfo(packageInformation);
 			verify(uploadService, times(0)).findInstitutionId(packageInformation);
@@ -106,9 +132,11 @@ public class UploadControllerTest {
 		when(uploadService.saveUploadPackage(packageInformation, packageTypeOther)).thenReturn(5);
 		when(uploadService.saveSubmitterInfo(packageInformation)).thenReturn(55);
 		when(uploadService.findInstitutionId(packageInformation)).thenReturn(66);
+		when(uploadService.createUploadPackage(packageInformation, packageTypeOther)).thenReturn(new UploadPackage());
 
-		UploadPackageIds packageIds = controller.uploadPackageInfo(packageInformation);
+		UploadPackageIds packageIds = controller.uploadPackageInfo(packageInformation, session);
 
+		verify(uploadService).createUploadPackage(packageInformation, packageTypeOther);
 		verify(uploadService).saveUploadPackage(packageInformation, packageTypeOther);
 		verify(uploadService).saveSubmitterInfo(packageInformation);
 		verify(uploadService).findInstitutionId(packageInformation);
@@ -124,7 +152,19 @@ public class UploadControllerTest {
 		File savedFile = mock(File.class);
 		when(fileHandler.saveMultipartFile(file, 1, "filename", false)).thenReturn(savedFile);
 
-		controller.handleFileUpload(file, "fileMetadata", 1, 2, 3, "filename", 1, 0);
+		UploadPackage uploadPackage = mock(UploadPackage.class);
+		when(uploadPackage.getCreatedAt()).thenReturn(new Date());
+		when(uploadPackage.getPackageType()).thenReturn(new PackageType());
+		when(uploadPackage.getUniversalId()).thenReturn("123_UUID");
+		InstitutionDemographics institutionDemographics = new InstitutionDemographics();
+		SubmitterDemographics submitterDemographics = new SubmitterDemographics();
+		when(session.getAttribute("institution")).thenReturn(institutionDemographics);
+		when(session.getAttribute("submitter")).thenReturn(submitterDemographics);
+		when(session.getAttribute("uploadPackage")).thenReturn(uploadPackage);
+
+		controller.setSession(session);
+
+		controller.handleFileUpload(file, "fileMetadata", 1, 2, 3, 0, 1, "filename", 1, 0);
 
 		ArgumentCaptor<UploadPackageIds> idCaptor = ArgumentCaptor.forClass(UploadPackageIds.class);
 		ArgumentCaptor<File> fileCaptor = ArgumentCaptor.forClass(File.class);
@@ -144,7 +184,32 @@ public class UploadControllerTest {
 		File savedFile = mock(File.class);
 		when(fileHandler.saveMultipartFile(file, 1, "filename", true)).thenReturn(savedFile);
 
-		controller.handleFileUpload(file, "fileMetadata", 1, 2, 3, "filename", 2, 1);
+		FileMetadataEntries fileMetadataEntries = new FileMetadataEntries();
+		UploadPackage uploadPackage1 = mock(UploadPackage.class);
+		UploadPackage uploadPackage2 = mock(UploadPackage.class);
+		FileSubmission fileSubmission = mock(FileSubmission.class);
+		when(uploadPackage1.getCreatedAt()).thenReturn(new Date());
+		when(uploadPackage1.getPackageType()).thenReturn(new PackageType());
+		when(uploadPackage1.getUniversalId()).thenReturn("123_UUID");
+		when(uploadPackage2.getCreatedAt()).thenReturn(new Date());
+		when(uploadPackage2.getPackageType()).thenReturn(new PackageType());
+		when(uploadPackage2.getUniversalId()).thenReturn("123_UUID");
+		when(fileSubmission.getFileMetadata()).thenReturn(fileMetadataEntries);
+		when(fileSubmission.getFilePath()).thenReturn("/");
+		when(fileSubmission.getFileSize()).thenReturn(123L);
+		when(uploadPackage2.getFileSubmissions()).thenReturn(new ArrayList(Arrays.asList(fileSubmission)));
+		InstitutionDemographics institutionDemographics = new InstitutionDemographics();
+		SubmitterDemographics submitterDemographics = new SubmitterDemographics();
+		when(session.getAttribute("institution")).thenReturn(institutionDemographics);
+		when(session.getAttribute("submitter")).thenReturn(submitterDemographics);
+		when(session.getAttribute("uploadPackage")).thenReturn(uploadPackage1);
+		when(uploadService.createFileSubmission(savedFile, fileMetadataEntries, institutionDemographics, submitterDemographics, uploadPackage2)).thenReturn(fileSubmission);
+
+		controller.setSession(session);
+
+		when(fileHandler.saveMultipartFile(file, 1, "filename", true)).thenReturn(savedFile);
+
+		controller.handleFileUpload(file, "fileMetadata", 1, 2, 3, 0, 1, "filename", 2, 1);
 
 		ArgumentCaptor<UploadPackageIds> idCaptor = ArgumentCaptor.forClass(UploadPackageIds.class);
 		ArgumentCaptor<File> fileCaptor = ArgumentCaptor.forClass(File.class);
