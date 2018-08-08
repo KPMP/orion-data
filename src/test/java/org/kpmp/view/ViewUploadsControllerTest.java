@@ -16,6 +16,8 @@ import org.kpmp.dao.InstitutionDemographics;
 import org.kpmp.dao.PackageType;
 import org.kpmp.dao.SubmitterDemographics;
 import org.kpmp.dao.UploadPackage;
+import org.kpmp.upload.FilePathHelper;
+import org.kpmp.upload.UploadPackageRepository;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -24,11 +26,15 @@ public class ViewUploadsControllerTest {
 	@Mock
 	private FileSubmissionsRepository fileSubmissionsRepository;
 	private ViewUploadsController controller;
+	@Mock
+	private UploadPackageRepository uploadPackageRepository;
+	@Mock
+	private FilePathHelper filePathHelper;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		controller = new ViewUploadsController(fileSubmissionsRepository);
+		controller = new ViewUploadsController(fileSubmissionsRepository, uploadPackageRepository, filePathHelper);
 	}
 
 	@After

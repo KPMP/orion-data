@@ -14,6 +14,7 @@ public class PackageView {
 	private String packageType;
 	private String subjectId;
 	private Date createdAt;
+	private int databaseId;
 
 	public PackageView(FileSubmission fileSubmission) {
 		this.researcher = fileSubmission.getSubmitter().getFirstName() + " "
@@ -23,6 +24,7 @@ public class PackageView {
 		this.packageType = fileSubmission.getUploadPackage().getPackageType().getPackageType();
 		this.subjectId = fileSubmission.getUploadPackage().getSubjectId();
 		this.createdAt = fileSubmission.getUploadPackage().getCreatedAt();
+		this.databaseId = fileSubmission.getUploadPackage().getId();
 	}
 
 	public PackageView() {
@@ -74,5 +76,13 @@ public class PackageView {
 
 	public void setPackageId(String packageId) {
 		this.packageId = packageId;
+	}
+
+	public int getDatabaseId() {
+		return databaseId;
+	}
+
+	public void setDatabaseId(int databaseId) {
+		this.databaseId = databaseId;
 	}
 }
