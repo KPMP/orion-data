@@ -44,7 +44,11 @@ public class ViewUploadsControllerTest {
 
 	@Test
 	public void testGetPackages_oneFileOnePackage() {
+		UploadPackage uploadPackage = mock(UploadPackage.class);
+		when(uploadPackage.getUniversalId()).thenReturn("uuid");
+		when(uploadPackageRepository.findById(1)).thenReturn(uploadPackage);
 		FileSubmission fileSubmission = generateBlankFileSubmission();
+		when(fileSubmission.getUploadPackage().getId()).thenReturn(1);
 		List<FileSubmission> files = Arrays.asList(fileSubmission);
 		when(fileSubmissionsRepository.findAllByOrderByCreatedAtDesc()).thenReturn(files);
 
@@ -55,6 +59,9 @@ public class ViewUploadsControllerTest {
 
 	@Test
 	public void testGetPackages_twoFilesOnePackage() {
+		UploadPackage uploadPackage = mock(UploadPackage.class);
+		when(uploadPackage.getUniversalId()).thenReturn("uuid", "uuid");
+		when(uploadPackageRepository.findById(1)).thenReturn(uploadPackage, uploadPackage);
 		FileSubmission fileSubmission1 = generateBlankFileSubmission();
 		when(fileSubmission1.getUploadPackage().getId()).thenReturn(1);
 		FileSubmission fileSubmission2 = generateBlankFileSubmission();
@@ -69,6 +76,10 @@ public class ViewUploadsControllerTest {
 
 	@Test
 	public void testGetPackages_threeFilesTwoPackages() {
+		UploadPackage uploadPackage = mock(UploadPackage.class);
+		when(uploadPackage.getUniversalId()).thenReturn("uuid", "uuid");
+		when(uploadPackageRepository.findById(1)).thenReturn(uploadPackage, uploadPackage);
+		when(uploadPackageRepository.findById(2)).thenReturn(uploadPackage);
 		FileSubmission fileSubmission1 = generateBlankFileSubmission();
 		when(fileSubmission1.getUploadPackage().getId()).thenReturn(1);
 		FileSubmission fileSubmission2 = generateBlankFileSubmission();
