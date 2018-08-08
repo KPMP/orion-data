@@ -45,11 +45,14 @@ public class UploadControllerTest {
 	@Mock
 	private MetadataHandler metadataHandler;
 	private HttpSession session;
+	@Mock
+	private UploadPackageRepository packageRepository;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		controller = new UploadController(uploadService, fileHandler, filePathHelper, metadataHandler);
+		controller = new UploadController(uploadService, fileHandler, filePathHelper, metadataHandler,
+				packageRepository);
 		session = mock(HttpSession.class);
 		ReflectionTestUtils.setField(filePathHelper, "metadataFileName", "metadata.json");
 		ReflectionTestUtils.setField(filePathHelper, "basePath", File.separator + "data");
@@ -203,7 +206,8 @@ public class UploadControllerTest {
 		when(session.getAttribute("institution")).thenReturn(institutionDemographics);
 		when(session.getAttribute("submitter")).thenReturn(submitterDemographics);
 		when(session.getAttribute("uploadPackage")).thenReturn(uploadPackage1);
-		when(uploadService.createFileSubmission(savedFile, fileMetadataEntries, institutionDemographics, submitterDemographics, uploadPackage2)).thenReturn(fileSubmission);
+		when(uploadService.createFileSubmission(savedFile, fileMetadataEntries, institutionDemographics,
+				submitterDemographics, uploadPackage2)).thenReturn(fileSubmission);
 
 		controller.setSession(session);
 
