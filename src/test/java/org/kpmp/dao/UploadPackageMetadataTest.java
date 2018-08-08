@@ -32,11 +32,14 @@ public class UploadPackageMetadataTest {
 		now = new Date();
 
 		uploadPackage = mock(UploadPackage.class);
+		Protocol protocol = mock(Protocol.class);
+		when(protocol.getProtocol()).thenReturn("The Protocol");
 		when(uploadPackage.getCreatedAt()).thenReturn(now);
 		when(uploadPackage.getExperimentDate()).thenReturn(now);
 		when(uploadPackage.getId()).thenReturn(1);
 		when(uploadPackage.getSubjectId()).thenReturn("42");
 		when(uploadPackage.getUniversalId()).thenReturn("uuid-package");
+		when(uploadPackage.getProtocol()).thenReturn(protocol);
 
 		PackageType packageType = mock(PackageType.class);
 		when(packageType.getPackageType()).thenReturn("Big Data");
@@ -82,6 +85,7 @@ public class UploadPackageMetadataTest {
 		assertEquals("42", uploadPackageMetadata.getSubjectId());
 		assertEquals("Mattie", uploadPackageMetadata.getSubmitterFirstName());
 		assertEquals("Dayta", uploadPackageMetadata.getSubmitterLastName());
+		assertEquals("The Protocol", uploadPackageMetadata.getProtocol());
 	}
 
 	@Test
@@ -99,7 +103,7 @@ public class UploadPackageMetadataTest {
 		String date = dateFormat.format(now);
 		String expected = "{\"id\":\"uuid-package\",\"subjectId\":\"42\",\"experimentDate\":\""
 				+ date + "\",\"createdAt\":\"" + date
-				+ "\",\"packageType\":\"Big Data\",\"submitterFirstName\":\"Mattie\",\"submitterLastName\":\"Dayta\","
+				+ "\",\"packageType\":\"Big Data\",\"protocol\":\"The Protocol\",\"submitterFirstName\":\"Mattie\",\"submitterLastName\":\"Dayta\","
 				+ "\"institution\":\"Mars University\",\"files\":[{\"path\":\"/package1/filename\",\"size\":12345,\"fileName\":\"filename\",\"description\":\"file description\",\"universalId\":\"uuid-file\"}]}";
 		assertEquals(expected, actual);
 	}
@@ -114,6 +118,7 @@ public class UploadPackageMetadataTest {
 		uploadPackageMetadata.setSubjectId("242");
 		uploadPackageMetadata.setSubmitterFirstName("Zap");
 		uploadPackageMetadata.setSubmitterLastName("Branigan");
+		uploadPackageMetadata.setProtocol("The Protocol");
 
 		assertEquals("2014-04-16", uploadPackageMetadata.getCreatedAt());
 		assertEquals("2017-07-08", uploadPackageMetadata.getExperimentDate());
@@ -123,6 +128,7 @@ public class UploadPackageMetadataTest {
 		assertEquals("242", uploadPackageMetadata.getSubjectId());
 		assertEquals("Zap", uploadPackageMetadata.getSubmitterFirstName());
 		assertEquals("Branigan", uploadPackageMetadata.getSubmitterLastName());
+		assertEquals("The Protocol", uploadPackageMetadata.getProtocol());
 
 	}
 
