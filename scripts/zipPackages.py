@@ -21,7 +21,8 @@ if __name__ == '__main__':
                     data = json.load(metadataFile)
                     packageId = data["id"]
                     archiveName = root + '/' + packageId + '.zip'
-                    zipFile = zipfile.ZipFile(archiveName, 'w')
+                    zipFile = zipfile.ZipFile(archiveName, 'w', allowZip64 = True)
+		    print("zipping directory: " + root)
                     zipdir(root, zipFile )
                     zipFile.close()
          
