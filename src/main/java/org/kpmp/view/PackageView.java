@@ -15,6 +15,7 @@ public class PackageView {
 	private String subjectId;
 	private Date createdAt;
 	private int databaseId;
+	private boolean isDownloadable;
 
 	public PackageView(FileSubmission fileSubmission) {
 		this.researcher = fileSubmission.getSubmitter().getFirstName() + " "
@@ -84,5 +85,13 @@ public class PackageView {
 
 	public void setDatabaseId(int databaseId) {
 		this.databaseId = databaseId;
+	}
+
+	public boolean isDownloadable() {
+		return isDownloadable;
+	}
+
+	public void setDownloadable(boolean isDownloadable) {
+		this.isDownloadable = isDownloadable;
 	}
 }

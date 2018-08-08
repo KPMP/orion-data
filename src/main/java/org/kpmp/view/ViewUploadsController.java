@@ -1,5 +1,6 @@
 package org.kpmp.view;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,7 +49,13 @@ public class ViewUploadsController {
 			if (packageIds.contains(packageId)) {
 				continue;
 			}
+			UploadPackage uploadPackage = uploadPackageRepository.findById(packageId);
+			String archiveName = getArchiveName(packageId, uploadPackage.getUniversalId());
+			File archiveFile = new File(archiveName);
 			PackageView packageView = new PackageView(fileSubmission);
+			if (archiveFile.exists()) {
+				packageView.setDownloadable(true);
+			}
 			packages.add(packageView);
 			packageIds.add(packageId);
 		}
@@ -60,15 +67,16 @@ public class ViewUploadsController {
 			throws MalformedURLException {
 		UploadPackage uploadPackage = uploadPackageRepository.findById(packageId);
 		String uuid = uploadPackage.getUniversalId();
-		System.err.println(uuid);
-		System.err.println(uploadPackage.getFileSubmissions().get(0).getSubmitter().getFirstName());
 		String packagePath = filePathHelper.getPackagePath("", Integer.toString(packageId));
-		System.err.println(packagePath);
 		Path filePath = Paths.get(packagePath, uuid + ".zip");
-		System.err.println(filePath.getFileName());
 		Resource resource = new UrlResource(filePath.toUri());
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
 				.body(resource);
+	}
+
+	private String getArchiveName(int packageId, String uuid) {
+		String packagePath = filePathHelper.getPackagePath("", Integer.toString(packageId));
+		return packagePath + uuid + ".zip";
 	}
 }
