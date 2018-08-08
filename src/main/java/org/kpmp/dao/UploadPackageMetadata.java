@@ -15,6 +15,7 @@ public class UploadPackageMetadata {
 	private String experimentDate;
 	private String createdAt;
 	private String packageType;
+	private String protocol;
 	private String submitterFirstName;
 	private String submitterLastName;
 	private String institution;
@@ -81,6 +82,7 @@ public class UploadPackageMetadata {
 			demographics = fileSubmission.getInstitution();
 		}
 
+		this.protocol = uploadPackage.getProtocol().getProtocol();
 		this.submitterFirstName = submitter.getFirstName();
 		this.submitterLastName = submitter.getLastName();
 		this.institution = demographics.getInstitutionName();
@@ -163,4 +165,11 @@ public class UploadPackageMetadata {
 		this.files = files;
 	}
 
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
 }
