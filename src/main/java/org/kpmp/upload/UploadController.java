@@ -1,13 +1,18 @@
 package org.kpmp.upload;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.io.IOUtils;
 import org.kpmp.dao.FileMetadataEntries;
 import org.kpmp.dao.FileSubmission;
 import org.kpmp.dao.InstitutionDemographics;
@@ -18,6 +23,7 @@ import org.kpmp.dao.UploadPackageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,19 +44,24 @@ public class UploadController {
 
 	private static final MessageFormat packageInfoRequest = new MessageFormat("Request|{0}|{1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat("Request|{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}");
+	private static final MessageFormat finishRequest = new MessageFormat("Request|{0}|{1}");
 
 	private static final MessageFormat saveMetadata = new MessageFormat("metadata for package {0} created");
+	private UploadPackageRepository uploadPackageRepository;
 
 	@Autowired
-	public UploadController(UploadService uploadService, FileHandler fileHandler, FilePathHelper filePathHelper, MetadataHandler metadataHandler) {
+	public UploadController(UploadService uploadService, FileHandler fileHandler, FilePathHelper filePathHelper,
+			MetadataHandler metadataHandler, UploadPackageRepository uploadPackageRepository) {
 		this.uploadService = uploadService;
 		this.fileHandler = fileHandler;
 		this.filePathHelper = filePathHelper;
 		this.metadataHandler = metadataHandler;
+		this.uploadPackageRepository = uploadPackageRepository;
 	}
 
 	@RequestMapping(value = "/upload/packageInfo", consumes = { "application/json" }, method = RequestMethod.POST)
-	public UploadPackageIds uploadPackageInfo(@RequestBody PackageInformation packageInformation, HttpSession httpSession) {
+	public UploadPackageIds uploadPackageInfo(@RequestBody PackageInformation packageInformation,
+			HttpSession httpSession) {
 
 		session = httpSession;
 
@@ -88,6 +99,16 @@ public class UploadController {
 		return ids;
 	}
 
+	@RequestMapping(value = "/upload/finish/{packageId}", method = RequestMethod.POST)
+	public String finishUpload(@PathVariable int packageId) throws IOException {
+		log.info(finishRequest.format(new Object[] { "finishUpload", packageId }));
+		UploadPackage uploadPackage = uploadPackageRepository.findById(packageId);
+
+		generateMetadataFile(packageId, uploadPackage);
+		createZip(uploadPackage.getFileSubmissions(), packageId, uploadPackage.getUniversalId());
+		return "{\"success\": " + true + "}";
+	}
+
 	@RequestMapping(value = "/upload", consumes = { "multipart/form-data" }, method = RequestMethod.POST)
 	public String handleFileUpload(@RequestParam("qqfile") MultipartFile file,
 			@RequestParam("fileMetadata") String fileMetadataString, @RequestParam("packageId") int packageId,
@@ -115,23 +136,17 @@ public class UploadController {
 			if (chunk == chunks - 1) {
 				UploadPackageIds packageIds = new UploadPackageIds(packageId, submitterId, institutionId);
 				uploadService.addFileToPackage(savedFile, fileMetadataString, packageIds);
-				FileMetadataEntries fileMetadata = new FileMetadataEntries();
-				fileMetadata.setCreatedAt(createdDate);
-				fileMetadata.setMetadata(fileMetadataString);
+				FileMetadataEntries fileMetadata = createFileMetadata(fileMetadataString, createdDate);
 
-				CopyOnWriteArrayList<FileSubmission> fileSubmissions = new CopyOnWriteArrayList<>(uploadPackage.getFileSubmissions());
+				CopyOnWriteArrayList<FileSubmission> fileSubmissions = new CopyOnWriteArrayList<>(
+						uploadPackage.getFileSubmissions());
 
-				FileSubmission fileSubmission = uploadService.createFileSubmission(savedFile, fileMetadata, institution, submitter, uploadPackage);
+				FileSubmission fileSubmission = uploadService.createFileSubmission(savedFile, fileMetadata, institution,
+						submitter, uploadPackage);
 				fileSubmissions.add(fileSubmission);
 				uploadPackage.setFileSubmissions(fileSubmissions);
 				session.setAttribute("uploadPackage", uploadPackage);
 
-				if (fileId + 1 == totalFiles) {
-					String filePath = filePathHelper.getPackagePath("", Integer.toString(packageId)) + filePathHelper.getMetadataFileName();
-					UploadPackageMetadata uploadPackageMetadata = new UploadPackageMetadata(uploadPackage);
-					metadataHandler.saveUploadPackageMetadata(uploadPackageMetadata, filePath);
-					log.info(saveMetadata.format(new Object[]{uploadPackage.getId()}));
-				}
 			}
 		} catch (IOException e) {
 			log.error("Unable to save multipart file with information: name: " + filename + " packageId: " + packageId,
@@ -140,6 +155,46 @@ public class UploadController {
 		}
 
 		return "{\"success\": " + true + "}";
+	}
+
+	private void createZip(List<FileSubmission> files, int packageId, String universalId) throws IOException {
+		File zipFileHandle = new File(
+				filePathHelper.getPackagePath("", Integer.toString(packageId)) + universalId + ".zip");
+		ZipArchiveOutputStream zipFile = new ZipArchiveOutputStream(zipFileHandle);
+		zipFile.setMethod(ZipArchiveOutputStream.DEFLATED);
+		zipFile.setEncoding("UTF-8");
+
+		for (FileSubmission fileSubmission : files) {
+			File file = new File(fileSubmission.getFilePath());
+			ZipArchiveEntry entry = new ZipArchiveEntry(file.getName());
+			entry.setSize(fileSubmission.getFileSize());
+			zipFile.putArchiveEntry(entry);
+			zipFile.write(IOUtils.toByteArray(new FileInputStream(file)));
+			zipFile.closeArchiveEntry();
+		}
+		File metadataFile = new File(
+				filePathHelper.getPackagePath("", Integer.toString(packageId)) + filePathHelper.getMetadataFileName());
+		ZipArchiveEntry entry = new ZipArchiveEntry(metadataFile.getName());
+		entry.setSize(metadataFile.length());
+		zipFile.putArchiveEntry(entry);
+		zipFile.write(IOUtils.toByteArray(new FileInputStream(metadataFile)));
+		zipFile.closeArchiveEntry();
+		zipFile.close();
+	}
+
+	private void generateMetadataFile(int packageId, UploadPackage uploadPackage) throws IOException {
+		String filePath = filePathHelper.getPackagePath("", Integer.toString(packageId))
+				+ filePathHelper.getMetadataFileName();
+		UploadPackageMetadata uploadPackageMetadata = new UploadPackageMetadata(uploadPackage);
+		metadataHandler.saveUploadPackageMetadata(uploadPackageMetadata, filePath);
+		log.info(saveMetadata.format(new Object[] { uploadPackage.getId() }));
+	}
+
+	private FileMetadataEntries createFileMetadata(String fileMetadataString, Date createdDate) {
+		FileMetadataEntries fileMetadata = new FileMetadataEntries();
+		fileMetadata.setCreatedAt(createdDate);
+		fileMetadata.setMetadata(fileMetadataString);
+		return fileMetadata;
 	}
 
 	public HttpSession getSession() {
