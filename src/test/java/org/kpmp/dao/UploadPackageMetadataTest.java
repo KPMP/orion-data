@@ -77,7 +77,7 @@ public class UploadPackageMetadataTest {
 
 	@Test
 	public void testConstructor() throws Exception {
-		assertEquals(dateFormat.format(now), uploadPackageMetadata.getCreatedAt());
+		assertEquals(dateFormat.format(now) + " UTC", uploadPackageMetadata.getCreatedAt());
 		assertEquals(dateFormat.format(now), uploadPackageMetadata.getExperimentDate());
 		assertEquals("Mars University", uploadPackageMetadata.getInstitution());
 		assertEquals("uuid-package", uploadPackageMetadata.getId());
@@ -103,7 +103,7 @@ public class UploadPackageMetadataTest {
 		String date = dateFormat.format(now);
 		String expected = "{\"id\":\"uuid-package\",\"subjectId\":\"42\",\"experimentDate\":\""
 				+ date + "\",\"createdAt\":\"" + date
-				+ "\",\"packageType\":\"Big Data\",\"protocol\":\"The Protocol\",\"submitterFirstName\":\"Mattie\",\"submitterLastName\":\"Dayta\","
+				+ " UTC\",\"packageType\":\"Big Data\",\"protocol\":\"The Protocol\",\"submitterFirstName\":\"Mattie\",\"submitterLastName\":\"Dayta\","
 				+ "\"institution\":\"Mars University\",\"files\":[{\"path\":\"/package1/filename\",\"size\":12345,\"fileName\":\"filename\",\"description\":\"file description\",\"universalId\":\"uuid-file\"}]}";
 		assertEquals(expected, actual);
 	}

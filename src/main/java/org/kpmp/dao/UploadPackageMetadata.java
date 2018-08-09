@@ -64,7 +64,7 @@ public class UploadPackageMetadata {
 		if (uploadPackage.getExperimentDate() != null) {
 			this.experimentDate = dt.format(uploadPackage.getExperimentDate());
 		}
-		this.createdAt = dt.format(uploadPackage.getCreatedAt());
+		this.createdAt = dt.format(uploadPackage.getCreatedAt()) + " UTC";
 		if (uploadPackage.getPackageTypeOther() != null) {
 			this.packageType = uploadPackage.getPackageTypeOther().getPackageType();
 		} else {
