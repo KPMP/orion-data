@@ -3,7 +3,7 @@
 import json
 import os
 
-rootdir = "/cygdrive/c/data"
+rootdir = "/data"
 
 if __name__ == '__main__':
     for root, dirs, files in os.walk(rootdir):
