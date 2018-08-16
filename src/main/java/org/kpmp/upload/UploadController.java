@@ -1,5 +1,6 @@
 package org.kpmp.upload;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -103,9 +104,17 @@ public class UploadController {
 	public String finishUpload(@PathVariable int packageId) throws IOException {
 		log.info(finishRequest.format(new Object[] { "finishUpload", packageId }));
 		UploadPackage uploadPackage = uploadPackageRepository.findById(packageId);
-
 		generateMetadataFile(packageId, uploadPackage);
-		createZip(uploadPackage.getFileSubmissions(), packageId, uploadPackage.getUniversalId());
+		new Thread() {
+			public void run() {
+				try {
+					createZip(uploadPackage.getFileSubmissions(), packageId, uploadPackage.getUniversalId());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				log.info(finishRequest.format(new Object[] { "finishZip", packageId }));
+			}
+		}.start();
 		return "{\"success\": " + true + "}";
 	}
 
@@ -121,7 +130,7 @@ public class UploadController {
 		log.info(fileUploadRequest.format(new Object[] { "handleFileUpload", filename, fileMetadataString, packageId,
 				submitterId, institutionId, chunks, chunk }));
 		boolean shouldAppend = false;
-		if (chunk != 0) {
+		if (chunks > 0) {
 			shouldAppend = true;
 		}
 
@@ -169,7 +178,17 @@ public class UploadController {
 			ZipArchiveEntry entry = new ZipArchiveEntry(file.getName());
 			entry.setSize(fileSubmission.getFileSize());
 			zipFile.putArchiveEntry(entry);
-			zipFile.write(IOUtils.toByteArray(new FileInputStream(file)));
+			FileInputStream fileInputStream = new FileInputStream(file);
+			BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+			byte [] buffer = new byte[32768];
+			int data = bufferedInputStream.read(buffer);
+			while (data != -1) {
+				zipFile.write(buffer);
+				data = bufferedInputStream.read(buffer);
+			}
+			fileInputStream.close();
+			bufferedInputStream.close();
+			zipFile.flush();
 			zipFile.closeArchiveEntry();
 		}
 		File metadataFile = new File(
