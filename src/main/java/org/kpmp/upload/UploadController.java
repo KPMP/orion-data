@@ -130,7 +130,7 @@ public class UploadController {
 		log.info(fileUploadRequest.format(new Object[] { "handleFileUpload", filename, fileMetadataString, packageId,
 				submitterId, institutionId, chunks, chunk }));
 		boolean shouldAppend = false;
-		if (chunks != 0) {
+		if (chunk != 0) {
 			shouldAppend = true;
 		}
 
