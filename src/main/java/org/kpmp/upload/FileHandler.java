@@ -1,9 +1,11 @@
 package org.kpmp.upload;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,12 +32,15 @@ class FileHandler {
 			filename = filename.replace(".", "_user.");
 		}
 		File fileToSave = new File(basePath + File.separator + "package" + packageId + File.separator + filename);
+		InputStream inputStream = file.getInputStream();
+		FileOutputStream fileOutputStream;
 
 		if (shouldAppend) {
-			FileUtils.writeByteArrayToFile(fileToSave, file.getBytes(), true);
+			fileOutputStream = new FileOutputStream(fileToSave, true);
 		} else {
-			FileUtils.writeByteArrayToFile(fileToSave, file.getBytes());
+			fileOutputStream = new FileOutputStream(fileToSave);
 		}
+		IOUtils.copy(inputStream, fileOutputStream);
 		return fileToSave;
 	}
 
