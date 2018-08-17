@@ -167,9 +167,10 @@ public class UploadController {
 	}
 
 	private void createZip(List<FileSubmission> files, int packageId, String universalId) throws IOException {
-		File zipFileHandle = new File(
-				filePathHelper.getPackagePath("", Integer.toString(packageId)) + universalId + ".zip");
-		ZipArchiveOutputStream zipFile = new ZipArchiveOutputStream(zipFileHandle);
+		String zipFileName = filePathHelper.getPackagePath("", Integer.toString(packageId)) + universalId + ".zip";
+		File zipFileTempHandle = new File(zipFileName + ".tmp");
+		File zipFileHandle = new File(zipFileName);
+		ZipArchiveOutputStream zipFile = new ZipArchiveOutputStream(zipFileTempHandle);
 		zipFile.setMethod(ZipArchiveOutputStream.DEFLATED);
 		zipFile.setEncoding("UTF-8");
 
@@ -199,6 +200,7 @@ public class UploadController {
 		zipFile.write(IOUtils.toByteArray(new FileInputStream(metadataFile)));
 		zipFile.closeArchiveEntry();
 		zipFile.close();
+		zipFileTempHandle.renameTo(zipFileHandle);
 	}
 
 	private void generateMetadataFile(int packageId, UploadPackage uploadPackage) throws IOException {
