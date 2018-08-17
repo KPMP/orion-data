@@ -6,7 +6,9 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +44,8 @@ public class FileHandlerTest {
 
 		when(filePathHelper.getMetadataFileName()).thenReturn("metadata.json");
 		MultipartFile file = mock(MultipartFile.class);
-		when(file.getBytes()).thenReturn(new byte[4]);
+		InputStream testInputStream = IOUtils.toInputStream("here is some test data", "UTF-8");
+		when(file.getInputStream()).thenReturn(testInputStream);
 
 		File savedFile = fileHandler.saveMultipartFile(file, 4, "filename.txt", true);
 		File expectedFile = new File("/data/package4/filename.txt");
@@ -55,7 +58,8 @@ public class FileHandlerTest {
 
 		when(filePathHelper.getMetadataFileName()).thenReturn("metadata.json");
 		MultipartFile file = mock(MultipartFile.class);
-		when(file.getBytes()).thenReturn(new byte[4]);
+		InputStream testInputStream = IOUtils.toInputStream("here is some test data", "UTF-8");
+		when(file.getInputStream()).thenReturn(testInputStream);
 
 		File savedFile = fileHandler.saveMultipartFile(file, 4, "metadata.json", true);
 		File expectedFile = new File("/data/package4/metadata_user.json");
@@ -68,7 +72,8 @@ public class FileHandlerTest {
 
 		when(filePathHelper.getMetadataFileName()).thenReturn("metadata.json");
 		MultipartFile file = mock(MultipartFile.class);
-		when(file.getBytes()).thenReturn(new byte[4]);
+		InputStream testInputStream = IOUtils.toInputStream("here is some test data", "UTF-8");
+		when(file.getInputStream()).thenReturn(testInputStream);
 
 		File savedFile = fileHandler.saveMultipartFile(file, 4, "METADATA.JSON", true);
 		File expectedFile = new File("/data/package4/METADATA_user.JSON");
@@ -84,8 +89,9 @@ public class FileHandlerTest {
 		// integration test at a later point
 
 		MultipartFile file = mock(MultipartFile.class);
-		when(file.getBytes()).thenReturn(new byte[4]);
-
+		InputStream testInputStream = IOUtils.toInputStream("here is some test data", "UTF-8");
+		when(file.getInputStream()).thenReturn(testInputStream);
+		
 		File savedFile = fileHandler.saveMultipartFile(file, 4, "filename.txt", false);
 		File expectedFile = new File("/data/package4/filename.txt");
 
