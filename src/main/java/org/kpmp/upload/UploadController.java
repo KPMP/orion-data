@@ -65,6 +65,7 @@ public class UploadController {
 			HttpSession httpSession) {
 
 		session = httpSession;
+		session.setMaxInactiveInterval(7200);
 
 		log.info(packageInfoRequest.format(new Object[] { "uploadPackageInfo", packageInformation }));
 		UploadPackageIds ids = new UploadPackageIds();
