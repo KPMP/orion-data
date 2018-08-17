@@ -91,7 +91,7 @@ public class FileHandlerTest {
 		MultipartFile file = mock(MultipartFile.class);
 		InputStream testInputStream = IOUtils.toInputStream("here is some test data", "UTF-8");
 		when(file.getInputStream()).thenReturn(testInputStream);
-		
+
 		File savedFile = fileHandler.saveMultipartFile(file, 4, "filename.txt", false);
 		File expectedFile = new File("/data/package4/filename.txt");
 
