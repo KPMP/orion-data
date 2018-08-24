@@ -7,3 +7,4 @@
 build
 /bin/
 .embedmongo
+.oracle_jre_usage
