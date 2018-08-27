@@ -40,8 +40,8 @@ public class AttachmentTest {
 
 	@Test
 	public void testSetFilename() {
-		attachment.setFilename("filename.txt");
-		assertEquals("filename.txt", attachment.getFilename());
+		attachment.setFileName("filename.txt");
+		assertEquals("filename.txt", attachment.getFileName());
 	}
 
 	@Test

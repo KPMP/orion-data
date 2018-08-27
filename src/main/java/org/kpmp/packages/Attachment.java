@@ -13,7 +13,7 @@ public class Attachment {
 	private String id;
 	private String path;
 	private int size;
-	private String filename;
+	private String fileName;
 	private String description;
 
 	public String getId() {
@@ -40,12 +40,12 @@ public class Attachment {
 		this.size = size;
 	}
 
-	public String getFilename() {
-		return filename;
+	public String getFileName() {
+		return fileName;
 	}
 
-	public void setFilename(String filename) {
-		this.filename = filename;
+	public void setFileName(String filename) {
+		this.fileName = filename;
 	}
 
 	public String getDescription() {
