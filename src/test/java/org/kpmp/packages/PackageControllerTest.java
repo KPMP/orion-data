@@ -1,6 +1,7 @@
 package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -37,6 +38,7 @@ public class PackageControllerTest {
 		List<Package> packages = controller.getAllPackages();
 
 		assertEquals(expectedPackages, packages);
+		verify(packageService).findAllPackages();
 	}
 
 }
