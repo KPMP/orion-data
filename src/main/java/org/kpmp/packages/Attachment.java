@@ -12,7 +12,7 @@ public class Attachment {
 	@Field("universalId")
 	private String id;
 	private String path;
-	private int size;
+	private long size;
 	private String fileName;
 	private String description;
 
@@ -32,7 +32,7 @@ public class Attachment {
 		this.path = path;
 	}
 
-	public int getSize() {
+	public long getSize() {
 		return size;
 	}
 
