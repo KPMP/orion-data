@@ -14,7 +14,8 @@ public class Package {
 	private String packageId;
 	private String packageType;
 	private Date createdAt;
-	private String submitter;
+	private String submitterFirstName;
+	private String submitterLastName;
 	private String institution;
 	@Field("files")
 	private List<Attachment> attachments;
@@ -43,14 +44,6 @@ public class Package {
 		this.createdAt = submitted;
 	}
 
-	public String getSubmitter() {
-		return submitter;
-	}
-
-	public void setSubmitter(String submitter) {
-		this.submitter = submitter;
-	}
-
 	public String getInstitution() {
 		return institution;
 	}
@@ -65,6 +58,22 @@ public class Package {
 
 	public void setAttachments(List<Attachment> attachments) {
 		this.attachments = attachments;
+	}
+
+	public String getSubmitterLastName() {
+		return submitterLastName;
+	}
+
+	public void setSubmitterLastName(String submitterLastName) {
+		this.submitterLastName = submitterLastName;
+	}
+
+	public String getSubmitterFirstName() {
+		return submitterFirstName;
+	}
+
+	public void setSubmitterFirstName(String submitterFirstName) {
+		this.submitterFirstName = submitterFirstName;
 	}
 
 }

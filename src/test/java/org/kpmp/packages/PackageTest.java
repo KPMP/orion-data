@@ -44,9 +44,15 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testSetSubmitter() {
-		testPackage.setSubmitter("submitter");
-		assertEquals("submitter", testPackage.getSubmitter());
+	public void testSetSubmitterFirstName() {
+		testPackage.setSubmitterFirstName("submitter");
+		assertEquals("submitter", testPackage.getSubmitterFirstName());
+	}
+
+	@Test
+	public void testSetSubmitterLastName() {
+		testPackage.setSubmitterLastName("submitter");
+		assertEquals("submitter", testPackage.getSubmitterLastName());
 	}
 
 	@Test

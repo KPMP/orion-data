@@ -46,7 +46,8 @@ public class PackageControllerIntegrationTest {
 				.apply(documentationConfiguration(this.restDocumentation)).build();
 		Package uploadedPackage = new Package();
 		uploadedPackage.setPackageType("mRNA");
-		uploadedPackage.setSubmitter("John Doe");
+		uploadedPackage.setSubmitterFirstName("John");
+		uploadedPackage.setSubmitterLastName("Doe");
 		uploadedPackage.setInstitution("University of Colorado");
 		uploadedPackage.setCreatedAt(new Date());
 		packageRepository.save(uploadedPackage);
@@ -66,8 +67,10 @@ public class PackageControllerIntegrationTest {
 						fieldWithPath("[].packageType")
 								.description("The type of data contained in the package, ex: Sub-segment RNAseq"),
 						fieldWithPath("[].createdAt").description("The date this package was uploaded"),
-						fieldWithPath("[].submitter")
-								.description("The first and last name of the person who submitted this package"),
+						fieldWithPath("[].submitterFirstName")
+								.description("The first name of the person who submitted this package"),
+						fieldWithPath("[].submitterLastName")
+								.description("The last name of the person who submitted this package"),
 						fieldWithPath("[].institution")
 								.description("The name of the institution where this data was generated"))));
 	}
