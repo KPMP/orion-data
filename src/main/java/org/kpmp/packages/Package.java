@@ -16,6 +16,7 @@ public class Package {
 	private Date createdAt;
 	private String submitter;
 	private String institution;
+	private String subjectId;
 	@Field("files")
 	private List<Attachment> attachments;
 
@@ -67,4 +68,11 @@ public class Package {
 		this.attachments = attachments;
 	}
 
+	public String getSubjectId() {
+		return subjectId;
+	}
+
+	public void setSubjectId(String subjectId) {
+		this.subjectId = subjectId;
+	}
 }
