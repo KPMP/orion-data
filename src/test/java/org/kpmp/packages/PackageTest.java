@@ -56,7 +56,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testSetInstitution() {
+	public void testSetInstitutionName() {
 		testPackage.setInstitution("institution");
 		assertEquals("institution", testPackage.getInstitution());
 	}
@@ -68,4 +68,28 @@ public class PackageTest {
 		assertEquals(attachments, testPackage.getAttachments());
 	}
 
+	@Test
+	public void testSetProtocol() throws Exception {
+		testPackage.setProtocol("protocol");
+		assertEquals("protocol", testPackage.getProtocol());
+	}
+
+	@Test
+	public void testSetSubjectId() throws Exception {
+		testPackage.setSubjectId("subjectId");
+		assertEquals("subjectId", testPackage.getSubjectId());
+	}
+
+	@Test
+	public void testSetExperimentDate() throws Exception {
+		Date experimentDate = new Date();
+		testPackage.setExperimentDate(experimentDate);
+		assertEquals(experimentDate, testPackage.getExperimentDate());
+	}
+
+	@Test
+	public void testSetDescription() throws Exception {
+		testPackage.setDescription("description");
+		assertEquals("description", testPackage.getDescription());
+	}
 }

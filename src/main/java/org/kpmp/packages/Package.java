@@ -1,5 +1,6 @@
 package org.kpmp.packages;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,8 +18,12 @@ public class Package {
 	private String submitterFirstName;
 	private String submitterLastName;
 	private String institution;
+	private String protocol;
+	private String subjectId;
+	private Date experimentDate;
+	private String description;
 	@Field("files")
-	private List<Attachment> attachments;
+	private List<Attachment> attachments = new ArrayList<>();
 
 	public String getPackageId() {
 		return packageId;
@@ -74,6 +79,38 @@ public class Package {
 
 	public void setSubmitterFirstName(String submitterFirstName) {
 		this.submitterFirstName = submitterFirstName;
+	}
+
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public String getSubjectId() {
+		return subjectId;
+	}
+
+	public void setSubjectId(String subjectId) {
+		this.subjectId = subjectId;
+	}
+
+	public Date getExperimentDate() {
+		return experimentDate;
+	}
+
+	public void setExperimentDate(Date experimentDate) {
+		this.experimentDate = experimentDate;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

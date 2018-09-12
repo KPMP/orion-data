@@ -1,6 +1,7 @@
 package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,6 +40,19 @@ public class PackageControllerTest {
 
 		assertEquals(expectedPackages, packages);
 		verify(packageService).findAllPackages();
+	}
+
+	@Test
+	public void testPostPackageInfo() throws Exception {
+		Package packageInfo = new Package();
+		Package savedPackage = mock(Package.class);
+		when(savedPackage.getPackageId()).thenReturn("universalId");
+		when(packageService.savePackageInformation(packageInfo)).thenReturn(savedPackage);
+
+		String universalId = controller.postPackageInfo(packageInfo);
+
+		assertEquals("universalId", universalId);
+		verify(packageService.savePackageInformation(packageInfo));
 	}
 
 }

@@ -9,4 +9,7 @@ import org.springframework.stereotype.Component;
 public interface PackageRepository extends MongoRepository<Package, String> {
 
 	public List<Package> findAll();
+
+	@SuppressWarnings("unchecked")
+	public Package save(Package packageInfo);
 }
