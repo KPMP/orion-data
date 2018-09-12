@@ -68,7 +68,6 @@ public class PackageTest {
 		assertEquals(attachments, testPackage.getAttachments());
 	}
 
-
 	@Test
 	public void testSetSubjectId() {
 		testPackage.setSubjectId("Subject 23");
