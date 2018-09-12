@@ -68,4 +68,18 @@ public class PackageTest {
 		assertEquals(attachments, testPackage.getAttachments());
 	}
 
+
+	@Test
+	public void testSetSubjectId() {
+		testPackage.setSubjectId("Subject 23");
+		assertEquals("Subject 23", testPackage.getSubjectId());
+	}
+
+	@Test
+	public void testSetExperimentDate() {
+		Date now = new Date();
+		testPackage.setExperimentDate(now);
+		assertEquals(now, testPackage.getExperimentDate());
+	}
+
 }

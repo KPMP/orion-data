@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.lang.Nullable;
 
 @Document(collection = "packages")
 public class Package {
@@ -17,6 +18,8 @@ public class Package {
 	private String submitterFirstName;
 	private String submitterLastName;
 	private String institution;
+	private Date experimentDate;
+
 	@Field("files")
 	private List<Attachment> attachments;
 
@@ -76,4 +79,12 @@ public class Package {
 		this.submitterFirstName = submitterFirstName;
 	}
 
+	@Nullable
+	public Date getExperimentDate() {
+		return experimentDate;
+	}
+
+	public void setExperimentDate(Date experimentDate) {
+		this.experimentDate = experimentDate;
+	}
 }
