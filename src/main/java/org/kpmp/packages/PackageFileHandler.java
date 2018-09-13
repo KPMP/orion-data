@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ public class PackageFileHandler {
 		String packageDirectoryPath = filePathHelper.getPackagePath("", packageId);
 		File packageDirectory = new File(packageDirectoryPath);
 		if (!packageDirectory.exists()) {
-			packageDirectory.mkdirs();
+			Files.createDirectory(Paths.get(packageDirectoryPath));
 		}
 		File fileToSave = new File(packageDirectoryPath + File.separator + filename);
 		InputStream inputStream = file.getInputStream();
