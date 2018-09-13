@@ -52,7 +52,7 @@ public class PackageControllerTest {
 		String universalId = controller.postPackageInfo(packageInfo);
 
 		assertEquals("universalId", universalId);
-		verify(packageService.savePackageInformation(packageInfo));
+		verify(packageService).savePackageInformation(packageInfo);
 	}
 
 }

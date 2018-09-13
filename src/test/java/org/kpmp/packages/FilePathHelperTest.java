@@ -1,4 +1,4 @@
-package org.kpmp.upload.deprecated;
+package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,7 +7,7 @@ import java.io.File;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.upload.deprecated.FilePathHelper;
+import org.kpmp.packages.FilePathHelper;
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class FilePathHelperTest {

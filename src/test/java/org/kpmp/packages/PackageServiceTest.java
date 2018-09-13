@@ -61,4 +61,15 @@ public class PackageServiceTest {
 		assertEquals(expectedPackage, savedPackage);
 	}
 
+	@Test
+	public void testFindPackage() throws Exception {
+		Package expectedPackage = mock(Package.class);
+		when(packageRepository.findByPackageId("packageId")).thenReturn(expectedPackage);
+
+		Package actualPackage = service.findPackage("packageId");
+
+		assertEquals(expectedPackage, actualPackage);
+		verify(packageRepository).findByPackageId("packageId");
+	}
+
 }

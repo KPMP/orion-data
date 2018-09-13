@@ -12,4 +12,6 @@ public interface PackageRepository extends MongoRepository<Package, String> {
 
 	@SuppressWarnings("unchecked")
 	public Package save(Package packageInfo);
+
+	public Package findByPackageId(String packageId);
 }

@@ -1,4 +1,4 @@
-package org.kpmp.upload.deprecated;
+package org.kpmp.packages;
 
 import java.io.File;
 

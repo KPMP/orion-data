@@ -30,4 +30,8 @@ public class PackageService {
 		return savedPackage;
 	}
 
+	public Package findPackage(String packageId) {
+		return packageRepository.findByPackageId(packageId);
+	}
+
 }
