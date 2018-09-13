@@ -1,5 +1,6 @@
 package org.kpmp.packages;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class PackageController {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private static final MessageFormat packageInfoPost = new MessageFormat("Request|{0}|{1}");
-	private static final MessageFormat fileUploadRequest = new MessageFormat("Request|{0}|{1}|{2}|{3}|{4}");
+	private static final MessageFormat fileUploadRequest = new MessageFormat("Request|{0}|{1}|{2}|{3}|{4}|{5}");
 
 	@Autowired
 	public PackageController(PackageService packageService) {
@@ -45,17 +46,14 @@ public class PackageController {
 			"multipart/form-data" })
 	public @ResponseBody FileUploadResponse postFilesToPackage(@PathVariable("packageId") String packageId,
 			@RequestParam("qqfile") MultipartFile file, @RequestParam("qqfilename") String filename,
+			@RequestParam("qqtotalfilesize") long fileSize,
 			@RequestParam(name = "qqtotalparts", defaultValue = "1") int chunks,
-			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk) {
+			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk) throws IOException {
 
-		log.info(fileUploadRequest.format(new Object[] { "postFilesToPackage", filename, packageId, chunks, chunk }));
+		log.info(fileUploadRequest
+				.format(new Object[] { "postFilesToPackage", filename, packageId, fileSize, chunks, chunk }));
 
-		if (isInitialChunk(chunk)) {
-			// these steps should happen in PackageService
-			// // update package information...add new file information
-			// // save the information back to the db
-		}
-
+		packageService.saveFile(file, packageId, filename, fileSize, isInitialChunk(chunk));
 		// determine if I should start new file, or append
 
 		// save the file
