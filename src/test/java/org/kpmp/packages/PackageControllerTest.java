@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.multipart.MultipartFile;
 
 public class PackageControllerTest {
 
@@ -53,6 +54,22 @@ public class PackageControllerTest {
 
 		assertEquals("universalId", universalId);
 		verify(packageService).savePackageInformation(packageInfo);
+	}
+
+	@Test
+	public void testPostFilesToPackage_whenNotInitialChunk() throws Exception {
+		MultipartFile file = mock(MultipartFile.class);
+		controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 2);
+
+		verify(packageService).saveFile(file, "packageId", "filename", 1234, false);
+	}
+
+	@Test
+	public void testPostFilesToPackage_whenInitialChunk() throws Exception {
+		MultipartFile file = mock(MultipartFile.class);
+		controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0);
+
+		verify(packageService).saveFile(file, "packageId", "filename", 1234, true);
 	}
 
 }

@@ -54,9 +54,7 @@ public class PackageController {
 				.format(new Object[] { "postFilesToPackage", filename, packageId, fileSize, chunks, chunk }));
 
 		packageService.saveFile(file, packageId, filename, fileSize, isInitialChunk(chunk));
-		// determine if I should start new file, or append
 
-		// save the file
 		return new FileUploadResponse(true);
 	}
 

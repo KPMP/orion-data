@@ -1,6 +1,7 @@
 package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -91,5 +92,26 @@ public class PackageTest {
 	public void testSetDescription() throws Exception {
 		testPackage.setDescription("description");
 		assertEquals("description", testPackage.getDescription());
+	}
+
+	@Test
+	public void testToString() throws Exception {
+		Date createdAt = new Date();
+		Package packageInfo = new Package();
+		packageInfo.setAttachments(Arrays.asList(mock(Attachment.class)));
+		packageInfo.setCreatedAt(createdAt);
+		packageInfo.setDescription("description");
+		packageInfo.setInstitution("institution");
+		packageInfo.setPackageId("packageId");
+		packageInfo.setPackageType("packageType");
+		packageInfo.setProtocol("protocol");
+		packageInfo.setSubjectId("subjectId");
+		packageInfo.setSubmitterFirstName("submitterFirstName");
+		packageInfo.setSubmitterLastName("submitterLastName");
+
+		assertEquals("packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", "
+				+ "submitterFirstName: submitterFirstName, submitterLastName: submitterLastName, "
+				+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
+				+ "institution: institution, number of attachments: 1", packageInfo.toString());
 	}
 }

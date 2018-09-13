@@ -113,4 +113,13 @@ public class Package {
 		this.description = description;
 	}
 
+	@Override
+	public String toString() {
+		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
+				+ ", submitterFirstName: " + submitterFirstName + ", submitterLastName: " + submitterLastName
+				+ ", protocol: " + protocol + ", subjectId: " + subjectId + ", experimentDate: " + experimentDate
+				+ ", description: " + description + ", institution: " + institution + ", number of attachments: "
+				+ attachments.size();
+	}
+
 }
