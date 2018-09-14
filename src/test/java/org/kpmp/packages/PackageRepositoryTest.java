@@ -3,6 +3,7 @@ package org.kpmp.packages;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,15 @@ public class PackageRepositoryTest {
 		packageRepo.save(new Package());
 		List<Package> packages = packageRepo.findAll();
 		assertEquals(1, packages.size());
+	}
+
+	@Test
+	public void testFindById() {
+		Package uploadPackage = new Package();
+		uploadPackage.setPackageId("1234");
+		packageRepo.save(uploadPackage);
+		Optional<Package> foundPackage = packageRepo.findById("1234");
+		assertEquals(uploadPackage, foundPackage.get());
 	}
 
 }

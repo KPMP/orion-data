@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.kpmp.dao.deprecated.UploadPackage;
 import org.kpmp.dao.deprecated.UploadPackageMetadata;
-import org.kpmp.upload.deprecated.FilePathHelper;
+import org.kpmp.packages.FilePathHelper;
 import org.kpmp.upload.deprecated.MetadataHandler;
 import org.kpmp.upload.deprecated.UploadPackageMySQLRepository;
 import org.slf4j.Logger;
