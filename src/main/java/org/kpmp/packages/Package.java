@@ -8,6 +8,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Document(collection = "packages")
 public class Package {
 
@@ -120,6 +123,11 @@ public class Package {
 				+ ", protocol: " + protocol + ", subjectId: " + subjectId + ", experimentDate: " + experimentDate
 				+ ", description: " + description + ", institution: " + institution + ", number of attachments: "
 				+ attachments.size();
+	}
+
+	public String generateJSON() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(this);
 	}
 
 }

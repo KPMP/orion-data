@@ -47,7 +47,7 @@ public class GenerateMetadataFiles implements CommandLineRunner {
 		List<UploadPackage> packages = uploadPackageRepository.findAll();
 		int packageCount = 0;
 		for (UploadPackage uploadPackage : packages) {
-			String filePath = filePathHelper.getPackagePath("", Integer.toString(uploadPackage.getId()))
+			String filePath = filePathHelper.getPackagePath(Integer.toString(uploadPackage.getId()))
 					+ filePathHelper.getMetadataFileName();
 			UploadPackageMetadata uploadPackageMetadata = new UploadPackageMetadata(uploadPackage);
 			metadataHandler.saveUploadPackageMetadata(uploadPackageMetadata, filePath);

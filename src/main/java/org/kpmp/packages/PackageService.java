@@ -1,10 +1,13 @@
 package org.kpmp.packages;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 
 import org.kpmp.UniversalIdGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,16 +15,21 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class PackageService {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final MessageFormat zipPackage = new MessageFormat("Service|{0}|{1}");
+
 	private PackageRepository packageRepository;
 	private UniversalIdGenerator universalIdGenerator;
 	private PackageFileHandler packageFileHandler;
+	private PackageZipService packageZipper;
 
 	@Autowired
 	public PackageService(PackageRepository packageRepository, UniversalIdGenerator universalIdGenerator,
-			PackageFileHandler packageFileHandler) {
+			PackageFileHandler packageFileHandler, PackageZipService packageZipper) {
 		this.packageRepository = packageRepository;
 		this.universalIdGenerator = universalIdGenerator;
 		this.packageFileHandler = packageFileHandler;
+		this.packageZipper = packageZipper;
 	}
 
 	public List<Package> findAllPackages() {
@@ -45,6 +53,22 @@ public class PackageService {
 			updatePackageInfo(packageId, filename, fileSize);
 		}
 		packageFileHandler.saveMultipartFile(file, packageId, filename, !isInitialChunk);
+	}
+
+	public void createZipFile(String packageId) {
+
+		Package packageInfo = packageRepository.findByPackageId(packageId);
+
+		new Thread() {
+			public void run() {
+				try {
+					packageZipper.createZipFile(packageInfo);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				log.info(zipPackage.format(new Object[] { "createZipFile", packageId }));
+			}
+		}.start();
 	}
 
 	private void updatePackageInfo(String packageId, String filename, long fileSize) {

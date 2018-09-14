@@ -23,6 +23,7 @@ public class PackageController {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private static final MessageFormat packageInfoPost = new MessageFormat("Request|{0}|{1}");
+	private static final MessageFormat finish = new MessageFormat("Request|{0}|{1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat("Request|{0}|{1}|{2}|{3}|{4}|{5}");
 
 	@Autowired
@@ -55,6 +56,13 @@ public class PackageController {
 
 		packageService.saveFile(file, packageId, filename, fileSize, isInitialChunk(chunk));
 
+		return new FileUploadResponse(true);
+	}
+
+	@RequestMapping(value = "/v1/packages/{packageId}/files/finish", method = RequestMethod.POST)
+	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId) {
+		log.info(finish.format(new Object[] { "finishUpload", packageId }));
+		packageService.createZipFile(packageId);
 		return new FileUploadResponse(true);
 	}
 

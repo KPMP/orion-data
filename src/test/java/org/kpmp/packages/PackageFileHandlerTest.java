@@ -35,7 +35,7 @@ public class PackageFileHandlerTest {
 
 	@Test
 	public void testSaveMultipartFile_firstPart() throws IOException {
-		when(filePathHelper.getPackagePath("", "packageId")).thenReturn("/data");
+		when(filePathHelper.getPackagePath("packageId")).thenReturn("/data");
 		MultipartFile file = mock(MultipartFile.class);
 		InputStream testInputStream = IOUtils.toInputStream("Here is the data in the file", "UTF-8");
 		when(file.getInputStream()).thenReturn(testInputStream);
@@ -48,7 +48,7 @@ public class PackageFileHandlerTest {
 
 	@Test
 	public void testSaveMultipartFile_twoParts() throws IOException {
-		when(filePathHelper.getPackagePath("", "packageId")).thenReturn("/data");
+		when(filePathHelper.getPackagePath("packageId")).thenReturn("/data");
 		MultipartFile filePartOne = mock(MultipartFile.class);
 		InputStream testInputStream1 = IOUtils.toInputStream("Here is the data in the file", "UTF-8");
 		when(filePartOne.getInputStream()).thenReturn(testInputStream1);

@@ -114,4 +114,31 @@ public class PackageTest {
 				+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
 				+ "institution: institution, number of attachments: 1", packageInfo.toString());
 	}
+
+	@Test
+	public void testGenerateJSON() throws Exception {
+		Date createdAt = new Date();
+		Package packageInfo = new Package();
+		Attachment attachment = new Attachment();
+		attachment.setFileName("filename");
+		attachment.setId("fileId");
+		attachment.setSize(433);
+		packageInfo.setAttachments(Arrays.asList(attachment));
+		packageInfo.setCreatedAt(createdAt);
+		packageInfo.setDescription("description");
+		packageInfo.setInstitution("institution");
+		packageInfo.setPackageId("packageId");
+		packageInfo.setPackageType("packageType");
+		packageInfo.setProtocol("protocol");
+		packageInfo.setSubjectId("subjectId");
+		packageInfo.setSubmitterFirstName("submitterFirstName");
+		packageInfo.setSubmitterLastName("submitterLastName");
+
+		assertEquals("{\"packageId\":\"packageId\",\"packageType\":\"packageType\",\"createdAt\":" + createdAt.getTime()
+				+ "," + "\"submitterFirstName\":\"submitterFirstName\",\"submitterLastName\":\"submitterLastName\","
+				+ "\"institution\":\"institution\",\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
+				+ "\"experimentDate\":null,\"description\":\"description\",\"attachments\":"
+				+ "[{\"id\":\"fileId\",\"path\":null,\"size\":433,\"fileName\":\"filename\",\"description\":null}]}",
+				packageInfo.generateJSON());
+	}
 }
