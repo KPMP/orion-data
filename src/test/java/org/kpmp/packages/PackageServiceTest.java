@@ -18,7 +18,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.UniversalIdGenerator;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.multipart.MultipartFile;
@@ -83,13 +82,12 @@ public class PackageServiceTest {
 		verify(packageRepository).findByPackageId("packageId");
 	}
 
-	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void testSaveFile_whenInitialChunk() throws Exception {
 		MultipartFile file = mock(MultipartFile.class);
 		Package packageToUpdate = mock(Package.class);
 		when(packageRepository.findByPackageId("packageId")).thenReturn(packageToUpdate);
-		ArrayList<Attachment> files = mock(ArrayList.class);
+		List<Attachment> files = new ArrayList<>();
 		when(packageToUpdate.getAttachments()).thenReturn(files);
 		boolean isInitialChunk = true;
 
@@ -98,11 +96,9 @@ public class PackageServiceTest {
 		verify(packageFileHandler).saveMultipartFile(file, "packageId", "filename", !isInitialChunk);
 		verify(packageRepository).findByPackageId("packageId");
 		verify(packageRepository).save(packageToUpdate);
-		ArgumentCaptor<Attachment> attachmentCaptor = ArgumentCaptor.forClass(Attachment.class);
-		verify(files).add(attachmentCaptor.capture());
-		Attachment attachment = attachmentCaptor.getValue();
-		assertEquals("filename", attachment.getFileName());
-		assertEquals(322, attachment.getSize());
+		assertEquals(1, files.size());
+		assertEquals("filename", files.get(0).getFileName());
+		assertEquals(322, files.get(0).getSize());
 		verify(packageToUpdate).setAttachments(files);
 	}
 
@@ -137,5 +133,26 @@ public class PackageServiceTest {
 		} catch (Exception actual) {
 			assertEquals(expectedException, actual);
 		}
+	}
+
+	@Test
+	public void testSaveFile_whenAnotherFileWithSameNameInPackage() throws Exception {
+		MultipartFile file = mock(MultipartFile.class);
+		Package packageToUpdate = mock(Package.class);
+		Attachment existingAttachment = mock(Attachment.class);
+		when(existingAttachment.getFileName()).thenReturn("filename");
+		List<Attachment> attachments = new ArrayList<>();
+		attachments.add(existingAttachment);
+		when(packageToUpdate.getAttachments()).thenReturn(attachments);
+		when(packageRepository.findByPackageId("packageId")).thenReturn(packageToUpdate);
+		boolean isInitialChunk = true;
+
+		try {
+			service.saveFile(file, "packageId", "filename", 322, isInitialChunk);
+			fail("Should have thrown exception");
+		} catch (Exception expected) {
+			assertEquals("Cannot add multiple files with the same name to a package", expected.getMessage());
+		}
+
 	}
 }

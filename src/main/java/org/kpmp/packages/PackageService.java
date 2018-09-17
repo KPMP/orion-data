@@ -48,7 +48,7 @@ public class PackageService {
 	}
 
 	public void saveFile(MultipartFile file, String packageId, String filename, long fileSize, boolean isInitialChunk)
-			throws IOException {
+			throws Exception {
 		if (isInitialChunk) {
 			updatePackageInfo(packageId, filename, fileSize);
 		}
@@ -71,13 +71,26 @@ public class PackageService {
 		}.start();
 	}
 
-	private void updatePackageInfo(String packageId, String filename, long fileSize) {
+	private void updatePackageInfo(String packageId, String filename, long fileSize) throws Exception {
 		Package packageInformation = packageRepository.findByPackageId(packageId);
+		if (packageContainsFileWithSameName(filename, packageInformation)) {
+			throw new Exception("Cannot add multiple files with the same name to a package");
+		}
 		List<Attachment> attachments = packageInformation.getAttachments();
 		Attachment attachment = createAttachment(filename, fileSize);
 		attachments.add(attachment);
 		packageInformation.setAttachments(attachments);
 		packageRepository.save(packageInformation);
+	}
+
+	private boolean packageContainsFileWithSameName(String filename, Package packageInformation) {
+		List<Attachment> attachments = packageInformation.getAttachments();
+		for (Attachment attachment : attachments) {
+			if (filename == attachment.getFileName()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private Attachment createAttachment(String filename, long fileSize) {
