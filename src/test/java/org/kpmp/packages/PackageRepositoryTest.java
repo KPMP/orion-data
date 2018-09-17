@@ -44,7 +44,7 @@ public class PackageRepositoryTest {
 		uploadPackage.setPackageId("1234");
 		packageRepo.save(uploadPackage);
 		Optional<Package> foundPackage = packageRepo.findById("1234");
-		assertEquals(uploadPackage, foundPackage.get());
+		assertEquals(uploadPackage.getPackageId(), foundPackage.get().getPackageId());
 	}
 
 }
