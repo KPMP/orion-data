@@ -3,6 +3,7 @@ package org.kpmp.packages;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,12 +31,14 @@ public class PackageServiceTest {
 	private UniversalIdGenerator universalIdGenerator;
 	@Mock
 	private PackageFileHandler packageFileHandler;
+	@Mock
+	private PackageZipService packageZipService;
 	private PackageService service;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		service = new PackageService(packageRepository, universalIdGenerator, packageFileHandler);
+		service = new PackageService(packageRepository, universalIdGenerator, packageFileHandler, packageZipService);
 	}
 
 	@After
@@ -125,8 +128,8 @@ public class PackageServiceTest {
 		MultipartFile file = mock(MultipartFile.class);
 		boolean isInitialChunk = false;
 		Exception expectedException = new IOException();
-		when(packageFileHandler.saveMultipartFile(file, "packageId", "filename", !isInitialChunk))
-				.thenThrow(expectedException);
+		doThrow(expectedException).when(packageFileHandler).saveMultipartFile(file, "packageId", "filename",
+				!isInitialChunk);
 
 		try {
 			service.saveFile(file, "packageId", "filename", 322, isInitialChunk);
