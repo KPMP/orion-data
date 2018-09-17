@@ -22,7 +22,7 @@ public class PackageFileHandler {
 		this.filePathHelper = filePathHelper;
 	}
 
-	public File saveMultipartFile(MultipartFile file, String packageId, String filename, boolean shouldAppend)
+	public void saveMultipartFile(MultipartFile file, String packageId, String filename, boolean shouldAppend)
 			throws IOException {
 		String packageDirectoryPath = filePathHelper.getPackagePath(packageId);
 		File packageDirectory = new File(packageDirectoryPath);
@@ -34,7 +34,6 @@ public class PackageFileHandler {
 		FileOutputStream fileOutputStream = new FileOutputStream(fileToSave, shouldAppend);
 
 		IOUtils.copy(inputStream, fileOutputStream);
-		return fileToSave;
 	}
 
 }

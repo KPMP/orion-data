@@ -27,12 +27,6 @@ public class AttachmentTest {
 	}
 
 	@Test
-	public void testSetPath() {
-		attachment.setPath("path/to/file");
-		assertEquals("path/to/file", attachment.getPath());
-	}
-
-	@Test
 	public void testSetSize() {
 		attachment.setSize(344);
 		assertEquals(344, attachment.getSize());
@@ -42,12 +36,6 @@ public class AttachmentTest {
 	public void testSetFilename() {
 		attachment.setFileName("filename.txt");
 		assertEquals("filename.txt", attachment.getFileName());
-	}
-
-	@Test
-	public void testSetDescription() {
-		attachment.setDescription("description");
-		assertEquals("description", attachment.getDescription());
 	}
 
 }

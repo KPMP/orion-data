@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -35,20 +37,24 @@ public class PackageFileHandlerTest {
 
 	@Test
 	public void testSaveMultipartFile_firstPart() throws IOException {
-		when(filePathHelper.getPackagePath("packageId")).thenReturn("/data");
+		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
+		String dataDirectoryPath = dataDirectory.toString();
+		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
 		MultipartFile file = mock(MultipartFile.class);
 		InputStream testInputStream = IOUtils.toInputStream("Here is the data in the file", "UTF-8");
 		when(file.getInputStream()).thenReturn(testInputStream);
 
-		File savedFile = fileHandler.saveMultipartFile(file, "packageId", "filename.txt", false);
+		fileHandler.saveMultipartFile(file, "packageId", "filename.txt", false);
 
-		assertEquals("/data/filename.txt", savedFile.getPath());
+		File savedFile = new File(dataDirectoryPath + File.separator + "filename.txt");
 		assertEquals(true, savedFile.exists());
 	}
 
 	@Test
 	public void testSaveMultipartFile_twoParts() throws IOException {
-		when(filePathHelper.getPackagePath("packageId")).thenReturn("/data");
+		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
+		String dataDirectoryPath = dataDirectory.toString();
+		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
 		MultipartFile filePartOne = mock(MultipartFile.class);
 		InputStream testInputStream1 = IOUtils.toInputStream("Here is the data in the file", "UTF-8");
 		when(filePartOne.getInputStream()).thenReturn(testInputStream1);
@@ -56,12 +62,13 @@ public class PackageFileHandlerTest {
 		InputStream testInputStream2 = IOUtils.toInputStream("Here is the more data", "UTF-8");
 		when(filePartTwo.getInputStream()).thenReturn(testInputStream2);
 
-		File firstPart = fileHandler.saveMultipartFile(filePartOne, "packageId", "filename.txt", false);
+		fileHandler.saveMultipartFile(filePartOne, "packageId", "filename.txt", false);
+		File firstPart = new File(dataDirectoryPath + File.separator + "filename.txt");
 		long firstPartFileSize = firstPart.length();
-		File savedFile = fileHandler.saveMultipartFile(filePartTwo, "packageId", "filename.txt", true);
+		fileHandler.saveMultipartFile(filePartTwo, "packageId", "filename.txt", true);
 
+		File savedFile = new File(dataDirectoryPath + File.separator + "filename.txt");
 		assertEquals(true, firstPartFileSize < savedFile.length());
-		assertEquals("/data/filename.txt", savedFile.getPath());
 		assertEquals(true, savedFile.exists());
 	}
 
