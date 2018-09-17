@@ -37,7 +37,7 @@ public class PackageController {
 		return packageService.findAllPackages();
 	}
 
-	@RequestMapping(value = "/download/{packageId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Resource> downloadPackage(@PathVariable String packageId) {
 		Resource resource = null;
 		try {
