@@ -1,6 +1,5 @@
 package org.kpmp.packages;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -49,7 +48,7 @@ public class PackageController {
 			@RequestParam("qqfile") MultipartFile file, @RequestParam("qqfilename") String filename,
 			@RequestParam("qqtotalfilesize") long fileSize,
 			@RequestParam(name = "qqtotalparts", defaultValue = "1") int chunks,
-			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk) throws IOException {
+			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk) throws Exception {
 
 		log.info(fileUploadRequest
 				.format(new Object[] { "postFilesToPackage", filename, packageId, fileSize, chunks, chunk }));
