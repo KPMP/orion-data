@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +26,7 @@ public class Package {
 	private String subjectId;
 	private Date experimentDate;
 	private String description;
+
 	@Field("files")
 	private List<Attachment> attachments = new ArrayList<>();
 
@@ -100,6 +102,7 @@ public class Package {
 		this.subjectId = subjectId;
 	}
 
+	@Nullable
 	public Date getExperimentDate() {
 		return experimentDate;
 	}
