@@ -37,15 +37,6 @@ public class PackageService {
 
 	}
 
-	@Autowired
-	public PackageService(PackageRepository packageRepository, UniversalIdGenerator universalIdGenerator,
-			PackageFileHandler packageFileHandler, PackageZipService packageZipper) {
-		this.packageRepository = packageRepository;
-		this.universalIdGenerator = universalIdGenerator;
-		this.packageFileHandler = packageFileHandler;
-		this.packageZipper = packageZipper;
-	}
-
 	public List<Package> findAllPackages() {
 		return packageRepository.findAll();
 	}
