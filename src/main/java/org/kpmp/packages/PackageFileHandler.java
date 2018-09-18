@@ -27,7 +27,7 @@ public class PackageFileHandler {
 		String packageDirectoryPath = filePathHelper.getPackagePath(packageId);
 		File packageDirectory = new File(packageDirectoryPath);
 		if (!packageDirectory.exists()) {
-			Files.createDirectory(Paths.get(packageDirectoryPath));
+			Files.createDirectories(Paths.get(packageDirectoryPath));
 		}
 		File fileToSave = new File(packageDirectoryPath + File.separator + filename);
 		InputStream inputStream = file.getInputStream();
