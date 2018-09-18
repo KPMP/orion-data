@@ -140,7 +140,7 @@ public class Package {
 		this.isDownloadable = isDownloadable;
 	}
 
-	public boolean isDownloadble() {
+	public boolean isDownloadable() {
 		return isDownloadable;
 	}
 

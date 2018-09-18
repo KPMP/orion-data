@@ -95,6 +95,12 @@ public class PackageTest {
 	}
 
 	@Test
+	public void testSetIsDownloadable() throws Exception {
+		testPackage.setIsDownloadable(true);
+		assertEquals(true, testPackage.isDownloadable());
+	}
+
+	@Test
 	public void testToString() throws Exception {
 		Date createdAt = new Date();
 		Package packageInfo = new Package();
@@ -141,7 +147,7 @@ public class PackageTest {
 				+ "," + "\"submitterFirstName\":\"submitterFirstName\",\"submitterLastName\":\"submitterLastName\","
 				+ "\"institution\":\"institution\",\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
 				+ "\"experimentDate\":null,\"description\":\"description\",\"attachments\":"
-				+ "[{\"id\":\"fileId\",\"size\":433,\"fileName\":\"filename\"}],\"downloadble\":false}",
+				+ "[{\"id\":\"fileId\",\"size\":433,\"fileName\":\"filename\"}],\"downloadable\":false}",
 				packageInfo.generateJSON());
 	}
 }
