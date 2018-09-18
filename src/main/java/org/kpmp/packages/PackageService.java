@@ -1,6 +1,8 @@
 package org.kpmp.packages;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +24,18 @@ public class PackageService {
 	private UniversalIdGenerator universalIdGenerator;
 	private PackageFileHandler packageFileHandler;
 	private PackageZipService packageZipper;
+	private FilePathHelper filePathHelper;
+
+	@Autowired
+	public PackageService(PackageRepository packageRepository, UniversalIdGenerator universalIdGenerator,
+			PackageFileHandler packageFileHandler, PackageZipService packageZipper, FilePathHelper filePathHelper) {
+		this.packageRepository = packageRepository;
+		this.filePathHelper = filePathHelper;
+		this.universalIdGenerator = universalIdGenerator;
+		this.packageFileHandler = packageFileHandler;
+		this.packageZipper = packageZipper;
+
+	}
 
 	@Autowired
 	public PackageService(PackageRepository packageRepository, UniversalIdGenerator universalIdGenerator,
@@ -34,6 +48,15 @@ public class PackageService {
 
 	public List<Package> findAllPackages() {
 		return packageRepository.findAll();
+	}
+
+	public Path getPackageFile(String packageId) {
+		String packagePath = filePathHelper.getPackagePath(packageId);
+		Path filePath = Paths.get(packagePath, packageId + ".zip");
+		if (!filePath.toFile().exists()) {
+			throw new RuntimeException("The file was not found: " + filePath.getFileName().toString());
+		}
+		return filePath;
 	}
 
 	public Package savePackageInformation(Package packageInfo) {

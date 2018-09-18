@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringBootTest(classes = { TestMongoConfig.class })
 public class PackageRepositoryTest {
 
+	@After
+	public void tearDown() throws Exception {
+		packageRepo.deleteAll();
+	}
+
 	@Autowired
 	private PackageRepository packageRepo;
 
@@ -35,6 +41,15 @@ public class PackageRepositoryTest {
 		packageRepo.save(new Package());
 		List<Package> packages = packageRepo.findAll();
 		assertEquals(1, packages.size());
+	}
+
+	@Test
+	public void testFindByPackageId() {
+		Package uploadPackage = new Package();
+		uploadPackage.setPackageId("1234");
+		packageRepo.save(uploadPackage);
+		Package foundPackage = packageRepo.findByPackageId("1234");
+		assertEquals(uploadPackage.getPackageId(), foundPackage.getPackageId());
 	}
 
 }

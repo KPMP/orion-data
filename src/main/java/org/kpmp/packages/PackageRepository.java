@@ -14,4 +14,6 @@ public interface PackageRepository extends MongoRepository<Package, String> {
 	public Package save(Package packageInfo);
 
 	public Package findByPackageId(String packageId);
+
+	public void deleteAll();
 }

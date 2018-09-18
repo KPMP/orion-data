@@ -1,11 +1,17 @@
 package org.kpmp.packages;
 
+import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,9 +31,12 @@ public class PackageController {
 	private static final MessageFormat finish = new MessageFormat("Request|{0}|{1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat("Request|{0}|{1}|{2}|{3}|{4}|{5}");
 
+	private static final MessageFormat fileDownloadRequest = new MessageFormat("Request|{0}|{1}");
+
 	@Autowired
 	public PackageController(PackageService packageService) {
 		this.packageService = packageService;
+
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
@@ -56,6 +65,20 @@ public class PackageController {
 		packageService.saveFile(file, packageId, filename, fileSize, isInitialChunk(chunk));
 
 		return new FileUploadResponse(true);
+	}
+
+	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Resource> downloadPackage(@PathVariable String packageId) {
+		Resource resource = null;
+		try {
+			resource = new UrlResource(packageService.getPackageFile(packageId).toUri());
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+		log.info(fileDownloadRequest.format(new Object[] { packageId, resource.toString() }));
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+				.body(resource);
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files/finish", method = RequestMethod.POST)

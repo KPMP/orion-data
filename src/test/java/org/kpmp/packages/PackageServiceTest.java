@@ -2,6 +2,7 @@ package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -9,7 +10,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,12 +37,15 @@ public class PackageServiceTest {
 	private PackageFileHandler packageFileHandler;
 	@Mock
 	private PackageZipService packageZipService;
+	@Mock
+	private FilePathHelper filePathHelper;
 	private PackageService service;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		service = new PackageService(packageRepository, universalIdGenerator, packageFileHandler, packageZipService);
+		service = new PackageService(packageRepository, universalIdGenerator, packageFileHandler, packageZipService,
+				filePathHelper);
 	}
 
 	@After
@@ -154,5 +162,37 @@ public class PackageServiceTest {
 			assertEquals("Cannot add multiple files with the same name to a package", expected.getMessage());
 		}
 
+	}
+
+	@Test
+	public void testGetPackageFile_doesntExist() throws Exception {
+		String packageId = "abc-345";
+		Path packagePath = Files.createTempDirectory("data");
+		packagePath.toFile().deleteOnExit();
+		when(filePathHelper.getPackagePath("", packageId)).thenReturn(packagePath.toString());
+
+		try {
+			service.getPackageFile(packageId);
+			fail("expected a RuntimeException");
+		} catch (RuntimeException expectedException) {
+			assertEquals("The file was not found: " + packageId + ".zip", expectedException.getMessage());
+		}
+	}
+
+	@Test
+	public void testGetPackageFile_exists() throws Exception {
+		String packageId = "abc-345";
+		Path packagePath = Files.createTempDirectory("data");
+		packagePath.toFile().deleteOnExit();
+		String expectedFilePathString = Paths.get(packagePath.toString(), packageId + ".zip").toString();
+		File file = new File(expectedFilePathString);
+		file.createNewFile();
+		file.deleteOnExit();
+		when(filePathHelper.getPackagePath(packageId)).thenReturn(packagePath.toString());
+
+		Path actualFilePath = service.getPackageFile(packageId);
+
+		assertEquals(expectedFilePathString, actualFilePath.toString());
+		assertTrue(actualFilePath.toFile().exists());
 	}
 }
