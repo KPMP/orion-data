@@ -1,6 +1,7 @@
 package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -56,7 +57,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testSetInstitution() {
+	public void testSetInstitutionName() {
 		testPackage.setInstitution("institution");
 		assertEquals("institution", testPackage.getInstitution());
 	}
@@ -69,16 +70,74 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testSetSubjectId() {
-		testPackage.setSubjectId("Subject 23");
-		assertEquals("Subject 23", testPackage.getSubjectId());
+	public void testSetProtocol() throws Exception {
+		testPackage.setProtocol("protocol");
+		assertEquals("protocol", testPackage.getProtocol());
 	}
 
 	@Test
-	public void testSetExperimentDate() {
-		Date now = new Date();
-		testPackage.setExperimentDate(now);
-		assertEquals(now, testPackage.getExperimentDate());
+	public void testSetSubjectId() throws Exception {
+		testPackage.setSubjectId("subjectId");
+		assertEquals("subjectId", testPackage.getSubjectId());
 	}
 
+	@Test
+	public void testSetExperimentDate() throws Exception {
+		Date experimentDate = new Date();
+		testPackage.setExperimentDate(experimentDate);
+		assertEquals(experimentDate, testPackage.getExperimentDate());
+	}
+
+	@Test
+	public void testSetDescription() throws Exception {
+		testPackage.setDescription("description");
+		assertEquals("description", testPackage.getDescription());
+	}
+
+	@Test
+	public void testToString() throws Exception {
+		Date createdAt = new Date();
+		Package packageInfo = new Package();
+		packageInfo.setAttachments(Arrays.asList(mock(Attachment.class)));
+		packageInfo.setCreatedAt(createdAt);
+		packageInfo.setDescription("description");
+		packageInfo.setInstitution("institution");
+		packageInfo.setPackageId("packageId");
+		packageInfo.setPackageType("packageType");
+		packageInfo.setProtocol("protocol");
+		packageInfo.setSubjectId("subjectId");
+		packageInfo.setSubmitterFirstName("submitterFirstName");
+		packageInfo.setSubmitterLastName("submitterLastName");
+
+		assertEquals("packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", "
+				+ "submitterFirstName: submitterFirstName, submitterLastName: submitterLastName, "
+				+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
+				+ "institution: institution, number of attachments: 1", packageInfo.toString());
+	}
+
+	@Test
+	public void testGenerateJSON() throws Exception {
+		Date createdAt = new Date();
+		Package packageInfo = new Package();
+		Attachment attachment = new Attachment();
+		attachment.setFileName("filename");
+		attachment.setId("fileId");
+		attachment.setSize(433);
+		packageInfo.setAttachments(Arrays.asList(attachment));
+		packageInfo.setCreatedAt(createdAt);
+		packageInfo.setDescription("description");
+		packageInfo.setInstitution("institution");
+		packageInfo.setPackageId("packageId");
+		packageInfo.setPackageType("packageType");
+		packageInfo.setProtocol("protocol");
+		packageInfo.setSubjectId("subjectId");
+		packageInfo.setSubmitterFirstName("submitterFirstName");
+		packageInfo.setSubmitterLastName("submitterLastName");
+
+		assertEquals("{\"packageId\":\"packageId\",\"packageType\":\"packageType\",\"createdAt\":" + createdAt.getTime()
+				+ "," + "\"submitterFirstName\":\"submitterFirstName\",\"submitterLastName\":\"submitterLastName\","
+				+ "\"institution\":\"institution\",\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
+				+ "\"experimentDate\":null,\"description\":\"description\",\"attachments\":"
+				+ "[{\"id\":\"fileId\",\"size\":433,\"fileName\":\"filename\"}]}", packageInfo.generateJSON());
+	}
 }

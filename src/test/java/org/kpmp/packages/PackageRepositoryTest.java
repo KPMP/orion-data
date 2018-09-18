@@ -3,8 +3,8 @@ package org.kpmp.packages;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-import java.util.Optional;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +28,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringBootTest(classes = { TestMongoConfig.class })
 public class PackageRepositoryTest {
 
+	@After
+	public void tearDown() throws Exception {
+		packageRepo.deleteAll();
+	}
+
 	@Autowired
 	private PackageRepository packageRepo;
 
@@ -39,12 +44,12 @@ public class PackageRepositoryTest {
 	}
 
 	@Test
-	public void testFindById() {
+	public void testFindByPackageId() {
 		Package uploadPackage = new Package();
 		uploadPackage.setPackageId("1234");
 		packageRepo.save(uploadPackage);
-		Optional<Package> foundPackage = packageRepo.findById("1234");
-		assertEquals(uploadPackage.getPackageId(), foundPackage.get().getPackageId());
+		Package foundPackage = packageRepo.findByPackageId("1234");
+		assertEquals(uploadPackage.getPackageId(), foundPackage.getPackageId());
 	}
 
 }

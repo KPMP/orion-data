@@ -1,5 +1,6 @@
 package org.kpmp.packages;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -7,6 +8,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.lang.Nullable;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Document(collection = "packages")
 public class Package {
@@ -18,11 +22,13 @@ public class Package {
 	private String submitterFirstName;
 	private String submitterLastName;
 	private String institution;
-	private Date experimentDate;
+	private String protocol;
 	private String subjectId;
+	private Date experimentDate;
+	private String description;
 
 	@Field("files")
-	private List<Attachment> attachments;
+	private List<Attachment> attachments = new ArrayList<>();
 
 	public String getPackageId() {
 		return packageId;
@@ -64,13 +70,6 @@ public class Package {
 		this.attachments = attachments;
 	}
 
-	public String getSubjectId() {
-		return subjectId;
-	}
-
-	public void setSubjectId(String subjectId) {
-		this.subjectId = subjectId;
-	}
 	public String getSubmitterLastName() {
 		return submitterLastName;
 	}
@@ -87,6 +86,22 @@ public class Package {
 		this.submitterFirstName = submitterFirstName;
 	}
 
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public String getSubjectId() {
+		return subjectId;
+	}
+
+	public void setSubjectId(String subjectId) {
+		this.subjectId = subjectId;
+	}
+
 	@Nullable
 	public Date getExperimentDate() {
 		return experimentDate;
@@ -95,4 +110,27 @@ public class Package {
 	public void setExperimentDate(Date experimentDate) {
 		this.experimentDate = experimentDate;
 	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	@Override
+	public String toString() {
+		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
+				+ ", submitterFirstName: " + submitterFirstName + ", submitterLastName: " + submitterLastName
+				+ ", protocol: " + protocol + ", subjectId: " + subjectId + ", experimentDate: " + experimentDate
+				+ ", description: " + description + ", institution: " + institution + ", number of attachments: "
+				+ attachments.size();
+	}
+
+	public String generateJSON() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(this);
+	}
+
 }
