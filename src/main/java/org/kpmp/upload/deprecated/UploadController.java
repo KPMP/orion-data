@@ -15,6 +15,7 @@ import org.kpmp.dao.deprecated.PackageTypeOther;
 import org.kpmp.dao.deprecated.SubmitterDemographics;
 import org.kpmp.dao.deprecated.UploadPackage;
 import org.kpmp.dao.deprecated.UploadPackageMetadata;
+import org.kpmp.packages.FilePathHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
