@@ -23,6 +23,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.UniversalIdGenerator;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,12 +56,18 @@ public class PackageServiceTest {
 
 	@Test
 	public void testFindAllPackages() {
-		List<Package> expectedResults = Arrays.asList(new Package());
+		Package uploadedPackage = mock(Package.class);
+		when(uploadedPackage.getPackageId()).thenReturn("packageId");
+		List<Package> expectedResults = Arrays.asList(uploadedPackage);
 		when(packageRepository.findAll()).thenReturn(expectedResults);
+		when(filePathHelper.getZipFileName("packageId")).thenReturn("/data/packageId/packageId.zip");
 
 		List<Package> packages = service.findAllPackages();
 
+		ArgumentCaptor<Boolean> downloadableCaptor = ArgumentCaptor.forClass(Boolean.class);
+		verify(uploadedPackage).setIsDownloadable(downloadableCaptor.capture());
 		assertEquals(expectedResults, packages);
+		assertEquals(false, downloadableCaptor.getValue());
 		verify(packageRepository).findAll();
 	}
 

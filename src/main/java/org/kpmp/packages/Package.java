@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.lang.Nullable;
@@ -29,6 +30,8 @@ public class Package {
 
 	@Field("files")
 	private List<Attachment> attachments = new ArrayList<>();
+	@Transient
+	private boolean isDownloadable;
 
 	public String getPackageId() {
 		return packageId;
@@ -124,13 +127,21 @@ public class Package {
 		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
 				+ ", submitterFirstName: " + submitterFirstName + ", submitterLastName: " + submitterLastName
 				+ ", protocol: " + protocol + ", subjectId: " + subjectId + ", experimentDate: " + experimentDate
-				+ ", description: " + description + ", institution: " + institution + ", number of attachments: "
-				+ attachments.size();
+				+ ", description: " + description + ", institution: " + institution + ", is downloadable: "
+				+ isDownloadable + ", number of attachments: " + attachments.size();
 	}
 
 	public String generateJSON() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(this);
+	}
+
+	public void setIsDownloadable(boolean isDownloadable) {
+		this.isDownloadable = isDownloadable;
+	}
+
+	public boolean isDownloadble() {
+		return isDownloadable;
 	}
 
 }

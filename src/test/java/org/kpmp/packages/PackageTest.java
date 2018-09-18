@@ -108,11 +108,14 @@ public class PackageTest {
 		packageInfo.setSubjectId("subjectId");
 		packageInfo.setSubmitterFirstName("submitterFirstName");
 		packageInfo.setSubmitterLastName("submitterLastName");
+		packageInfo.setIsDownloadable(true);
 
-		assertEquals("packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", "
-				+ "submitterFirstName: submitterFirstName, submitterLastName: submitterLastName, "
-				+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
-				+ "institution: institution, number of attachments: 1", packageInfo.toString());
+		assertEquals(
+				"packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", "
+						+ "submitterFirstName: submitterFirstName, submitterLastName: submitterLastName, "
+						+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
+						+ "institution: institution, is downloadable: true, number of attachments: 1",
+				packageInfo.toString());
 	}
 
 	@Test
@@ -138,6 +141,7 @@ public class PackageTest {
 				+ "," + "\"submitterFirstName\":\"submitterFirstName\",\"submitterLastName\":\"submitterLastName\","
 				+ "\"institution\":\"institution\",\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
 				+ "\"experimentDate\":null,\"description\":\"description\",\"attachments\":"
-				+ "[{\"id\":\"fileId\",\"size\":433,\"fileName\":\"filename\"}]}", packageInfo.generateJSON());
+				+ "[{\"id\":\"fileId\",\"size\":433,\"fileName\":\"filename\"}],\"downloadble\":false}",
+				packageInfo.generateJSON());
 	}
 }

@@ -1,5 +1,6 @@
 package org.kpmp.packages;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,7 +39,16 @@ public class PackageService {
 	}
 
 	public List<Package> findAllPackages() {
-		return packageRepository.findAll();
+		List<Package> packages = packageRepository.findAll();
+		for (Package packageToCheck : packages) {
+			String zipFileName = filePathHelper.getZipFileName(packageToCheck.getPackageId());
+			if (new File(zipFileName).exists()) {
+				packageToCheck.setIsDownloadable(true);
+			} else {
+				packageToCheck.setIsDownloadable(false);
+			}
+		}
+		return packages;
 	}
 
 	public Path getPackageFile(String packageId) {
