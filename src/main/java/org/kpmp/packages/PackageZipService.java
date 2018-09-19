@@ -24,7 +24,7 @@ public class PackageZipService {
 	public void createZipFile(Package packageInformation) throws IOException {
 		List<Attachment> attachments = packageInformation.getAttachments();
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId());
-		String zipFileName = packagePath + packageInformation.getPackageId() + ".zip";
+		String zipFileName = filePathHelper.getZipFileName(packageInformation.getPackageId());
 		File tempZipFileHandle = new File(zipFileName + ".tmp");
 		try (ZipArchiveOutputStream zipFile = new ZipArchiveOutputStream(tempZipFileHandle)) {
 

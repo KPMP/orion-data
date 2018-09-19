@@ -16,7 +16,6 @@ public class FilePathHelperTest {
 	@Before
 	public void setUp() throws Exception {
 		filePathHelper = new FilePathHelper();
-		ReflectionTestUtils.setField(filePathHelper, "metadataFileName", "metadata.json");
 		ReflectionTestUtils.setField(filePathHelper, "basePath", File.separator + "data");
 	}
 
@@ -38,8 +37,8 @@ public class FilePathHelperTest {
 	}
 
 	@Test
-	public void testGetMetadataFileName() {
-		assertEquals("metadata.json", filePathHelper.getMetadataFileName());
-
+	public void testGetZipFileName() throws Exception {
+		assertEquals(File.separator + "data" + File.separator + "package_223" + File.separator + "223.zip",
+				filePathHelper.getZipFileName("223"));
 	}
 }

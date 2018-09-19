@@ -11,9 +11,6 @@ public class FilePathHelper {
 	@Value("${file.base.path}")
 	private String basePath;
 
-	@Value("${metadata.file.name}")
-	private String metadataFileName;
-
 	public String getPackagePath(String prefix, String suffix) {
 		return basePath + File.separator + prefix + File.separator + "package_" + suffix + File.separator;
 	}
@@ -22,8 +19,8 @@ public class FilePathHelper {
 		return basePath + File.separator + "package_" + suffix + File.separator;
 	}
 
-	public String getMetadataFileName() {
-		return metadataFileName;
+	public String getZipFileName(String packageId) {
+		return getPackagePath(packageId) + packageId + ".zip";
 	}
 
 }
