@@ -26,6 +26,7 @@ import org.kpmp.UniversalIdGenerator;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.multipart.MultipartFile;
 
 public class PackageServiceTest {
@@ -59,7 +60,7 @@ public class PackageServiceTest {
 		Package uploadedPackage = mock(Package.class);
 		when(uploadedPackage.getPackageId()).thenReturn("packageId");
 		List<Package> expectedResults = Arrays.asList(uploadedPackage);
-		when(packageRepository.findAll()).thenReturn(expectedResults);
+		when(packageRepository.findAll(new Sort(Sort.Direction.DESC, "createdAt"))).thenReturn(expectedResults);
 		when(filePathHelper.getZipFileName("packageId")).thenReturn("/data/packageId/packageId.zip");
 
 		List<Package> packages = service.findAllPackages();
@@ -68,7 +69,7 @@ public class PackageServiceTest {
 		verify(uploadedPackage).setIsDownloadable(downloadableCaptor.capture());
 		assertEquals(expectedResults, packages);
 		assertEquals(false, downloadableCaptor.getValue());
-		verify(packageRepository).findAll();
+		verify(packageRepository).findAll(new Sort(Sort.Direction.DESC, "createdAt"));
 	}
 
 	@Test
@@ -95,6 +96,26 @@ public class PackageServiceTest {
 
 		assertEquals(expectedPackage, actualPackage);
 		verify(packageRepository).findByPackageId("packageId");
+	}
+
+	@Test
+	public void testSaveFile_whenFilenameMetadataJson() throws Exception {
+		MultipartFile file = mock(MultipartFile.class);
+		Package packageToUpdate = mock(Package.class);
+		when(packageRepository.findByPackageId("packageId")).thenReturn(packageToUpdate);
+		List<Attachment> files = new ArrayList<>();
+		when(packageToUpdate.getAttachments()).thenReturn(files);
+		boolean isInitialChunk = true;
+
+		service.saveFile(file, "packageId", "metadata.json", 322, isInitialChunk);
+
+		verify(packageFileHandler).saveMultipartFile(file, "packageId", "metadata_user.json", !isInitialChunk);
+		verify(packageRepository).findByPackageId("packageId");
+		verify(packageRepository).save(packageToUpdate);
+		assertEquals(1, files.size());
+		assertEquals("metadata_user.json", files.get(0).getFileName());
+		assertEquals(322, files.get(0).getSize());
+		verify(packageToUpdate).setAttachments(files);
 	}
 
 	@Test

@@ -12,6 +12,7 @@ import org.kpmp.UniversalIdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +40,7 @@ public class PackageService {
 	}
 
 	public List<Package> findAllPackages() {
-		List<Package> packages = packageRepository.findAll();
+		List<Package> packages = packageRepository.findAll(new Sort(Sort.Direction.DESC, "createdAt"));
 		for (Package packageToCheck : packages) {
 			String zipFileName = filePathHelper.getZipFileName(packageToCheck.getPackageId());
 			if (new File(zipFileName).exists()) {
@@ -73,6 +74,11 @@ public class PackageService {
 
 	public void saveFile(MultipartFile file, String packageId, String filename, long fileSize, boolean isInitialChunk)
 			throws Exception {
+
+		if (filename.equalsIgnoreCase("metadata.json")) {
+			filename = filename.replace(".", "_user.");
+		}
+
 		if (isInitialChunk) {
 			updatePackageInfo(packageId, filename, fileSize);
 		}
