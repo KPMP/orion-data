@@ -26,6 +26,7 @@ import org.kpmp.UniversalIdGenerator;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.multipart.MultipartFile;
 
 public class PackageServiceTest {
@@ -59,7 +60,7 @@ public class PackageServiceTest {
 		Package uploadedPackage = mock(Package.class);
 		when(uploadedPackage.getPackageId()).thenReturn("packageId");
 		List<Package> expectedResults = Arrays.asList(uploadedPackage);
-		when(packageRepository.findAll()).thenReturn(expectedResults);
+		when(packageRepository.findAll(new Sort(Sort.Direction.DESC, "createdAt"))).thenReturn(expectedResults);
 		when(filePathHelper.getZipFileName("packageId")).thenReturn("/data/packageId/packageId.zip");
 
 		List<Package> packages = service.findAllPackages();
@@ -68,7 +69,7 @@ public class PackageServiceTest {
 		verify(uploadedPackage).setIsDownloadable(downloadableCaptor.capture());
 		assertEquals(expectedResults, packages);
 		assertEquals(false, downloadableCaptor.getValue());
-		verify(packageRepository).findAll();
+		verify(packageRepository).findAll(new Sort(Sort.Direction.DESC, "createdAt"));
 	}
 
 	@Test
