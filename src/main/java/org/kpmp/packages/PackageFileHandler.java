@@ -29,6 +29,7 @@ public class PackageFileHandler {
 		if (!packageDirectory.exists()) {
 			Files.createDirectories(Paths.get(packageDirectoryPath));
 		}
+
 		File fileToSave = new File(packageDirectoryPath + File.separator + filename);
 		InputStream inputStream = file.getInputStream();
 		FileOutputStream fileOutputStream = new FileOutputStream(fileToSave, shouldAppend);

@@ -74,6 +74,11 @@ public class PackageService {
 
 	public void saveFile(MultipartFile file, String packageId, String filename, long fileSize, boolean isInitialChunk)
 			throws Exception {
+
+		if (filename.equalsIgnoreCase("metadata.json")) {
+			filename = filename.replace(".", "_user.");
+		}
+
 		if (isInitialChunk) {
 			updatePackageInfo(packageId, filename, fileSize);
 		}
