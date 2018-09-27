@@ -20,6 +20,7 @@ public class AtttributeController {
 
 	@RequestMapping(value = "/v1/attributes/displayName", method = RequestMethod.GET)
 	public String getDisplayName(HttpServletRequest request) throws UnsupportedEncodingException {
+
 		Enumeration<String> headerNames = request.getHeaderNames();
 		log.info(attributesDisplayName.format(new Object[] { "getDisplayName" }));
 		while (headerNames.hasMoreElements()) {
@@ -27,7 +28,7 @@ public class AtttributeController {
 			log.info(attributesDisplayName.format(new Object[] { headerName }));
 		}
 
-		String value = request.getHeader("displayName");
+		String value = request.getHeader("displayname");
 		if (value != null) {
 			String displayName = new String(value.getBytes("ISO-8859-1"), "UTF-8");
 			return displayName;
