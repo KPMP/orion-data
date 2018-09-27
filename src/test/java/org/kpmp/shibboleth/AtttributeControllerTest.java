@@ -11,14 +11,19 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-public class AtttributeControllerTest extends AtttributeController {
+public class AtttributeControllerTest {
 
 	private AtttributeController controller;
+	@Mock
+	private UTF8Encoder encoder;
 
 	@Before
 	public void setUp() throws Exception {
-		controller = new AtttributeController();
+		MockitoAnnotations.initMocks(this);
+		controller = new AtttributeController(encoder);
 	}
 
 	@After
@@ -27,13 +32,14 @@ public class AtttributeControllerTest extends AtttributeController {
 	}
 
 	@Test
-	public void testGetDisplayName() throws UnsupportedEncodingException {
+	public void testGetAttributes() throws UnsupportedEncodingException {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		when(request.getHeader("displayname")).thenReturn("Johnny Cash");
+		when(encoder.convertFromLatin1("Johnny Cash")).thenReturn("Johnny Cash");
 
-		String displayName = controller.getDisplayName(request);
+		User attributes = controller.getAttributes(request);
 
-		assertEquals("Johnny Cash", displayName);
+		assertEquals("Johnny Cash", attributes.getDisplayName());
 
 	}
 
