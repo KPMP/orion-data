@@ -2,6 +2,7 @@ package org.kpmp.shibboleth;
 
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
+import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,7 +20,12 @@ public class AtttributeController {
 
 	@RequestMapping(value = "/v1/attributes/displayName", method = RequestMethod.GET)
 	public String getDisplayName(HttpServletRequest request) throws UnsupportedEncodingException {
-		log.info(attributesDisplayName.format(new Object[] { "getDisplayName", request.getAttributeNames() }));
+		Enumeration<String> attributeNames = request.getAttributeNames();
+		log.info(attributesDisplayName.format(new Object[] { "getDisplayName", attributeNames }));
+		while (attributeNames.hasMoreElements()) {
+			String attribute = attributeNames.nextElement();
+			log.info(attributesDisplayName.format(new Object[] { "attribute", attribute }));
+		}
 
 		String value = request.getHeader("displayName");
 		if (value != null) {
