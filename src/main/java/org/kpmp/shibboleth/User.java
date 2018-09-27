@@ -4,9 +4,6 @@ import java.io.UnsupportedEncodingException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.stereotype.Component;
-
-@Component
 class User {
 
 	private String displayName;
