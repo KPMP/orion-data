@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AtttributeController {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	private static final MessageFormat attributesDisplayName = new MessageFormat("Request|{0}|{1}");
+	private static final MessageFormat attributesDisplayName = new MessageFormat("Request|{0}");
 
 	@RequestMapping(value = "/v1/attributes/displayName", method = RequestMethod.GET)
 	public String getDisplayName(HttpServletRequest request) throws UnsupportedEncodingException {
-		Enumeration<String> attributeNames = request.getAttributeNames();
-		log.info(attributesDisplayName.format(new Object[] { "getDisplayName", attributeNames }));
-		while (attributeNames.hasMoreElements()) {
-			String attribute = attributeNames.nextElement();
-			log.info(attributesDisplayName.format(new Object[] { "attribute", attribute }));
+		Enumeration<String> headerNames = request.getHeaderNames();
+		log.info(attributesDisplayName.format(new Object[] { "getDisplayName" }));
+		while (headerNames.hasMoreElements()) {
+			String headerName = headerNames.nextElement();
+			log.info(attributesDisplayName.format(new Object[] { headerName }));
 		}
 
 		String value = request.getHeader("displayName");
