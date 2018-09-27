@@ -29,7 +29,7 @@ public class AtttributeControllerTest extends AtttributeController {
 	@Test
 	public void testGetDisplayName() throws UnsupportedEncodingException {
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getHeader("displayName")).thenReturn("Johnny Cash");
+		when(request.getHeader("displayname")).thenReturn("Johnny Cash");
 
 		String displayName = controller.getDisplayName(request);
 
