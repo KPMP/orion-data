@@ -9,10 +9,7 @@ import org.springframework.stereotype.Component;
 class UTF8Encoder {
 
 	public String convertFromLatin1(String value) throws UnsupportedEncodingException {
-		if (value != null) {
-			return new String(value.getBytes(Charsets.ISO_8859_1), Charsets.UTF_8);
-		}
-		return "";
+		return new String(value.getBytes(Charsets.ISO_8859_1), Charsets.UTF_8);
 	}
 
 }

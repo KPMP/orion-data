@@ -14,23 +14,28 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class AtttributeController {
+public class ShibbolethAttributeController {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private static final MessageFormat attributesDisplayName = new MessageFormat("Request|{0}");
 	private UTF8Encoder encoder;
 
 	@Autowired
-	public AtttributeController(UTF8Encoder encoder) {
+	public ShibbolethAttributeController(UTF8Encoder encoder) {
 		this.encoder = encoder;
 	}
 
-	@RequestMapping(value = "/v1/attributes", method = RequestMethod.GET)
+	// userMap(request)
+	// if env var 'userInformation_displayName' then use that otherwise pull it
+	// from the request
+
+	@RequestMapping(value = "/v1/userInformation", method = RequestMethod.GET)
 	public @ResponseBody User getAttributes(HttpServletRequest request) throws UnsupportedEncodingException {
-		log.info(attributesDisplayName.format(new Object[] { "getDisplayName" }));
+		log.info(attributesDisplayName.format(new Object[] { "getAttributes" }));
+
+		// request -> userMap
 
 		User user = new User(request, encoder);
-
 		return user;
 	}
 }

@@ -16,10 +16,14 @@ class User {
 	// back to the application, and we made this object protected, we should be
 	// safe
 	public User(HttpServletRequest request, UTF8Encoder encoder) throws UnsupportedEncodingException {
-		this.displayName = encoder.convertFromLatin1(request.getHeader("displayname"));
-		this.firstName = encoder.convertFromLatin1(request.getHeader("givenname"));
-		this.lastName = encoder.convertFromLatin1(request.getHeader("sn"));
-		this.email = encoder.convertFromLatin1(request.getHeader("mail"));
+		String value = handleNull(request.getHeader("displayname"));
+		this.displayName = encoder.convertFromLatin1(value);
+		value = handleNull(request.getHeader("givenname"));
+		this.firstName = encoder.convertFromLatin1(value);
+		value = handleNull(request.getHeader("sn"));
+		this.lastName = encoder.convertFromLatin1(value);
+		value = handleNull(request.getHeader("mail"));
+		this.email = encoder.convertFromLatin1(value);
 	}
 
 	public String getDisplayName() {
@@ -52,6 +56,13 @@ class User {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	private String handleNull(String value) {
+		if (value == null) {
+			return "";
+		}
+		return value;
 	}
 
 }

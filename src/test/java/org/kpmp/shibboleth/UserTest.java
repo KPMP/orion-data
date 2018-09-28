@@ -1,6 +1,9 @@
 package org.kpmp.shibboleth;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +50,19 @@ public class UserTest {
 		assertEquals("Roberto", user.getLastName());
 		assertEquals("Robby", user.getFirstName());
 		assertEquals("robby@gmail.com", user.getEmail());
+	}
+
+	@Test
+	public void testConstructor_handlesNullValues() throws Exception {
+		when(request.getHeader("displayname")).thenReturn(null);
+		when(request.getHeader("sn")).thenReturn(null);
+		when(request.getHeader("givenname")).thenReturn(null);
+		when(request.getHeader("mail")).thenReturn(null);
+		UTF8Encoder testEncoder = mock(UTF8Encoder.class);
+
+		new User(request, testEncoder);
+
+		verify(encoder, times(4)).convertFromLatin1("");
 	}
 
 	@Test

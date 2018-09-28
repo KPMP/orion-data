@@ -14,16 +14,16 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class AtttributeControllerTest {
+public class ShibbolethAtttributeControllerTest {
 
-	private AtttributeController controller;
+	private ShibbolethAttributeController controller;
 	@Mock
 	private UTF8Encoder encoder;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		controller = new AtttributeController(encoder);
+		controller = new ShibbolethAttributeController(encoder);
 	}
 
 	@After
