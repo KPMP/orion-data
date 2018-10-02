@@ -63,7 +63,6 @@ dependencies {
 	compile 'org.mockito:mockito-core'
     compile 'org.junit.jupiter:junit-jupiter-engine:5.2.0' 
     compile 'mysql:mysql-connector-java:6.0.5'
-	compile 'org.hibernate:hibernate-core:5.2.16.Final'
 	compile 'org.springframework.boot:spring-boot-starter-test'
 	compile 'org.springframework:spring-test:5.0.5.RELEASE'
 	compile 'org.springframework.data:spring-data-mongodb:2.0.8.RELEASE'
