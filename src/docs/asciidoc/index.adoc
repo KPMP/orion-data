@@ -5,56 +5,66 @@
 == Introduction
 This tool is used to upload data to the KPMP Data Lake.
 
-== V2 Endpoints
-
-=== View Packages
+== View Packages
 This will retrieve the list of packages that have been stored in Mongo and return the basic information
 to be displayed to the user.
 
+=== Sample Request
+include::{snippets}/listPackages/httpie-request.adoc[]
+
+=== Sample Response
+include::{snippets}/listPackages/http-response.adoc[]
+
+include::{snippets}/listPackages/response-fields.adoc[]
+
+== Upload Package
+The process to upload a package contains three steps.
+  
+=== Step 1 - Upload package metadata
+
 ==== Sample Request
-include::{snippets}/packages/httpie-request.adoc[]
-
-==== Sample Response
-include::{snippets}/packages/http-response.adoc[]
-
-include::{snippets}/packages/response-fields.adoc[]
-
-== V1 Endpoints
-These endpoints are currently deprected and will be slowly removed in favor of the v2 versions.
-
-=== Upload Package Information Endpoint
-This endpoint must be called first, as it will generate the packageId, submitterId, and return the institutionId needed as input when you call the upload endpoint to add files to a package.
-
-==== Sample Request
-include::{snippets}/uploadPackageInfo/httpie-request.adoc[]
+include::{snippets}/uploadPackageInfo/http-request.adoc[]
 
 include::{snippets}/uploadPackageInfo/request-fields.adoc[]
 
 ==== Sample Response
+The response is the generated id for the package.
+
 include::{snippets}/uploadPackageInfo/http-response.adoc[]
 
-include::{snippets}/uploadPackageInfo/response-fields.adoc[]
-
-=== Upload Endpoint
-After you have created a package, you may upload one or more files to be included in that package.
+=== Step 2 - Upload the files
+We support chunking of file uploads. If you have multiple files, you will need to call this for each file you wish to add to the package.
 
 ==== Sample Request
-include::{snippets}/upload/httpie-request.adoc[]
+include::{snippets}/postFileToPackage/http-request.adoc[]
 
-include::{snippets}/upload/request-parameters.adoc[]
+include::{snippets}/postFileToPackage/request-parameters.adoc[]
+
+include::{snippets}/postFileToPackage/path-parameters.adoc[]
 
 ==== Sample Response
-include::{snippets}/upload/http-response.adoc[]
+include::{snippets}/postFileToPackage/http-response.adoc[]
 
-include::{snippets}/upload/response-fields.adoc[]
-
-=== View Uploads Endpoint
-Will return the list of files that have been uploaded to the KPMP Data Lake
+=== Step 3 - Finish the package upload
+Calling this will generate the zip file to allow the package to be downloaded.  Without this call, the package will not be available for download.
 
 ==== Sample Request
-include::{snippets}/viewUploads/httpie-request.adoc[]
+include::{snippets}/finishPackage/http-request.adoc[]
+
+include::{snippets}/finishPackage/path-parameters.adoc[]
 
 ==== Sample Response
-include::{snippets}/viewUploads/http-response.adoc[]
+include::{snippets}/finishPackage/http-response.adoc[]
 
-include::{snippets}/viewUploads/response-fields.adoc[]
+== Download Package
+Only packages that have completed the finish step above will be available for download.
+
+=== Sample Request
+include::{snippets}/downloadPackage/http-request.adoc[]
+
+include::{snippets}/downloadPackage/path-parameters.adoc[]
+
+=== Sample Response
+include::{snippets}/downloadPackage/http-response.adoc[]
+
+
