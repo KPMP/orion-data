@@ -70,15 +70,15 @@ public class PackageControllerIntegrationTest {
 		uploadedPackage.setDescription("description of package");
 		defaultPackage = packageRepository.save(uploadedPackage);
 
+		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
+		ReflectionTestUtils.setField(filePathHelper, "basePath", dataDirectory.toAbsolutePath());
+
 		MockMultipartFile file = new MockMultipartFile("qqfile", "file.txt", "text/plain", "file contents".getBytes());
 
 		mockMvc.perform(RestDocumentationRequestBuilders
 				.fileUpload("/v1/packages/{packageId}/files", defaultPackage.getPackageId()).file(file)
 				.param("qqfilename", "attachment.txt").param("qqtotalfilesize", "100").param("qqtotalparts", "1")
 				.param("qqpartindex", "0"));
-
-		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
-		ReflectionTestUtils.setField(filePathHelper, "basePath", dataDirectory.toAbsolutePath());
 
 	}
 
