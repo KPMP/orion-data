@@ -71,7 +71,7 @@ public class PackageControllerIntegrationTest {
 		defaultPackage = packageRepository.save(uploadedPackage);
 
 		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
-		ReflectionTestUtils.setField(filePathHelper, "basePath", dataDirectory.toAbsolutePath());
+		ReflectionTestUtils.setField(filePathHelper, "basePath", dataDirectory.toAbsolutePath().toString());
 
 		MockMultipartFile file = new MockMultipartFile("qqfile", "file.txt", "text/plain", "file contents".getBytes());
 
