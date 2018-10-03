@@ -11,6 +11,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Date;
 
 import org.junit.After;
@@ -27,6 +29,7 @@ import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -73,6 +76,9 @@ public class PackageControllerIntegrationTest {
 				.fileUpload("/v1/packages/{packageId}/files", defaultPackage.getPackageId()).file(file)
 				.param("qqfilename", "attachment.txt").param("qqtotalfilesize", "100").param("qqtotalparts", "1")
 				.param("qqpartindex", "0"));
+
+		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
+		ReflectionTestUtils.setField(filePathHelper, "basePath", dataDirectory.toAbsolutePath());
 
 	}
 
