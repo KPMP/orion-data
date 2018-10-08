@@ -57,6 +57,12 @@ public class PackageTest {
 	}
 
 	@Test
+	public void testSetSubmitterEmail() {
+		testPackage.setSubmitterEmail("submitter@email.com");
+		assertEquals("submitter@email.com", testPackage.getSubmitterEmail());
+	}
+
+	@Test
 	public void testSetInstitutionName() {
 		testPackage.setInstitution("institution");
 		assertEquals("institution", testPackage.getInstitution());
@@ -114,11 +120,13 @@ public class PackageTest {
 		packageInfo.setSubjectId("subjectId");
 		packageInfo.setSubmitterFirstName("submitterFirstName");
 		packageInfo.setSubmitterLastName("submitterLastName");
+		packageInfo.setSubmitterEmail("submitter@email.com");
 		packageInfo.setIsDownloadable(true);
 
 		assertEquals(
 				"packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", "
 						+ "submitterFirstName: submitterFirstName, submitterLastName: submitterLastName, "
+						+ "submitterEmail: submitter@email.com, "
 						+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
 						+ "institution: institution, is downloadable: true, number of attachments: 1",
 				packageInfo.toString());
@@ -142,12 +150,14 @@ public class PackageTest {
 		packageInfo.setSubjectId("subjectId");
 		packageInfo.setSubmitterFirstName("submitterFirstName");
 		packageInfo.setSubmitterLastName("submitterLastName");
+		packageInfo.setSubmitterEmail("submitter@email.com");
 
 		assertEquals("{\"packageId\":\"packageId\",\"packageType\":\"packageType\",\"createdAt\":" + createdAt.getTime()
-				+ "," + "\"submitterFirstName\":\"submitterFirstName\",\"submitterLastName\":\"submitterLastName\","
-				+ "\"institution\":\"institution\",\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
-				+ "\"experimentDate\":null,\"description\":\"description\",\"attachments\":"
-				+ "[{\"id\":\"fileId\",\"size\":433,\"fileName\":\"filename\"}],\"downloadable\":false}",
+						+ "," + "\"submitterFirstName\":\"submitterFirstName\",\"submitterLastName\":\"submitterLastName\","
+						+ "\"submitterEmail\":\"submitter@email.com\","
+						+ "\"institution\":\"institution\",\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
+						+ "\"experimentDate\":null,\"description\":\"description\",\"attachments\":"
+						+ "[{\"id\":\"fileId\",\"size\":433,\"fileName\":\"filename\"}],\"downloadable\":false}",
 				packageInfo.generateJSON());
 	}
 }
