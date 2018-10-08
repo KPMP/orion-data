@@ -22,6 +22,7 @@ public class Package {
 	private Date createdAt;
 	private String submitterFirstName;
 	private String submitterLastName;
+	private String submitterEmail;
 	private String institution;
 	private String protocol;
 	private String subjectId;
@@ -122,11 +123,19 @@ public class Package {
 		this.description = description;
 	}
 
+	public String getSubmitterEmail() {
+		return submitterEmail;
+	}
+
+	public void setSubmitterEmail(String submitterEmail) {
+		this.submitterEmail = submitterEmail;
+	}
+
 	@Override
 	public String toString() {
 		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
 				+ ", submitterFirstName: " + submitterFirstName + ", submitterLastName: " + submitterLastName
-				+ ", protocol: " + protocol + ", subjectId: " + subjectId + ", experimentDate: " + experimentDate
+				+ ", submitterEmail: "+ submitterEmail + ", protocol: " + protocol + ", subjectId: " + subjectId + ", experimentDate: " + experimentDate
 				+ ", description: " + description + ", institution: " + institution + ", is downloadable: "
 				+ isDownloadable + ", number of attachments: " + attachments.size();
 	}
