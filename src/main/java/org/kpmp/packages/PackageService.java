@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -39,17 +40,20 @@ public class PackageService {
 
 	}
 
-	public List<Package> findAllPackages() {
+	public List<PackageView> findAllPackages() {
 		List<Package> packages = packageRepository.findAll(new Sort(Sort.Direction.DESC, "createdAt"));
+		List<PackageView> packageViews = new ArrayList<>();
 		for (Package packageToCheck : packages) {
+			PackageView packageView = new PackageView(packageToCheck);
 			String zipFileName = filePathHelper.getZipFileName(packageToCheck.getPackageId());
 			if (new File(zipFileName).exists()) {
-				packageToCheck.setIsDownloadable(true);
+				packageView.setIsDownloadable(true);
 			} else {
-				packageToCheck.setIsDownloadable(false);
+				packageView.setIsDownloadable(false);
 			}
+			packageViews.add(packageView);
 		}
-		return packages;
+		return packageViews;
 	}
 
 	public Path getPackageFile(String packageId) {
