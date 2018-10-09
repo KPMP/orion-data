@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.lang.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -140,6 +141,7 @@ public class Package {
 		this.isDownloadable = isDownloadable;
 	}
 
+	@JsonIgnore
 	public boolean isDownloadable() {
 		return isDownloadable;
 	}

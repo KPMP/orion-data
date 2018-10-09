@@ -147,7 +147,6 @@ public class PackageTest {
 				+ "," + "\"submitterFirstName\":\"submitterFirstName\",\"submitterLastName\":\"submitterLastName\","
 				+ "\"institution\":\"institution\",\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
 				+ "\"experimentDate\":null,\"description\":\"description\",\"attachments\":"
-				+ "[{\"id\":\"fileId\",\"size\":433,\"fileName\":\"filename\"}],\"downloadable\":false}",
-				packageInfo.generateJSON());
+				+ "[{\"id\":\"fileId\",\"size\":433,\"fileName\":\"filename\"}]}", packageInfo.generateJSON());
 	}
 }
