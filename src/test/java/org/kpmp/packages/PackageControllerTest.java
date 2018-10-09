@@ -41,10 +41,10 @@ public class PackageControllerTest {
 
 	@Test
 	public void testGetAllPackages() {
-		List<Package> expectedPackages = Arrays.asList(new Package());
+		List<PackageView> expectedPackages = Arrays.asList(new PackageView(new Package()));
 		when(packageService.findAllPackages()).thenReturn(expectedPackages);
 
-		List<Package> packages = controller.getAllPackages();
+		List<PackageView> packages = controller.getAllPackages();
 
 		assertEquals(expectedPackages, packages);
 		verify(packageService).findAllPackages();

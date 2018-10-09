@@ -93,31 +93,35 @@ public class PackageControllerIntegrationTest {
 				.andDo(document("listPackages", responseFields(
 						fieldWithPath("[]")
 								.description("The list of packages that have been uploaded to the data lake"),
-						fieldWithPath("[].packageId")
+						fieldWithPath("[].packageInfo.packageId")
 								.description("The generated universal id for the uploaded package"),
-						fieldWithPath("[].packageType")
+						fieldWithPath("[].packageInfo.packageType")
 								.description("The type of data contained in the package, ex: Sub-segment RNAseq"),
-						fieldWithPath("[].createdAt").description("The date this package was uploaded"),
-						fieldWithPath("[].submitterFirstName")
+						fieldWithPath("[].packageInfo.createdAt").description("The date this package was uploaded"),
+						fieldWithPath("[].packageInfo.submitterFirstName")
 								.description("The first name of the person who submitted this package"),
-						fieldWithPath("[].submitterLastName")
+						fieldWithPath("[].packageInfo.submitterLastName")
 								.description("The last name of the person who submitted this package"),
-						fieldWithPath("[].submitterEmail")
+						fieldWithPath("[].packageInfo.submitterEmail")
 								.description("The email address of the person who submitted this package"),
-						fieldWithPath("[].protocol").description("The protocol used to generate this data"),
-						fieldWithPath("[].subjectId").description("The subject or sample id associated with this data"),
-						fieldWithPath("[].experimentDate").description("The date this data was generated"),
-						fieldWithPath("[].description").description(
+						fieldWithPath("[].packageInfo.protocol").description("The protocol used to generate this data"),
+						fieldWithPath("[].packageInfo.subjectId")
+								.description("The subject or sample id associated with this data"),
+						fieldWithPath("[].packageInfo.experimentDate").description("The date this data was generated"),
+						fieldWithPath("[].packageInfo.description").description(
 								"A free text field used to describe the data in the package, the experiment, etc"),
-						fieldWithPath("[].attachments")
+						fieldWithPath("[].packageInfo.attachments")
 								.description("The list of files that are included in this package"),
 						fieldWithPath("[].downloadable")
 								.description("Indicates whether this package is available to download"),
-						fieldWithPath("[].institution")
+						fieldWithPath("[].packageInfo.institution")
 								.description("The name of the institution where this data was generated"),
-						fieldWithPath("[].attachments[].id").description("The generated universal id for this file"),
-						fieldWithPath("[].attachments[].size").description("The size in bytes of the attached file"),
-						fieldWithPath("[].attachments[].fileName").description("The name of the attched file"))));
+						fieldWithPath("[].packageInfo.attachments[].id")
+								.description("The generated universal id for this file"),
+						fieldWithPath("[].packageInfo.attachments[].size")
+								.description("The size in bytes of the attached file"),
+						fieldWithPath("[].packageInfo.attachments[].fileName")
+								.description("The name of the attched file"))));
 	}
 
 	@Test
@@ -136,28 +140,28 @@ public class PackageControllerIntegrationTest {
 		mockMvc.perform(RestDocumentationRequestBuilders.post("/v1/packages").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(packageInfo)))
 				.andExpect(status().isOk())
-				.andDo(document("uploadPackageInfo", requestFields(
-						fieldWithPath("submitterFirstName")
-								.description("The first name of the person who submitted this package"),
-						fieldWithPath("submitterLastName")
-								.description("The last name of the person who submitted this package"),
-						fieldWithPath("submitterEmail")
-								.description("The email address of the person who submitted this package"),
-						fieldWithPath("createdAt").description("The date this package was uploaded"),
-						fieldWithPath("description").description(
-								"A free text field used to describe the data in the package, the experiment, etc"),
-						fieldWithPath("experimentDate").description("The date this data was generated"),
-						fieldWithPath("institution")
-								.description("The name of the institution where this data was generated"),
-						fieldWithPath("packageType")
-								.description("The type of data contained in the package, ex: Sub-segment RNAseq"),
-						fieldWithPath("protocol").description("The protocol used to generate this data"),
-						fieldWithPath("subjectId").description("The date this data was generated"),
-						fieldWithPath("packageId").description(
-								"The generated universal id for the uploaded package.  DO NOT PROVIDE A VALUE"),
-						fieldWithPath("attachments").description("The list of files that are included in this package"),
-						fieldWithPath("downloadable").description(
-								"Indicates whether this package is available to download. DO NOT PROVIDE A VALUE"))));
+				.andDo(document("uploadPackageInfo",
+						requestFields(
+								fieldWithPath("submitterFirstName")
+										.description("The first name of the person who submitted this package"),
+								fieldWithPath("submitterLastName")
+										.description("The last name of the person who submitted this package"),
+								fieldWithPath("submitterEmail")
+										.description("The email address of the person who submitted this package"),
+								fieldWithPath("createdAt").description("The date this package was uploaded"),
+								fieldWithPath("description").description(
+										"A free text field used to describe the data in the package, the experiment, etc"),
+								fieldWithPath("experimentDate").description("The date this data was generated"),
+								fieldWithPath("institution")
+										.description("The name of the institution where this data was generated"),
+								fieldWithPath("packageType").description(
+										"The type of data contained in the package, ex: Sub-segment RNAseq"),
+								fieldWithPath("protocol").description("The protocol used to generate this data"),
+								fieldWithPath("subjectId").description("The date this data was generated"),
+								fieldWithPath("packageId").description(
+										"The generated universal id for the uploaded package.  DO NOT PROVIDE A VALUE"),
+								fieldWithPath("attachments")
+										.description("The list of files that are included in this package"))));
 	}
 
 	@Test

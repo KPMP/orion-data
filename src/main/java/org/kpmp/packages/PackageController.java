@@ -30,7 +30,6 @@ public class PackageController {
 	private static final MessageFormat packageInfoPost = new MessageFormat("Request|{0}|{1}");
 	private static final MessageFormat finish = new MessageFormat("Request|{0}|{1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat("Request|{0}|{1}|{2}|{3}|{4}|{5}");
-
 	private static final MessageFormat fileDownloadRequest = new MessageFormat("Request|{0}|{1}");
 
 	@Autowired
@@ -40,7 +39,7 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
-	public @ResponseBody List<Package> getAllPackages() {
+	public @ResponseBody List<PackageView> getAllPackages() {
 		return packageService.findAllPackages();
 	}
 

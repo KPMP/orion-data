@@ -101,12 +101,6 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testSetIsDownloadable() throws Exception {
-		testPackage.setIsDownloadable(true);
-		assertEquals(true, testPackage.isDownloadable());
-	}
-
-	@Test
 	public void testToString() throws Exception {
 		Date createdAt = new Date();
 		Package packageInfo = new Package();
@@ -121,15 +115,12 @@ public class PackageTest {
 		packageInfo.setSubmitterFirstName("submitterFirstName");
 		packageInfo.setSubmitterLastName("submitterLastName");
 		packageInfo.setSubmitterEmail("submitter@email.com");
-		packageInfo.setIsDownloadable(true);
 
-		assertEquals(
-				"packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", "
-						+ "submitterFirstName: submitterFirstName, submitterLastName: submitterLastName, "
-						+ "submitterEmail: submitter@email.com, "
-						+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
-						+ "institution: institution, is downloadable: true, number of attachments: 1",
-				packageInfo.toString());
+		assertEquals("packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", "
+				+ "submitterFirstName: submitterFirstName, submitterLastName: submitterLastName, "
+				+ "submitterEmail: submitter@email.com, "
+				+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
+				+ "institution: institution, number of attachments: 1", packageInfo.toString());
 	}
 
 	@Test

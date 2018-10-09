@@ -23,7 +23,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.UniversalIdGenerator;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Sort;
@@ -63,12 +62,9 @@ public class PackageServiceTest {
 		when(packageRepository.findAll(new Sort(Sort.Direction.DESC, "createdAt"))).thenReturn(expectedResults);
 		when(filePathHelper.getZipFileName("packageId")).thenReturn("/data/packageId/packageId.zip");
 
-		List<Package> packages = service.findAllPackages();
+		List<PackageView> packages = service.findAllPackages();
 
-		ArgumentCaptor<Boolean> downloadableCaptor = ArgumentCaptor.forClass(Boolean.class);
-		verify(uploadedPackage).setIsDownloadable(downloadableCaptor.capture());
-		assertEquals(expectedResults, packages);
-		assertEquals(false, downloadableCaptor.getValue());
+		assertEquals(false, packages.get(0).isDownloadable());
 		verify(packageRepository).findAll(new Sort(Sort.Direction.DESC, "createdAt"));
 	}
 
