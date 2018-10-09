@@ -65,6 +65,7 @@ public class PackageControllerIntegrationTest {
 		uploadedPackage.setPackageType("mRNA");
 		uploadedPackage.setSubmitterFirstName("John");
 		uploadedPackage.setSubmitterLastName("Doe");
+		uploadedPackage.setSubmitterEmail("jdoe@colorado.edu");
 		uploadedPackage.setInstitution("University of Colorado");
 		uploadedPackage.setCreatedAt(new Date());
 		uploadedPackage.setDescription("description of package");
@@ -101,6 +102,8 @@ public class PackageControllerIntegrationTest {
 								.description("The first name of the person who submitted this package"),
 						fieldWithPath("[].submitterLastName")
 								.description("The last name of the person who submitted this package"),
+						fieldWithPath("[].submitterEmail")
+								.description("The email address of the person who submitted this package"),
 						fieldWithPath("[].protocol").description("The protocol used to generate this data"),
 						fieldWithPath("[].subjectId").description("The subject or sample id associated with this data"),
 						fieldWithPath("[].experimentDate").description("The date this data was generated"),
@@ -138,6 +141,8 @@ public class PackageControllerIntegrationTest {
 								.description("The first name of the person who submitted this package"),
 						fieldWithPath("submitterLastName")
 								.description("The last name of the person who submitted this package"),
+						fieldWithPath("submitterEmail")
+								.description("The email address of the person who submitted this package"),
 						fieldWithPath("createdAt").description("The date this package was uploaded"),
 						fieldWithPath("description").description(
 								"A free text field used to describe the data in the package, the experiment, etc"),
