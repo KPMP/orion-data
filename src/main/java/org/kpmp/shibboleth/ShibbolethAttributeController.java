@@ -30,12 +30,13 @@ public class ShibbolethAttributeController {
 	// from the request
 
 	@RequestMapping(value = "/v1/userInformation", method = RequestMethod.GET)
-	public @ResponseBody User getAttributes(HttpServletRequest request) throws UnsupportedEncodingException {
+	public @ResponseBody
+	ShibbolethUser getAttributes(HttpServletRequest request) throws UnsupportedEncodingException {
 		log.info(attributesDisplayName.format(new Object[] { "getAttributes" }));
 
 		// request -> userMap
 
-		User user = new User(request, encoder);
+		ShibbolethUser user = new ShibbolethUser(request, encoder);
 		return user;
 	}
 }

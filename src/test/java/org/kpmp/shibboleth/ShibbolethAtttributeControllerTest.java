@@ -37,7 +37,7 @@ public class ShibbolethAtttributeControllerTest {
 		when(request.getHeader("displayname")).thenReturn("Johnny Cash");
 		when(encoder.convertFromLatin1("Johnny Cash")).thenReturn("Johnny Cash");
 
-		User attributes = controller.getAttributes(request);
+		ShibbolethUser attributes = controller.getAttributes(request);
 
 		assertEquals("Johnny Cash", attributes.getDisplayName());
 

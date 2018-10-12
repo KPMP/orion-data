@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.lang.Nullable;
@@ -27,6 +28,8 @@ public class Package {
 	private String subjectId;
 	private Date experimentDate;
 	private String description;
+	@DBRef
+	private User submitter;
 
 	@Field("files")
 	private List<Attachment> attachments = new ArrayList<>();
@@ -126,6 +129,14 @@ public class Package {
 
 	public void setSubmitterEmail(String submitterEmail) {
 		this.submitterEmail = submitterEmail;
+	}
+
+	public User getSubmitter() {
+		return submitter;
+	}
+
+	public void setSubmitter(User submitter) {
+		this.submitter = submitter;
 	}
 
 	@Override

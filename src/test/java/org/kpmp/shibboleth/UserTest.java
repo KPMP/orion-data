@@ -16,7 +16,7 @@ import org.mockito.MockitoAnnotations;
 
 public class UserTest {
 
-	private User user;
+	private ShibbolethUser user;
 	@Mock
 	private HttpServletRequest request;
 	@Mock
@@ -25,7 +25,7 @@ public class UserTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		user = new User(request, encoder);
+		user = new ShibbolethUser(request, encoder);
 	}
 
 	@After
@@ -44,7 +44,7 @@ public class UserTest {
 		when(request.getHeader("mail")).thenReturn("robbie@gmail.com");
 		when(encoder.convertFromLatin1("robbie@gmail.com")).thenReturn("robby@gmail.com");
 
-		user = new User(request, encoder);
+		user = new ShibbolethUser(request, encoder);
 
 		assertEquals("display Name", user.getDisplayName());
 		assertEquals("Roberto", user.getLastName());
@@ -60,7 +60,7 @@ public class UserTest {
 		when(request.getHeader("mail")).thenReturn(null);
 		UTF8Encoder testEncoder = mock(UTF8Encoder.class);
 
-		new User(request, testEncoder);
+		new ShibbolethUser(request, testEncoder);
 
 		verify(encoder, times(4)).convertFromLatin1("");
 	}
