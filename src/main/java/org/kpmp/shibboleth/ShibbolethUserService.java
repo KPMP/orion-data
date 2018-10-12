@@ -30,7 +30,10 @@ public class ShibbolethUserService {
         User user = userRepository.findByEmailAddress(emailAddress);
         if (user == null) {
             user = new User();
-
+            user.setDisplayName(displayName);
+            user.setLastName(lastName);
+            user.setFirstName(firstName);
+            user.setEmailAddress(emailAddress);
         }
         return user;
 
