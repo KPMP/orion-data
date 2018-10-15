@@ -30,7 +30,7 @@ public class Package {
 	private String institution;
 	private String protocol;
 	private String subjectId;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss 'UTC'", timezone = "GMT")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date experimentDate;
 	private String description;
 

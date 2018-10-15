@@ -150,7 +150,8 @@ public class PackageTest {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'UTC'");
 		df.setTimeZone(TimeZone.getTimeZone("UTC"));
 		String createdAtString = df.format(createdAt);
-		String experimentDateString = df.format(experimentDate);
+		DateFormat experimentDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String experimentDateString = experimentDateFormat.format(experimentDate);
 
 		assertEquals(
 				"{\"packageId\":\"packageId\",\"createdAt\":\"" + createdAtString + "\","
