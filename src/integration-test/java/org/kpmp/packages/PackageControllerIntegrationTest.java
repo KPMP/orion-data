@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kpmp.Application;
+import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -63,9 +64,7 @@ public class PackageControllerIntegrationTest {
 				.apply(documentationConfiguration(this.restDocumentation)).build();
 		Package uploadedPackage = new Package();
 		uploadedPackage.setPackageType("mRNA");
-		uploadedPackage.setSubmitterFirstName("John");
-		uploadedPackage.setSubmitterLastName("Doe");
-		uploadedPackage.setSubmitterEmail("jdoe@colorado.edu");
+		uploadedPackage.setSubmitter(new User());
 		uploadedPackage.setInstitution("University of Colorado");
 		uploadedPackage.setCreatedAt(new Date());
 		uploadedPackage.setDescription("description of package");
@@ -98,12 +97,8 @@ public class PackageControllerIntegrationTest {
 						fieldWithPath("[].packageInfo.packageType")
 								.description("The type of data contained in the package, ex: Sub-segment RNAseq"),
 						fieldWithPath("[].packageInfo.createdAt").description("The date this package was uploaded"),
-						fieldWithPath("[].packageInfo.submitterFirstName")
-								.description("The first name of the person who submitted this package"),
-						fieldWithPath("[].packageInfo.submitterLastName")
-								.description("The last name of the person who submitted this package"),
-						fieldWithPath("[].packageInfo.submitterEmail")
-								.description("The email address of the person who submitted this package"),
+						fieldWithPath("[].packageInfo.submitter")
+								.description("The person who submitted this package"),
 						fieldWithPath("[].packageInfo.protocol").description("The protocol used to generate this data"),
 						fieldWithPath("[].packageInfo.subjectId")
 								.description("The subject or sample id associated with this data"),
@@ -134,20 +129,15 @@ public class PackageControllerIntegrationTest {
 		packageInfo.setPackageType("Bulk RNA-Seq");
 		packageInfo.setProtocol("Pilot 1");
 		packageInfo.setSubjectId("12345");
-		packageInfo.setSubmitterFirstName("John");
-		packageInfo.setSubmitterLastName("Smith");
+		packageInfo.setSubmitter(new User());
 
 		mockMvc.perform(RestDocumentationRequestBuilders.post("/v1/packages").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(packageInfo)))
 				.andExpect(status().isOk())
 				.andDo(document("uploadPackageInfo",
 						requestFields(
-								fieldWithPath("submitterFirstName")
-										.description("The first name of the person who submitted this package"),
-								fieldWithPath("submitterLastName")
-										.description("The last name of the person who submitted this package"),
-								fieldWithPath("submitterEmail")
-										.description("The email address of the person who submitted this package"),
+								fieldWithPath("submitter")
+										.description("The person who submitted this package"),
 								fieldWithPath("createdAt").description("The date this package was uploaded"),
 								fieldWithPath("description").description(
 										"A free text field used to describe the data in the package, the experiment, etc"),
