@@ -46,6 +46,7 @@ public class PackageController {
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)
 	public @ResponseBody String postPackageInfo(@RequestBody Package packageInfo) {
 		log.info(packageInfoPost.format(new Object[] { "postPackageInfo", packageInfo }));
+
 		Package savedPackage = packageService.savePackageInformation(packageInfo);
 		return savedPackage.getPackageId();
 	}

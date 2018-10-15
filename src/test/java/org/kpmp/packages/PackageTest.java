@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.users.User;
 
 public class PackageTest {
 
@@ -42,24 +43,6 @@ public class PackageTest {
 		Date createdAt = new Date();
 		testPackage.setCreatedAt(createdAt);
 		assertEquals(createdAt, testPackage.getCreatedAt());
-	}
-
-	@Test
-	public void testSetSubmitterFirstName() {
-		testPackage.setSubmitterFirstName("submitter");
-		assertEquals("submitter", testPackage.getSubmitterFirstName());
-	}
-
-	@Test
-	public void testSetSubmitterLastName() {
-		testPackage.setSubmitterLastName("submitter");
-		assertEquals("submitter", testPackage.getSubmitterLastName());
-	}
-
-	@Test
-	public void testSetSubmitterEmail() {
-		testPackage.setSubmitterEmail("submitter@email.com");
-		assertEquals("submitter@email.com", testPackage.getSubmitterEmail());
 	}
 
 	@Test
@@ -101,6 +84,13 @@ public class PackageTest {
 	}
 
 	@Test
+	public void testSetSubmitter() throws Exception {
+		User testUser = new User();
+		testPackage.setSubmitter(testUser);
+		assertEquals(testUser, testPackage.getSubmitter());
+	}
+
+	@Test
 	public void testToString() throws Exception {
 		Date createdAt = new Date();
 		Package packageInfo = new Package();
@@ -112,13 +102,12 @@ public class PackageTest {
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
 		packageInfo.setSubjectId("subjectId");
-		packageInfo.setSubmitterFirstName("submitterFirstName");
-		packageInfo.setSubmitterLastName("submitterLastName");
-		packageInfo.setSubmitterEmail("submitter@email.com");
+		User user = new User();
+		user.setId("1234");
+		packageInfo.setSubmitter(user);
 
 		assertEquals("packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", "
-				+ "submitterFirstName: submitterFirstName, submitterLastName: submitterLastName, "
-				+ "submitterEmail: submitter@email.com, "
+				+ "submitterId: 1234, "
 				+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
 				+ "institution: institution, number of attachments: 1", packageInfo.toString());
 	}
@@ -139,15 +128,10 @@ public class PackageTest {
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
 		packageInfo.setSubjectId("subjectId");
-		packageInfo.setSubmitterFirstName("submitterFirstName");
-		packageInfo.setSubmitterLastName("submitterLastName");
-		packageInfo.setSubmitterEmail("submitter@email.com");
 
 		assertEquals("{\"packageId\":\"packageId\",\"packageType\":\"packageType\",\"createdAt\":" + createdAt.getTime()
-				+ "," + "\"submitterFirstName\":\"submitterFirstName\",\"submitterLastName\":\"submitterLastName\","
-				+ "\"submitterEmail\":\"submitter@email.com\","
-				+ "\"institution\":\"institution\",\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
-				+ "\"experimentDate\":null,\"description\":\"description\",\"attachments\":"
+				+ ", \"institution\":\"institution\",\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
+				+ "\"experimentDate\":null,\"description\":\"description\",\"submitter\":null,\"attachments\":"
 				+ "[{\"id\":\"fileId\",\"size\":433,\"fileName\":\"filename\"}]}", packageInfo.generateJSON());
 	}
 }

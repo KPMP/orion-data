@@ -5,7 +5,7 @@ import java.text.MessageFormat;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.kpmp.packages.User;
+import org.kpmp.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

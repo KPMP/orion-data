@@ -1,7 +1,9 @@
-package org.kpmp.packages;
+package org.kpmp.users;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Document(collection = "users")
 public class User {
@@ -37,6 +39,7 @@ public class User {
         this.lastName = lastName;
     }
 
+    @JsonIgnore
     public String getDisplayName() {
         return displayName;
     }
@@ -51,5 +54,14 @@ public class User {
 
     public void setEmail(String emailAddress) {
         this.email = emailAddress;
+    }
+
+    @Override
+    public String toString() {
+        return  "userId: " + id +
+                ", firstName: " + firstName +
+                ", lastName: " + lastName +
+                ", displayName: " + displayName +
+                ", email: " + email;
     }
 }

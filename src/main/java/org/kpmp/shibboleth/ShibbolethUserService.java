@@ -4,8 +4,8 @@ import java.io.UnsupportedEncodingException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.kpmp.packages.User;
-import org.kpmp.packages.UserRepository;
+import org.kpmp.users.User;
+import org.kpmp.users.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
