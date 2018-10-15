@@ -39,7 +39,6 @@ public class User {
         this.lastName = lastName;
     }
 
-    @JsonIgnore
     public String getDisplayName() {
         return displayName;
     }
