@@ -14,6 +14,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.users.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.Resource;
@@ -54,6 +55,9 @@ public class PackageControllerTest {
 	public void testPostPackageInfo() throws Exception {
 		Package packageInfo = new Package();
 		Package savedPackage = mock(Package.class);
+		User user = new User();
+		user.setId("1234");
+		packageInfo.setSubmitter(user);
 		when(savedPackage.getPackageId()).thenReturn("universalId");
 		when(packageService.savePackageInformation(packageInfo)).thenReturn(savedPackage);
 
