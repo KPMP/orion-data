@@ -3,9 +3,12 @@ package org.kpmp.packages;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.After;
 import org.junit.Before;
@@ -126,6 +129,7 @@ public class PackageTest {
 	@Test
 	public void testGenerateJSON() throws Exception {
 		Date createdAt = new Date();
+		Date experimentDate = new Date();
 		Package packageInfo = new Package();
 		Attachment attachment = new Attachment();
 		attachment.setFileName("filename");
@@ -142,12 +146,20 @@ public class PackageTest {
 		packageInfo.setSubmitterFirstName("submitterFirstName");
 		packageInfo.setSubmitterLastName("submitterLastName");
 		packageInfo.setSubmitterEmail("submitter@email.com");
+		packageInfo.setExperimentDate(experimentDate);
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'UTC'");
+		df.setTimeZone(TimeZone.getTimeZone("UTC"));
+		String createdAtString = df.format(createdAt);
+		DateFormat experimentDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String experimentDateString = experimentDateFormat.format(experimentDate);
 
-		assertEquals("{\"packageId\":\"packageId\",\"packageType\":\"packageType\",\"createdAt\":" + createdAt.getTime()
-				+ "," + "\"submitterFirstName\":\"submitterFirstName\",\"submitterLastName\":\"submitterLastName\","
-				+ "\"submitterEmail\":\"submitter@email.com\","
-				+ "\"institution\":\"institution\",\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
-				+ "\"experimentDate\":null,\"description\":\"description\",\"attachments\":"
-				+ "[{\"id\":\"fileId\",\"size\":433,\"fileName\":\"filename\"}]}", packageInfo.generateJSON());
+		assertEquals(
+				"{\"packageId\":\"packageId\",\"createdAt\":\"" + createdAtString + "\","
+						+ "\"packageType\":\"packageType\"," + "\"submitterFirstName\":\"submitterFirstName\","
+						+ "\"submitterLastName\":\"submitterLastName\"," + "\"submitterEmail\":\"submitter@email.com\","
+						+ "\"institution\":\"institution\"," + "\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
+						+ "\"experimentDate\":\"" + experimentDateString + "\",\"description\":\"description\","
+						+ "\"attachments\":[{\"fileName\":\"filename\",\"size\":433,\"id\":\"fileId\"}]}",
+				packageInfo.generateJSON());
 	}
 }
