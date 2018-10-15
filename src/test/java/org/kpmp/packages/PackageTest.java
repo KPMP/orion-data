@@ -132,6 +132,7 @@ public class PackageTest {
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
 		packageInfo.setSubjectId("subjectId");
+		packageInfo.setSubmitter(null);
 
 		packageInfo.setExperimentDate(experimentDate);
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'UTC'");

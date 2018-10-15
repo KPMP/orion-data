@@ -28,6 +28,6 @@ public class UserRepositoryTest {
         testUser.setEmail("jimminy@cricket.com");
         userRepository.save(testUser);
         User user = userRepository.findByEmail("jimminy@cricket.com");
-        assertEquals(testUser, user);
+        assertEquals(testUser.getEmail(), user.getEmail());
     }
 }
