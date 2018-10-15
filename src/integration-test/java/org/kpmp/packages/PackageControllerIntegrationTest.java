@@ -161,15 +161,15 @@ public class PackageControllerIntegrationTest {
 						requestFields(
 								fieldWithPath("submitter")
 										.description("The person who submitted this package"),
-								fieldWithPath("[].packageInfo.submitter.id")
+								fieldWithPath("submitter.id")
 										.description("The id person who submitted this package"),
-								fieldWithPath("[].packageInfo.submitter.firstName")
+								fieldWithPath("submitter.firstName")
 										.description("The first Name person who submitted this package"),
-								fieldWithPath("[].packageInfo.submitter.lastName")
+								fieldWithPath("submitter.lastName")
 										.description("The last name person who submitted this package"),
-								fieldWithPath("[].packageInfo.submitter.displayName")
+								fieldWithPath("submitter.displayName")
 										.description("The display name person who submitted this package"),
-								fieldWithPath("[].packageInfo.submitter.email")
+								fieldWithPath("submitter.email")
 										.description("The email address of the person who submitted this package"),
 								fieldWithPath("createdAt").description("The date this package was uploaded"),
 								fieldWithPath("description").description(
