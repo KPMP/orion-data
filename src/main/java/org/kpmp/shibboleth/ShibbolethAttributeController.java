@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.kpmp.packages.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,12 @@ public class ShibbolethAttributeController {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private static final MessageFormat attributesDisplayName = new MessageFormat("Request|{0}");
 	private UTF8Encoder encoder;
+	private ShibbolethUserService shibbolethUserService;
 
 	@Autowired
-	public ShibbolethAttributeController(UTF8Encoder encoder) {
+	public ShibbolethAttributeController(UTF8Encoder encoder, ShibbolethUserService shibbolethUserService) {
 		this.encoder = encoder;
+		this.shibbolethUserService = shibbolethUserService;
 	}
 
 	// userMap(request)
@@ -31,12 +34,12 @@ public class ShibbolethAttributeController {
 
 	@RequestMapping(value = "/v1/userInformation", method = RequestMethod.GET)
 	public @ResponseBody
-	ShibbolethUser getAttributes(HttpServletRequest request) throws UnsupportedEncodingException {
+	User getAttributes(HttpServletRequest request) throws UnsupportedEncodingException {
 		log.info(attributesDisplayName.format(new Object[] { "getAttributes" }));
 
 		// request -> userMap
 
-		ShibbolethUser user = new ShibbolethUser(request, encoder);
+		User user = shibbolethUserService.getUser(request, encoder);
 		return user;
 	}
 }

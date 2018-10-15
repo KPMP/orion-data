@@ -19,7 +19,7 @@ public class ShibbolethUserService {
 
     public User getUser(HttpServletRequest request, UTF8Encoder encoder) throws UnsupportedEncodingException {
         String value = handleNull(request.getHeader("mail"));
-        String emailAddress = encoder.convertFromLatin1(value);
+        String email = encoder.convertFromLatin1(value);
         value = handleNull(request.getHeader("displayname"));
         String displayName = encoder.convertFromLatin1(value);
         value = handleNull(request.getHeader("givenname"));
@@ -27,13 +27,14 @@ public class ShibbolethUserService {
         value = handleNull(request.getHeader("sn"));
         String lastName = encoder.convertFromLatin1(value);
 
-        User user = userRepository.findByEmailAddress(emailAddress);
+        User user = userRepository.findByEmail(email);
         if (user == null) {
             user = new User();
             user.setDisplayName(displayName);
             user.setLastName(lastName);
             user.setFirstName(firstName);
-            user.setEmailAddress(emailAddress);
+            user.setEmail(email);
+            userRepository.save(user);
         }
         return user;
 

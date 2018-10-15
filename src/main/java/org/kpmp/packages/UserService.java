@@ -13,8 +13,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User findByEmailAddress(String emailAddress) {
-        return userRepository.findByEmailAddress(emailAddress);
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
 }

@@ -11,7 +11,7 @@ public class User {
     String firstName;
     String lastName;
     String displayName;
-    String emailAddress;
+    String email;
 
     public String getId() {
         return id;
@@ -45,11 +45,11 @@ public class User {
         this.displayName = displayName;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public void setEmail(String emailAddress) {
+        this.email = emailAddress;
     }
 }

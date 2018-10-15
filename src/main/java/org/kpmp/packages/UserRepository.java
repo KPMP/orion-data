@@ -8,6 +8,6 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     public User save(User user);
 
-    public User findByEmailAddress(String emailAddress);
+    public User findByEmail(String email);
 
 }
