@@ -70,6 +70,10 @@ public class PackageControllerIntegrationTest {
 		uploadedPackage.setDescription("description of package");
 		User user = new User();
 		user.setId("1234");
+		user.setFirstName("John");
+		user.setLastName("Doe");
+		user.setDisplayName("John Doe");
+		user.setEmail("johnd@anonymous.com");
 		uploadedPackage.setSubmitter(user);
 		defaultPackage = packageRepository.save(uploadedPackage);
 
@@ -102,6 +106,16 @@ public class PackageControllerIntegrationTest {
 						fieldWithPath("[].packageInfo.createdAt").description("The date this package was uploaded"),
 						fieldWithPath("[].packageInfo.submitter")
 								.description("The person who submitted this package"),
+						fieldWithPath("[].packageInfo.submitter.id")
+								.description("The id person who submitted this package"),
+						fieldWithPath("[].packageInfo.submitter.firstName")
+								.description("The first Name person who submitted this package"),
+						fieldWithPath("[].packageInfo.submitter.lastName")
+								.description("The last name person who submitted this package"),
+						fieldWithPath("[].packageInfo.submitter.displayName")
+								.description("The display name person who submitted this package"),
+						fieldWithPath("[].packageInfo.submitter.email")
+								.description("The email address of the person who submitted this package"),
 						fieldWithPath("[].packageInfo.protocol").description("The protocol used to generate this data"),
 						fieldWithPath("[].packageInfo.subjectId")
 								.description("The subject or sample id associated with this data"),
@@ -134,6 +148,10 @@ public class PackageControllerIntegrationTest {
 		packageInfo.setSubjectId("12345");
 		User user = new User();
 		user.setId("1234");
+		user.setFirstName("John");
+		user.setLastName("Doe");
+		user.setDisplayName("John Doe");
+		user.setEmail("johnd@anonymous.com");
 		packageInfo.setSubmitter(user);
 
 		mockMvc.perform(RestDocumentationRequestBuilders.post("/v1/packages").contentType(MediaType.APPLICATION_JSON)
@@ -143,6 +161,16 @@ public class PackageControllerIntegrationTest {
 						requestFields(
 								fieldWithPath("submitter")
 										.description("The person who submitted this package"),
+								fieldWithPath("[].packageInfo.submitter.id")
+										.description("The id person who submitted this package"),
+								fieldWithPath("[].packageInfo.submitter.firstName")
+										.description("The first Name person who submitted this package"),
+								fieldWithPath("[].packageInfo.submitter.lastName")
+										.description("The last name person who submitted this package"),
+								fieldWithPath("[].packageInfo.submitter.displayName")
+										.description("The display name person who submitted this package"),
+								fieldWithPath("[].packageInfo.submitter.email")
+										.description("The email address of the person who submitted this package"),
 								fieldWithPath("createdAt").description("The date this package was uploaded"),
 								fieldWithPath("description").description(
 										"A free text field used to describe the data in the package, the experiment, etc"),
