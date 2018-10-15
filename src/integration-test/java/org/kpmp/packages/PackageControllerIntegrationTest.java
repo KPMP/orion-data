@@ -68,6 +68,9 @@ public class PackageControllerIntegrationTest {
 		uploadedPackage.setInstitution("University of Colorado");
 		uploadedPackage.setCreatedAt(new Date());
 		uploadedPackage.setDescription("description of package");
+		User user = new User();
+		user.setId("1234");
+		uploadedPackage.setSubmitter(user);
 		defaultPackage = packageRepository.save(uploadedPackage);
 
 		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
@@ -129,7 +132,9 @@ public class PackageControllerIntegrationTest {
 		packageInfo.setPackageType("Bulk RNA-Seq");
 		packageInfo.setProtocol("Pilot 1");
 		packageInfo.setSubjectId("12345");
-		packageInfo.setSubmitter(new User());
+		User user = new User();
+		user.setId("1234");
+		packageInfo.setSubmitter(user);
 
 		mockMvc.perform(RestDocumentationRequestBuilders.post("/v1/packages").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(packageInfo)))
