@@ -11,19 +11,24 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.lang.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Document(collection = "packages")
+@JsonPropertyOrder({ "packageId", "createdAt", "packageType", "submitter", "institution", "protocol", "subjectId", "experimentDate", "description", "attachments" })
 public class Package {
 
 	@Id
 	private String packageId;
 	private String packageType;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss 'UTC'", timezone = "GMT")
 	private Date createdAt;
 	private String institution;
 	private String protocol;
 	private String subjectId;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date experimentDate;
 	private String description;
 	@DBRef
