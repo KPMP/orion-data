@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kpmp.Application;
 import org.kpmp.users.User;
+import org.kpmp.users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -50,6 +51,8 @@ public class PackageControllerIntegrationTest {
 	@Autowired
 	private PackageRepository packageRepository;
 	@Autowired
+	private UserRepository userRepository;
+	@Autowired
 	private WebApplicationContext context;
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -74,6 +77,7 @@ public class PackageControllerIntegrationTest {
 		user.setLastName("Doe");
 		user.setDisplayName("John Doe");
 		user.setEmail("johnd@anonymous.com");
+		userRepository.save(user);
 		uploadedPackage.setSubmitter(user);
 		defaultPackage = packageRepository.save(uploadedPackage);
 
@@ -95,7 +99,6 @@ public class PackageControllerIntegrationTest {
 
 	@Test
 	public void testGetPackages() throws Exception {
-		System.out.println(mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/packages")).andReturn().getAsyncResult().toString());
 		mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/packages")).andExpect(status().isOk())
 				.andDo(document("listPackages", responseFields(
 						fieldWithPath("[]")
