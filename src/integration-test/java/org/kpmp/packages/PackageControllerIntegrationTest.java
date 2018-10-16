@@ -95,6 +95,7 @@ public class PackageControllerIntegrationTest {
 
 	@Test
 	public void testGetPackages() throws Exception {
+		System.out.println(mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/packages")).andReturn().getAsyncResult().toString());
 		mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/packages")).andExpect(status().isOk())
 				.andDo(document("listPackages", responseFields(
 						fieldWithPath("[]")
@@ -133,7 +134,7 @@ public class PackageControllerIntegrationTest {
 						fieldWithPath("[].packageInfo.attachments[].size")
 								.description("The size in bytes of the attached file"),
 						fieldWithPath("[].packageInfo.attachments[].fileName")
-								.description("The name of the attched file"))));
+								.description("The name of the attached file"))));
 	}
 
 	@Test
