@@ -3,6 +3,9 @@ package org.kpmp.users;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({ "id", "firstName", "lastName", "displayName", "email" })
 @Document(collection = "users")
 public class User {
 

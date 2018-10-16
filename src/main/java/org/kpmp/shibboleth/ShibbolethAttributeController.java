@@ -28,16 +28,10 @@ public class ShibbolethAttributeController {
 		this.shibbolethUserService = shibbolethUserService;
 	}
 
-	// userMap(request)
-	// if env var 'userInformation_displayName' then use that otherwise pull it
-	// from the request
-
 	@RequestMapping(value = "/v1/userInformation", method = RequestMethod.GET)
 	public @ResponseBody
 	User getAttributes(HttpServletRequest request) throws UnsupportedEncodingException {
 		log.info(attributesDisplayName.format(new Object[] { "getAttributes" }));
-
-		// request -> userMap
 
 		User user = shibbolethUserService.getUser(request, encoder);
 		return user;

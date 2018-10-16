@@ -40,7 +40,6 @@ public class PackageServiceTest {
 	private PackageZipService packageZipService;
 	@Mock
 	private FilePathHelper filePathHelper;
-	@Mock
 	private PackageService service;
 
 	@Before

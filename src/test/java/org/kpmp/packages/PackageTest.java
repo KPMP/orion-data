@@ -132,8 +132,13 @@ public class PackageTest {
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
 		packageInfo.setSubjectId("subjectId");
-		packageInfo.setSubmitter(null);
-
+		User testUser = new User();
+		testUser.setId("1234");
+		testUser.setFirstName("Arnold");
+		testUser.setLastName("Schwarzenegger");
+		testUser.setDisplayName("Conan");
+		testUser.setEmail("arnie@illbeback.com");
+		packageInfo.setSubmitter(testUser);
 		packageInfo.setExperimentDate(experimentDate);
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'UTC'");
 		df.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -143,7 +148,9 @@ public class PackageTest {
 
 		assertEquals(
 				"{\"packageId\":\"packageId\",\"createdAt\":\"" + createdAtString + "\","
-						+ "\"packageType\":\"packageType\"," + "\"submitter\":null,"
+						+ "\"packageType\":\"packageType\"," +
+						"\"submitter\":{\"id\":\"1234\",\"firstName\":\"Arnold\",\"lastName\":\"Schwarzenegger\","
+						+ "\"displayName\":\"Conan\",\"email\":\"arnie@illbeback.com\"},"
 						+ "\"institution\":\"institution\"," + "\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
 						+ "\"experimentDate\":\"" + experimentDateString + "\",\"description\":\"description\","
 						+ "\"attachments\":[{\"fileName\":\"filename\",\"size\":433,\"id\":\"fileId\"}]}",
