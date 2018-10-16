@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.kpmp.users.User;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.lang.Nullable;
@@ -15,8 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Document(collection = "packages")
-@JsonPropertyOrder({ "packageId", "createdAt", "packageType", "submitterFirstName", "submitterLastName",
-		"submitterEmail", "institution", "protocol", "subjectId", "experimentDate", "description", "attachments" })
+@JsonPropertyOrder({ "packageId", "createdAt", "packageType", "submitter", "institution", "protocol", "subjectId", "experimentDate", "description", "attachments" })
 public class Package {
 
 	@Id
@@ -24,15 +25,14 @@ public class Package {
 	private String packageType;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss 'UTC'", timezone = "GMT")
 	private Date createdAt;
-	private String submitterFirstName;
-	private String submitterLastName;
-	private String submitterEmail;
 	private String institution;
 	private String protocol;
 	private String subjectId;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date experimentDate;
 	private String description;
+	@DBRef
+	private User submitter;
 
 	@Field("files")
 	private List<Attachment> attachments = new ArrayList<>();
@@ -77,22 +77,6 @@ public class Package {
 		this.attachments = attachments;
 	}
 
-	public String getSubmitterLastName() {
-		return submitterLastName;
-	}
-
-	public void setSubmitterLastName(String submitterLastName) {
-		this.submitterLastName = submitterLastName;
-	}
-
-	public String getSubmitterFirstName() {
-		return submitterFirstName;
-	}
-
-	public void setSubmitterFirstName(String submitterFirstName) {
-		this.submitterFirstName = submitterFirstName;
-	}
-
 	public String getProtocol() {
 		return protocol;
 	}
@@ -126,19 +110,18 @@ public class Package {
 		this.description = description;
 	}
 
-	public String getSubmitterEmail() {
-		return submitterEmail;
+	public User getSubmitter() {
+		return submitter;
 	}
 
-	public void setSubmitterEmail(String submitterEmail) {
-		this.submitterEmail = submitterEmail;
+	public void setSubmitter(User submitter) {
+		this.submitter = submitter;
 	}
 
 	@Override
 	public String toString() {
 		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
-				+ ", submitterFirstName: " + submitterFirstName + ", submitterLastName: " + submitterLastName
-				+ ", submitterEmail: " + submitterEmail + ", protocol: " + protocol + ", subjectId: " + subjectId
+				+ ", submitterId: " + submitter.getId() + ", protocol: " + protocol + ", subjectId: " + subjectId
 				+ ", experimentDate: " + experimentDate + ", description: " + description + ", institution: "
 				+ institution + ", number of attachments: " + attachments.size();
 	}

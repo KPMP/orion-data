@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.users.User;
 
 public class PackageTest {
 
@@ -45,24 +46,6 @@ public class PackageTest {
 		Date createdAt = new Date();
 		testPackage.setCreatedAt(createdAt);
 		assertEquals(createdAt, testPackage.getCreatedAt());
-	}
-
-	@Test
-	public void testSetSubmitterFirstName() {
-		testPackage.setSubmitterFirstName("submitter");
-		assertEquals("submitter", testPackage.getSubmitterFirstName());
-	}
-
-	@Test
-	public void testSetSubmitterLastName() {
-		testPackage.setSubmitterLastName("submitter");
-		assertEquals("submitter", testPackage.getSubmitterLastName());
-	}
-
-	@Test
-	public void testSetSubmitterEmail() {
-		testPackage.setSubmitterEmail("submitter@email.com");
-		assertEquals("submitter@email.com", testPackage.getSubmitterEmail());
 	}
 
 	@Test
@@ -104,6 +87,13 @@ public class PackageTest {
 	}
 
 	@Test
+	public void testSetSubmitter() throws Exception {
+		User testUser = new User();
+		testPackage.setSubmitter(testUser);
+		assertEquals(testUser, testPackage.getSubmitter());
+	}
+
+	@Test
 	public void testToString() throws Exception {
 		Date createdAt = new Date();
 		Package packageInfo = new Package();
@@ -115,13 +105,12 @@ public class PackageTest {
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
 		packageInfo.setSubjectId("subjectId");
-		packageInfo.setSubmitterFirstName("submitterFirstName");
-		packageInfo.setSubmitterLastName("submitterLastName");
-		packageInfo.setSubmitterEmail("submitter@email.com");
+		User user = new User();
+		user.setId("1234");
+		packageInfo.setSubmitter(user);
 
 		assertEquals("packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", "
-				+ "submitterFirstName: submitterFirstName, submitterLastName: submitterLastName, "
-				+ "submitterEmail: submitter@email.com, "
+				+ "submitterId: 1234, "
 				+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
 				+ "institution: institution, number of attachments: 1", packageInfo.toString());
 	}
@@ -143,9 +132,13 @@ public class PackageTest {
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
 		packageInfo.setSubjectId("subjectId");
-		packageInfo.setSubmitterFirstName("submitterFirstName");
-		packageInfo.setSubmitterLastName("submitterLastName");
-		packageInfo.setSubmitterEmail("submitter@email.com");
+		User testUser = new User();
+		testUser.setId("1234");
+		testUser.setFirstName("Arnold");
+		testUser.setLastName("Schwarzenegger");
+		testUser.setDisplayName("Conan");
+		testUser.setEmail("arnie@illbeback.com");
+		packageInfo.setSubmitter(testUser);
 		packageInfo.setExperimentDate(experimentDate);
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'UTC'");
 		df.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -155,8 +148,9 @@ public class PackageTest {
 
 		assertEquals(
 				"{\"packageId\":\"packageId\",\"createdAt\":\"" + createdAtString + "\","
-						+ "\"packageType\":\"packageType\"," + "\"submitterFirstName\":\"submitterFirstName\","
-						+ "\"submitterLastName\":\"submitterLastName\"," + "\"submitterEmail\":\"submitter@email.com\","
+						+ "\"packageType\":\"packageType\"," +
+						"\"submitter\":{\"id\":\"1234\",\"firstName\":\"Arnold\",\"lastName\":\"Schwarzenegger\","
+						+ "\"displayName\":\"Conan\",\"email\":\"arnie@illbeback.com\"},"
 						+ "\"institution\":\"institution\"," + "\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
 						+ "\"experimentDate\":\"" + experimentDateString + "\",\"description\":\"description\","
 						+ "\"attachments\":[{\"fileName\":\"filename\",\"size\":433,\"id\":\"fileId\"}]}",

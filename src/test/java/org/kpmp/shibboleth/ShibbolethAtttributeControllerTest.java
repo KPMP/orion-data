@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.users.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -19,11 +20,13 @@ public class ShibbolethAtttributeControllerTest {
 	private ShibbolethAttributeController controller;
 	@Mock
 	private UTF8Encoder encoder;
+	@Mock
+	private ShibbolethUserService shibbolethUserService;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		controller = new ShibbolethAttributeController(encoder);
+		controller = new ShibbolethAttributeController(encoder, shibbolethUserService);
 	}
 
 	@After
@@ -34,13 +37,9 @@ public class ShibbolethAtttributeControllerTest {
 	@Test
 	public void testGetAttributes() throws UnsupportedEncodingException {
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getHeader("displayname")).thenReturn("Johnny Cash");
-		when(encoder.convertFromLatin1("Johnny Cash")).thenReturn("Johnny Cash");
-
-		User attributes = controller.getAttributes(request);
-
-		assertEquals("Johnny Cash", attributes.getDisplayName());
-
+		User testUser = new User();
+		when(shibbolethUserService.getUser(request, encoder)).thenReturn(testUser);
+		assertEquals(testUser, controller.getAttributes(request));
 	}
 
 }

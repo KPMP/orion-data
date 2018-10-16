@@ -16,9 +16,9 @@ import cz.jirutka.spring.embedmongo.EmbeddedMongoFactoryBean;
 
 @Configuration
 @ComponentScan(basePackages = {
-		"org.kpmp.packages" }, excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+		"org.kpmp.packages", "org.kpmp.users" }, excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
 				PackageController.class, PackageService.class }))
-@EnableMongoRepositories(basePackages = { "org.kpmp.packages" })
+@EnableMongoRepositories(basePackages = { "org.kpmp.packages", "org.kpmp.users" })
 public class TestMongoConfig {
 
 	private static final String MONGO_DB_URL = "localhost";
