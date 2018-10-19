@@ -83,9 +83,6 @@ public class PackageService {
 			filename = filename.replace(".", "_user.");
 		}
 
-		if (isInitialChunk) {
-			updatePackageInfo(packageId, filename, fileSize);
-		}
 		packageFileHandler.saveMultipartFile(file, packageId, filename, !isInitialChunk);
 	}
 
@@ -103,18 +100,6 @@ public class PackageService {
 				log.info(zipPackage.format(new Object[] { "createZipFile", packageId }));
 			}
 		}.start();
-	}
-
-	private void updatePackageInfo(String packageId, String filename, long fileSize) throws Exception {
-		Package packageInformation = packageRepository.findByPackageId(packageId);
-		if (packageContainsFileWithSameName(filename, packageInformation)) {
-			throw new Exception("Cannot add multiple files with the same name to a package");
-		}
-		List<Attachment> attachments = packageInformation.getAttachments();
-		Attachment attachment = createAttachment(filename, fileSize);
-		attachments.add(attachment);
-		packageInformation.setAttachments(attachments);
-		packageRepository.save(packageInformation);
 	}
 
 	private boolean packageContainsFileWithSameName(String filename, Package packageInformation) {
