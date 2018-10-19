@@ -14,3 +14,10 @@ for subdir, dirs, files in os.walk(rootdir):
                 universalId =  data["id"]
                 newDirectoryName = os.path.join(rootdir,"package_" + universalId)
                 shutil.copytree(subdir, newDirectoryName)
+                    
+                currentMetadataFile = os.path.join(subdir, 'metadata.json')
+                newMetadataFileName = os.path.join(subdir, 'metadata.json.deprecated')
+                print(currentMetadataFile)
+                print(newMetadataFileName)
+                shutil.move(currentMetadataFile, newMetadataFileName)
+                os.remove(os.path.join(newDirectoryName, 'metadata.json'))
