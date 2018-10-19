@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.After;
@@ -79,6 +80,11 @@ public class PackageControllerIntegrationTest {
 		user.setEmail("johnd@anonymous.com");
 		userRepository.save(user);
 		uploadedPackage.setSubmitter(user);
+		Attachment attachment = new Attachment();
+		attachment.setId("1234");
+		attachment.setFileName("file.txt");
+		attachment.setSize(100);
+		uploadedPackage.setAttachments(Arrays.asList(attachment));
 		defaultPackage = packageRepository.save(uploadedPackage);
 
 		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
