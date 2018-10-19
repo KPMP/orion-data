@@ -4,10 +4,10 @@ from collections import OrderedDict
 import json
 import os
 
-rootdir = "/data/prod"
-output = open ("/data/prod/combinedMetadata.json", "w+")
-outputPretty = open ("/data/prod/combinedMetadata.pretty.json", "w+")
-userInput = open("/data/prod/exportedUsers.json")
+rootdir = "/data"
+output = open ("/data/combinedMetadata.json", "w+")
+outputPretty = open ("/data/combinedMetadata.pretty.json", "w+")
+userInput = open("/data/exportedUsers.json")
 userDataStr = "[" + ",".join([line.strip() for line in userInput.readlines()]) + "]"
 userData = dict([(user["lastName"], user["_id"]) for user in json.loads(userDataStr)])
 for subdir, dirs, files in os.walk(rootdir):

@@ -3,8 +3,8 @@
 import json
 import os
 
-rootdir = "/data/prod"
-output = open ("/data/prod/combinedUserData.json", "w+")
+rootdir = "/data"
+output = open ("/data/combinedUserData.json", "w+")
 
 userNames = []
 for subdir, dirs, files in os.walk(rootdir):

@@ -4,7 +4,7 @@ import os
 import json
 import shutil
 
-rootdir = "/data/prod"
+rootdir = "/data"
 
 for subdir, dirs, files in os.walk(rootdir):
     for potentialFile in files:
