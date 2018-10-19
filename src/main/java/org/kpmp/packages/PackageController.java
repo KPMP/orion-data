@@ -62,7 +62,7 @@ public class PackageController {
 		log.info(fileUploadRequest
 				.format(new Object[] { "postFilesToPackage", filename, packageId, fileSize, chunks, chunk }));
 
-		packageService.saveFile(file, packageId, filename, fileSize, isInitialChunk(chunk));
+		packageService.saveFile(file, packageId, filename, shouldAppend(chunk));
 
 		return new FileUploadResponse(true);
 	}
@@ -88,7 +88,7 @@ public class PackageController {
 		return new FileUploadResponse(true);
 	}
 
-	private boolean isInitialChunk(int chunk) {
-		return chunk == 0;
+	private boolean shouldAppend(int chunk) {
+		return chunk != 0;
 	}
 }

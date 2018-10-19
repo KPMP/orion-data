@@ -76,14 +76,14 @@ public class PackageService {
 		return packageRepository.findByPackageId(packageId);
 	}
 
-	public void saveFile(MultipartFile file, String packageId, String filename, long fileSize, boolean isInitialChunk)
+	public void saveFile(MultipartFile file, String packageId, String filename, boolean shouldAppend)
 			throws Exception {
 
 		if (filename.equalsIgnoreCase("metadata.json")) {
 			filename = filename.replace(".", "_user.");
 		}
 
-		packageFileHandler.saveMultipartFile(file, packageId, filename, !isInitialChunk);
+		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 	}
 
 	public void createZipFile(String packageId) {
@@ -101,23 +101,4 @@ public class PackageService {
 			}
 		}.start();
 	}
-
-	private boolean packageContainsFileWithSameName(String filename, Package packageInformation) {
-		List<Attachment> attachments = packageInformation.getAttachments();
-		for (Attachment attachment : attachments) {
-			if (filename == attachment.getFileName()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private Attachment createAttachment(String filename, long fileSize) {
-		Attachment attachment = new Attachment();
-		attachment.setFileName(filename);
-		attachment.setSize(fileSize);
-		attachment.setId(universalIdGenerator.generateUniversalId());
-		return attachment;
-	}
-
 }
