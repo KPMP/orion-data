@@ -17,7 +17,5 @@ for subdir, dirs, files in os.walk(rootdir):
                     
                 currentMetadataFile = os.path.join(subdir, 'metadata.json')
                 newMetadataFileName = os.path.join(subdir, 'metadata.json.deprecated')
-                print(currentMetadataFile)
-                print(newMetadataFileName)
                 shutil.move(currentMetadataFile, newMetadataFileName)
                 os.remove(os.path.join(newDirectoryName, 'metadata.json'))

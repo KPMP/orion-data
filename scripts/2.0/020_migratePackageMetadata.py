@@ -17,7 +17,6 @@ for subdir, dirs, files in os.walk(rootdir):
                 data = json.load(f)
                 metadata = {}
                 metadata["_id"] = data["id"]
-#                 2018-04-30 03:10:13 UTC
                 createdAt = data["createdAt"]
                 createdAt = createdAt.replace(" UTC", ".000Z")
                 createdAt = createdAt.replace(" ", "T")
@@ -31,7 +30,6 @@ for subdir, dirs, files in os.walk(rootdir):
                 if experimentDate is not None:
                     experimentDate = experimentDate + ".000Z"
                     experimentDate = experimentDate.replace(" ", "T")
-                    print experimentDate
                     metadata["experimentDate"] = {"$date" : experimentDate} 
                 else:
                     metadata["experimentDate"] = None                
