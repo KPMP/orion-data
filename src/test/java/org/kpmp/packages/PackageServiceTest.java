@@ -97,21 +97,11 @@ public class PackageServiceTest {
 	@Test
 	public void testSaveFile_whenFilenameMetadataJson() throws Exception {
 		MultipartFile file = mock(MultipartFile.class);
-		Package packageToUpdate = mock(Package.class);
-		when(packageRepository.findByPackageId("packageId")).thenReturn(packageToUpdate);
-		List<Attachment> files = new ArrayList<>();
-		when(packageToUpdate.getAttachments()).thenReturn(files);
-		boolean isInitialChunk = true;
+		boolean shouldAppend = false;
 
-		service.saveFile(file, "packageId", "metadata.json", 322, isInitialChunk);
+		service.saveFile(file, "packageId", "metadata.json", shouldAppend);
 
-		verify(packageFileHandler).saveMultipartFile(file, "packageId", "metadata_user.json", !isInitialChunk);
-		verify(packageRepository).findByPackageId("packageId");
-		verify(packageRepository).save(packageToUpdate);
-		assertEquals(1, files.size());
-		assertEquals("metadata_user.json", files.get(0).getFileName());
-		assertEquals(322, files.get(0).getSize());
-		verify(packageToUpdate).setAttachments(files);
+		verify(packageFileHandler).saveMultipartFile(file, "packageId", "metadata_user.json", shouldAppend);
 	}
 
 	@Test
@@ -119,19 +109,11 @@ public class PackageServiceTest {
 		MultipartFile file = mock(MultipartFile.class);
 		Package packageToUpdate = mock(Package.class);
 		when(packageRepository.findByPackageId("packageId")).thenReturn(packageToUpdate);
-		List<Attachment> files = new ArrayList<>();
-		when(packageToUpdate.getAttachments()).thenReturn(files);
-		boolean isInitialChunk = true;
+		boolean shouldAppend = false;
 
-		service.saveFile(file, "packageId", "filename", 322, isInitialChunk);
+		service.saveFile(file, "packageId", "filename", shouldAppend);
 
-		verify(packageFileHandler).saveMultipartFile(file, "packageId", "filename", !isInitialChunk);
-		verify(packageRepository).findByPackageId("packageId");
-		verify(packageRepository).save(packageToUpdate);
-		assertEquals(1, files.size());
-		assertEquals("filename", files.get(0).getFileName());
-		assertEquals(322, files.get(0).getSize());
-		verify(packageToUpdate).setAttachments(files);
+		verify(packageFileHandler).saveMultipartFile(file, "packageId", "filename", shouldAppend);
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -142,11 +124,11 @@ public class PackageServiceTest {
 		when(packageRepository.findByPackageId("packageId")).thenReturn(packageToUpdate);
 		ArrayList<Attachment> files = mock(ArrayList.class);
 		when(packageToUpdate.getAttachments()).thenReturn(files);
-		boolean isInitialChunk = false;
+		boolean shouldAppend = true;
 
-		service.saveFile(file, "packageId", "filename", 322, isInitialChunk);
+		service.saveFile(file, "packageId", "filename", shouldAppend);
 
-		verify(packageFileHandler).saveMultipartFile(file, "packageId", "filename", !isInitialChunk);
+		verify(packageFileHandler).saveMultipartFile(file, "packageId", "filename", shouldAppend);
 		verify(packageRepository, times(0)).findByPackageId("packageId");
 		verify(packageRepository, times(0)).save(packageToUpdate);
 	}
@@ -154,38 +136,17 @@ public class PackageServiceTest {
 	@Test
 	public void testSaveFile_whenException() throws Exception {
 		MultipartFile file = mock(MultipartFile.class);
-		boolean isInitialChunk = false;
+		boolean shouldAppend = true;
 		Exception expectedException = new IOException();
 		doThrow(expectedException).when(packageFileHandler).saveMultipartFile(file, "packageId", "filename",
-				!isInitialChunk);
+				shouldAppend);
 
 		try {
-			service.saveFile(file, "packageId", "filename", 322, isInitialChunk);
+			service.saveFile(file, "packageId", "filename",  shouldAppend);
 			fail("Should have thrown exception");
 		} catch (Exception actual) {
 			assertEquals(expectedException, actual);
 		}
-	}
-
-	@Test
-	public void testSaveFile_whenAnotherFileWithSameNameInPackage() throws Exception {
-		MultipartFile file = mock(MultipartFile.class);
-		Package packageToUpdate = mock(Package.class);
-		Attachment existingAttachment = mock(Attachment.class);
-		when(existingAttachment.getFileName()).thenReturn("filename");
-		List<Attachment> attachments = new ArrayList<>();
-		attachments.add(existingAttachment);
-		when(packageToUpdate.getAttachments()).thenReturn(attachments);
-		when(packageRepository.findByPackageId("packageId")).thenReturn(packageToUpdate);
-		boolean isInitialChunk = true;
-
-		try {
-			service.saveFile(file, "packageId", "filename", 322, isInitialChunk);
-			fail("Should have thrown exception");
-		} catch (Exception expected) {
-			assertEquals("Cannot add multiple files with the same name to a package", expected.getMessage());
-		}
-
 	}
 
 	@Test
