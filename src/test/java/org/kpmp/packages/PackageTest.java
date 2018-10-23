@@ -149,7 +149,7 @@ public class PackageTest {
 		assertEquals(
 				"{\"packageId\":\"packageId\",\"createdAt\":\"" + createdAtString + "\","
 						+ "\"packageType\":\"packageType\"," +
-						"\"submitter\":{\"id\":\"1234\",\"firstName\":\"Arnold\",\"lastName\":\"Schwarzenegger\","
+						"\"submitter\":{\"firstName\":\"Arnold\",\"lastName\":\"Schwarzenegger\","
 						+ "\"displayName\":\"Conan\",\"email\":\"arnie@illbeback.com\"},"
 						+ "\"institution\":\"institution\"," + "\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
 						+ "\"experimentDate\":\"" + experimentDateString + "\",\"description\":\"description\","
