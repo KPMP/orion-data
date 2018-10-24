@@ -68,6 +68,10 @@ public class PackageService {
 	public Package savePackageInformation(Package packageInfo) {
 		packageInfo.setPackageId(universalIdGenerator.generateUniversalId());
 		packageInfo.setCreatedAt(new Date());
+		List<Attachment> attachments = packageInfo.getAttachments();
+		for (Attachment attachment : attachments) {
+			attachment.setId(universalIdGenerator.generateUniversalId());
+		}
 		Package savedPackage = packageRepository.save(packageInfo);
 		return savedPackage;
 	}
@@ -76,8 +80,7 @@ public class PackageService {
 		return packageRepository.findByPackageId(packageId);
 	}
 
-	public void saveFile(MultipartFile file, String packageId, String filename, boolean shouldAppend)
-			throws Exception {
+	public void saveFile(MultipartFile file, String packageId, String filename, boolean shouldAppend) throws Exception {
 
 		if (filename.equalsIgnoreCase("metadata.json")) {
 			filename = filename.replace(".", "_user.");
@@ -101,4 +104,5 @@ public class PackageService {
 			}
 		}.start();
 	}
+
 }

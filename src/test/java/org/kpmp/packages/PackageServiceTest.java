@@ -71,7 +71,11 @@ public class PackageServiceTest {
 	@Test
 	public void testSavePackageInformation() throws Exception {
 		Package packageInfo = new Package();
-		when(universalIdGenerator.generateUniversalId()).thenReturn("new universal id");
+		Attachment attachment1 = new Attachment();
+		Attachment attachment2 = new Attachment();
+		packageInfo.setAttachments(Arrays.asList(attachment1, attachment2));
+		when(universalIdGenerator.generateUniversalId()).thenReturn("new universal id").thenReturn("new universal id2")
+				.thenReturn("new universal id3");
 		Package expectedPackage = mock(Package.class);
 		when(packageRepository.save(packageInfo)).thenReturn(expectedPackage);
 
@@ -81,6 +85,8 @@ public class PackageServiceTest {
 		assertNotNull(packageInfo.getCreatedAt());
 		verify(packageRepository).save(packageInfo);
 		assertEquals(expectedPackage, savedPackage);
+		assertEquals("new universal id2", attachment1.getId());
+		assertEquals("new universal id3", attachment2.getId());
 	}
 
 	@Test
@@ -142,7 +148,7 @@ public class PackageServiceTest {
 				shouldAppend);
 
 		try {
-			service.saveFile(file, "packageId", "filename",  shouldAppend);
+			service.saveFile(file, "packageId", "filename", shouldAppend);
 			fail("Should have thrown exception");
 		} catch (Exception actual) {
 			assertEquals(expectedException, actual);
@@ -180,4 +186,5 @@ public class PackageServiceTest {
 		assertEquals(expectedFilePathString, actualFilePath.toString());
 		assertTrue(actualFilePath.toFile().exists());
 	}
+
 }
