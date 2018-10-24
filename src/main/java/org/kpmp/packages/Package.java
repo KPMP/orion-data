@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.kpmp.users.User;
+import org.kpmp.users.UserJsonMixin;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -127,6 +128,7 @@ public class Package {
 	public String generateJSON() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.addMixIn(Package.class, MetadataJsonMixin.class);
+		mapper.addMixIn(User.class, UserJsonMixin.class);
 		return mapper.writeValueAsString(this);
 	}
 
