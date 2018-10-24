@@ -187,34 +187,4 @@ public class PackageServiceTest {
 		assertTrue(actualFilePath.toFile().exists());
 	}
 
-	@Test
-	public void testGetFileUuid() throws Exception {
-		Package ourPackage = mock(Package.class);
-		Attachment attachment1 = mock(Attachment.class);
-		when(attachment1.getFileName()).thenReturn("not the one");
-		when(attachment1.getId()).thenReturn("theWrongId");
-		Attachment attachment2 = mock(Attachment.class);
-		when(attachment2.getFileName()).thenReturn("the one");
-		when(attachment2.getId()).thenReturn("theCorrectId");
-		when(ourPackage.getAttachments()).thenReturn(Arrays.asList(attachment1, attachment2));
-		when(packageRepository.findByPackageId("packageId")).thenReturn(ourPackage);
-
-		String actualUuid = service.getFileUuid("the one", "packageId");
-
-		assertEquals("theCorrectId", actualUuid);
-	}
-
-	@Test
-	public void testGetFileUuid_throwsWhenNotFound() throws Exception {
-		Package ourPackage = mock(Package.class);
-		when(packageRepository.findByPackageId("packageId")).thenReturn(ourPackage);
-
-		try {
-			service.getFileUuid("the one", "packageId");
-			fail("Should have thrown exception");
-		} catch (Exception expected) {
-			assertEquals("Unable to find file: 'the one' in package with id: packageId", expected.getMessage());
-		}
-
-	}
 }

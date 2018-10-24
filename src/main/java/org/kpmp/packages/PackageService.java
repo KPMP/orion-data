@@ -105,14 +105,4 @@ public class PackageService {
 		}.start();
 	}
 
-	public String getFileUuid(String filename, String packageId) throws Exception {
-		Package packageInfo = packageRepository.findByPackageId(packageId);
-		List<Attachment> attachments = packageInfo.getAttachments();
-		for (Attachment attachment : attachments) {
-			if (attachment.getFileName().equals(filename)) {
-				return attachment.getId();
-			}
-		}
-		throw new Exception("Unable to find file: '" + filename + "' in package with id: " + packageId);
-	}
 }
