@@ -1,7 +1,5 @@
 package org.kpmp.packages;
 
-import static de.flapdoodle.embed.mongo.distribution.Version.Main.PRODUCTION;
-
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +14,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import com.mongodb.MongoClient;
 
 import cz.jirutka.spring.embedmongo.EmbeddedMongoFactoryBean;
-import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
 
 @Configuration
 @ComponentScan(basePackages = {
@@ -30,8 +27,6 @@ public class TestMongoConfig {
 
 	@Value("${embedded.mongodb.version:latest}")
 	private String mongoVersion;
-
-	private IFeatureAwareVersion version = PRODUCTION;
 
 	@Bean
 	public MongoTemplate mongoTemplate() throws IOException {
