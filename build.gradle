@@ -7,6 +7,10 @@ buildscript {
     }
 }
 
+plugins {
+	id "org.asciidoctor.convert" version "1.5.3"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -14,12 +18,32 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 jar {
+	dependsOn asciidoctor
+	from ("${asciidoctor.outputDir}/html5") {
+		into 'static/docs'
+	}
     baseName='orion-data'
-    version= '1.0'
+    version= '2.0'
 }
 
 repositories {
     mavenCentral()
+}
+
+sourceSets {
+	integrationTest {
+		java {
+			compileClasspath += main.output + test.output
+			runtimeClasspath += main.output + test.output
+			srcDir file('src/integration-test/java')
+		}
+		resources.srcDir file('src/integration-test/resources')
+	}
+}
+
+configurations {
+	integrationTestCompile.extendsFrom testCompile
+	integrationTestRuntime.extendsFrom testRuntime
 }
 
 processResources {
@@ -32,16 +56,52 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web")
-	compile('commons-io:commons-io:2.6')
-    testCompile("junit:junit")
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+	asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor:2.0.1.RELEASE'
+	compile 'org.springframework.restdocs:spring-restdocs-mockmvc:2.0.1.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-web' 
+	compile 'commons-io:commons-io:2.6' 
+	compile 'org.mockito:mockito-core'
+    compile 'org.junit.jupiter:junit-jupiter-engine:5.2.0' 
     compile 'mysql:mysql-connector-java:6.0.5'
-	compile 'org.hibernate:hibernate-core:5.2.16.Final'
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile('org.springframework:spring-test:5.0.5.RELEASE')
+	compile 'org.springframework.boot:spring-boot-starter-test'
+	compile 'org.springframework:spring-test:5.0.5.RELEASE'
+	compile 'org.springframework.data:spring-data-mongodb:2.0.8.RELEASE'
+	compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1'
+	testCompile 'cz.jirutka.spring:embedmongo-spring:1.3.1'
+	compile 'org.apache.commons:commons-compress:1.17'
 }
 
-bootRun {
-    systemProperty 'spring.profiles.active', System.properties['spring.profiles.active']
+ext {
+	snippetsDir = file('build/generated-snippets')
+}
+
+test {
+	outputs.dir snippetsDir
+}
+
+tasks.withType(Test) {
+	testLogging {
+	  exceptionFormat "full"
+	  events "skipped", "passed", "failed"
+	  showStandardStreams false
+	}
+  }
+
+asciidoctor {
+	inputs.dir snippetsDir
+	dependsOn test
+}
+
+task integrationTest(type: Test) {
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	outputs.upToDateWhen { false }
+}
+
+check.dependsOn integrationTest
+integrationTest.mustRunAfter test
+
+springBoot {
+    mainClassName = "org.kpmp.Application"
 }

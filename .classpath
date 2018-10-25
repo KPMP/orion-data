@@ -3,25 +3,42 @@
 	<classpathentry kind="src" output="bin/main" path="src/main/java">
 		<attributes>
 			<attribute name="gradle_scope" value="main"/>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="gradle_used_by_scope" value="main,test,integrationTest"/>
 			<attribute name="FROM_GRADLE_MODEL" value="true"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" output="bin/main" path="src/main/resources">
 		<attributes>
 			<attribute name="gradle_scope" value="main"/>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="gradle_used_by_scope" value="main,test,integrationTest"/>
 			<attribute name="FROM_GRADLE_MODEL" value="true"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" output="bin/test" path="src/test/java">
 		<attributes>
 			<attribute name="gradle_scope" value="test"/>
-			<attribute name="gradle_used_by_scope" value="test"/>
+			<attribute name="gradle_used_by_scope" value="test,integrationTest"/>
+			<attribute name="FROM_GRADLE_MODEL" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="bin/integrationTest" path="src/integration-test/java">
+		<attributes>
+			<attribute name="gradle_scope" value="integrationTest"/>
+			<attribute name="gradle_used_by_scope" value="integrationTest"/>
 			<attribute name="FROM_GRADLE_MODEL" value="true"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/"/>
 	<classpathentry kind="con" path="org.eclipse.buildship.core.gradleclasspathcontainer"/>
+	<classpathentry kind="lib" path="/Users/rlreamy/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot/2.0.1.RELEASE/b8c5b14cbb0e52fdded8f98a8c1493cc74c7cf59/spring-boot-2.0.1.RELEASE.jar" sourcepath="/Users/rlreamy/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot/2.0.1.RELEASE/6256c81ff81377b54b95e89817b93ba408513918/spring-boot-2.0.1.RELEASE-sources.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="integrationTest,main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/rlreamy/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-autoconfigure/2.0.1.RELEASE/b0bf9d34ed70c6987a86cd58a009065e5fa02545/spring-boot-autoconfigure-2.0.1.RELEASE.jar" sourcepath="/Users/rlreamy/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-autoconfigure/2.0.1.RELEASE/e4f10fbe21036deaf8a127b5cff982cbde0be845/spring-boot-autoconfigure-2.0.1.RELEASE-sources.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="integrationTest,main,test"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin/default"/>
 </classpath>

@@ -1,0 +1,70 @@
+= KPMP Data Lake Uploader Documentation
+:toc: left
+:sectnums:
+
+== Introduction
+This tool is used to upload data to the KPMP Data Lake.
+
+== View Packages
+This will retrieve the list of packages that have been stored in Mongo and return the basic information
+to be displayed to the user.
+
+=== Sample Request
+include::{snippets}/listPackages/httpie-request.adoc[]
+
+=== Sample Response
+include::{snippets}/listPackages/http-response.adoc[]
+
+include::{snippets}/listPackages/response-fields.adoc[]
+
+== Upload Package
+The process to upload a package contains three steps.
+  
+=== Step 1 - Upload package metadata
+
+==== Sample Request
+include::{snippets}/uploadPackageInfo/http-request.adoc[]
+
+include::{snippets}/uploadPackageInfo/request-fields.adoc[]
+
+==== Sample Response
+The response is the generated id for the package.
+
+include::{snippets}/uploadPackageInfo/http-response.adoc[]
+
+=== Step 2 - Upload the files
+We support chunking of file uploads. If you have multiple files, you will need to call this for each file you wish to add to the package.
+
+==== Sample Request
+include::{snippets}/postFileToPackage/http-request.adoc[]
+
+include::{snippets}/postFileToPackage/request-parameters.adoc[]
+
+include::{snippets}/postFileToPackage/path-parameters.adoc[]
+
+==== Sample Response
+include::{snippets}/postFileToPackage/http-response.adoc[]
+
+=== Step 3 - Finish the package upload
+Calling this will generate the zip file to allow the package to be downloaded.  Without this call, the package will not be available for download.
+
+==== Sample Request
+include::{snippets}/finishPackage/http-request.adoc[]
+
+include::{snippets}/finishPackage/path-parameters.adoc[]
+
+==== Sample Response
+include::{snippets}/finishPackage/http-response.adoc[]
+
+== Download Package
+Only packages that have completed the finish step above will be available for download.
+
+=== Sample Request
+include::{snippets}/downloadPackage/http-request.adoc[]
+
+include::{snippets}/downloadPackage/path-parameters.adoc[]
+
+=== Sample Response
+include::{snippets}/downloadPackage/http-response.adoc[]
+
+
