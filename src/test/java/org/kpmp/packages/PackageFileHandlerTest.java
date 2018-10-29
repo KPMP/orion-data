@@ -121,7 +121,7 @@ public class PackageFileHandlerTest {
 
 		fileHandler.saveMultipartFile(fileOne, "packageId", "filename.txt", false);
 
-		assertThrows(FileAlreadyExistsException.class, () -> fileHandler.saveMultipartFile(fileTwo, "packageId", "filename.txt", false), "filename.txt");
+		assertThrows(FileAlreadyExistsException.class, () -> fileHandler.saveMultipartFile(fileTwo, "packageId", "filename.txt", false));
 
 
 	}
