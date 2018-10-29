@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -31,10 +32,14 @@ public class PackageFileHandler {
 		}
 
 		File fileToSave = new File(packageDirectoryPath + File.separator + filename);
-		InputStream inputStream = file.getInputStream();
-		FileOutputStream fileOutputStream = new FileOutputStream(fileToSave, shouldAppend);
+		if (!shouldAppend && fileToSave.exists()) {
+			throw new FileAlreadyExistsException(fileToSave.getPath());
+		} else {
+			InputStream inputStream = file.getInputStream();
+			FileOutputStream fileOutputStream = new FileOutputStream(fileToSave, shouldAppend);
 
-		IOUtils.copy(inputStream, fileOutputStream);
+			IOUtils.copy(inputStream, fileOutputStream);
+		}
 	}
 
 }

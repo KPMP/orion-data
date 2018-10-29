@@ -1,6 +1,7 @@
 package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -9,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -103,6 +105,25 @@ public class PackageFileHandlerTest {
 		}
 		assertEquals("Here is the data in the fileHere is the more data", fileContents);
 		reader.close();
+	}
+
+	@Test
+	public void testSaveMultipartFile_fileExists() throws IOException {
+		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
+		String dataDirectoryPath = dataDirectory.toString();
+		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
+		MultipartFile fileOne = mock(MultipartFile.class);
+		InputStream testInputStream1 = IOUtils.toInputStream("Here is the data in file 1", "UTF-8");
+		when(fileOne.getInputStream()).thenReturn(testInputStream1);
+		MultipartFile fileTwo = mock(MultipartFile.class);
+		InputStream testInputStream2 = IOUtils.toInputStream("Here is the data in file 2", "UTF-8");
+		when(fileTwo.getInputStream()).thenReturn(testInputStream2);
+
+		fileHandler.saveMultipartFile(fileOne, "packageId", "filename.txt", false);
+
+		assertThrows(FileAlreadyExistsException.class, () -> fileHandler.saveMultipartFile(fileTwo, "packageId", "filename.txt", false), "filename.txt");
+
+
 	}
 
 }
