@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.kpmp.UniversalIdGenerator;
+import org.kpmp.users.User;
+import org.kpmp.users.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +26,17 @@ public class PackageService {
 	private static final MessageFormat zipPackage = new MessageFormat("Service|{0}|{1}");
 
 	private PackageRepository packageRepository;
+	private UserRepository userRepository;
 	private UniversalIdGenerator universalIdGenerator;
 	private PackageFileHandler packageFileHandler;
 	private PackageZipService packageZipper;
 	private FilePathHelper filePathHelper;
 
 	@Autowired
-	public PackageService(PackageRepository packageRepository, UniversalIdGenerator universalIdGenerator,
+	public PackageService(PackageRepository packageRepository, UserRepository userRepository, UniversalIdGenerator universalIdGenerator,
 			PackageFileHandler packageFileHandler, PackageZipService packageZipper, FilePathHelper filePathHelper) {
 		this.packageRepository = packageRepository;
+		this.userRepository = userRepository;
 		this.filePathHelper = filePathHelper;
 		this.universalIdGenerator = universalIdGenerator;
 		this.packageFileHandler = packageFileHandler;
@@ -71,6 +75,10 @@ public class PackageService {
 		List<Attachment> attachments = packageInfo.getAttachments();
 		for (Attachment attachment : attachments) {
 			attachment.setId(universalIdGenerator.generateUniversalId());
+		}
+		User user = userRepository.findByEmail(packageInfo.getSubmitter().getEmail());
+		if (user == null) {
+			userRepository.save(packageInfo.getSubmitter());
 		}
 		Package savedPackage = packageRepository.save(packageInfo);
 		return savedPackage;

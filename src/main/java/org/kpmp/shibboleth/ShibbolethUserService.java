@@ -27,15 +27,11 @@ public class ShibbolethUserService {
         value = handleNull(request.getHeader("sn"));
         String lastName = encoder.convertFromLatin1(value);
 
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            user = new User();
-            user.setDisplayName(displayName);
-            user.setLastName(lastName);
-            user.setFirstName(firstName);
-            user.setEmail(email);
-            userRepository.save(user);
-        }
+        User user = new User();
+        user.setDisplayName(displayName);
+        user.setLastName(lastName);
+        user.setFirstName(firstName);
+        user.setEmail(email);
         return user;
 
     }

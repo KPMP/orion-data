@@ -23,6 +23,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.UniversalIdGenerator;
+import org.kpmp.users.UserRepository;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Sort;
@@ -32,6 +33,8 @@ public class PackageServiceTest {
 
 	@Mock
 	private PackageRepository packageRepository;
+	@Mock
+	private UserRepository userRepository;
 	@Mock
 	private UniversalIdGenerator universalIdGenerator;
 	@Mock
@@ -45,7 +48,7 @@ public class PackageServiceTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		service = new PackageService(packageRepository, universalIdGenerator, packageFileHandler, packageZipService,
+		service = new PackageService(packageRepository, userRepository, universalIdGenerator, packageFileHandler, packageZipService,
 				filePathHelper);
 	}
 
