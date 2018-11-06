@@ -78,8 +78,9 @@ public class PackageService {
 		}
 		User user = userRepository.findByEmail(packageInfo.getSubmitter().getEmail());
 		if (user == null) {
-			userRepository.save(packageInfo.getSubmitter());
+			user = userRepository.save(packageInfo.getSubmitter());
 		}
+		packageInfo.setSubmitter(user);
 		Package savedPackage = packageRepository.save(packageInfo);
 		return savedPackage;
 	}

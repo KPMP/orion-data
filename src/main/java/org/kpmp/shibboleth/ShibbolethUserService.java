@@ -5,17 +5,10 @@ import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.kpmp.users.User;
-import org.kpmp.users.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ShibbolethUserService {
-
-    private UserRepository userRepository;
-
-    public ShibbolethUserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public User getUser(HttpServletRequest request, UTF8Encoder encoder) throws UnsupportedEncodingException {
         String value = handleNull(request.getHeader("mail"));
