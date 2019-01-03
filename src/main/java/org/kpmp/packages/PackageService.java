@@ -33,8 +33,9 @@ public class PackageService {
 	private FilePathHelper filePathHelper;
 
 	@Autowired
-	public PackageService(PackageRepository packageRepository, UserRepository userRepository, UniversalIdGenerator universalIdGenerator,
-			PackageFileHandler packageFileHandler, PackageZipService packageZipper, FilePathHelper filePathHelper) {
+	public PackageService(PackageRepository packageRepository, UserRepository userRepository,
+			UniversalIdGenerator universalIdGenerator, PackageFileHandler packageFileHandler,
+			PackageZipService packageZipper, FilePathHelper filePathHelper) {
 		this.packageRepository = packageRepository;
 		this.userRepository = userRepository;
 		this.filePathHelper = filePathHelper;
@@ -61,8 +62,8 @@ public class PackageService {
 	}
 
 	public Path getPackageFile(String packageId) {
-		String packagePath = filePathHelper.getPackagePath(packageId);
-		Path filePath = Paths.get(packagePath, packageId + ".zip");
+		String zipFileName = filePathHelper.getZipFileName(packageId);
+		Path filePath = Paths.get(zipFileName);
 		if (!filePath.toFile().exists()) {
 			throw new RuntimeException("The file was not found: " + filePath.getFileName().toString());
 		}

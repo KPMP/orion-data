@@ -47,6 +47,12 @@ public class PackageZipService {
 				}
 				zipFile.closeArchiveEntry();
 			}
+			ZipArchiveEntry metadataEntry = new ZipArchiveEntry("metadata.json");
+			String metadataJson = packageInformation.generateJSON();
+			metadataEntry.setSize(metadataJson.getBytes().length);
+			zipFile.putArchiveEntry(metadataEntry);
+			zipFile.write(metadataJson.getBytes());
+			zipFile.closeArchiveEntry();
 		}
 		File zipFileHandle = new File(zipFileName);
 		tempZipFileHandle.renameTo(zipFileHandle);

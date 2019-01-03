@@ -69,6 +69,7 @@ public class PackageController {
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Resource> downloadPackage(@PathVariable String packageId) {
+
 		Resource resource = null;
 		try {
 			resource = new UrlResource(packageService.getPackageFile(packageId).toUri());
