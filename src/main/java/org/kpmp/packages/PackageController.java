@@ -1,6 +1,5 @@
 package org.kpmp.packages;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.util.List;
@@ -69,8 +68,7 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Resource> downloadPackage(@PathVariable String packageId) throws IOException {
-
+	public @ResponseBody ResponseEntity<Resource> downloadPackage(@PathVariable String packageId) {
 		Resource resource = null;
 		try {
 			resource = new UrlResource(packageService.getPackageFile(packageId).toUri());
