@@ -49,8 +49,8 @@ public class PackageServiceTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		service = new PackageService(packageRepository, userRepository, universalIdGenerator, packageFileHandler, packageZipService,
-				filePathHelper);
+		service = new PackageService(packageRepository, userRepository, universalIdGenerator, packageFileHandler,
+				packageZipService, filePathHelper);
 	}
 
 	@After
@@ -73,7 +73,7 @@ public class PackageServiceTest {
 	}
 
 	@Test
-		 public void testSavePackageInformationUserDoesntExist() throws Exception {
+	public void testSavePackageInformationUserDoesntExist() throws Exception {
 		Package packageInfo = new Package();
 		Attachment attachment1 = new Attachment();
 		Attachment attachment2 = new Attachment();
@@ -111,7 +111,7 @@ public class PackageServiceTest {
 		when(universalIdGenerator.generateUniversalId()).thenReturn("new universal id").thenReturn("new universal id2")
 				.thenReturn("new universal id3");
 		Package expectedPackage = mock(Package.class);
-		User expectedSubmitter= mock(User.class);
+		User expectedSubmitter = mock(User.class);
 		when(packageRepository.save(packageInfo)).thenReturn(expectedPackage);
 		when(userRepository.findByEmail("nouser@doesntexist.org")).thenReturn(expectedSubmitter);
 
@@ -197,7 +197,8 @@ public class PackageServiceTest {
 		String packageId = "abc-345";
 		Path packagePath = Files.createTempDirectory("data");
 		packagePath.toFile().deleteOnExit();
-		when(filePathHelper.getPackagePath("", packageId)).thenReturn(packagePath.toString());
+		when(filePathHelper.getZipFileName(packageId))
+				.thenReturn(packagePath.toString() + File.separator + packageId + ".zip");
 
 		try {
 			service.getPackageFile(packageId);
@@ -216,7 +217,7 @@ public class PackageServiceTest {
 		File file = new File(expectedFilePathString);
 		file.createNewFile();
 		file.deleteOnExit();
-		when(filePathHelper.getPackagePath(packageId)).thenReturn(packagePath.toString());
+		when(filePathHelper.getZipFileName(packageId)).thenReturn(expectedFilePathString);
 
 		Path actualFilePath = service.getPackageFile(packageId);
 
