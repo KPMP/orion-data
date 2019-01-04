@@ -1,5 +1,6 @@
 package org.kpmp.packages;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.util.List;
@@ -68,7 +69,7 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Resource> downloadPackage(@PathVariable String packageId) {
+	public @ResponseBody ResponseEntity<Resource> downloadPackage(@PathVariable String packageId) throws IOException {
 
 		Resource resource = null;
 		try {
@@ -77,6 +78,7 @@ public class PackageController {
 			throw new RuntimeException(e);
 		}
 		log.info(fileDownloadRequest.format(new Object[] { packageId, resource.toString() }));
+
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
 				.body(resource);
