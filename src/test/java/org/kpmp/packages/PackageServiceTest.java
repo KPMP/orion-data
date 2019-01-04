@@ -1,7 +1,6 @@
 package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
@@ -49,8 +48,8 @@ public class PackageServiceTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		service = new PackageService(packageRepository, userRepository, universalIdGenerator, packageFileHandler, packageZipService,
-				filePathHelper);
+		service = new PackageService(packageRepository, userRepository, universalIdGenerator, packageFileHandler,
+				packageZipService, filePathHelper);
 	}
 
 	@After
@@ -73,7 +72,7 @@ public class PackageServiceTest {
 	}
 
 	@Test
-		 public void testSavePackageInformationUserDoesntExist() throws Exception {
+	public void testSavePackageInformationUserDoesntExist() throws Exception {
 		Package packageInfo = new Package();
 		Attachment attachment1 = new Attachment();
 		Attachment attachment2 = new Attachment();
@@ -81,7 +80,7 @@ public class PackageServiceTest {
 		User submitter = new User();
 		submitter.setEmail("nouser@doesntexist.org");
 		packageInfo.setSubmitter(submitter);
-		when(universalIdGenerator.generateUniversalId()).thenReturn("new universal id").thenReturn("new universal id2")
+		when(universalIdGenerator.generateUniversalId()).thenReturn("new universal id2")
 				.thenReturn("new universal id3");
 		Package expectedPackage = mock(Package.class);
 		when(packageRepository.save(packageInfo)).thenReturn(expectedPackage);
@@ -90,8 +89,6 @@ public class PackageServiceTest {
 
 		Package savedPackage = service.savePackageInformation(packageInfo);
 
-		assertEquals("new universal id", packageInfo.getPackageId());
-		assertNotNull(packageInfo.getCreatedAt());
 		verify(packageRepository).save(packageInfo);
 		verify(userRepository).save(submitter);
 		assertEquals(expectedPackage, savedPackage);
@@ -108,17 +105,15 @@ public class PackageServiceTest {
 		User submitter = new User();
 		submitter.setEmail("nouser@doesntexist.org");
 		packageInfo.setSubmitter(submitter);
-		when(universalIdGenerator.generateUniversalId()).thenReturn("new universal id").thenReturn("new universal id2")
+		when(universalIdGenerator.generateUniversalId()).thenReturn("new universal id2")
 				.thenReturn("new universal id3");
 		Package expectedPackage = mock(Package.class);
-		User expectedSubmitter= mock(User.class);
+		User expectedSubmitter = mock(User.class);
 		when(packageRepository.save(packageInfo)).thenReturn(expectedPackage);
 		when(userRepository.findByEmail("nouser@doesntexist.org")).thenReturn(expectedSubmitter);
 
 		Package savedPackage = service.savePackageInformation(packageInfo);
 
-		assertEquals("new universal id", packageInfo.getPackageId());
-		assertNotNull(packageInfo.getCreatedAt());
 		verify(packageRepository).save(packageInfo);
 		assertEquals(expectedPackage, savedPackage);
 		assertEquals(expectedPackage.getSubmitter(), savedPackage.getSubmitter());

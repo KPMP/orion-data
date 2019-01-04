@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.kpmp.UniversalIdGenerator;
@@ -33,8 +32,9 @@ public class PackageService {
 	private FilePathHelper filePathHelper;
 
 	@Autowired
-	public PackageService(PackageRepository packageRepository, UserRepository userRepository, UniversalIdGenerator universalIdGenerator,
-			PackageFileHandler packageFileHandler, PackageZipService packageZipper, FilePathHelper filePathHelper) {
+	public PackageService(PackageRepository packageRepository, UserRepository userRepository,
+			UniversalIdGenerator universalIdGenerator, PackageFileHandler packageFileHandler,
+			PackageZipService packageZipper, FilePathHelper filePathHelper) {
 		this.packageRepository = packageRepository;
 		this.userRepository = userRepository;
 		this.filePathHelper = filePathHelper;
@@ -70,8 +70,7 @@ public class PackageService {
 	}
 
 	public Package savePackageInformation(Package packageInfo) {
-		packageInfo.setPackageId(universalIdGenerator.generateUniversalId());
-		packageInfo.setCreatedAt(new Date());
+
 		List<Attachment> attachments = packageInfo.getAttachments();
 		for (Attachment attachment : attachments) {
 			attachment.setId(universalIdGenerator.generateUniversalId());
