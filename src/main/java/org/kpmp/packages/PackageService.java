@@ -71,8 +71,8 @@ public class PackageService {
 	}
 
 	public Path getPackageFile(String packageId) {
-		String packagePath = filePathHelper.getPackagePath(packageId);
-		Path filePath = Paths.get(packagePath, packageId + ".zip");
+		String zipFileName = filePathHelper.getZipFileName(packageId);
+		Path filePath = Paths.get(zipFileName);
 		if (!filePath.toFile().exists()) {
 			throw new RuntimeException("The file was not found: " + filePath.getFileName().toString());
 		}

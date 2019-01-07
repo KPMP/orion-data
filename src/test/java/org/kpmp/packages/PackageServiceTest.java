@@ -228,7 +228,8 @@ public class PackageServiceTest {
 		String packageId = "abc-345";
 		Path packagePath = Files.createTempDirectory("data");
 		packagePath.toFile().deleteOnExit();
-		when(filePathHelper.getPackagePath("", packageId)).thenReturn(packagePath.toString());
+		when(filePathHelper.getZipFileName(packageId))
+				.thenReturn(packagePath.toString() + File.separator + packageId + ".zip");
 
 		try {
 			service.getPackageFile(packageId);
@@ -247,7 +248,7 @@ public class PackageServiceTest {
 		File file = new File(expectedFilePathString);
 		file.createNewFile();
 		file.deleteOnExit();
-		when(filePathHelper.getPackagePath(packageId)).thenReturn(packagePath.toString());
+		when(filePathHelper.getZipFileName(packageId)).thenReturn(expectedFilePathString);
 
 		Path actualFilePath = service.getPackageFile(packageId);
 

@@ -76,6 +76,7 @@ public class PackageController {
 			throw new RuntimeException(e);
 		}
 		log.info(fileDownloadRequest.format(new Object[] { packageId, resource.toString() }));
+
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
 				.body(resource);
