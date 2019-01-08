@@ -44,7 +44,7 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)
-	public @ResponseBody String postPackageInfo(@RequestBody Package packageInfo) {
+	public @ResponseBody String postPackageInformation(@RequestBody Package packageInfo) {
 		log.info(packageInfoPost.format(new Object[] { "postPackageInfo", packageInfo }));
 
 		Package savedPackage = packageService.savePackageInformation(packageInfo);
@@ -85,11 +85,14 @@ public class PackageController {
 	@RequestMapping(value = "/v1/packages/{packageId}/files/finish", method = RequestMethod.POST)
 	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId) {
 		log.info(finish.format(new Object[] { "finishUpload", packageId }));
+
 		packageService.createZipFile(packageId);
+
 		return new FileUploadResponse(true);
 	}
 
 	private boolean shouldAppend(int chunk) {
 		return chunk != 0;
 	}
+
 }
