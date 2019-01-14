@@ -6,4 +6,5 @@ public abstract class UserJsonMixin {
 
     @JsonIgnore
     abstract String getId();
+
 }

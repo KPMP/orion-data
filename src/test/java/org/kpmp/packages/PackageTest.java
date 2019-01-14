@@ -94,6 +94,15 @@ public class PackageTest {
 	}
 
 	@Test
+	public void testGetAttachmentFilenames() throws Exception {
+		Attachment attachment = new Attachment();
+		attachment.setFileName("file1.zip");
+		List<Attachment> attachments = Arrays.asList(attachment);
+		testPackage.setAttachments(attachments);
+		assertEquals(Arrays.asList(new String[] {"file1.zip"}), testPackage.getAttachmentFilenames());
+	}
+
+	@Test
 	public void testToString() throws Exception {
 		Date createdAt = new Date();
 		Package packageInfo = new Package();
