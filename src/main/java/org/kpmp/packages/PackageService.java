@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -167,5 +168,25 @@ public class PackageService {
 		long megabyteValue = 1024L * 1024L;
 		return (double) totalSize / megabyteValue;
 	}
+
+	public Boolean checkFilesExist(Package packageInformation) {
+		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId());
+		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
+		List<String> filesInPackage = getAttachmentFilenames(packageInformation);
+		Collections.sort(filesOnDisk);
+		Collections.sort(filesInPackage);
+		return filesOnDisk.equals(filesInPackage);
+	}
+
+	private List<String> getAttachmentFilenames(Package packageInformation) {
+		ArrayList<String> filenames = new ArrayList<>();
+		List<Attachment> attachments = packageInformation.getAttachments();
+		for (Attachment attachment : attachments) {
+			filenames.add(attachment.getFileName());
+		}
+		return filenames;
+	};
+
+
 
 }

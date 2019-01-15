@@ -290,4 +290,29 @@ public class PackageServiceTest {
 		assertEquals(true, timingMessage.contains("|5.299 MB/sec"));
 	}
 
+	@Test
+	public void testCheckFilesExistTrue() throws Exception {
+		Package packageInfo = new Package();
+		Attachment attachment1 = new Attachment();
+		attachment1.setFileName("file1");
+		Attachment attachment2 = new Attachment();
+		attachment2.setFileName("file2");
+		when(filePathHelper.getPackagePath("123")).thenReturn("path");
+		when(filePathHelper.getFilenames("path")).thenReturn(Arrays.asList("file2", "file1"));
+		assertEquals(true, service.checkFilesExist(packageInfo));
+	}
+
+	@Test
+	public void testCheckFilesExistFalse() throws Exception {
+		Package packageInfo = new Package();
+		Attachment attachment1 = new Attachment();
+		attachment1.setFileName("file1");
+		Attachment attachment2 = new Attachment();
+		attachment2.setFileName("file2");
+		packageInfo.setAttachments(Arrays.asList(attachment1, attachment2));
+		when(filePathHelper.getPackagePath("123")).thenReturn("path");
+		when(filePathHelper.getFilenames("path")).thenReturn(Arrays.asList("file1"));
+		assertEquals(false, service.checkFilesExist(packageInfo));
+	}
+
 }

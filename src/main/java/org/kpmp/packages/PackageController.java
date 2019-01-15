@@ -84,11 +84,18 @@ public class PackageController {
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files/finish", method = RequestMethod.POST)
 	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId) {
+		FileUploadResponse fileUploadResponse;
 		log.info(finish.format(new Object[] { "finishUpload", packageId }));
-
-		packageService.createZipFile(packageId);
-
-		return new FileUploadResponse(true);
+		Package packageInfo = packageService.findPackage(packageId);
+		if (packageService.checkFilesExist(packageInfo)) {
+			packageService.createZipFile(packageId);
+			fileUploadResponse = new FileUploadResponse(true);
+		}
+		else {
+			log.error(finish.format(new Object[] { "mismatchedFiles", packageId }));
+			fileUploadResponse = new FileUploadResponse(false);
+		}
+		return fileUploadResponse;
 	}
 
 	private boolean shouldAppend(int chunk) {
