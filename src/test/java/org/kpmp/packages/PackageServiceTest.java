@@ -292,22 +292,37 @@ public class PackageServiceTest {
 
 	@Test
 	public void testCheckFilesExistTrue() throws Exception {
-		Package packageInfo = mock(Package.class);
-		when(packageInfo.getPackageId()).thenReturn("123");
+		Package packageInfo = new Package();
+		Attachment attachment1 = new Attachment();
+		attachment1.setFileName("file1");
+		Attachment attachment2 = new Attachment();
+		attachment2.setFileName("file2");
 		when(filePathHelper.getPackagePath("123")).thenReturn("path");
-		when(packageInfo.getAttachmentFilenames()).thenReturn(Arrays.asList(new String[]{"file1", "file2"}));
-		when(filePathHelper.getFilenames("path")).thenReturn(Arrays.asList(new String[] {"file2", "file1"}));
+		when(filePathHelper.getFilenames("path")).thenReturn(Arrays.asList("file2", "file1"));
 		assertEquals(true, service.checkFilesExist(packageInfo));
 	}
 
 	@Test
 	public void testCheckFilesExistFalse() throws Exception {
-		Package packageInfo = mock(Package.class);
-		when(packageInfo.getPackageId()).thenReturn("123");
+		Package packageInfo = new Package();
+		Attachment attachment1 = new Attachment();
+		attachment1.setFileName("file1");
+		Attachment attachment2 = new Attachment();
+		attachment2.setFileName("file2");
+		packageInfo.setAttachments(Arrays.asList(attachment1, attachment2));
 		when(filePathHelper.getPackagePath("123")).thenReturn("path");
-		when(packageInfo.getAttachmentFilenames()).thenReturn(Arrays.asList(new String[] {"file1", "file2"}));
-		when(filePathHelper.getFilenames("path")).thenReturn(Arrays.asList(new String[] {"file1"}));
+		when(filePathHelper.getFilenames("path")).thenReturn(Arrays.asList("file1"));
 		assertEquals(false, service.checkFilesExist(packageInfo));
+	}
+
+	@Test
+	public void testGetAttachmentFilenames() throws Exception {
+		Package packageInfo = new Package();
+		Attachment attachment = new Attachment();
+		attachment.setFileName("file1.zip");
+		List<Attachment> attachments = Arrays.asList(attachment);
+		packageInfo.setAttachments(attachments);
+		assertEquals(Arrays.asList(new String[] {"file1.zip"}), service.getAttachmentFilenames(packageInfo));
 	}
 
 }

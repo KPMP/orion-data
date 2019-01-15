@@ -172,11 +172,20 @@ public class PackageService {
 	public Boolean checkFilesExist(Package packageInformation) {
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
-		List<String> filesInPackage = packageInformation.getAttachmentFilenames();
+		List<String> filesInPackage = getAttachmentFilenames(packageInformation);
 		Collections.sort(filesOnDisk);
 		Collections.sort(filesInPackage);
 		return filesOnDisk.equals(filesInPackage);
 	}
+
+	public List<String> getAttachmentFilenames(Package packageInformation) {
+		ArrayList<String> filenames = new ArrayList<>();
+		List<Attachment> attachments = packageInformation.getAttachments();
+		for (Attachment attachment : attachments) {
+			filenames.add(attachment.getFileName());
+		}
+		return filenames;
+	};
 
 
 

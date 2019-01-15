@@ -76,14 +76,6 @@ public class Package {
 		this.attachments = attachments;
 	}
 
-	public List<String> getAttachmentFilenames() {
-		ArrayList<String> filenames = new ArrayList<String>();
-		for (Attachment attachment : attachments) {
-			filenames.add(attachment.getFileName());
-		}
-		return filenames;
-	};
-
 	public String getProtocol() {
 		return protocol;
 	}
