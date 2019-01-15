@@ -315,14 +315,4 @@ public class PackageServiceTest {
 		assertEquals(false, service.checkFilesExist(packageInfo));
 	}
 
-	@Test
-	public void testGetAttachmentFilenames() throws Exception {
-		Package packageInfo = new Package();
-		Attachment attachment = new Attachment();
-		attachment.setFileName("file1.zip");
-		List<Attachment> attachments = Arrays.asList(attachment);
-		packageInfo.setAttachments(attachments);
-		assertEquals(Arrays.asList(new String[] {"file1.zip"}), service.getAttachmentFilenames(packageInfo));
-	}
-
 }

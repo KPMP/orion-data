@@ -178,7 +178,7 @@ public class PackageService {
 		return filesOnDisk.equals(filesInPackage);
 	}
 
-	public List<String> getAttachmentFilenames(Package packageInformation) {
+	private List<String> getAttachmentFilenames(Package packageInformation) {
 		ArrayList<String> filenames = new ArrayList<>();
 		List<Attachment> attachments = packageInformation.getAttachments();
 		for (Attachment attachment : attachments) {
