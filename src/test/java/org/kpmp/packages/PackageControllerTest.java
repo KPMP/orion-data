@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -91,10 +92,22 @@ public class PackageControllerTest {
 		when(packageInfo.getSubmitter()).thenReturn(mock(User.class));
 		when(packageService.findPackage("3545")).thenReturn(packageInfo);
 		when(packageInfo.getCreatedAt()).thenReturn(new Date());
-
+		when(packageService.checkFilesExist(packageInfo)).thenReturn(true);
 		controller.finishUpload("3545");
 
 		verify(packageService).createZipFile("3545");
+	}
+
+	@Test
+	public void testFinishUploadMismatchedFiles() throws Exception {
+		Package packageInfo = mock(Package.class);
+		when(packageInfo.getSubmitter()).thenReturn(mock(User.class));
+		when(packageService.findPackage("3545")).thenReturn(packageInfo);
+		when(packageInfo.getCreatedAt()).thenReturn(new Date());
+		when(packageService.checkFilesExist(packageInfo)).thenReturn(false);
+		controller.finishUpload("3545");
+
+		verify(packageService, times(0)).createZipFile("3545");
 	}
 
 	@Test
