@@ -1,5 +1,7 @@
 package org.kpmp.users;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
 
@@ -10,5 +12,7 @@ public interface UserRepository extends MongoRepository<User, String> {
 	public User save(User user);
 
 	public User findByEmail(String email);
+
+	public List<User> findAll();
 
 }
