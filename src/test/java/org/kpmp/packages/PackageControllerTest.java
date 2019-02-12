@@ -4,11 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.After;
@@ -53,15 +55,16 @@ public class PackageControllerTest {
 
 	@Test
 	public void testPostPackageInfo() throws Exception {
-		Package packageInfo = new Package();
+		Package packageInfo = mock(Package.class);
 		Package savedPackage = mock(Package.class);
+		when(savedPackage.getPackageId()).thenReturn("universalId");
 		User user = new User();
 		user.setId("1234");
-		packageInfo.setSubmitter(user);
-		when(savedPackage.getPackageId()).thenReturn("universalId");
+		user.setEmail("emailaddress");
+		when(packageInfo.getSubmitter()).thenReturn(user);
 		when(packageService.savePackageInformation(packageInfo)).thenReturn(savedPackage);
 
-		String universalId = controller.postPackageInfo(packageInfo);
+		String universalId = controller.postPackageInformation(packageInfo);
 
 		assertEquals("universalId", universalId);
 		verify(packageService).savePackageInformation(packageInfo);
@@ -81,6 +84,30 @@ public class PackageControllerTest {
 		controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0);
 
 		verify(packageService).saveFile(file, "packageId", "filename", false);
+	}
+
+	@Test
+	public void testFinishUpload() throws Exception {
+		Package packageInfo = mock(Package.class);
+		when(packageInfo.getSubmitter()).thenReturn(mock(User.class));
+		when(packageService.findPackage("3545")).thenReturn(packageInfo);
+		when(packageInfo.getCreatedAt()).thenReturn(new Date());
+		when(packageService.checkFilesExist(packageInfo)).thenReturn(true);
+		controller.finishUpload("3545");
+
+		verify(packageService).createZipFile("3545");
+	}
+
+	@Test
+	public void testFinishUploadMismatchedFiles() throws Exception {
+		Package packageInfo = mock(Package.class);
+		when(packageInfo.getSubmitter()).thenReturn(mock(User.class));
+		when(packageService.findPackage("3545")).thenReturn(packageInfo);
+		when(packageInfo.getCreatedAt()).thenReturn(new Date());
+		when(packageService.checkFilesExist(packageInfo)).thenReturn(false);
+		controller.finishUpload("3545");
+
+		verify(packageService, times(0)).createZipFile("3545");
 	}
 
 	@Test

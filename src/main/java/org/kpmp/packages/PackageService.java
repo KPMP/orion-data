@@ -4,11 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.kpmp.UniversalIdGenerator;
 import org.kpmp.users.User;
 import org.kpmp.users.UserRepository;
@@ -24,6 +30,10 @@ public class PackageService {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private static final MessageFormat zipPackage = new MessageFormat("Service|{0}|{1}");
+	private static final MessageFormat fileUploadStartTiming = new MessageFormat("Timing|start|{0}|{1}|{2}|{3} files");
+	private static final MessageFormat fileUploadFinishTiming = new MessageFormat(
+			"Timing|end|{0}|{1}|{2}|{3} files|{4}|{5}|{6}");
+	private static final MessageFormat zipTiming = new MessageFormat("Timing|zip|{0}|{1}|{2}|{3} files|{4}|{5}");
 
 	private PackageRepository packageRepository;
 	private UserRepository userRepository;
@@ -33,8 +43,9 @@ public class PackageService {
 	private FilePathHelper filePathHelper;
 
 	@Autowired
-	public PackageService(PackageRepository packageRepository, UserRepository userRepository, UniversalIdGenerator universalIdGenerator,
-			PackageFileHandler packageFileHandler, PackageZipService packageZipper, FilePathHelper filePathHelper) {
+	public PackageService(PackageRepository packageRepository, UserRepository userRepository,
+			UniversalIdGenerator universalIdGenerator, PackageFileHandler packageFileHandler,
+			PackageZipService packageZipper, FilePathHelper filePathHelper) {
 		this.packageRepository = packageRepository;
 		this.userRepository = userRepository;
 		this.filePathHelper = filePathHelper;
@@ -61,8 +72,8 @@ public class PackageService {
 	}
 
 	public Path getPackageFile(String packageId) {
-		String packagePath = filePathHelper.getPackagePath(packageId);
-		Path filePath = Paths.get(packagePath, packageId + ".zip");
+		String zipFileName = filePathHelper.getZipFileName(packageId);
+		Path filePath = Paths.get(zipFileName);
 		if (!filePath.toFile().exists()) {
 			throw new RuntimeException("The file was not found: " + filePath.getFileName().toString());
 		}
@@ -70,8 +81,13 @@ public class PackageService {
 	}
 
 	public Package savePackageInformation(Package packageInfo) {
-		packageInfo.setPackageId(universalIdGenerator.generateUniversalId());
-		packageInfo.setCreatedAt(new Date());
+		Date startTime = new Date();
+		String packageId = universalIdGenerator.generateUniversalId();
+		packageInfo.setPackageId(packageId);
+		packageInfo.setCreatedAt(startTime);
+		log.info(fileUploadStartTiming.format(new Object[] { startTime, packageInfo.getSubmitter().getEmail(),
+				packageId, packageInfo.getAttachments().size() }));
+
 		List<Attachment> attachments = packageInfo.getAttachments();
 		for (Attachment attachment : attachments) {
 			attachment.setId(universalIdGenerator.generateUniversalId());
@@ -101,6 +117,16 @@ public class PackageService {
 	public void createZipFile(String packageId) {
 
 		Package packageInfo = packageRepository.findByPackageId(packageId);
+		List<Attachment> attachments = packageInfo.getAttachments();
+		String displaySize = FileUtils.byteCountToDisplaySize(getTotalSizeOfAttachmentsInBytes(attachments));
+		Date finishUploadTime = new Date();
+		long duration = calculateDurationInSeconds(packageInfo.getCreatedAt(), finishUploadTime);
+		double uploadRate = calculateUploadRate(duration, attachments);
+		DecimalFormat rateFormat = new DecimalFormat("###.###");
+
+		log.info(fileUploadFinishTiming.format(
+				new Object[] { finishUploadTime, packageInfo.getSubmitter().getEmail(), packageId, attachments.size(),
+						displaySize, duration + " seconds", rateFormat.format(uploadRate) + " MB/sec" }));
 
 		new Thread() {
 			public void run() {
@@ -110,8 +136,57 @@ public class PackageService {
 					e.printStackTrace();
 				}
 				log.info(zipPackage.format(new Object[] { "createZipFile", packageId }));
+				long zipDuration = calculateDurationInSeconds(finishUploadTime, new Date());
+				log.info(zipTiming.format(
+						new Object[] { packageInfo.getCreatedAt(), packageInfo.getSubmitter().getEmail(), packageId,
+								packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
 			}
 		}.start();
 	}
+
+	private double calculateUploadRate(long duration, List<Attachment> attachments) {
+		double fileSizeInMeg = calculateFileSizeInMeg(attachments);
+		return (double) fileSizeInMeg / duration;
+	}
+
+	private long calculateDurationInSeconds(Date startTime, Date endTime) {
+		LocalDateTime start = LocalDateTime.ofInstant(startTime.toInstant(), ZoneId.systemDefault());
+		LocalDateTime end = LocalDateTime.ofInstant(endTime.toInstant(), ZoneId.systemDefault());
+		return ChronoUnit.SECONDS.between(start, end);
+	}
+
+	private long getTotalSizeOfAttachmentsInBytes(List<Attachment> attachments) {
+		long totalSize = 0;
+		for (Attachment attachment : attachments) {
+			totalSize += attachment.getSize();
+		}
+		return totalSize;
+	}
+
+	private double calculateFileSizeInMeg(List<Attachment> attachments) {
+		long totalSize = getTotalSizeOfAttachmentsInBytes(attachments);
+		long megabyteValue = 1024L * 1024L;
+		return (double) totalSize / megabyteValue;
+	}
+
+	public Boolean checkFilesExist(Package packageInformation) {
+		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId());
+		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
+		List<String> filesInPackage = getAttachmentFilenames(packageInformation);
+		Collections.sort(filesOnDisk);
+		Collections.sort(filesInPackage);
+		return filesOnDisk.equals(filesInPackage);
+	}
+
+	private List<String> getAttachmentFilenames(Package packageInformation) {
+		ArrayList<String> filenames = new ArrayList<>();
+		List<Attachment> attachments = packageInformation.getAttachments();
+		for (Attachment attachment : attachments) {
+			filenames.add(attachment.getFileName());
+		}
+		return filenames;
+	};
+
+
 
 }
