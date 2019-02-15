@@ -8,4 +8,5 @@ build
 /bin/
 .embedmongo
 .oracle_jre_usage
-orion-data.log
+*.log.*
+*.log
