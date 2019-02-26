@@ -97,7 +97,6 @@ public class PackageService {
 			user = userRepository.save(packageInfo.getSubmitter());
 		}
 		packageInfo.setSubmitter(user);
-		packageInfo.setRegenerateZip(false);
 		Package savedPackage = packageRepository.save(packageInfo);
 		return savedPackage;
 	}

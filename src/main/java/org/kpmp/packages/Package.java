@@ -33,7 +33,7 @@ public class Package {
 	@DBRef
 	private User submitter;
 	@Nullable
-	private Boolean regenerateZip;
+	private Boolean regenerateZip = false;
 
 	@Field("files")
 	private List<Attachment> attachments = new ArrayList<>();
