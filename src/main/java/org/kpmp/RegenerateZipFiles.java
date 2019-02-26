@@ -40,7 +40,7 @@ public class RegenerateZipFiles implements CommandLineRunner {
 		for (Package packageInfo : allPackages) {
 			String packageId = packageInfo.getPackageId();
 			String zipFileName = pathHelper.getZipFileName(packageId);
-			if (packageInfo.getRegenerateZip() == true) {
+			if (packageInfo.getRegenerateZip()) {
 				try {
 					zipService.createZipFile(packageInfo);
 				} catch (IOException e) {
