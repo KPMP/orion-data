@@ -32,6 +32,7 @@ public class Package {
 	private String description;
 	@DBRef
 	private User submitter;
+	@Nullable
 	private Boolean regenerateZip;
 
 	@Field("files")
