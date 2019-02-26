@@ -1,6 +1,5 @@
 package org.kpmp;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class RegenerateZipFiles implements CommandLineRunner {
 		for (Package packageInfo : allPackages) {
 			String packageId = packageInfo.getPackageId();
 			String zipFileName = pathHelper.getZipFileName(packageId);
-			if (new File(zipFileName).exists() != true) {
+			if (packageInfo.getRegenerateZip() == true) {
 				try {
 					zipService.createZipFile(packageInfo);
 				} catch (IOException e) {

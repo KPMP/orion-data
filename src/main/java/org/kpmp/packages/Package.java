@@ -32,6 +32,7 @@ public class Package {
 	private String description;
 	@DBRef
 	private User submitter;
+	private Boolean regenerateZip;
 
 	@Field("files")
 	private List<Attachment> attachments = new ArrayList<>();
@@ -115,6 +116,14 @@ public class Package {
 
 	public void setSubmitter(User submitter) {
 		this.submitter = submitter;
+	}
+
+	public Boolean getRegenerateZip() {
+		return regenerateZip;
+	}
+
+	public void setRegenerateZip(Boolean regenerateZip) {
+		this.regenerateZip = regenerateZip;
 	}
 
 	@Override
