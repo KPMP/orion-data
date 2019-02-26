@@ -131,7 +131,7 @@ public class Package {
 		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
 				+ ", submitterId: " + submitter.getId() + ", protocol: " + protocol + ", subjectId: " + subjectId
 				+ ", experimentDate: " + experimentDate + ", description: " + description + ", institution: "
-				+ institution + ", number of attachments: " + attachments.size();
+				+ institution + ", number of attachments: " + attachments.size() + ", regenerateZip: " + regenerateZip;
 	}
 
 	public String generateJSON() throws JsonProcessingException {

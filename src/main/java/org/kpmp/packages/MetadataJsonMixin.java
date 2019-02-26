@@ -14,6 +14,6 @@ abstract class MetadataJsonMixin {
 	abstract Date getExperimentDate();
 
 	@JsonIgnore
-	abstract String getRegenerateZipFile();
+	abstract Boolean getRegenerateZip();
 
 }
