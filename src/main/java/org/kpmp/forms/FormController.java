@@ -1,7 +1,6 @@
 package org.kpmp.forms;
 
 import java.text.MessageFormat;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,6 @@ public class FormController {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private static final MessageFormat formRequest = new MessageFormat("Request|{0}");
-	private static final MessageFormat formResponse = new MessageFormat("Response|{0}");
 
 	private FormRepository repository;
 
@@ -26,12 +24,11 @@ public class FormController {
 	}
 
 	@RequestMapping(value = "/v1/form", method = RequestMethod.GET)
-	public @ResponseBody List<Form> getFormDTD() {
+	public @ResponseBody Form getFormDTD() {
 		log.info(formRequest.format(new Object[] { "getFormDTD" }));
-		System.err.println(this.repository.findAll());
-		log.info(formResponse.format(new Object[] { this.repository.findAll() }));
-		return this.repository.findAll();
-//		return new Form();
+
+		// We only have one dtd in the db
+		return this.repository.findAll().get(0);
 	}
 
 }
