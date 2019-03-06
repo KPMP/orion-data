@@ -1,28 +1,49 @@
 package org.kpmp.forms;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class FormTest extends Form {
 
-	private Form dtd;
+	private Form form;
 
-	@BeforeEach
-	private void setUp() throws Exception {
-		dtd = new Form();
+	@Before
+	public void setUp() throws Exception {
+		form = new Form();
 	}
 
-	@AfterEach
-	private void tearDown() throws Exception {
-		dtd = null;
+	@After
+	public void tearDown() throws Exception {
+		form = null;
 	}
 
 	@Test
-	public void testGetForm() {
-//		DBObject expectedDtd = mock(DBObject.class);
-//		dtd.setForm(expectedDtd);
-//		assertEquals(expectedDtd, dtd.getForm());
+	public void testgetId() {
+		form.setId("ere354334");
+		assertEquals("ere354334", form.getId());
 	}
 
+	@Test
+	public void testGetTypeSpecificElements() throws Exception {
+		List<Map<String, Object>> expected = Arrays.asList(new HashMap<>());
+		form.setTypeSpecificElements(expected);
+
+		assertEquals(expected, form.getTypeSpecificElements());
+	}
+
+	@Test
+	public void testGetStandardFields() throws Exception {
+		HashMap<String, Object> standardFields = new HashMap<>();
+		form.setStandardFields(standardFields);
+
+		assertEquals(standardFields, form.getStandardFields());
+	}
 }

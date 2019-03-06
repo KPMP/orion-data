@@ -6,9 +6,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -18,14 +18,14 @@ public class FormControllerTest {
 	private FormRepository repository;
 	private FormController controller;
 
-	@BeforeEach
-	private void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		controller = new FormController(repository);
 	}
 
-	@AfterEach
-	private void tearDown() throws Exception {
+	@After
+	public void tearDown() throws Exception {
 		controller = null;
 	}
 
