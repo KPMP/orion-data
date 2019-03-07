@@ -138,6 +138,8 @@ public class PackageControllerIntegrationTest {
 								.description("Indicates whether this package is available to download"),
 						fieldWithPath("[].packageInfo.institution")
 								.description("The name of the institution where this data was generated"),
+						fieldWithPath("[].packageInfo.regenerateZip")
+								.description("Whether the zip file needs to be regenerated"),
 						fieldWithPath("[].packageInfo.attachments[].id")
 								.description("The generated universal id for this file"),
 						fieldWithPath("[].packageInfo.attachments[].size")
@@ -191,6 +193,7 @@ public class PackageControllerIntegrationTest {
 										"The type of data contained in the package, ex: Sub-segment RNAseq"),
 								fieldWithPath("protocol").description("The protocol used to generate this data"),
 								fieldWithPath("subjectId").description("The date this data was generated"),
+								fieldWithPath("regenerateZip").description("Whether the zip file needs to be regenerated"),
 								fieldWithPath("packageId").description(
 										"The generated universal id for the uploaded package.  DO NOT PROVIDE A VALUE"),
 								fieldWithPath("attachments")

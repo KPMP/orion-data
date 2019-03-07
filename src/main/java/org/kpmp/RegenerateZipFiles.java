@@ -1,8 +1,6 @@
 package org.kpmp;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 import org.kpmp.packages.FilePathHelper;
@@ -42,11 +40,14 @@ public class RegenerateZipFiles implements CommandLineRunner {
 		for (Package packageInfo : allPackages) {
 			String packageId = packageInfo.getPackageId();
 			String zipFileName = pathHelper.getZipFileName(packageId);
-			try {
-				Files.deleteIfExists(Paths.get(zipFileName));
-				zipService.createZipFile(packageInfo);
-			} catch (IOException e) {
-				System.err.println("Unable to delete file, invalid permissions: " + zipFileName);
+			if (packageInfo.getRegenerateZip()) {
+				try {
+					zipService.createZipFile(packageInfo);
+					packageInfo.setRegenerateZip(false);
+					packageRepository.save(packageInfo);
+				} catch (IOException e) {
+					System.err.println("Unable to delete file, invalid permissions: " + zipFileName);
+				}
 			}
 		}
 	}

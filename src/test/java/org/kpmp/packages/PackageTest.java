@@ -94,6 +94,12 @@ public class PackageTest {
 	}
 
 	@Test
+	public void testSetRegenerateZip() throws Exception {
+		testPackage.setRegenerateZip(true);
+		assertEquals(true, testPackage.getRegenerateZip());
+	}
+
+	@Test
 	public void testToString() throws Exception {
 		Date createdAt = new Date();
 		Package packageInfo = new Package();
@@ -105,6 +111,7 @@ public class PackageTest {
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
 		packageInfo.setSubjectId("subjectId");
+		packageInfo.setRegenerateZip(true);
 		User user = new User();
 		user.setId("1234");
 		packageInfo.setSubmitter(user);
@@ -112,7 +119,7 @@ public class PackageTest {
 		assertEquals("packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", "
 				+ "submitterId: 1234, "
 				+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
-				+ "institution: institution, number of attachments: 1", packageInfo.toString());
+				+ "institution: institution, number of attachments: 1, regenerateZip: true", packageInfo.toString());
 	}
 
 	@Test

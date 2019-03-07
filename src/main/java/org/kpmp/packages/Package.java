@@ -32,6 +32,8 @@ public class Package {
 	private String description;
 	@DBRef
 	private User submitter;
+	@Nullable
+	private Boolean regenerateZip = false;
 
 	@Field("files")
 	private List<Attachment> attachments = new ArrayList<>();
@@ -117,12 +119,20 @@ public class Package {
 		this.submitter = submitter;
 	}
 
+	public Boolean getRegenerateZip() {
+		return regenerateZip;
+	}
+
+	public void setRegenerateZip(Boolean regenerateZip) {
+		this.regenerateZip = regenerateZip;
+	}
+
 	@Override
 	public String toString() {
 		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
 				+ ", submitterId: " + submitter.getId() + ", protocol: " + protocol + ", subjectId: " + subjectId
 				+ ", experimentDate: " + experimentDate + ", description: " + description + ", institution: "
-				+ institution + ", number of attachments: " + attachments.size();
+				+ institution + ", number of attachments: " + attachments.size() + ", regenerateZip: " + regenerateZip;
 	}
 
 	public String generateJSON() throws JsonProcessingException {
