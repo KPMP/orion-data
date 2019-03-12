@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.util.List;
 
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,12 +45,17 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)
-	public @ResponseBody String postPackageInformation(@RequestBody Package packageInfo) {
-		log.info(packageInfoPost.format(new Object[] { "postPackageInfo", packageInfo }));
-
-		Package savedPackage = packageService.savePackageInformation(packageInfo);
-		return savedPackage.getPackageId();
+	public @ResponseBody String postPackageInformation(@RequestBody String packageInfo) throws JSONException {
+		String packageId = packageService.savePackageInformation(packageInfo);
+		return packageId;
 	}
+
+//	public @ResponseBody String postPackageInformation(@RequestBody Package packageInfo) {
+//		log.info(packageInfoPost.format(new Object[] { "postPackageInfo", packageInfo }));
+//
+//		Package savedPackage = packageService.savePackageInformation(packageInfo);
+//		return savedPackage.getPackageId();
+//	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.POST, consumes = {
 			"multipart/form-data" })
@@ -90,8 +96,7 @@ public class PackageController {
 		if (packageService.checkFilesExist(packageInfo)) {
 			packageService.createZipFile(packageId);
 			fileUploadResponse = new FileUploadResponse(true);
-		}
-		else {
+		} else {
 			log.error(finish.format(new Object[] { "mismatchedFiles", packageId }));
 			fileUploadResponse = new FileUploadResponse(false);
 		}

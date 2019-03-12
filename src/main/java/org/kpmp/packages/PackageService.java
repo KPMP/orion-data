@@ -15,6 +15,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.kpmp.UniversalIdGenerator;
 import org.kpmp.users.User;
 import org.kpmp.users.UserRepository;
@@ -22,8 +27,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.mongodb.DBRef;
+import com.mongodb.client.MongoCollection;
 
 @Service
 public class PackageService {
@@ -41,17 +50,19 @@ public class PackageService {
 	private PackageFileHandler packageFileHandler;
 	private PackageZipService packageZipper;
 	private FilePathHelper filePathHelper;
+	private MongoTemplate mongoTemplate;
 
 	@Autowired
 	public PackageService(PackageRepository packageRepository, UserRepository userRepository,
 			UniversalIdGenerator universalIdGenerator, PackageFileHandler packageFileHandler,
-			PackageZipService packageZipper, FilePathHelper filePathHelper) {
+			PackageZipService packageZipper, FilePathHelper filePathHelper, MongoTemplate mongoTemplate) {
 		this.packageRepository = packageRepository;
 		this.userRepository = userRepository;
 		this.filePathHelper = filePathHelper;
 		this.universalIdGenerator = universalIdGenerator;
 		this.packageFileHandler = packageFileHandler;
 		this.packageZipper = packageZipper;
+		this.mongoTemplate = mongoTemplate;
 
 	}
 
@@ -78,6 +89,48 @@ public class PackageService {
 			throw new RuntimeException("The file was not found: " + filePath.getFileName().toString());
 		}
 		return filePath;
+	}
+
+	public String savePackageInformation(String packageInfo) throws JSONException {
+		Date startTime = new Date();
+		String packageId = universalIdGenerator.generateUniversalId();
+		log.info("-----------" + packageInfo + "------------");
+		JSONObject json = new JSONObject(packageInfo);
+		JSONArray files = json.getJSONArray("files");
+		for (int i = 0; i < files.length(); i++) {
+			JSONObject file = files.getJSONObject(i);
+			file.put("_id", universalIdGenerator.generateUniversalId());
+		}
+		json.put("_id", packageId);
+		json.put("regenerateZip", false);
+		String submitterEmail = json.getString("submitterEmail");
+		User user = userRepository.findByEmail(submitterEmail);
+		if (user == null) {
+			User newUser = new User();
+			JSONObject submitter = json.getJSONObject("submitter");
+			newUser.setDisplayName(submitter.getString("displayName"));
+			newUser.setEmail(submitter.getString("email"));
+			newUser.setFirstName(submitter.getString("firstName"));
+			newUser.setLastName(submitter.getString("lastName"));
+			user = userRepository.save(newUser);
+			log.info("created new user");
+		}
+		json.remove("submitter");
+		json.remove("submitterFirstName");
+		json.remove("submitterLastName");
+		json.remove("submitterEmail");
+
+		DBRef userRef = new DBRef("users", new ObjectId(user.getId()));
+		String jsonString = json.toString();
+
+		Document document = Document.parse(jsonString);
+		document.put("submitter", userRef);
+		document.put("createdAt", startTime);
+
+		MongoCollection<Document> collection = mongoTemplate.getCollection("packages");
+		collection.insertOne(document);
+
+		return packageId;
 	}
 
 	public Package savePackageInformation(Package packageInfo) {
@@ -186,7 +239,5 @@ public class PackageService {
 		}
 		return filenames;
 	};
-
-
 
 }
