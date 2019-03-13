@@ -103,6 +103,7 @@ public class CustomPackageRepositoryTest {
 		when(mockSubmitter.getString("email")).thenReturn("emailAddress2");
 		when(mockSubmitter.getString("firstName")).thenReturn("firstName");
 		when(mockSubmitter.getString("lastName")).thenReturn("lastName");
+		when(mockSubmitter.has("displayName")).thenReturn(true);
 		User user = mock(User.class);
 		when(user.getId()).thenReturn("5c2f9e01cb5e710049f33121");
 		when(userRepo.save(any(User.class))).thenReturn(user);
