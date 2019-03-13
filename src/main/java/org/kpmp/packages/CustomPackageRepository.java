@@ -102,7 +102,9 @@ public class CustomPackageRepository {
 		if (user == null) {
 			User newUser = new User();
 			JSONObject submitter = packageMetadata.getJSONObject(SUBMITTER_OBJECT_KEY);
-			newUser.setDisplayName(submitter.getString(DISPLAY_NAME_KEY));
+			if (submitter.has(DISPLAY_NAME_KEY)) {
+				newUser.setDisplayName(submitter.getString(DISPLAY_NAME_KEY));
+			}
 			newUser.setEmail(submitter.getString(EMAIL_KEY));
 			newUser.setFirstName(submitter.getString(FIRST_NAME_KEY));
 			newUser.setLastName(submitter.getString(LAST_NAME_KEY));
