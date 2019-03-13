@@ -3,6 +3,7 @@ package org.kpmp.packages;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,19 +57,13 @@ public class PackageControllerTest {
 
 	@Test
 	public void testPostPackageInfo() throws Exception {
-		Package packageInfo = mock(Package.class);
-		Package savedPackage = mock(Package.class);
-		when(savedPackage.getPackageId()).thenReturn("universalId");
-		User user = new User();
-		user.setId("1234");
-		user.setEmail("emailaddress");
-		when(packageInfo.getSubmitter()).thenReturn(user);
-		when(packageService.savePackageInformation(packageInfo)).thenReturn(savedPackage);
+		String packageInfoString = "{}";
+		when(packageService.savePackageInformation(any(JSONObject.class))).thenReturn("universalId");
 
-		String universalId = controller.postPackageInformation(packageInfo);
+		String universalId = controller.postPackageInformation(packageInfoString);
 
 		assertEquals("universalId", universalId);
-		verify(packageService).savePackageInformation(packageInfo);
+		verify(packageService).savePackageInformation(any(JSONObject.class));
 	}
 
 	@Test

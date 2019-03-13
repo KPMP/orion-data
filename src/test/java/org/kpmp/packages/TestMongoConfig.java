@@ -16,9 +16,9 @@ import com.mongodb.MongoClient;
 import cz.jirutka.spring.embedmongo.EmbeddedMongoFactoryBean;
 
 @Configuration
-@ComponentScan(basePackages = {
-		"org.kpmp.packages", "org.kpmp.users" }, excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-				PackageController.class, PackageService.class }))
+@ComponentScan(basePackages = { "org.kpmp.packages",
+		"org.kpmp.users" }, excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+				PackageController.class, PackageService.class, CustomPackageRepository.class }))
 @EnableMongoRepositories(basePackages = { "org.kpmp.packages", "org.kpmp.users" })
 public class TestMongoConfig {
 
