@@ -15,59 +15,39 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.bson.Document;
-import org.bson.types.ObjectId;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.kpmp.UniversalIdGenerator;
-import org.kpmp.users.User;
-import org.kpmp.users.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.mongodb.DBRef;
-import com.mongodb.client.MongoCollection;
 
 @Service
 public class PackageService {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private static final MessageFormat zipPackage = new MessageFormat("Service|{0}|{1}");
-	private static final MessageFormat fileUploadStartTiming = new MessageFormat("Timing|start|{0}|{1}|{2}|{3} files");
 	private static final MessageFormat fileUploadFinishTiming = new MessageFormat(
 			"Timing|end|{0}|{1}|{2}|{3} files|{4}|{5}|{6}");
 	private static final MessageFormat zipTiming = new MessageFormat("Timing|zip|{0}|{1}|{2}|{3} files|{4}|{5}");
 
-	private PackageRepository packageRepository;
-	private UserRepository userRepository;
-	private UniversalIdGenerator universalIdGenerator;
 	private PackageFileHandler packageFileHandler;
 	private PackageZipService packageZipper;
 	private FilePathHelper filePathHelper;
-	private MongoTemplate mongoTemplate;
+	private CustomPackageRepository packageRepository;
 
 	@Autowired
-	public PackageService(PackageRepository packageRepository, UserRepository userRepository,
-			UniversalIdGenerator universalIdGenerator, PackageFileHandler packageFileHandler,
-			PackageZipService packageZipper, FilePathHelper filePathHelper, MongoTemplate mongoTemplate) {
-		this.packageRepository = packageRepository;
-		this.userRepository = userRepository;
+	public PackageService(PackageFileHandler packageFileHandler, PackageZipService packageZipper,
+			FilePathHelper filePathHelper, CustomPackageRepository packageRepository) {
 		this.filePathHelper = filePathHelper;
-		this.universalIdGenerator = universalIdGenerator;
 		this.packageFileHandler = packageFileHandler;
 		this.packageZipper = packageZipper;
-		this.mongoTemplate = mongoTemplate;
-
+		this.packageRepository = packageRepository;
 	}
 
 	public List<PackageView> findAllPackages() {
-		List<Package> packages = packageRepository.findAll(new Sort(Sort.Direction.DESC, "createdAt"));
+		List<Package> packages = packageRepository.findAll();
 		List<PackageView> packageViews = new ArrayList<>();
 		for (Package packageToCheck : packages) {
 			PackageView packageView = new PackageView(packageToCheck);
@@ -91,67 +71,8 @@ public class PackageService {
 		return filePath;
 	}
 
-	public String savePackageInformation(String packageInfo) throws JSONException {
-		Date startTime = new Date();
-		String packageId = universalIdGenerator.generateUniversalId();
-		log.info("-----------" + packageInfo + "------------");
-		JSONObject json = new JSONObject(packageInfo);
-		JSONArray files = json.getJSONArray("files");
-		for (int i = 0; i < files.length(); i++) {
-			JSONObject file = files.getJSONObject(i);
-			file.put("_id", universalIdGenerator.generateUniversalId());
-		}
-		json.put("_id", packageId);
-		json.put("regenerateZip", false);
-		String submitterEmail = json.getString("submitterEmail");
-		User user = userRepository.findByEmail(submitterEmail);
-		if (user == null) {
-			User newUser = new User();
-			JSONObject submitter = json.getJSONObject("submitter");
-			newUser.setDisplayName(submitter.getString("displayName"));
-			newUser.setEmail(submitter.getString("email"));
-			newUser.setFirstName(submitter.getString("firstName"));
-			newUser.setLastName(submitter.getString("lastName"));
-			user = userRepository.save(newUser);
-			log.info("created new user");
-		}
-		json.remove("submitter");
-		json.remove("submitterFirstName");
-		json.remove("submitterLastName");
-		json.remove("submitterEmail");
-
-		DBRef userRef = new DBRef("users", new ObjectId(user.getId()));
-		String jsonString = json.toString();
-
-		Document document = Document.parse(jsonString);
-		document.put("submitter", userRef);
-		document.put("createdAt", startTime);
-
-		MongoCollection<Document> collection = mongoTemplate.getCollection("packages");
-		collection.insertOne(document);
-
-		return packageId;
-	}
-
-	public Package savePackageInformation(Package packageInfo) {
-		Date startTime = new Date();
-		String packageId = universalIdGenerator.generateUniversalId();
-		packageInfo.setPackageId(packageId);
-		packageInfo.setCreatedAt(startTime);
-		log.info(fileUploadStartTiming.format(new Object[] { startTime, packageInfo.getSubmitter().getEmail(),
-				packageId, packageInfo.getAttachments().size() }));
-
-		List<Attachment> attachments = packageInfo.getAttachments();
-		for (Attachment attachment : attachments) {
-			attachment.setId(universalIdGenerator.generateUniversalId());
-		}
-		User user = userRepository.findByEmail(packageInfo.getSubmitter().getEmail());
-		if (user == null) {
-			user = userRepository.save(packageInfo.getSubmitter());
-		}
-		packageInfo.setSubmitter(user);
-		Package savedPackage = packageRepository.save(packageInfo);
-		return savedPackage;
+	public String savePackageInformation(JSONObject packageMetadata) throws JSONException {
+		return packageRepository.saveDynamicForm(packageMetadata);
 	}
 
 	public Package findPackage(String packageId) {

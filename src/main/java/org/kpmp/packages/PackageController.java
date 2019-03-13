@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,6 @@ public class PackageController {
 	@Autowired
 	public PackageController(PackageService packageService) {
 		this.packageService = packageService;
-
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
@@ -45,17 +45,12 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)
-	public @ResponseBody String postPackageInformation(@RequestBody String packageInfo) throws JSONException {
+	public @ResponseBody String postPackageInformation(@RequestBody String packageInfoString) throws JSONException {
+		JSONObject packageInfo = new JSONObject(packageInfoString);
+		log.info(packageInfoPost.format(new Object[] { "postPackageInfo", packageInfo }));
 		String packageId = packageService.savePackageInformation(packageInfo);
 		return packageId;
 	}
-
-//	public @ResponseBody String postPackageInformation(@RequestBody Package packageInfo) {
-//		log.info(packageInfoPost.format(new Object[] { "postPackageInfo", packageInfo }));
-//
-//		Package savedPackage = packageService.savePackageInformation(packageInfo);
-//		return savedPackage.getPackageId();
-//	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.POST, consumes = {
 			"multipart/form-data" })
