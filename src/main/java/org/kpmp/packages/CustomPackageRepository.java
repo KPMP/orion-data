@@ -71,8 +71,33 @@ public class CustomPackageRepository {
 			JSONObject file = files.getJSONObject(i);
 			file.put(MONGO_ID_FIELD, universalIdGenerator.generateUniversalId());
 		}
-		packageMetadata.put(MONGO_ID_FIELD, packageId);
-		packageMetadata.put(REGENERATE_ZIP_KEY, false);
+
+		User user = findUser(packageMetadata, submitterEmail);
+		cleanUpObject(packageMetadata);
+
+		DBRef userRef = new DBRef(USERS_COLLECTION, new ObjectId(user.getId()));
+		String jsonString = packageMetadata.toString();
+
+		Document document = Document.parse(jsonString);
+		document.put(SUBMITTER_OBJECT_KEY, userRef);
+		document.put(CREATED_AT_FIELD, startTime);
+		document.put(MONGO_ID_FIELD, packageId);
+		document.put(REGENERATE_ZIP_KEY, false);
+
+		MongoCollection<Document> collection = mongoTemplate.getCollection(PACKAGES_COLLECTION);
+		collection.insertOne(document);
+
+		return packageId;
+	}
+
+	private void cleanUpObject(JSONObject packageMetadata) {
+		packageMetadata.remove(SUBMITTER_OBJECT_KEY);
+		packageMetadata.remove(SUBMITTER_FIRST_NAME_KEY);
+		packageMetadata.remove(SUBMITTER_LAST_NAME_KEY);
+		packageMetadata.remove(SUBMITTER_EMAIL_KEY);
+	}
+
+	private User findUser(JSONObject packageMetadata, String submitterEmail) throws JSONException {
 		User user = userRepository.findByEmail(submitterEmail);
 		if (user == null) {
 			User newUser = new User();
@@ -83,22 +108,7 @@ public class CustomPackageRepository {
 			newUser.setLastName(submitter.getString(LAST_NAME_KEY));
 			user = userRepository.save(newUser);
 		}
-		packageMetadata.remove(SUBMITTER_OBJECT_KEY);
-		packageMetadata.remove(SUBMITTER_FIRST_NAME_KEY);
-		packageMetadata.remove(SUBMITTER_LAST_NAME_KEY);
-		packageMetadata.remove(SUBMITTER_EMAIL_KEY);
-
-		DBRef userRef = new DBRef(USERS_COLLECTION, new ObjectId(user.getId()));
-		String jsonString = packageMetadata.toString();
-
-		Document document = Document.parse(jsonString);
-		document.put(SUBMITTER_OBJECT_KEY, userRef);
-		document.put(CREATED_AT_FIELD, startTime);
-
-		MongoCollection<Document> collection = mongoTemplate.getCollection(PACKAGES_COLLECTION);
-		collection.insertOne(document);
-
-		return packageId;
+		return user;
 	}
 
 	public List<Package> findAll() {

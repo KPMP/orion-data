@@ -3,6 +3,7 @@ package org.kpmp.packages;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -56,13 +57,13 @@ public class PackageControllerTest {
 
 	@Test
 	public void testPostPackageInfo() throws Exception {
-		JSONObject packageInfo = mock(JSONObject.class);
-		when(packageService.savePackageInformation(packageInfo)).thenReturn("universalId");
+		String packageInfoString = "{}";
+		when(packageService.savePackageInformation(any(JSONObject.class))).thenReturn("universalId");
 
-		String universalId = controller.postPackageInformation(packageInfo);
+		String universalId = controller.postPackageInformation(packageInfoString);
 
 		assertEquals("universalId", universalId);
-		verify(packageService).savePackageInformation(packageInfo);
+		verify(packageService).savePackageInformation(any(JSONObject.class));
 	}
 
 	@Test

@@ -55,7 +55,7 @@ public class FilePathHelperTest {
 		File file = new File(filePathString);
 		file.createNewFile();
 		file.deleteOnExit();
-		List fileNames = Arrays.asList(new String[] {"aPackage.zip"});
+		List<String> fileNames = Arrays.asList(new String[] { "aPackage.zip" });
 		assertEquals(fileNames, filePathHelper.getFilenames(packagePath.toString()));
 	}
 }
