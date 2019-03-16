@@ -7,20 +7,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
 import org.kpmp.packages.Package;
 import org.kpmp.packages.PackageRepository;
-import org.kpmp.packages.TestMongoConfig;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = { TestMongoConfig.class })
 public class UserServiceTest {
 
     @Mock
@@ -29,13 +23,13 @@ public class UserServiceTest {
     private PackageRepository packageRepository;
     private UserService userService;
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         userService = new UserService(userRepository, packageRepository);
     }
 
-    @AfterEach
+    @After
     public void tearDown() throws Exception {
         userService = null;
     }
