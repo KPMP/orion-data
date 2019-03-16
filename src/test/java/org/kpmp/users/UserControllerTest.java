@@ -17,27 +17,29 @@ class UserControllerTest {
 
 	@Mock
 	private UserRepository userRepository;
+	@Mock
+	private UserService userService;
 	private UserController controller;
 
 	@BeforeEach
-	void setUp() throws Exception {
+	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		controller = new UserController(userRepository);
+		controller = new UserController(userRepository, userService);
 	}
 
 	@AfterEach
-	void tearDown() throws Exception {
+	public void tearDown() throws Exception {
 		controller = null;
 	}
 
 	@Test
-	void testGetUsers() {
+	public void testGetUsers() {
 		List<User> users = Arrays.asList(mock(User.class));
 		when(userRepository.findAll()).thenReturn(users);
-
-		List<User> result = controller.getUsers();
-
+		List<User> result = controller.getUsers("false");
+		List<User> result2 = controller.getUsers("true");
 		assertEquals(users, result);
+		assertEquals(null, result2);
 	}
 
 }
