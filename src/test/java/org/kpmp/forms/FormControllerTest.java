@@ -30,11 +30,18 @@ public class FormControllerTest {
 	}
 
 	@Test
-	public void testGetFormDTD() {
+	public void testGetFormDTDNoVersion() {
 		Form expectedForm = mock(Form.class);
-		when(repository.findAll()).thenReturn(Arrays.asList(expectedForm));
+		when(repository.findTopByOrderByVersionDesc()).thenReturn(expectedForm);
 
 		assertEquals(expectedForm, controller.getFormDTD());
+	}
+
+	@Test
+	public void testGetFormDTDWithVersion() {
+		Form expectedForm = mock(Form.class);
+		when(repository.findByVersion(1.0)).thenReturn(Arrays.asList(expectedForm));
+		assertEquals(expectedForm, controller.getFormDTD(1.0));
 	}
 
 }
