@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class Form {
 
 	private String id;
+	private Double version;
 	private Map<String, Object> standardFields;
 	private List<Map<String, Object>> typeSpecificElements;
 
@@ -42,5 +43,13 @@ public class Form {
 	public String toString() {
 		return "typeSpecificElements " + typeSpecificElements.toString() + ", standardFields "
 				+ standardFields;
+	}
+
+	public Double getVersion() {
+		return version;
+	}
+
+	public void setVersion(Double version) {
+		this.version = version;
 	}
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public interface FormRepository extends MongoRepository<Form, String> {
 
-	public List<Form> findAll();
+	public List<Form> findByVersion(Double version);
+	public Form findTopByOrderByVersionDesc();
 
 }

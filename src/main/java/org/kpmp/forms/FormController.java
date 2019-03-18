@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,9 +27,13 @@ public class FormController {
 	@RequestMapping(value = "/v1/form", method = RequestMethod.GET)
 	public @ResponseBody Form getFormDTD() {
 		log.info(formRequest.format(new Object[] { "getFormDTD" }));
+		return this.repository.findTopByOrderByVersionDesc();
+	}
 
-		// We only have one dtd in the db
-		return this.repository.findAll().get(0);
+	@RequestMapping(value = "/v1/form/version/{version}", method = RequestMethod.GET)
+	public @ResponseBody Form getFormDTD(@PathVariable Double version) {
+		log.info(formRequest.format(new Object[] { "getFormDTD" }));
+		return this.repository.findByVersion(version).get(0);
 	}
 
 }
