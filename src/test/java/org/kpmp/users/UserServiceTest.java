@@ -18,15 +18,13 @@ import org.mockito.MockitoAnnotations;
 public class UserServiceTest {
 
     @Mock
-    private UserRepository userRepository;
-    @Mock
     private PackageRepository packageRepository;
     private UserService userService;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        userService = new UserService(userRepository, packageRepository);
+        userService = new UserService(packageRepository);
     }
 
     @After
@@ -39,12 +37,8 @@ public class UserServiceTest {
         Package package1 = new Package();
         User user1 = new User();
         user1.setId("1");
-        User user2 = new User();
-        user2.setId("2");
         package1.setSubmitter(user1);
         List<Package> packageList = new ArrayList<>(Arrays.asList(package1));
-        List<User> users = new ArrayList<>(Arrays.asList(user1, user2));
-        when(userRepository.findAll()).thenReturn(users);
         when(packageRepository.findAll()).thenReturn(packageList);
         assertEquals(1, userService.findAllWithPackages().size());
         assertEquals("1", userService.findAllWithPackages().get(0).getId());

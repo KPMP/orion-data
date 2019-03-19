@@ -1,8 +1,9 @@
 package org.kpmp.users;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.kpmp.packages.Package;
 import org.kpmp.packages.PackageRepository;
@@ -12,32 +13,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    private UserRepository userRepository;
     private PackageRepository packageRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, PackageRepository packageRepository) {
-        this.userRepository = userRepository;
+    public UserService(PackageRepository packageRepository) {
         this.packageRepository = packageRepository;
     }
 
     public List<User> findAllWithPackages() {
-        List<User> users = userRepository.findAll();
         List<Package> packages = packageRepository.findAll();
-        Iterator it = users.iterator();
-        List<String> userIds = new ArrayList<>();
+        Map<String, User> users = new HashMap<>();
 
         for (Package aPackage : packages) {
-            userIds.add(aPackage.getSubmitter().getId());
+            users.put(aPackage.getSubmitter().getId(), aPackage.getSubmitter());
         }
 
-        while(it.hasNext()) {
-            User thisUser = (User) it.next();
-            if (!userIds.contains(thisUser.id)) {
-                it.remove();
-            }
-        }
-        return users;
+        return new ArrayList<>(users.values());
     }
 
 }
