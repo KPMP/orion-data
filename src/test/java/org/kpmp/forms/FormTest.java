@@ -46,4 +46,10 @@ public class FormTest extends Form {
 
 		assertEquals(standardFields, form.getStandardFields());
 	}
+
+	@Test
+	public void testGetVersion() throws Exception {
+		form.setVersion(3.14159);
+		assertEquals(3.14159, form.getVersion(), 0.00001);
+	}
 }
