@@ -66,6 +66,7 @@ public class User {
 
 	public String generateJSON() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.addMixIn(User.class, UserJsonMixin.class);
 		return mapper.writeValueAsString(this);
 	}
 }

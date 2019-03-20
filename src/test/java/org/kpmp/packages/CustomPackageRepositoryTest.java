@@ -172,7 +172,7 @@ public class CustomPackageRepositoryTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testGetJSONByPackageId() {
+	public void testGetJSONByPackageId() throws Exception {
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
 		FindIterable<Document> foundItems = mock(FindIterable.class);

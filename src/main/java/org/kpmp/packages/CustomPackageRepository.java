@@ -47,6 +47,8 @@ public class CustomPackageRepository {
 	private static final String SUBMITTER_FIRST_NAME_KEY = "submitterFirstName";
 	private static final String SUBMITTER_LAST_NAME_KEY = "submitterLastName";
 	private static final String SUBMITTER_OBJECT_KEY = "submitter";
+	private static final String SUBMITTER_ID_KEY = "$oid";
+	private static final String SUBMITTER_ID_OBJECT_KEY = "$id";
 
 	private static final String CREATED_AT_FIELD = "createdAt";
 	private static final String MONGO_ID_FIELD = "_id";
@@ -144,16 +146,16 @@ public class CustomPackageRepository {
 		String json = document.toJson(codec);
 
 		JSONObject jsonObject = new JSONObject(json);
-		JSONObject submitter = (JSONObject) jsonObject.get("submitter");
-		JSONObject submitterIdObject = (JSONObject) submitter.get("$id");
-		String submitterId = submitterIdObject.getString("$oid");
+		JSONObject submitter = (JSONObject) jsonObject.get(SUBMITTER_OBJECT_KEY);
+		JSONObject submitterIdObject = (JSONObject) submitter.get(SUBMITTER_ID_OBJECT_KEY);
+		String submitterId = submitterIdObject.getString(SUBMITTER_ID_KEY);
 		Optional<User> userOptional = userRepository.findById(submitterId);
-		jsonObject.remove("submitter");
+		jsonObject.remove(SUBMITTER_OBJECT_KEY);
 		if (userOptional.isPresent()) {
 			User user = userOptional.get();
 			String submitterJsonString = user.generateJSON();
 			JSONObject submitterJson = new JSONObject(submitterJsonString);
-			jsonObject.put("submitter", submitterJson);
+			jsonObject.put(SUBMITTER_OBJECT_KEY, submitterJson);
 		}
 
 		return jsonObject.toString();

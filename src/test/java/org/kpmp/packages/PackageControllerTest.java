@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -11,14 +12,13 @@ import static org.mockito.Mockito.when;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.users.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.Resource;
@@ -84,26 +84,36 @@ public class PackageControllerTest {
 
 	@Test
 	public void testFinishUpload() throws Exception {
-		Package packageInfo = mock(Package.class);
-		when(packageInfo.getSubmitter()).thenReturn(mock(User.class));
-		when(packageService.findPackage("3545")).thenReturn(packageInfo);
-		when(packageInfo.getCreatedAt()).thenReturn(new Date());
-		when(packageService.checkFilesExist(packageInfo)).thenReturn(true);
-		controller.finishUpload("3545");
+		when(packageService.checkFilesExist("3545")).thenReturn(true);
+
+		FileUploadResponse result = controller.finishUpload("3545");
 
 		verify(packageService).createZipFile("3545");
+		verify(packageService).checkFilesExist("3545");
+		assertEquals(true, result.isSuccess());
 	}
 
 	@Test
-	public void testFinishUploadMismatchedFiles() throws Exception {
-		Package packageInfo = mock(Package.class);
-		when(packageInfo.getSubmitter()).thenReturn(mock(User.class));
-		when(packageService.findPackage("3545")).thenReturn(packageInfo);
-		when(packageInfo.getCreatedAt()).thenReturn(new Date());
-		when(packageService.checkFilesExist(packageInfo)).thenReturn(false);
-		controller.finishUpload("3545");
+	public void testFinishUpload_whenCreateZipThrows() throws Exception {
+		when(packageService.checkFilesExist("3545")).thenReturn(true);
+		doThrow(new JSONException("OOF")).when(packageService).createZipFile("3545");
+
+		FileUploadResponse result = controller.finishUpload("3545");
+
+		verify(packageService).createZipFile("3545");
+		verify(packageService).checkFilesExist("3545");
+		assertEquals(false, result.isSuccess());
+	}
+
+	@Test
+	public void testFinishUpload_whenMismatchedFiles() throws Exception {
+		when(packageService.checkFilesExist("3545")).thenReturn(false);
+
+		FileUploadResponse result = controller.finishUpload("3545");
 
 		verify(packageService, times(0)).createZipFile("3545");
+		verify(packageService).checkFilesExist("3545");
+		assertEquals(false, result.isSuccess());
 	}
 
 	@Test

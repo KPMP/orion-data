@@ -143,7 +143,8 @@ public class PackageService {
 		return (double) totalSize / megabyteValue;
 	}
 
-	public Boolean checkFilesExist(Package packageInformation) {
+	public Boolean checkFilesExist(String packageId) {
+		Package packageInformation = findPackage(packageId);
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
 		List<String> filesInPackage = getAttachmentFilenames(packageInformation);

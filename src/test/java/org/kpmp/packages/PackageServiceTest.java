@@ -218,19 +218,21 @@ public class PackageServiceTest {
 
 	@Test
 	public void testCheckFilesExistTrue() throws Exception {
-		Package packageInfo = new Package();
+		when(packageRepository.findByPackageId("123")).thenReturn(mock(Package.class));
 		Attachment attachment1 = new Attachment();
 		attachment1.setFileName("file1");
 		Attachment attachment2 = new Attachment();
 		attachment2.setFileName("file2");
 		when(filePathHelper.getPackagePath("123")).thenReturn("path");
 		when(filePathHelper.getFilenames("path")).thenReturn(Arrays.asList("file2", "file1"));
-		assertEquals(true, service.checkFilesExist(packageInfo));
+
+		assertEquals(true, service.checkFilesExist("123"));
 	}
 
 	@Test
 	public void testCheckFilesExistFalse() throws Exception {
 		Package packageInfo = new Package();
+		when(packageRepository.findByPackageId("123")).thenReturn(packageInfo);
 		Attachment attachment1 = new Attachment();
 		attachment1.setFileName("file1");
 		Attachment attachment2 = new Attachment();
@@ -238,7 +240,7 @@ public class PackageServiceTest {
 		packageInfo.setAttachments(Arrays.asList(attachment1, attachment2));
 		when(filePathHelper.getPackagePath("123")).thenReturn("path");
 		when(filePathHelper.getFilenames("path")).thenReturn(Arrays.asList("file1"));
-		assertEquals(false, service.checkFilesExist(packageInfo));
+		assertEquals(false, service.checkFilesExist("123"));
 	}
 
 }
