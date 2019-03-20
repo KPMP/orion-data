@@ -1,9 +1,11 @@
 package org.kpmp.packages;
 
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import org.bson.Document;
 import org.bson.codecs.BsonTypeClassMap;
@@ -49,6 +51,7 @@ public class CustomPackageRepository {
 	private static final String SUBMITTER_OBJECT_KEY = "submitter";
 	private static final String SUBMITTER_ID_KEY = "$oid";
 	private static final String SUBMITTER_ID_OBJECT_KEY = "$id";
+	private static final String CREATED_AT_DATE_KEY = "$date";
 
 	private static final String CREATED_AT_FIELD = "createdAt";
 	private static final String MONGO_ID_FIELD = "_id";
@@ -138,13 +141,33 @@ public class CustomPackageRepository {
 		query.put(MONGO_ID_FIELD, packageId);
 
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
-		final DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
+		DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
 		MongoDatabase db = mongoTemplate.getDb();
 		MongoCollection<Document> collection = db.getCollection(PACKAGES_COLLECTION);
 
 		Document document = collection.find(query).first();
 		String json = document.toJson(codec);
 
+		JSONObject jsonObject = setUserInformation(json);
+		jsonObject = cleanUpPackageObject(jsonObject);
+
+		return jsonObject.toString();
+	}
+
+	private JSONObject cleanUpPackageObject(JSONObject json) throws JSONException {
+		json.remove(REGENERATE_ZIP_KEY);
+		JSONObject createdAtObject = (JSONObject) json.get(CREATED_AT_FIELD);
+		long milliseconds = createdAtObject.getLong(CREATED_AT_DATE_KEY);
+		Date createdAtDate = new Date(milliseconds);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		String formattedDate = dateFormat.format(createdAtDate);
+		json.remove(CREATED_AT_FIELD);
+		json.put(CREATED_AT_FIELD, formattedDate);
+		return json;
+	}
+
+	private JSONObject setUserInformation(String json) throws JSONException, JsonProcessingException {
 		JSONObject jsonObject = new JSONObject(json);
 		JSONObject submitter = (JSONObject) jsonObject.get(SUBMITTER_OBJECT_KEY);
 		JSONObject submitterIdObject = (JSONObject) submitter.get(SUBMITTER_ID_OBJECT_KEY);
@@ -157,8 +180,7 @@ public class CustomPackageRepository {
 			JSONObject submitterJson = new JSONObject(submitterJsonString);
 			jsonObject.put(SUBMITTER_OBJECT_KEY, submitterJson);
 		}
-
-		return jsonObject.toString();
+		return jsonObject;
 	}
 
 	public Package findByPackageId(String packageId) {
