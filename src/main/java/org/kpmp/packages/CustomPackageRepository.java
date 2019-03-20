@@ -3,8 +3,13 @@ package org.kpmp.packages;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.Document;
+import org.bson.codecs.BsonTypeClassMap;
+import org.bson.codecs.DocumentCodec;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,8 +24,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBRef;
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 @Component
 public class CustomPackageRepository {
@@ -121,8 +130,36 @@ public class CustomPackageRepository {
 		return repo.save(packageInfo);
 	}
 
+	public String getJSONByPackageId(String packageId) throws JSONException, JsonProcessingException {
+
+		BasicDBObject query = new BasicDBObject();
+		query.put(MONGO_ID_FIELD, packageId);
+
+		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
+		final DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
+		MongoDatabase db = mongoTemplate.getDb();
+		MongoCollection<Document> collection = db.getCollection(PACKAGES_COLLECTION);
+
+		Document document = collection.find(query).first();
+		String json = document.toJson(codec);
+
+		JSONObject jsonObject = new JSONObject(json);
+		JSONObject submitter = (JSONObject) jsonObject.get("submitter");
+		JSONObject submitterIdObject = (JSONObject) submitter.get("$id");
+		String submitterId = submitterIdObject.getString("$oid");
+		Optional<User> userOptional = userRepository.findById(submitterId);
+		jsonObject.remove("submitter");
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+			String submitterJsonString = user.generateJSON();
+			JSONObject submitterJson = new JSONObject(submitterJsonString);
+			jsonObject.put("submitter", submitterJson);
+		}
+
+		return jsonObject.toString();
+	}
+
 	public Package findByPackageId(String packageId) {
 		return repo.findByPackageId(packageId);
 	}
-
 }

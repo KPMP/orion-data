@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,7 +28,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mongodb.DBRef;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 
 public class CustomPackageRepositoryTest {
 
@@ -167,15 +170,25 @@ public class CustomPackageRepositoryTest {
 		assertEquals(expectedPackage, savedPackage);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
-	public void testFindByPackageId() {
-		Package expectedPackage = mock(Package.class);
-		when(packageRepository.findByPackageId("packageId")).thenReturn(expectedPackage);
+	public void testGetJSONByPackageId() {
+		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
+		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
+		FindIterable<Document> foundItems = mock(FindIterable.class);
+		Document foundItem = mock(Document.class);
+		when(foundItems.first()).thenReturn(foundItem);
+		when(mongoCollection.find(any(Bson.class))).thenReturn(foundItems);
+		when(foundItem.toJson()).thenReturn("{key: value}");
 
-		Package foundPackage = repo.findByPackageId("packageId");
+		String result = repo.getJSONByPackageId("123");
 
-		verify(packageRepository).findByPackageId("packageId");
-		assertEquals(expectedPackage, foundPackage);
+		ArgumentCaptor<Bson> filterCaptor = ArgumentCaptor.forClass(Bson.class);
+		verify(mongoCollection).find(filterCaptor.capture());
+		assertEquals("{key: value}", result);
+
+		Bson filter = filterCaptor.getValue();
+		assertEquals(Filters.eq("_id", "123").toString(), filter.toString());
 	}
 
 }
