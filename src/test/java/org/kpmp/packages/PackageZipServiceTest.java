@@ -15,31 +15,32 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.json.JSONException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-class PackageZipServiceTest {
+public class PackageZipServiceTest {
 
 	@Mock
 	private FilePathHelper filePathHelper;
 	private PackageZipService service;
 
-	@BeforeEach
-	void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		service = new PackageZipService(filePathHelper);
 	}
 
-	@AfterEach
-	void tearDown() throws Exception {
+	@After
+	public void tearDown() throws Exception {
 		service = null;
 	}
 
 	@Test
-	void testCreateZipFile() throws IOException {
+	public void testCreateZipFile_old() throws IOException {
 		Path packageDirectory = Files.createTempDirectory("234");
 		File attachment1Path = File.createTempFile("orion", ".txt", packageDirectory.toFile());
 		attachment1Path.deleteOnExit();
@@ -53,6 +54,33 @@ class PackageZipServiceTest {
 		when(packageInformation.generateJSON()).thenReturn("{json: string}");
 
 		service.createZipFile(packageInformation);
+
+		File zipFile = new File(packageDirectory.toString() + File.separator + "234.zip");
+		assertEquals(true, zipFile.exists());
+		ZipFile zip = new ZipFile(packageDirectory.toString() + File.separator + "234.zip");
+		assertEquals(2, zip.size());
+		Enumeration<? extends ZipEntry> entries = zip.entries();
+		List<String> filenames = new ArrayList<>();
+		while (entries.hasMoreElements()) {
+			ZipEntry entry = entries.nextElement();
+			filenames.add(entry.getName());
+		}
+
+		assertEquals(true, filenames.contains("metadata.json"));
+		assertEquals(true, filenames.contains(attachment1Path.getName()));
+		zip.close();
+	}
+
+	@Test
+	public void testCreateZipFile() throws IOException, JSONException {
+		Path packageDirectory = Files.createTempDirectory("234");
+		File attachment1Path = File.createTempFile("orion", ".txt", packageDirectory.toFile());
+		attachment1Path.deleteOnExit();
+		when(filePathHelper.getPackagePath("234")).thenReturn(packageDirectory.toString() + File.separator);
+		when(filePathHelper.getZipFileName("234")).thenReturn(packageDirectory.toString() + File.separator + "234.zip");
+
+		service.createZipFile("{ \"_id\": \"234\", \"files\": [ { \"fileName\": \"" + attachment1Path.getName()
+				+ "\", \"size\": 123 }]}");
 
 		File zipFile = new File(packageDirectory.toString() + File.separator + "234.zip");
 		assertEquals(true, zipFile.exists());

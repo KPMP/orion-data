@@ -1,10 +1,17 @@
 package org.kpmp.packages;
 
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.TimeZone;
 
 import org.bson.Document;
+import org.bson.codecs.BsonTypeClassMap;
+import org.bson.codecs.DocumentCodec;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,8 +26,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBRef;
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 @Component
 public class CustomPackageRepository {
@@ -38,6 +49,9 @@ public class CustomPackageRepository {
 	private static final String SUBMITTER_FIRST_NAME_KEY = "submitterFirstName";
 	private static final String SUBMITTER_LAST_NAME_KEY = "submitterLastName";
 	private static final String SUBMITTER_OBJECT_KEY = "submitter";
+	private static final String SUBMITTER_ID_KEY = "$oid";
+	private static final String SUBMITTER_ID_OBJECT_KEY = "$id";
+	private static final String CREATED_AT_DATE_KEY = "$date";
 
 	private static final String CREATED_AT_FIELD = "createdAt";
 	private static final String MONGO_ID_FIELD = "_id";
@@ -121,8 +135,55 @@ public class CustomPackageRepository {
 		return repo.save(packageInfo);
 	}
 
+	public String getJSONByPackageId(String packageId) throws JSONException, JsonProcessingException {
+
+		BasicDBObject query = new BasicDBObject();
+		query.put(MONGO_ID_FIELD, packageId);
+
+		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
+		DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
+		MongoDatabase db = mongoTemplate.getDb();
+		MongoCollection<Document> collection = db.getCollection(PACKAGES_COLLECTION);
+
+		Document document = collection.find(query).first();
+		String json = document.toJson(codec);
+
+		JSONObject jsonObject = setUserInformation(json);
+		jsonObject = cleanUpPackageObject(jsonObject);
+
+		return jsonObject.toString();
+	}
+
+	private JSONObject cleanUpPackageObject(JSONObject json) throws JSONException {
+		json.remove(REGENERATE_ZIP_KEY);
+		JSONObject createdAtObject = (JSONObject) json.get(CREATED_AT_FIELD);
+		long milliseconds = createdAtObject.getLong(CREATED_AT_DATE_KEY);
+		Date createdAtDate = new Date(milliseconds);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		String formattedDate = dateFormat.format(createdAtDate);
+		json.remove(CREATED_AT_FIELD);
+		json.put(CREATED_AT_FIELD, formattedDate);
+		return json;
+	}
+
+	private JSONObject setUserInformation(String json) throws JSONException, JsonProcessingException {
+		JSONObject jsonObject = new JSONObject(json);
+		JSONObject submitter = (JSONObject) jsonObject.get(SUBMITTER_OBJECT_KEY);
+		JSONObject submitterIdObject = (JSONObject) submitter.get(SUBMITTER_ID_OBJECT_KEY);
+		String submitterId = submitterIdObject.getString(SUBMITTER_ID_KEY);
+		Optional<User> userOptional = userRepository.findById(submitterId);
+		jsonObject.remove(SUBMITTER_OBJECT_KEY);
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+			String submitterJsonString = user.generateJSON();
+			JSONObject submitterJson = new JSONObject(submitterJsonString);
+			jsonObject.put(SUBMITTER_OBJECT_KEY, submitterJson);
+		}
+		return jsonObject;
+	}
+
 	public Package findByPackageId(String packageId) {
 		return repo.findByPackageId(packageId);
 	}
-
 }

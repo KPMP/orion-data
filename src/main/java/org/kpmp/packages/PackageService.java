@@ -1,7 +1,6 @@
 package org.kpmp.packages;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -88,9 +87,10 @@ public class PackageService {
 		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 	}
 
-	public void createZipFile(String packageId) {
+	public void createZipFile(String packageId) throws Exception {
 
 		Package packageInfo = packageRepository.findByPackageId(packageId);
+		String packageMetadata = packageRepository.getJSONByPackageId(packageId);
 		List<Attachment> attachments = packageInfo.getAttachments();
 		String displaySize = FileUtils.byteCountToDisplaySize(getTotalSizeOfAttachmentsInBytes(attachments));
 		Date finishUploadTime = new Date();
@@ -105,8 +105,8 @@ public class PackageService {
 		new Thread() {
 			public void run() {
 				try {
-					packageZipper.createZipFile(packageInfo);
-				} catch (IOException e) {
+					packageZipper.createZipFile(packageMetadata);
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				log.info(zipPackage.format(new Object[] { "createZipFile", packageId }));
@@ -143,7 +143,8 @@ public class PackageService {
 		return (double) totalSize / megabyteValue;
 	}
 
-	public Boolean checkFilesExist(Package packageInformation) {
+	public Boolean checkFilesExist(String packageId) {
+		Package packageInformation = findPackage(packageId);
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
 		List<String> filesInPackage = getAttachmentFilenames(packageInformation);

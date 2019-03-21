@@ -9,8 +9,10 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.Document;
+import org.bson.codecs.DocumentCodec;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -26,8 +28,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBRef;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 public class CustomPackageRepositoryTest {
 
@@ -167,15 +172,31 @@ public class CustomPackageRepositoryTest {
 		assertEquals(expectedPackage, savedPackage);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
-	public void testFindByPackageId() {
-		Package expectedPackage = mock(Package.class);
-		when(packageRepository.findByPackageId("packageId")).thenReturn(expectedPackage);
+	public void testGetJSONByPackageId() throws Exception {
+		MongoDatabase db = mock(MongoDatabase.class);
+		when(mongoTemplate.getDb()).thenReturn(db);
+		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
+		when(db.getCollection("packages")).thenReturn(mongoCollection);
+		FindIterable<Document> result = mock(FindIterable.class);
+		when(mongoCollection.find(any(BasicDBObject.class))).thenReturn(result);
+		Document document = mock(Document.class);
+		when(document.toJson(any(DocumentCodec.class))).thenReturn(
+				"{ \"key\": \"value\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
+		when(result.first()).thenReturn(document);
+		User user = mock(User.class);
+		when(user.generateJSON()).thenReturn("{user: information, exists: here}");
+		when(userRepo.findById("123")).thenReturn(Optional.of(user));
 
-		Package foundPackage = repo.findByPackageId("packageId");
+		String packageJson = repo.getJSONByPackageId("123");
 
-		verify(packageRepository).findByPackageId("packageId");
-		assertEquals(expectedPackage, foundPackage);
+		assertEquals(
+				"{\"submitter\":{\"exists\":\"here\",\"user\":\"information\"},\"createdAt\":\"1970-01-01 00:02:03\",\"key\":\"value\"}",
+				packageJson);
+		ArgumentCaptor<BasicDBObject> queryCaptor = ArgumentCaptor.forClass(BasicDBObject.class);
+		verify(mongoCollection).find(queryCaptor.capture());
+		assertEquals("123", queryCaptor.getValue().get("_id"));
 	}
 
 }

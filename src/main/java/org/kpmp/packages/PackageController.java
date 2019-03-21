@@ -87,10 +87,14 @@ public class PackageController {
 	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId) {
 		FileUploadResponse fileUploadResponse;
 		log.info(finish.format(new Object[] { "finishUpload", packageId }));
-		Package packageInfo = packageService.findPackage(packageId);
-		if (packageService.checkFilesExist(packageInfo)) {
-			packageService.createZipFile(packageId);
-			fileUploadResponse = new FileUploadResponse(true);
+		if (packageService.checkFilesExist(packageId)) {
+			try {
+				packageService.createZipFile(packageId);
+				fileUploadResponse = new FileUploadResponse(true);
+			} catch (Exception e) {
+				log.error(finish.format(new Object[] { "error getting metadata", packageId }));
+				fileUploadResponse = new FileUploadResponse(false);
+			}
 		} else {
 			log.error(finish.format(new Object[] { "mismatchedFiles", packageId }));
 			fileUploadResponse = new FileUploadResponse(false);

@@ -7,10 +7,6 @@ buildscript {
     }
 }
 
-plugins {
-	id "org.asciidoctor.convert" version "1.5.3"
-}
-
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -18,10 +14,6 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 jar {
-	dependsOn asciidoctor
-	from ("${asciidoctor.outputDir}/html5") {
-		into 'static/docs'
-	}
     baseName='orion-data'
     version= '2.2'
 }
@@ -56,8 +48,6 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-	asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor:2.0.1.RELEASE'
-	compile 'org.springframework.restdocs:spring-restdocs-mockmvc:2.0.1.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-web' 
 	compile 'commons-io:commons-io:2.6' 
 	compile 'org.mockito:mockito-core'
@@ -87,11 +77,6 @@ tasks.withType(Test) {
 	  showStandardStreams false
 	}
   }
-
-asciidoctor {
-	inputs.dir snippetsDir
-	dependsOn test
-}
 
 task integrationTest(type: Test) {
 	testClassesDirs = sourceSets.integrationTest.output.classesDirs
