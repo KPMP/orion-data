@@ -1,6 +1,7 @@
 package org.kpmp.packages;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -45,12 +46,12 @@ public class PackageService {
 		this.packageRepository = packageRepository;
 	}
 
-	public List<PackageView> findAllPackages() {
-		List<Package> packages = packageRepository.findAll();
+	public List<PackageView> findAllPackages() throws JSONException, IOException {
+		List<JSONObject> jsons = packageRepository.findAllJson();
 		List<PackageView> packageViews = new ArrayList<>();
-		for (Package packageToCheck : packages) {
+		for (JSONObject packageToCheck : jsons) {
 			PackageView packageView = new PackageView(packageToCheck);
-			String zipFileName = filePathHelper.getZipFileName(packageToCheck.getPackageId());
+			String zipFileName = filePathHelper.getZipFileName(packageToCheck.getString("_id"));
 			if (new File(zipFileName).exists()) {
 				packageView.setIsDownloadable(true);
 			} else {

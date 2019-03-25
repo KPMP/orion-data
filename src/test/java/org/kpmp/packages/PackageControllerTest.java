@@ -45,8 +45,8 @@ public class PackageControllerTest {
 	}
 
 	@Test
-	public void testGetAllPackages() {
-		List<PackageView> expectedPackages = Arrays.asList(new PackageView(new Package()));
+	public void testGetAllPackages() throws JSONException {
+		List<PackageView> expectedPackages = Arrays.asList(new PackageView(new JSONObject()));
 		when(packageService.findAllPackages()).thenReturn(expectedPackages);
 
 		List<PackageView> packages = controller.getAllPackages();

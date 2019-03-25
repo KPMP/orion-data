@@ -1,17 +1,17 @@
 package org.kpmp.packages;
 
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.TimeZone;
 
 import org.bson.Document;
 import org.bson.codecs.BsonTypeClassMap;
 import org.bson.codecs.DocumentCodec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -63,14 +64,16 @@ public class CustomPackageRepository {
 	private MongoTemplate mongoTemplate;
 	private UniversalIdGenerator universalIdGenerator;
 	private UserRepository userRepository;
+	private JsonWriterSettingsClass jsonSettings;
 
 	@Autowired
 	public CustomPackageRepository(PackageRepository repo, MongoTemplate mongoTemplate,
-			UniversalIdGenerator universalIdGenerator, UserRepository userRepo) {
+			UniversalIdGenerator universalIdGenerator, UserRepository userRepo, JsonWriterSettingsClass jsonSettings) {
 		this.repo = repo;
 		this.mongoTemplate = mongoTemplate;
 		this.universalIdGenerator = universalIdGenerator;
 		this.userRepository = userRepo;
+		this.jsonSettings = jsonSettings;
 	}
 
 	public String saveDynamicForm(JSONObject packageMetadata) throws JSONException {
@@ -135,6 +138,26 @@ public class CustomPackageRepository {
 		return repo.save(packageInfo);
 	}
 
+	public List<JSONObject> findAllJson() throws JSONException, JsonProcessingException {
+		Query query = new Query();
+		query = query.with(new Sort(Sort.Direction.DESC, CREATED_AT_FIELD));
+
+		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
+		DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
+
+		List<Document> results = mongoTemplate.find(query, Document.class, PACKAGES_COLLECTION);
+		List<JSONObject> jsons = new ArrayList<>();
+		for (Document document : results) {
+			JsonWriterSettings settings = jsonSettings.getSettings();
+			String json = document.toJson(settings, codec);
+			JSONObject jsonObject = setUserInformation(json);
+			jsonObject = cleanUpPackageObject(jsonObject);
+			jsons.add(jsonObject);
+		}
+
+		return jsons;
+	}
+
 	public String getJSONByPackageId(String packageId) throws JSONException, JsonProcessingException {
 
 		BasicDBObject query = new BasicDBObject();
@@ -146,7 +169,8 @@ public class CustomPackageRepository {
 		MongoCollection<Document> collection = db.getCollection(PACKAGES_COLLECTION);
 
 		Document document = collection.find(query).first();
-		String json = document.toJson(codec);
+		JsonWriterSettings settings = jsonSettings.getSettings();
+		String json = document.toJson(settings, codec);
 
 		JSONObject jsonObject = setUserInformation(json);
 		jsonObject = cleanUpPackageObject(jsonObject);
@@ -156,14 +180,6 @@ public class CustomPackageRepository {
 
 	private JSONObject cleanUpPackageObject(JSONObject json) throws JSONException {
 		json.remove(REGENERATE_ZIP_KEY);
-		JSONObject createdAtObject = (JSONObject) json.get(CREATED_AT_FIELD);
-		long milliseconds = createdAtObject.getLong(CREATED_AT_DATE_KEY);
-		Date createdAtDate = new Date(milliseconds);
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-		String formattedDate = dateFormat.format(createdAtDate);
-		json.remove(CREATED_AT_FIELD);
-		json.put(CREATED_AT_FIELD, formattedDate);
 		return json;
 	}
 

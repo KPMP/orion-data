@@ -2,6 +2,7 @@ package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
 
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,8 +13,7 @@ public class PackageViewTest {
 
 	@Before
 	public void setUp() throws Exception {
-		Package packageInfo = new Package();
-		packageView = new PackageView(packageInfo);
+		packageView = new PackageView(new JSONObject());
 	}
 
 	@After
@@ -28,8 +28,8 @@ public class PackageViewTest {
 	}
 
 	@Test
-	public void testSetPackageInfo() {
-		Package packageInfo = new Package();
+	public void testSetPackageJSON() {
+		JSONObject packageInfo = new JSONObject();
 		packageView.setPackageInfo(packageInfo);
 
 		assertEquals(packageInfo, packageView.getPackageInfo());
