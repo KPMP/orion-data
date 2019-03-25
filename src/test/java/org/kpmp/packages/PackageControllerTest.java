@@ -10,6 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +46,7 @@ public class PackageControllerTest {
 	}
 
 	@Test
-	public void testGetAllPackages() throws JSONException {
+	public void testGetAllPackages() throws JSONException, IOException {
 		List<PackageView> expectedPackages = Arrays.asList(new PackageView(new JSONObject()));
 		when(packageService.findAllPackages()).thenReturn(expectedPackages);
 

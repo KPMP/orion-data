@@ -60,7 +60,7 @@ public class PackageServiceTest {
 	}
 
 	@Test
-	public void testFindAllPackages() throws JSONException {
+	public void testFindAllPackages() throws JSONException, IOException {
 		Package uploadedPackage = mock(Package.class);
 		when(uploadedPackage.getPackageId()).thenReturn("packageId");
 		List<Package> expectedResults = Arrays.asList(uploadedPackage);

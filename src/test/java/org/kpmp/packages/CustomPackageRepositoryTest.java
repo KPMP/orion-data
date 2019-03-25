@@ -44,12 +44,15 @@ public class CustomPackageRepositoryTest {
 	private UniversalIdGenerator universalIdGenerator;
 	@Mock
 	private UserRepository userRepo;
+	@Mock
+	private JsonWriterSettingsConstructor jsonWriterSettings;
 	private CustomPackageRepository repo;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		repo = new CustomPackageRepository(packageRepository, mongoTemplate, universalIdGenerator, userRepo);
+		repo = new CustomPackageRepository(packageRepository, mongoTemplate, universalIdGenerator, userRepo,
+				jsonWriterSettings);
 	}
 
 	@After
