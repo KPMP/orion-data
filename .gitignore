@@ -10,3 +10,5 @@ build
 .oracle_jre_usage
 *.log.*
 *.log
+out
+
