@@ -8,7 +8,7 @@ import org.bson.json.JsonWriterSettings;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JsonWriterSettingsClass {
+public class JsonWriterSettingsConstructor {
 
 	public JsonWriterSettings getSettings() {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
