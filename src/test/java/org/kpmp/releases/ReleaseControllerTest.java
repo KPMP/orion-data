@@ -34,7 +34,7 @@ public class ReleaseControllerTest {
     public void testGetMetadataRelease() {
         Release expectedRelease = mock(Release.class);
         when(repository.findAll()).thenReturn(Arrays.asList(expectedRelease));
-        assertEquals(expectedRelease, controller.getMetadataRelease());
+        assertEquals(Arrays.asList(expectedRelease), controller.getMetadataRelease());
     }
 
     @Test
