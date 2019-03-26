@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ReleaseControllerTest {
@@ -34,10 +35,7 @@ public class ReleaseControllerTest {
     @Test
     public void testGetMetadataRelease() {
         Release expectedRelease = mock(Release.class);
-        List<Release> expectedList = new ArrayList<>();
-        expectedList.add(expectedRelease);
-
-        when(repository.findAll()).thenReturn(expectedList);
+        when(repository.findAll()).thenReturn(Arrays.asList(expectedRelease));
         assertEquals(expectedRelease, controller.getMetadataRelease());
     }
 
