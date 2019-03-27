@@ -1,17 +1,17 @@
 package org.kpmp.packages;
 
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.TimeZone;
 
 import org.bson.Document;
 import org.bson.codecs.BsonTypeClassMap;
 import org.bson.codecs.DocumentCodec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,23 +40,6 @@ public class CustomPackageRepository {
 	private static final String PACKAGES_COLLECTION = "packages";
 	private static final String USERS_COLLECTION = "users";
 
-	private static final String DISPLAY_NAME_KEY = "displayName";
-	private static final String EMAIL_KEY = "email";
-	private static final String FILES_KEY = "files";
-	private static final String FIRST_NAME_KEY = "firstName";
-	private static final String LAST_NAME_KEY = "lastName";
-	private static final String REGENERATE_ZIP_KEY = "regenerateZip";
-	private static final String SUBMITTER_EMAIL_KEY = "submitterEmail";
-	private static final String SUBMITTER_FIRST_NAME_KEY = "submitterFirstName";
-	private static final String SUBMITTER_LAST_NAME_KEY = "submitterLastName";
-	private static final String SUBMITTER_OBJECT_KEY = "submitter";
-	private static final String SUBMITTER_ID_KEY = "$oid";
-	private static final String SUBMITTER_ID_OBJECT_KEY = "$id";
-	private static final String CREATED_AT_DATE_KEY = "$date";
-
-	private static final String CREATED_AT_FIELD = "createdAt";
-	private static final String MONGO_ID_FIELD = "_id";
-
 	private static final MessageFormat fileUploadStartTiming = new MessageFormat("Timing|start|{0}|{1}|{2}|{3} files");
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -63,27 +47,30 @@ public class CustomPackageRepository {
 	private MongoTemplate mongoTemplate;
 	private UniversalIdGenerator universalIdGenerator;
 	private UserRepository userRepository;
+	private JsonWriterSettingsConstructor jsonSettings;
 
 	@Autowired
 	public CustomPackageRepository(PackageRepository repo, MongoTemplate mongoTemplate,
-			UniversalIdGenerator universalIdGenerator, UserRepository userRepo) {
+			UniversalIdGenerator universalIdGenerator, UserRepository userRepo,
+			JsonWriterSettingsConstructor jsonSettings) {
 		this.repo = repo;
 		this.mongoTemplate = mongoTemplate;
 		this.universalIdGenerator = universalIdGenerator;
 		this.userRepository = userRepo;
+		this.jsonSettings = jsonSettings;
 	}
 
 	public String saveDynamicForm(JSONObject packageMetadata) throws JSONException {
 		Date startTime = new Date();
 		String packageId = universalIdGenerator.generateUniversalId();
-		String submitterEmail = packageMetadata.getString(SUBMITTER_EMAIL_KEY);
-		JSONArray files = packageMetadata.getJSONArray(FILES_KEY);
+		String submitterEmail = packageMetadata.getString(PackageKeys.SUBMITTER_EMAIL.getKey());
+		JSONArray files = packageMetadata.getJSONArray(PackageKeys.FILES.getKey());
 
 		log.info(fileUploadStartTiming.format(new Object[] { startTime, submitterEmail, packageId, files.length() }));
 
 		for (int i = 0; i < files.length(); i++) {
 			JSONObject file = files.getJSONObject(i);
-			file.put(MONGO_ID_FIELD, universalIdGenerator.generateUniversalId());
+			file.put(PackageKeys.ID.getKey(), universalIdGenerator.generateUniversalId());
 		}
 
 		User user = findUser(packageMetadata, submitterEmail);
@@ -93,10 +80,10 @@ public class CustomPackageRepository {
 		String jsonString = packageMetadata.toString();
 
 		Document document = Document.parse(jsonString);
-		document.put(SUBMITTER_OBJECT_KEY, userRef);
-		document.put(CREATED_AT_FIELD, startTime);
-		document.put(MONGO_ID_FIELD, packageId);
-		document.put(REGENERATE_ZIP_KEY, false);
+		document.put(PackageKeys.SUBMITTER.getKey(), userRef);
+		document.put(PackageKeys.CREATED_AT.getKey(), startTime);
+		document.put(PackageKeys.ID.getKey(), packageId);
+		document.put(PackageKeys.REGENERATE_ZIP.getKey(), false);
 
 		MongoCollection<Document> collection = mongoTemplate.getCollection(PACKAGES_COLLECTION);
 		collection.insertOne(document);
@@ -105,40 +92,56 @@ public class CustomPackageRepository {
 	}
 
 	private void cleanUpObject(JSONObject packageMetadata) {
-		packageMetadata.remove(SUBMITTER_OBJECT_KEY);
-		packageMetadata.remove(SUBMITTER_FIRST_NAME_KEY);
-		packageMetadata.remove(SUBMITTER_LAST_NAME_KEY);
-		packageMetadata.remove(SUBMITTER_EMAIL_KEY);
+		packageMetadata.remove(PackageKeys.SUBMITTER.getKey());
+		packageMetadata.remove(PackageKeys.SUBMITTER_EMAIL.getKey());
+		packageMetadata.remove(PackageKeys.SUBMITTER_FIRST_NAME.getKey());
+		packageMetadata.remove(PackageKeys.SUBMITTER_LAST_NAME.getKey());
 	}
 
 	private User findUser(JSONObject packageMetadata, String submitterEmail) throws JSONException {
 		User user = userRepository.findByEmail(submitterEmail);
 		if (user == null) {
 			User newUser = new User();
-			JSONObject submitter = packageMetadata.getJSONObject(SUBMITTER_OBJECT_KEY);
-			if (submitter.has(DISPLAY_NAME_KEY)) {
-				newUser.setDisplayName(submitter.getString(DISPLAY_NAME_KEY));
+			JSONObject submitter = packageMetadata.getJSONObject(PackageKeys.SUBMITTER.getKey());
+			if (submitter.has(PackageKeys.DISPLAY_NAME.getKey())) {
+				newUser.setDisplayName(submitter.getString(PackageKeys.DISPLAY_NAME.getKey()));
 			}
-			newUser.setEmail(submitter.getString(EMAIL_KEY));
-			newUser.setFirstName(submitter.getString(FIRST_NAME_KEY));
-			newUser.setLastName(submitter.getString(LAST_NAME_KEY));
+			newUser.setEmail(submitter.getString(PackageKeys.EMAIL.getKey()));
+			newUser.setFirstName(submitter.getString(PackageKeys.FIRST_NAME.getKey()));
+			newUser.setLastName(submitter.getString(PackageKeys.LAST_NAME.getKey()));
 			user = userRepository.save(newUser);
 		}
 		return user;
-	}
-
-	public List<Package> findAll() {
-		return repo.findAll(new Sort(Sort.Direction.DESC, CREATED_AT_FIELD));
 	}
 
 	public Package save(Package packageInfo) {
 		return repo.save(packageInfo);
 	}
 
+	public List<JSONObject> findAll() throws JSONException, JsonProcessingException {
+		Query query = new Query();
+		query = query.with(new Sort(Sort.Direction.DESC, PackageKeys.CREATED_AT.getKey()));
+
+		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
+		DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
+
+		List<Document> results = mongoTemplate.find(query, Document.class, PACKAGES_COLLECTION);
+		List<JSONObject> jsons = new ArrayList<>();
+		for (Document document : results) {
+			JsonWriterSettings settings = jsonSettings.getSettings();
+			String json = document.toJson(settings, codec);
+			JSONObject jsonObject = setUserInformation(json);
+			jsonObject = cleanUpPackageObject(jsonObject);
+			jsons.add(jsonObject);
+		}
+
+		return jsons;
+	}
+
 	public String getJSONByPackageId(String packageId) throws JSONException, JsonProcessingException {
 
 		BasicDBObject query = new BasicDBObject();
-		query.put(MONGO_ID_FIELD, packageId);
+		query.put(PackageKeys.ID.getKey(), packageId);
 
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
 		DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
@@ -146,7 +149,8 @@ public class CustomPackageRepository {
 		MongoCollection<Document> collection = db.getCollection(PACKAGES_COLLECTION);
 
 		Document document = collection.find(query).first();
-		String json = document.toJson(codec);
+		JsonWriterSettings settings = jsonSettings.getSettings();
+		String json = document.toJson(settings, codec);
 
 		JSONObject jsonObject = setUserInformation(json);
 		jsonObject = cleanUpPackageObject(jsonObject);
@@ -155,30 +159,22 @@ public class CustomPackageRepository {
 	}
 
 	private JSONObject cleanUpPackageObject(JSONObject json) throws JSONException {
-		json.remove(REGENERATE_ZIP_KEY);
-		JSONObject createdAtObject = (JSONObject) json.get(CREATED_AT_FIELD);
-		long milliseconds = createdAtObject.getLong(CREATED_AT_DATE_KEY);
-		Date createdAtDate = new Date(milliseconds);
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-		String formattedDate = dateFormat.format(createdAtDate);
-		json.remove(CREATED_AT_FIELD);
-		json.put(CREATED_AT_FIELD, formattedDate);
+		json.remove(PackageKeys.REGENERATE_ZIP.getKey());
 		return json;
 	}
 
 	private JSONObject setUserInformation(String json) throws JSONException, JsonProcessingException {
 		JSONObject jsonObject = new JSONObject(json);
-		JSONObject submitter = (JSONObject) jsonObject.get(SUBMITTER_OBJECT_KEY);
-		JSONObject submitterIdObject = (JSONObject) submitter.get(SUBMITTER_ID_OBJECT_KEY);
-		String submitterId = submitterIdObject.getString(SUBMITTER_ID_KEY);
+		JSONObject submitter = (JSONObject) jsonObject.get(PackageKeys.SUBMITTER.getKey());
+		JSONObject submitterIdObject = (JSONObject) submitter.get(PackageKeys.SUBMITTER_ID_OBJECT.getKey());
+		String submitterId = submitterIdObject.getString(PackageKeys.SUBMITTER_ID.getKey());
 		Optional<User> userOptional = userRepository.findById(submitterId);
-		jsonObject.remove(SUBMITTER_OBJECT_KEY);
+		jsonObject.remove(PackageKeys.SUBMITTER.getKey());
 		if (userOptional.isPresent()) {
 			User user = userOptional.get();
 			String submitterJsonString = user.generateJSON();
 			JSONObject submitterJson = new JSONObject(submitterJsonString);
-			jsonObject.put(SUBMITTER_OBJECT_KEY, submitterJson);
+			jsonObject.put(PackageKeys.SUBMITTER.getKey(), submitterJson);
 		}
 		return jsonObject;
 	}

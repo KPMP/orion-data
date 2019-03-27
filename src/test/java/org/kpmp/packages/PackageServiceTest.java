@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -59,10 +60,11 @@ public class PackageServiceTest {
 	}
 
 	@Test
-	public void testFindAllPackages() {
-		Package uploadedPackage = mock(Package.class);
-		when(uploadedPackage.getPackageId()).thenReturn("packageId");
-		List<Package> expectedResults = Arrays.asList(uploadedPackage);
+	public void testFindAllPackages() throws JSONException, IOException {
+		JSONObject uploadedPackage = mock(JSONObject.class);
+		when(uploadedPackage.toString()).thenReturn("");
+		when(uploadedPackage.getString("_id")).thenReturn("packageId");
+		List<JSONObject> expectedResults = Arrays.asList(uploadedPackage);
 		when(packageRepository.findAll()).thenReturn(expectedResults);
 		when(filePathHelper.getZipFileName("packageId")).thenReturn("/data/packageId/packageId.zip");
 

@@ -1,5 +1,6 @@
 package org.kpmp.packages;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.util.List;
@@ -40,7 +41,7 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
-	public @ResponseBody List<PackageView> getAllPackages() {
+	public @ResponseBody List<PackageView> getAllPackages() throws JSONException, IOException {
 		return packageService.findAllPackages();
 	}
 

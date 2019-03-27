@@ -2,9 +2,14 @@ package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PackageViewTest {
 
@@ -12,8 +17,7 @@ public class PackageViewTest {
 
 	@Before
 	public void setUp() throws Exception {
-		Package packageInfo = new Package();
-		packageView = new PackageView(packageInfo);
+		packageView = new PackageView(new JSONObject());
 	}
 
 	@After
@@ -28,11 +32,12 @@ public class PackageViewTest {
 	}
 
 	@Test
-	public void testSetPackageInfo() {
-		Package packageInfo = new Package();
+	public void testSetPackageJSON() throws IOException {
+		JSONObject packageInfo = new JSONObject();
+		ObjectMapper mapper = new ObjectMapper();
 		packageView.setPackageInfo(packageInfo);
 
-		assertEquals(packageInfo, packageView.getPackageInfo());
+		assertEquals(mapper.readTree(packageInfo.toString()), packageView.getPackageInfo());
 	}
 
 }
