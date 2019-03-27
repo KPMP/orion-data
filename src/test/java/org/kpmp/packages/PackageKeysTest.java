@@ -8,7 +8,7 @@ public class PackageKeysTest {
 
 	@Test
 	public void testLength() throws Exception {
-		assertEquals(15, PackageKeys.values().length);
+		assertEquals(16, PackageKeys.values().length);
 	}
 
 	@Test

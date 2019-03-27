@@ -62,7 +62,8 @@ public class PackageServiceTest {
 	@Test
 	public void testFindAllPackages() throws JSONException, IOException {
 		JSONObject uploadedPackage = mock(JSONObject.class);
-		when(uploadedPackage.get("_id")).thenReturn("packageId");
+		when(uploadedPackage.toString()).thenReturn("");
+		when(uploadedPackage.getString("_id")).thenReturn("packageId");
 		List<JSONObject> expectedResults = Arrays.asList(uploadedPackage);
 		when(packageRepository.findAll()).thenReturn(expectedResults);
 		when(filePathHelper.getZipFileName("packageId")).thenReturn("/data/packageId/packageId.zip");

@@ -9,6 +9,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class PackageViewTest {
 
 	private PackageView packageView;
@@ -32,9 +34,10 @@ public class PackageViewTest {
 	@Test
 	public void testSetPackageJSON() throws IOException {
 		JSONObject packageInfo = new JSONObject();
+		ObjectMapper mapper = new ObjectMapper();
 		packageView.setPackageInfo(packageInfo);
 
-		assertEquals(packageInfo, packageView.getPackageInfo());
+		assertEquals(mapper.readTree(packageInfo.toString()), packageView.getPackageInfo());
 	}
 
 }
