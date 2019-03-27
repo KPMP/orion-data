@@ -51,21 +51,4 @@ public class Release {
         return String.format("[Release version %s date %s desc \"%s\" typeSpecificNotes %s]",
             getVersion(), getDate(), getDesc(), getTypeSpecificNotes());
     }
-
-    /*
-     * {
-     *   "version": "1.0",
-     *   "date": "2019-03-25",
-     *   "desc": "The first major release of the new metadata standards, starting with Sub-segmental RNA-Seq.",
-     *   "typeSpecificNotes": {
-     *     "Sub-segmental RNA-Seq": {
-     *       "desc": "This data type was added in its entirety.  All fields are new.",
-     *       "fields": [
-     *         "tissueProcessingInstrument", "tissueProcessingSoftwareAndVersion"
-     *       ]
-     *     }
-     *   }
-     * }
-     */
-
 }
