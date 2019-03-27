@@ -37,7 +37,7 @@ public class RegenerateZipFiles implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		List<JSONObject> jsons = packageRepository.findAllJson();
+		List<JSONObject> jsons = packageRepository.findAll();
 		for (JSONObject packageInfo : jsons) {
 			String packageId = packageInfo.getString(PackageKeys.ID.getKey());
 			String zipFileName = pathHelper.getZipFileName(packageId);

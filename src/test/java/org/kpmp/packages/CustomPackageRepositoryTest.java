@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import org.bson.Document;
 import org.bson.codecs.DocumentCodec;
+import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,8 +26,8 @@ import org.kpmp.users.UserRepository;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBRef;
@@ -153,17 +154,6 @@ public class CustomPackageRepositoryTest {
 	}
 
 	@Test
-	public void testFindAll() {
-		List<Package> packages = Arrays.asList(mock(Package.class));
-		when(packageRepository.findAll(new Sort(Sort.Direction.DESC, "createdAt"))).thenReturn(packages);
-
-		List<Package> result = repo.findAll();
-
-		assertEquals(packages, result);
-		verify(packageRepository).findAll(new Sort(Sort.Direction.DESC, "createdAt"));
-	}
-
-	@Test
 	public void testSave() {
 		Package expectedPackage = mock(Package.class);
 		Package packageInfo = expectedPackage;
@@ -185,7 +175,9 @@ public class CustomPackageRepositoryTest {
 		FindIterable<Document> result = mock(FindIterable.class);
 		when(mongoCollection.find(any(BasicDBObject.class))).thenReturn(result);
 		Document document = mock(Document.class);
-		when(document.toJson(any(DocumentCodec.class))).thenReturn(
+		JsonWriterSettings jsonWriterSettingsReturn = mock(JsonWriterSettings.class);
+		when(jsonWriterSettings.getSettings()).thenReturn(jsonWriterSettingsReturn);
+		when(document.toJson(any(JsonWriterSettings.class), any(DocumentCodec.class))).thenReturn(
 				"{ \"key\": \"value\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
 		when(result.first()).thenReturn(document);
 		User user = mock(User.class);
@@ -195,11 +187,41 @@ public class CustomPackageRepositoryTest {
 		String packageJson = repo.getJSONByPackageId("123");
 
 		assertEquals(
-				"{\"submitter\":{\"exists\":\"here\",\"user\":\"information\"},\"createdAt\":\"1970-01-01 00:02:03\",\"key\":\"value\"}",
+				"{\"createdAt\":{\"$date\":123567},\"submitter\":{\"exists\":\"here\",\"user\":\"information\"},\"key\":\"value\"}",
 				packageJson);
 		ArgumentCaptor<BasicDBObject> queryCaptor = ArgumentCaptor.forClass(BasicDBObject.class);
 		verify(mongoCollection).find(queryCaptor.capture());
 		assertEquals("123", queryCaptor.getValue().get("_id"));
+		ArgumentCaptor<JsonWriterSettings> jsonWriterCaptor = ArgumentCaptor.forClass(JsonWriterSettings.class);
+		ArgumentCaptor<DocumentCodec> codecCaptor = ArgumentCaptor.forClass(DocumentCodec.class);
+		verify(document).toJson(jsonWriterCaptor.capture(), codecCaptor.capture());
+		assertEquals(jsonWriterSettingsReturn, jsonWriterCaptor.getValue());
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testFindAll() throws Exception {
+		Document firstResult = mock(Document.class);
+		List<Document> results = Arrays.asList(firstResult);
+		when(mongoTemplate.find(any(Query.class), any(Class.class), any(String.class))).thenReturn(results);
+		when(firstResult.toJson(any(JsonWriterSettings.class), any(DocumentCodec.class))).thenReturn(
+				"{ \"key\": \"value\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
+		JsonWriterSettings jsonWriterSettingsReturn = mock(JsonWriterSettings.class);
+		when(jsonWriterSettings.getSettings()).thenReturn(jsonWriterSettingsReturn);
+
+		List<JSONObject> allJsons = repo.findAll();
+
+		assertEquals(1, allJsons.size());
+		ArgumentCaptor<JsonWriterSettings> jsonWriterCaptor = ArgumentCaptor.forClass(JsonWriterSettings.class);
+		ArgumentCaptor<DocumentCodec> codecCaptor = ArgumentCaptor.forClass(DocumentCodec.class);
+		verify(firstResult).toJson(jsonWriterCaptor.capture(), codecCaptor.capture());
+		assertEquals(jsonWriterSettingsReturn, jsonWriterCaptor.getValue());
+		ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+		ArgumentCaptor<Class> entityCaptor = ArgumentCaptor.forClass(Class.class);
+		ArgumentCaptor<String> collectionCaptor = ArgumentCaptor.forClass(String.class);
+		verify(mongoTemplate).find(queryCaptor.capture(), entityCaptor.capture(), collectionCaptor.capture());
+		assertEquals("packages", collectionCaptor.getValue());
+		assertEquals(Document.class, entityCaptor.getValue());
 	}
 
 }

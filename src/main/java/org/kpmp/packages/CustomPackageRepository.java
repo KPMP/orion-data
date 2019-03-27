@@ -114,15 +114,11 @@ public class CustomPackageRepository {
 		return user;
 	}
 
-	public List<Package> findAll() {
-		return repo.findAll(new Sort(Sort.Direction.DESC, PackageKeys.CREATED_AT.getKey()));
-	}
-
 	public Package save(Package packageInfo) {
 		return repo.save(packageInfo);
 	}
 
-	public List<JSONObject> findAllJson() throws JSONException, JsonProcessingException {
+	public List<JSONObject> findAll() throws JSONException, JsonProcessingException {
 		Query query = new Query();
 		query = query.with(new Sort(Sort.Direction.DESC, PackageKeys.CREATED_AT.getKey()));
 
