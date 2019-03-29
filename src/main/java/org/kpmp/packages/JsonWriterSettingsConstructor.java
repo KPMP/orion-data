@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class JsonWriterSettingsConstructor {
 
 	public JsonWriterSettings getSettings() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 		JsonWriterSettings settings = JsonWriterSettings.builder()
 				.stringConverter((value, writer) -> writer.writeString(value.toString()))
