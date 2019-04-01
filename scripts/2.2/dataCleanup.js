@@ -1,16 +1,18 @@
-db.packages.update({"institution": "Broad (Michigan/Broad/Princeton TIS)"}, {$set: {"tisName": "Michigan/Broad/Princeton"}}, false, true)
-db.packages.update({"institution": "EMBL (UTHSA/EMBL/PNNL/UCSD TIS)"}, {$set: {"tisName": "UTHSA/EMBL/PNNL/UCSD"}}, false, true)
-db.packages.update({"institution": "Indiana (IU/OSU TIS)"}, {$set: {"tisName": "IU/OSU"}}, false, true)
-db.packages.update({"institution": "Michigan (Michigan/Broad/Princeton TIS)"}, {$set: {"tisName": "Michigan/Broad/Princeton"}}, false, true)
-db.packages.update({"institution": "OSU (IU/OSU TIS)"}, {$set: {"tisName": "IU/OSU"}}, false, true)
-db.packages.update({"institution": "PNNL (UTHSA/EMBL/PNNL/UCSD TIS)"}, {$set: {"tisName": "UTHSA/EMBL/PNNL/UCSD"}}, false, true)
-db.packages.update({"institution": "Princeton (Michigan/Broad/Princeton TIS)"}, {$set: {"tisName": "Michigan/Broad/Princeton"}}, false, true)
-db.packages.update({"institution": "Stanford (UCSF/Stanford TIS)"}, {$set: {"tisName": "UCSF/Stanford"}}, false, true)
-db.packages.update({"institution": "UCSD (UCSD/WashU TIS)"}, {$set: {"tisName": "UCSD/WashU"}}, false, true)
-db.packages.update({"institution": "UCSD (UTHSA/EMBL/PNNL/UCSD TIS)"}, {$set: {"tisName": "UTHSA/EMBL/PNNL/UCSD"}}, false, true)
-db.packages.update({"institution": "UCSF (UCSF/Stanford TIS)"}, {$set: {"tisName": "UCSF/Stanford"}}, false, true)
-db.packages.update({"institution": "UTHSA (UTHSA/EMBL/PNNL/UCSD TIS)"}, {$set: {"tisName": "UTHSA/EMBL/PNNL/UCSD"}}, false, true)
-db.packages.update({"institution": "WashU (UCSD/WashU TIS)"}, {$set: {"tisName": "UCSD/WashU"}}, false, true)
+var institutions=["Broad (Michigan/Broad/Princeton TIS)", "Michigan (Michigan/Broad/Princeton TIS)", "Princeton (Michigan/Broad/Princeton TIS)"]
+db.packages.update({"institution": {$in:institutions}}, {$set: {"tisName": "Michigan/Broad/Princeton"}}, false, true)
+
+institutions = ["EMBL (UTHSA/EMBL/PNNL/UCSD TIS)", "PNNL (UTHSA/EMBL/PNNL/UCSD TIS)", "UCSD (UTHSA/EMBL/PNNL/UCSD TIS)", "UTHSA (UTHSA/EMBL/PNNL/UCSD TIS)"]
+db.packages.update({"institution": {$in:institutions}}, {$set: {"tisName": "UTHSA/EMBL/PNNL/UCSD"}}, false, true)
+
+institutions = ["Indiana (IU/OSU TIS)", "OSU (IU/OSU TIS)"]
+db.packages.update({"institution": {$in:institutions}}, {$set: {"tisName": "IU/OSU"}}, false, true)
+
+institutions = ["Stanford (UCSF/Stanford TIS)", "UCSF (UCSF/Stanford TIS)"]
+db.packages.update({"institution": {$in:institutions}}, {$set: {"tisName": "UCSF/Stanford"}}, false, true)
+
+institutions = ["UCSD (UCSD/WashU TIS)", "WashU (UCSD/WashU TIS)"]
+db.packages.update({"institution": {$in:institutions}}, {$set: {"tisName": "UCSD/WashU"}}, false, true)
+
 db.packages.update({ "isError": { $exists: false } }, {$set: {"regenerateZip": true}}, false, true)
 db.packages.update({ packageType:"Bulk RNA-Seq" },{ $set:{ packageType:"Bulk total/mRNA", regenerateZip:true }}, false, true)
 db.packages.update({ packageType:"Sub-segment RNA-Seq" },{ $set:{ packageType:"Sub-segmental RNA-Seq", regenerateZip:true }}, false, true)
