@@ -69,4 +69,11 @@ public class User {
 		mapper.addMixIn(User.class, UserJsonMixin.class);
 		return mapper.writeValueAsString(this);
 	}
+
+	// We want the user id in the json for the front-end, but not for the
+	// metadata.json...hence the separate method
+	public String generateJSONForApp() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(this);
+	}
 }

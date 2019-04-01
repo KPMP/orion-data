@@ -72,4 +72,16 @@ public class UserTest {
 		assertEquals("{\"firstName\":\"firstName\",\"lastName\":\"lastName\","
 				+ "\"displayName\":\"displayName\",\"email\":\"emailAddress\"}", testUser.generateJSON());
 	}
+
+	@Test
+	public void testGenerateJSONForApp() throws Exception {
+		testUser.setDisplayName("displayName");
+		testUser.setEmail("emailAddress");
+		testUser.setFirstName("firstName");
+		testUser.setId("id");
+		testUser.setLastName("lastName");
+
+		assertEquals("{\"id\":\"id\",\"firstName\":\"firstName\",\"lastName\":\"lastName\","
+				+ "\"displayName\":\"displayName\",\"email\":\"emailAddress\"}", testUser.generateJSONForApp());
+	}
 }
