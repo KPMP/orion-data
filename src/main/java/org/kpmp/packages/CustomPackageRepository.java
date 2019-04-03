@@ -172,7 +172,7 @@ public class CustomPackageRepository {
 		jsonObject.remove(PackageKeys.SUBMITTER.getKey());
 		if (userOptional.isPresent()) {
 			User user = userOptional.get();
-			String submitterJsonString = user.generateJSON();
+			String submitterJsonString = user.generateJSONForApp();
 			JSONObject submitterJson = new JSONObject(submitterJsonString);
 			jsonObject.put(PackageKeys.SUBMITTER.getKey(), submitterJson);
 		}

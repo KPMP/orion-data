@@ -181,7 +181,7 @@ public class CustomPackageRepositoryTest {
 				"{ \"key\": \"value\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
 		when(result.first()).thenReturn(document);
 		User user = mock(User.class);
-		when(user.generateJSON()).thenReturn("{user: information, exists: here}");
+		when(user.generateJSONForApp()).thenReturn("{user: information, exists: here}");
 		when(userRepo.findById("123")).thenReturn(Optional.of(user));
 
 		String packageJson = repo.getJSONByPackageId("123");
