@@ -17,7 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Document(collection = "packages")
-@JsonPropertyOrder({ "packageId", "createdAt", "packageType", "submitter", "institution", "protocol", "subjectId",
+@JsonPropertyOrder({ "packageId", "createdAt", "packageType", "submitter", "tisName", "protocol", "subjectId",
 		"experimentDate", "description", "attachments" })
 public class Package {
 
@@ -25,7 +25,7 @@ public class Package {
 	private String packageId;
 	private String packageType;
 	private Date createdAt;
-	private String institution;
+	private String tisName;
 	private String protocol;
 	private String subjectId;
 	private Date experimentDate;
@@ -62,12 +62,12 @@ public class Package {
 		this.createdAt = submitted;
 	}
 
-	public String getInstitution() {
-		return institution;
+	public String getTisName() {
+		return tisName;
 	}
 
-	public void setInstitution(String institution) {
-		this.institution = institution;
+	public void setTisName(String tisName) {
+		this.tisName = tisName;
 	}
 
 	public List<Attachment> getAttachments() {
@@ -131,8 +131,8 @@ public class Package {
 	public String toString() {
 		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
 				+ ", submitterId: " + submitter.getId() + ", protocol: " + protocol + ", subjectId: " + subjectId
-				+ ", experimentDate: " + experimentDate + ", description: " + description + ", institution: "
-				+ institution + ", number of attachments: " + attachments.size() + ", regenerateZip: " + regenerateZip;
+				+ ", experimentDate: " + experimentDate + ", description: " + description + ", tisName: "
+				+ tisName + ", number of attachments: " + attachments.size() + ", regenerateZip: " + regenerateZip;
 	}
 
 	public String generateJSON() throws JsonProcessingException {

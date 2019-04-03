@@ -49,9 +49,9 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testSetInstitutionName() {
-		testPackage.setInstitution("institution");
-		assertEquals("institution", testPackage.getInstitution());
+	public void testSetTisName() {
+		testPackage.setTisName("TIS");
+		assertEquals("TIS", testPackage.getTisName());
 	}
 
 	@Test
@@ -106,7 +106,7 @@ public class PackageTest {
 		packageInfo.setAttachments(Arrays.asList(mock(Attachment.class)));
 		packageInfo.setCreatedAt(createdAt);
 		packageInfo.setDescription("description");
-		packageInfo.setInstitution("institution");
+		packageInfo.setTisName("TIS");
 		packageInfo.setPackageId("packageId");
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
@@ -119,7 +119,7 @@ public class PackageTest {
 		assertEquals("packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", "
 				+ "submitterId: 1234, "
 				+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
-				+ "institution: institution, number of attachments: 1, regenerateZip: true", packageInfo.toString());
+				+ "tisName: TIS, number of attachments: 1, regenerateZip: true", packageInfo.toString());
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public class PackageTest {
 		packageInfo.setAttachments(Arrays.asList(attachment));
 		packageInfo.setCreatedAt(createdAt);
 		packageInfo.setDescription("description");
-		packageInfo.setInstitution("institution");
+		packageInfo.setTisName("TIS");
 		packageInfo.setPackageId("packageId");
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
@@ -158,7 +158,7 @@ public class PackageTest {
 						+ "\"packageType\":\"packageType\"," +
 						"\"submitter\":{\"firstName\":\"Arnold\",\"lastName\":\"Schwarzenegger\","
 						+ "\"displayName\":\"Conan\",\"email\":\"arnie@illbeback.com\"},"
-						+ "\"institution\":\"institution\"," + "\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
+						+ "\"tisName\":\"TIS\"," + "\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
 						+ "\"experimentDate\":\"" + experimentDateString + "\",\"description\":\"description\","
 						+ "\"attachments\":[{\"fileName\":\"filename\",\"size\":433,\"id\":\"fileId\"}]}",
 				packageInfo.generateJSON());
