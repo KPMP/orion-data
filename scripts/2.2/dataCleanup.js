@@ -1,3 +1,4 @@
+//+++++ KPMP-843 map tisName to institution, other updates for release
 var institutions=["Broad (Michigan/Broad/Princeton TIS)", "Michigan (Michigan/Broad/Princeton TIS)", "Princeton (Michigan/Broad/Princeton TIS)"]
 db.packages.update({"institution": {$in:institutions}}, {$set: {"tisName": "Michigan/Broad/Princeton"}}, false, true)
 
@@ -16,3 +17,7 @@ db.packages.update({"institution": {$in:institutions}}, {$set: {"tisName": "UCSD
 db.packages.update({ "isError": { $exists: false } }, {$set: {"regenerateZip": true}}, false, true)
 db.packages.update({ packageType:"Bulk RNA-Seq" },{ $set:{ packageType:"Bulk total/mRNA", regenerateZip:true }}, false, true)
 db.packages.update({ packageType:"Sub-segment RNA-Seq" },{ $set:{ packageType:"Sub-segmental RNA-Seq", regenerateZip:true }}, false, true)
+
+//+++++ KPMP-848 remove institution name
+db.packages.update({"institution": {$exists: true}},{$unset: {"institution": 1}}, {multi: true});
+
