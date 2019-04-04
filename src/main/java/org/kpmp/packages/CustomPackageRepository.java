@@ -151,6 +151,7 @@ public class CustomPackageRepository {
 		Document document = collection.find(query).first();
 		JsonWriterSettings settings = jsonSettings.getSettings();
 		String json = document.toJson(settings, codec);
+		System.out.println(json);
 
 		JSONObject jsonObject = setUserInformation(json);
 		jsonObject = cleanUpPackageObject(jsonObject);
