@@ -44,6 +44,7 @@ public class RegenerateZipFiles implements CommandLineRunner {
 			String zipFileName = pathHelper.getZipFileName(packageId);
 			if (packageInfo.getBoolean(PackageKeys.REGENERATE_ZIP.getKey())) {
 				try {
+					packageInfo.remove(PackageKeys.REGENERATE_ZIP.getKey());
 					zipService.createZipFile(packageInfo.toString());
 					packageRepository.updateField(packageId, PackageKeys.REGENERATE_ZIP.getKey(), false);
 				} catch (IOException e) {

@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBRef;
@@ -248,6 +249,28 @@ public class CustomPackageRepositoryTest {
 		verify(mongoTemplate).find(queryCaptor.capture(), entityCaptor.capture(), collectionCaptor.capture());
 		assertEquals("packages", collectionCaptor.getValue());
 		assertEquals(Document.class, entityCaptor.getValue());
+	}
+
+	@Test
+	public void testUpdateField() throws Exception {
+		repo.updateField("id", "thisField", "a value");
+
+		ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+		ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
+		ArgumentCaptor<String> collectionNameCaptor = ArgumentCaptor.forClass(String.class);
+		verify(mongoTemplate).updateFirst(queryCaptor.capture(), updateCaptor.capture(),
+				collectionNameCaptor.capture());
+		assertEquals("packages", collectionNameCaptor.getValue());
+		Query actualQuery = queryCaptor.getValue();
+		Document queryObject = actualQuery.getQueryObject();
+		assertEquals("id", queryObject.get(PackageKeys.ID.getKey()));
+		Update updater = updateCaptor.getValue();
+		Document updateObject = updater.getUpdateObject();
+		System.err.println(updateObject);
+		Object actualDocumnet = updateObject.get("$set");
+		Document expectedDocument = new Document();
+		expectedDocument.append("thisField", "a value");
+		assertEquals(expectedDocument, actualDocumnet);
 	}
 
 }
