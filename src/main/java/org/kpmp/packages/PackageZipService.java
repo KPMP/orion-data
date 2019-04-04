@@ -27,7 +27,7 @@ public class PackageZipService {
 	public void createZipFile(String packageMetadataString) throws JSONException, IOException {
 		JSONObject packageMetadata = new JSONObject(packageMetadataString);
 		JSONArray files = (JSONArray) packageMetadata.get(PackageKeys.FILES.getKey());
-		String packageId = packageMetadata.getString(PackageKeys.ID.getKey());
+		String packageId = packageMetadata.getString(PackageKeys.PACKAGE_ID.getKey());
 		String packagePath = filePathHelper.getPackagePath(packageId);
 		String zipFileName = filePathHelper.getZipFileName(packageId);
 		File tempZipFileHandle = new File(zipFileName + ".tmp");

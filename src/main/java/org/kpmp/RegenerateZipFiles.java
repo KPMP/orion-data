@@ -40,7 +40,7 @@ public class RegenerateZipFiles implements CommandLineRunner {
 		boolean needsRegenerateZip = true;
 		List<JSONObject> jsons = packageRepository.findAll(needsRegenerateZip);
 		for (JSONObject packageInfo : jsons) {
-			String packageId = packageInfo.getString(PackageKeys.ID.getKey());
+			String packageId = packageInfo.getString(PackageKeys.PACKAGE_ID.getKey());
 			String zipFileName = pathHelper.getZipFileName(packageId);
 			if (packageInfo.getBoolean(PackageKeys.REGENERATE_ZIP.getKey())) {
 				try {

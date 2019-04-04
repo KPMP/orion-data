@@ -171,6 +171,10 @@ public class CustomPackageRepository {
 		if (!needsRegenerateZipField) {
 			json.remove(PackageKeys.REGENERATE_ZIP.getKey());
 		}
+		json.remove(PackageKeys.CLASS.getKey());
+		json.remove(PackageKeys.VERSION.getKey());
+		json.put("packageId", json.get(PackageKeys.ID.getKey()));
+		json.remove(PackageKeys.ID.getKey());
 		return json;
 	}
 
@@ -185,6 +189,7 @@ public class CustomPackageRepository {
 			User user = userOptional.get();
 			String submitterJsonString = user.generateJSONForApp();
 			JSONObject submitterJson = new JSONObject(submitterJsonString);
+			submitterJson.remove("id");
 			jsonObject.put(PackageKeys.SUBMITTER.getKey(), submitterJson);
 		}
 		return jsonObject;
