@@ -179,7 +179,7 @@ public class CustomPackageRepositoryTest {
 		JsonWriterSettings jsonWriterSettingsReturn = mock(JsonWriterSettings.class);
 		when(jsonWriterSettings.getSettings()).thenReturn(jsonWriterSettingsReturn);
 		when(document.toJson(any(JsonWriterSettings.class), any(DocumentCodec.class))).thenReturn(
-				"{ \"key\": \"value\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
+				"{ \"_id\": \"123\", \"key\": \"value\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
 		when(result.first()).thenReturn(document);
 		User user = mock(User.class);
 		when(user.generateJSONForApp()).thenReturn("{user: information, exists: here}");
@@ -188,7 +188,7 @@ public class CustomPackageRepositoryTest {
 		String packageJson = repo.getJSONByPackageId("123");
 
 		assertEquals(
-				"{\"createdAt\":{\"$date\":123567},\"submitter\":{\"exists\":\"here\",\"user\":\"information\"},\"key\":\"value\"}",
+				"{\"createdAt\":{\"$date\":123567},\"submitter\":{\"exists\":\"here\",\"user\":\"information\"},\"packageId\":\"123\",\"key\":\"value\"}",
 				packageJson);
 		ArgumentCaptor<BasicDBObject> queryCaptor = ArgumentCaptor.forClass(BasicDBObject.class);
 		verify(mongoCollection).find(queryCaptor.capture());
@@ -206,13 +206,14 @@ public class CustomPackageRepositoryTest {
 		List<Document> results = Arrays.asList(firstResult);
 		when(mongoTemplate.find(any(Query.class), any(Class.class), any(String.class))).thenReturn(results);
 		when(firstResult.toJson(any(JsonWriterSettings.class), any(DocumentCodec.class))).thenReturn(
-				"{ \"key\": \"value\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
+				"{ \"_id\": \"123\", \"key\": \"value\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
 		JsonWriterSettings jsonWriterSettingsReturn = mock(JsonWriterSettings.class);
 		when(jsonWriterSettings.getSettings()).thenReturn(jsonWriterSettingsReturn);
 
 		List<JSONObject> allJsons = repo.findAll(false);
 
 		assertEquals(1, allJsons.size());
+
 		ArgumentCaptor<JsonWriterSettings> jsonWriterCaptor = ArgumentCaptor.forClass(JsonWriterSettings.class);
 		ArgumentCaptor<DocumentCodec> codecCaptor = ArgumentCaptor.forClass(DocumentCodec.class);
 		verify(firstResult).toJson(jsonWriterCaptor.capture(), codecCaptor.capture());
@@ -232,7 +233,7 @@ public class CustomPackageRepositoryTest {
 		List<Document> results = Arrays.asList(firstResult);
 		when(mongoTemplate.find(any(Query.class), any(Class.class), any(String.class))).thenReturn(results);
 		when(firstResult.toJson(any(JsonWriterSettings.class), any(DocumentCodec.class))).thenReturn(
-				"{ \"key\": \"value\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
+				"{ \"_id\": \"234\", \"key\": \"value\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
 		JsonWriterSettings jsonWriterSettingsReturn = mock(JsonWriterSettings.class);
 		when(jsonWriterSettings.getSettings()).thenReturn(jsonWriterSettingsReturn);
 
@@ -266,7 +267,6 @@ public class CustomPackageRepositoryTest {
 		assertEquals("id", queryObject.get(PackageKeys.ID.getKey()));
 		Update updater = updateCaptor.getValue();
 		Document updateObject = updater.getUpdateObject();
-		System.err.println(updateObject);
 		Object actualDocumnet = updateObject.get("$set");
 		Document expectedDocument = new Document();
 		expectedDocument.append("thisField", "a value");
