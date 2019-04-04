@@ -45,8 +45,7 @@ public class RegenerateZipFiles implements CommandLineRunner {
 			if (packageInfo.getBoolean(PackageKeys.REGENERATE_ZIP.getKey())) {
 				try {
 					zipService.createZipFile(packageInfo.toString());
-					packageInfo.put(PackageKeys.REGENERATE_ZIP.getKey(), false);
-					packageRepository.saveDynamicForm(packageInfo);
+					packageRepository.updateField(packageId, PackageKeys.REGENERATE_ZIP.getKey(), false);
 				} catch (IOException e) {
 					System.err.println("Unable to delete file, invalid permissions: " + zipFileName);
 				}
