@@ -45,12 +45,14 @@ public class PackageZipService {
 				try (FileInputStream fileInputStream = new FileInputStream(file)) {
 					try (BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream)) {
 						byte[] buffer = new byte[32768];
-						int data = bufferedInputStream.read(buffer);
-						while (data != -1) {
-							zipFile.write(buffer);
-							data = bufferedInputStream.read(buffer);
+						int data = 0;
+						while ((data = bufferedInputStream.read(buffer, 0, buffer.length)) != -1) {
+							zipFile.write(buffer, 0, data);
 						}
+						zipFile.flush();
+						bufferedInputStream.close();
 					}
+					fileInputStream.close();
 				}
 				zipFile.closeArchiveEntry();
 			}
