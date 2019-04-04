@@ -47,7 +47,7 @@ public class PackageService {
 	}
 
 	public List<PackageView> findAllPackages() throws JSONException, IOException {
-		List<JSONObject> jsons = packageRepository.findAll();
+		List<JSONObject> jsons = packageRepository.findAll(false);
 		List<PackageView> packageViews = new ArrayList<>();
 		for (JSONObject packageToCheck : jsons) {
 			PackageView packageView = new PackageView(packageToCheck);

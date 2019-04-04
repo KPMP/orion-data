@@ -65,13 +65,13 @@ public class PackageServiceTest {
 		when(uploadedPackage.toString()).thenReturn("");
 		when(uploadedPackage.getString("_id")).thenReturn("packageId");
 		List<JSONObject> expectedResults = Arrays.asList(uploadedPackage);
-		when(packageRepository.findAll()).thenReturn(expectedResults);
+		when(packageRepository.findAll(false)).thenReturn(expectedResults);
 		when(filePathHelper.getZipFileName("packageId")).thenReturn("/data/packageId/packageId.zip");
 
 		List<PackageView> packages = service.findAllPackages();
 
 		assertEquals(false, packages.get(0).isDownloadable());
-		verify(packageRepository).findAll();
+		verify(packageRepository).findAll(false);
 	}
 
 	@Test
