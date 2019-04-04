@@ -118,7 +118,7 @@ public class CustomPackageRepository {
 		return repo.save(packageInfo);
 	}
 
-	public List<JSONObject> findAll() throws JSONException, JsonProcessingException {
+	public List<JSONObject> findAll(boolean needsRegnerateZipField) throws JSONException, JsonProcessingException {
 		Query query = new Query();
 		query = query.with(new Sort(Sort.Direction.DESC, PackageKeys.CREATED_AT.getKey()));
 
@@ -131,7 +131,7 @@ public class CustomPackageRepository {
 			JsonWriterSettings settings = jsonSettings.getSettings();
 			String json = document.toJson(settings, codec);
 			JSONObject jsonObject = setUserInformation(json);
-			jsonObject = cleanUpPackageObject(jsonObject);
+			jsonObject = cleanUpPackageObject(jsonObject, needsRegnerateZipField);
 			jsons.add(jsonObject);
 		}
 
@@ -153,13 +153,15 @@ public class CustomPackageRepository {
 		String json = document.toJson(settings, codec);
 
 		JSONObject jsonObject = setUserInformation(json);
-		jsonObject = cleanUpPackageObject(jsonObject);
+		jsonObject = cleanUpPackageObject(jsonObject, false);
 
 		return jsonObject.toString();
 	}
 
-	private JSONObject cleanUpPackageObject(JSONObject json) throws JSONException {
-		json.remove(PackageKeys.REGENERATE_ZIP.getKey());
+	private JSONObject cleanUpPackageObject(JSONObject json, boolean needsRegenerateZipField) throws JSONException {
+		if (!needsRegenerateZipField) {
+			json.remove(PackageKeys.REGENERATE_ZIP.getKey());
+		}
 		return json;
 	}
 
