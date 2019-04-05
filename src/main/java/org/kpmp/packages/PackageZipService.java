@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
@@ -60,13 +61,18 @@ public class PackageZipService {
 			}
 			packageMetadata = cleanUpPackageObject(packageMetadata);
 			ZipArchiveEntry metadataEntry = new ZipArchiveEntry(METADATA_JSON_FILENAME);
-			metadataEntry.setSize(packageMetadata.toString().getBytes().length);
+			String metadataToSave = formatPackageMetadata(packageMetadata.toString());
+			metadataEntry.setSize(metadataToSave.getBytes().length);
 			zipFile.putArchiveEntry(metadataEntry);
-			zipFile.write(packageMetadata.toString().getBytes());
+			zipFile.write(metadataToSave.getBytes(StandardCharsets.UTF_8));
 			zipFile.closeArchiveEntry();
 		}
 		File zipFileHandle = new File(zipFileName);
 		tempZipFileHandle.renameTo(zipFileHandle);
+	}
+
+	public String formatPackageMetadata(String packageMetadataString) {
+		return packageMetadataString.replaceAll("\\\\/", "/");
 	}
 
 	private JSONObject cleanUpPackageObject(JSONObject json) throws JSONException {

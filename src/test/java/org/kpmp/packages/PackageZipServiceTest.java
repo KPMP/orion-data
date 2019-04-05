@@ -64,4 +64,9 @@ public class PackageZipServiceTest {
 		zip.close();
 	}
 
+	@Test
+	public void testFormatPackageMetadata() throws Exception {
+		assertEquals("One/Two/Three", service.formatPackageMetadata("One\\/Two\\/Three"));
+	}
+
 }
