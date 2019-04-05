@@ -188,7 +188,7 @@ public class CustomPackageRepositoryTest {
 		String packageJson = repo.getJSONByPackageId("123");
 
 		assertEquals(
-				"{\"createdAt\":{\"$date\":123567},\"submitter\":{\"exists\":\"here\",\"user\":\"information\"},\"packageId\":\"123\",\"key\":\"value\"}",
+				"{\"regenerateZip\":true,\"createdAt\":{\"$date\":123567},\"submitter\":{\"exists\":\"here\",\"user\":\"information\"},\"_id\":\"123\",\"key\":\"value\"}",
 				packageJson);
 		ArgumentCaptor<BasicDBObject> queryCaptor = ArgumentCaptor.forClass(BasicDBObject.class);
 		verify(mongoCollection).find(queryCaptor.capture());
