@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 public class PackageZipService {
 
 	private static final String METADATA_JSON_FILENAME = "metadata.json";
+	private static final String PACKAGE_ID = "packageId";
+	private static final String SUBMITTER_ID = "id";
 	private FilePathHelper filePathHelper;
 
 	@Autowired
@@ -27,7 +29,7 @@ public class PackageZipService {
 	public void createZipFile(String packageMetadataString) throws JSONException, IOException {
 		JSONObject packageMetadata = new JSONObject(packageMetadataString);
 		JSONArray files = (JSONArray) packageMetadata.get(PackageKeys.FILES.getKey());
-		String packageId = packageMetadata.getString(PackageKeys.PACKAGE_ID.getKey());
+		String packageId = packageMetadata.getString(PackageKeys.ID.getKey());
 		String packagePath = filePathHelper.getPackagePath(packageId);
 		String zipFileName = filePathHelper.getZipFileName(packageId);
 		File tempZipFileHandle = new File(zipFileName + ".tmp");
@@ -56,14 +58,27 @@ public class PackageZipService {
 				}
 				zipFile.closeArchiveEntry();
 			}
+			packageMetadata = cleanUpPackageObject(packageMetadata);
 			ZipArchiveEntry metadataEntry = new ZipArchiveEntry(METADATA_JSON_FILENAME);
-			metadataEntry.setSize(packageMetadataString.getBytes().length);
+			metadataEntry.setSize(packageMetadata.toString().getBytes().length);
 			zipFile.putArchiveEntry(metadataEntry);
-			zipFile.write(packageMetadataString.getBytes());
+			zipFile.write(packageMetadata.toString().getBytes());
 			zipFile.closeArchiveEntry();
 		}
 		File zipFileHandle = new File(zipFileName);
 		tempZipFileHandle.renameTo(zipFileHandle);
+	}
+
+	private JSONObject cleanUpPackageObject(JSONObject json) throws JSONException {
+		json.remove(PackageKeys.REGENERATE_ZIP.getKey());
+		json.remove(PackageKeys.CLASS.getKey());
+		json.remove(PackageKeys.VERSION.getKey());
+		json.put(PACKAGE_ID, json.get(PackageKeys.ID.getKey()));
+		json.remove(PackageKeys.ID.getKey());
+		JSONObject submitterObject = json.getJSONObject(PackageKeys.SUBMITTER.getKey());
+		submitterObject.remove(SUBMITTER_ID);
+		json.put(PackageKeys.SUBMITTER.getKey(), submitterObject);
+		return json;
 	}
 
 }

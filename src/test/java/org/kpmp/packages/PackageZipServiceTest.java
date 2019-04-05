@@ -45,8 +45,8 @@ public class PackageZipServiceTest {
 		when(filePathHelper.getPackagePath("234")).thenReturn(packageDirectory.toString() + File.separator);
 		when(filePathHelper.getZipFileName("234")).thenReturn(packageDirectory.toString() + File.separator + "234.zip");
 
-		service.createZipFile("{ \"packageId\": \"234\", \"files\": [ { \"fileName\": \"" + attachment1Path.getName()
-				+ "\", \"size\": 123 }]}");
+		service.createZipFile("{ \"_id\": \"234\", \"files\": [ { \"fileName\": \"" + attachment1Path.getName()
+				+ "\", \"size\": 123 }], \"submitter\":{\"id\": \"123\", \"firstName\": \"John\"}}");
 
 		File zipFile = new File(packageDirectory.toString() + File.separator + "234.zip");
 		assertEquals(true, zipFile.exists());
