@@ -8,11 +8,12 @@ public class PackageKeysTest {
 
 	@Test
 	public void testLength() throws Exception {
-		assertEquals(16, PackageKeys.values().length);
+		assertEquals(18, PackageKeys.values().length);
 	}
 
 	@Test
 	public void testGetKey() {
+		assertEquals("_class", PackageKeys.CLASS.getKey());
 		assertEquals("createdAt", PackageKeys.CREATED_AT.getKey());
 		assertEquals("displayName", PackageKeys.DISPLAY_NAME.getKey());
 		assertEquals("email", PackageKeys.EMAIL.getKey());
@@ -29,6 +30,7 @@ public class PackageKeysTest {
 		assertEquals("$oid", PackageKeys.SUBMITTER_ID.getKey());
 		assertEquals("$id", PackageKeys.SUBMITTER_ID_OBJECT.getKey());
 		assertEquals("submitterLastName", PackageKeys.SUBMITTER_LAST_NAME.getKey());
+		assertEquals("version", PackageKeys.VERSION.getKey());
 	}
 
 }

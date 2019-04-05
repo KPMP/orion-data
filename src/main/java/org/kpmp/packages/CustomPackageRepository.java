@@ -24,7 +24,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -118,6 +120,13 @@ public class CustomPackageRepository {
 		return repo.save(packageInfo);
 	}
 
+	public void updateField(String id, String fieldName, Object value) {
+		Query updateQuery = new Query(Criteria.where(PackageKeys.ID.getKey()).is(id));
+		Update fieldUpdate = new Update();
+		fieldUpdate.set(fieldName, value);
+		mongoTemplate.updateFirst(updateQuery, fieldUpdate, PACKAGES_COLLECTION);
+	}
+
 	public List<JSONObject> findAll() throws JSONException, JsonProcessingException {
 		Query query = new Query();
 		query = query.with(new Sort(Sort.Direction.DESC, PackageKeys.CREATED_AT.getKey()));
@@ -131,7 +140,6 @@ public class CustomPackageRepository {
 			JsonWriterSettings settings = jsonSettings.getSettings();
 			String json = document.toJson(settings, codec);
 			JSONObject jsonObject = setUserInformation(json);
-			jsonObject = cleanUpPackageObject(jsonObject);
 			jsons.add(jsonObject);
 		}
 
@@ -153,14 +161,7 @@ public class CustomPackageRepository {
 		String json = document.toJson(settings, codec);
 
 		JSONObject jsonObject = setUserInformation(json);
-		jsonObject = cleanUpPackageObject(jsonObject);
-
 		return jsonObject.toString();
-	}
-
-	private JSONObject cleanUpPackageObject(JSONObject json) throws JSONException {
-		json.remove(PackageKeys.REGENERATE_ZIP.getKey());
-		return json;
 	}
 
 	private JSONObject setUserInformation(String json) throws JSONException, JsonProcessingException {

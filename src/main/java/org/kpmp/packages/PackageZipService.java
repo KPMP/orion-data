@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 public class PackageZipService {
 
 	private static final String METADATA_JSON_FILENAME = "metadata.json";
+	private static final String PACKAGE_ID = "packageId";
+	private static final String SUBMITTER_ID = "id";
 	private FilePathHelper filePathHelper;
 
 	@Autowired
@@ -57,8 +59,9 @@ public class PackageZipService {
 				}
 				zipFile.closeArchiveEntry();
 			}
+			packageMetadata = cleanUpPackageObject(packageMetadata);
 			ZipArchiveEntry metadataEntry = new ZipArchiveEntry(METADATA_JSON_FILENAME);
-			String metadataToSave = formatPackageMetadata(packageMetadataString);
+			String metadataToSave = formatPackageMetadata(packageMetadata.toString());
 			metadataEntry.setSize(metadataToSave.getBytes().length);
 			zipFile.putArchiveEntry(metadataEntry);
 			zipFile.write(metadataToSave.getBytes(StandardCharsets.UTF_8));
@@ -70,6 +73,18 @@ public class PackageZipService {
 
 	public String formatPackageMetadata(String packageMetadataString) {
 		return packageMetadataString.replaceAll("\\\\/", "/");
+	}
+
+	private JSONObject cleanUpPackageObject(JSONObject json) throws JSONException {
+		json.remove(PackageKeys.REGENERATE_ZIP.getKey());
+		json.remove(PackageKeys.CLASS.getKey());
+		json.remove(PackageKeys.VERSION.getKey());
+		json.put(PACKAGE_ID, json.get(PackageKeys.ID.getKey()));
+		json.remove(PackageKeys.ID.getKey());
+		JSONObject submitterObject = json.getJSONObject(PackageKeys.SUBMITTER.getKey());
+		submitterObject.remove(SUBMITTER_ID);
+		json.put(PackageKeys.SUBMITTER.getKey(), submitterObject);
+		return json;
 	}
 
 }
