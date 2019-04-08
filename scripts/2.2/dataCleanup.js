@@ -21,3 +21,5 @@ db.packages.update({ packageType:"Sub-segment RNA-Seq" },{ $set:{ packageType:"S
 //+++++ KPMP-848 remove institution name
 db.packages.update({"institution": {$exists: true}},{$unset: {"institution": 1}}, {multi: true});
 
+//+++++ KPMP-910 set version number if not already set
+db.packages.update({ version: {$exists: false}}, {$set: {"version": 0}}, false, true)
