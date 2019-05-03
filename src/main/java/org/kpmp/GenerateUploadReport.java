@@ -1,7 +1,9 @@
 package org.kpmp;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.kpmp.packages.CustomPackageRepository;
+import org.kpmp.packages.PackageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -33,34 +36,36 @@ public class GenerateUploadReport implements CommandLineRunner {
 		app.run(args);
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public void run(String... args) throws Exception {
 		List<JSONObject> jsons = packageRepository.findAll();
 		List<Map> packageDatas = new ArrayList<Map>();
 		for (JSONObject packageInfo : jsons) {
 			Map<String, String> packageData = new LinkedHashMap<>();
-			JSONObject submitter = packageInfo.getJSONObject("submitter");
-			String submitterName = submitter.getString("firstName") + " " + submitter.getString("lastName");
-			packageData.put("Package ID", packageInfo.getString("_id"));
+			JSONObject submitter = packageInfo.getJSONObject(PackageKeys.SUBMITTER.getKey());
+			String submitterName = submitter.getString(PackageKeys.FIRST_NAME.getKey()) + " "
+					+ submitter.getString(PackageKeys.LAST_NAME.getKey());
+			packageData.put("Package ID", packageInfo.getString(PackageKeys.ID.getKey()));
 			packageData.put("Submitter", submitterName);
-			packageData.put("TIS", packageInfo.getString("tisName"));
-			packageData.put("Specimen ID", packageInfo.getString("subjectId"));
-			if (packageInfo.has("tisInternalExperimentID")) {
-				packageData.put("TIS Internal Experiment ID", packageInfo.getString("tisInternalExperimentID"));
+			packageData.put("TIS Name", packageInfo.getString(PackageKeys.TIS_NAME.getKey()));
+			packageData.put("Specimen ID", packageInfo.getString(PackageKeys.SUBJECT_ID.getKey()));
+			if (packageInfo.has(PackageKeys.TIS_INTERNAL_EXPERIMENT_ID.getKey())) {
+				packageData.put("TIS Internal Experiment ID",
+						packageInfo.getString(PackageKeys.TIS_INTERNAL_EXPERIMENT_ID.getKey()));
 			} else {
 				packageData.put("TIS Internal Experiment ID", "N/A");
 			}
-			if (packageInfo.has("dataGenerators")) {
-				packageData.put("Data Generator(s)", packageInfo.getString("dataGenerators"));
+			if (packageInfo.has(PackageKeys.DATA_GENERATORS.getKey())) {
+				packageData.put("Data Generator(s)", packageInfo.getString(PackageKeys.DATA_GENERATORS.getKey()));
 			} else {
 				packageData.put("Data Generator(s)", "N/A");
 			}
-			packageData.put("Package Type", packageInfo.getString("packageType"));
-			packageData.put("Protocol", packageInfo.getString("protocol"));
-			packageData.put("Dataset Description", packageInfo.getString("description"));
-			packageData.put("Created At", packageInfo.getString("createdAt"));
-			JSONArray files = packageInfo.getJSONArray("files");
+			packageData.put("Package Type", packageInfo.getString(PackageKeys.PACKAGE_TYPE.getKey()));
+			packageData.put("Protocol", packageInfo.getString(PackageKeys.PROTOCOL.getKey()));
+			packageData.put("Dataset Description", packageInfo.getString(PackageKeys.DESCRIPTION.getKey()));
+			packageData.put("Created At", packageInfo.getString(PackageKeys.CREATED_AT.getKey()));
+			JSONArray files = packageInfo.getJSONArray(PackageKeys.FILES.getKey());
 			StringBuilder fileNames = new StringBuilder();
 			for (int i = 0; i < files.length(); i++) {
 				JSONObject file = files.getJSONObject(i);
@@ -69,14 +74,18 @@ public class GenerateUploadReport implements CommandLineRunner {
 				} else {
 					fileNames.append("\"");
 				}
-				fileNames.append(file.get("fileName"));
+				fileNames.append(file.get(PackageKeys.FILE_NAME.getKey()));
 			}
 			fileNames.append("\"");
 			packageData.put("Files", fileNames.toString());
 			packageDatas.add(packageData);
 		}
 
-		// Now write the results out to a csv?
+		writeToCSV(packageDatas);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void writeToCSV(List<Map> packageDatas) throws FileNotFoundException, IOException {
 		FileOutputStream report = new FileOutputStream(new File("report.csv"));
 		Map<String, Object> firstPackage = packageDatas.get(0);
 		Set<String> headers = firstPackage.keySet();
@@ -107,6 +116,7 @@ public class GenerateUploadReport implements CommandLineRunner {
 			report.write(System.lineSeparator().getBytes());
 			count = 0;
 		}
+		report.close();
 	}
 
 }
