@@ -16,6 +16,9 @@ To generate an upload report (before production release):
 
 This will generate a report.csv file in your current directory
 
+**Remember to revert your application.properties file before checking it in!!**
+Make sure you do not check in the report.csv
+
 ## RegenerateZipFiles
 To regenerate zip files:
 1. Connect to mongo
