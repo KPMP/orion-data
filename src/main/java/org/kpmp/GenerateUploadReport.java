@@ -63,7 +63,11 @@ public class GenerateUploadReport implements CommandLineRunner {
 			}
 			packageData.put("Package Type", packageInfo.getString(PackageKeys.PACKAGE_TYPE.getKey()));
 			packageData.put("Protocol", packageInfo.getString(PackageKeys.PROTOCOL.getKey()));
-			packageData.put("Dataset Description", packageInfo.getString(PackageKeys.DESCRIPTION.getKey()));
+			String description = packageInfo.getString(PackageKeys.DESCRIPTION.getKey());
+			description = description.replace("\n", " ");
+			description = description.replace("\r", " ");
+			description = description.replace("\r\n", " ");
+			packageData.put("Dataset Description", description);
 			packageData.put("Created At", packageInfo.getString(PackageKeys.CREATED_AT.getKey()));
 			JSONArray files = packageInfo.getJSONArray(PackageKeys.FILES.getKey());
 			StringBuilder fileNames = new StringBuilder();
