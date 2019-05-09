@@ -47,6 +47,7 @@ public class GenerateUploadReport implements CommandLineRunner {
 			String submitterName = submitter.getString(PackageKeys.FIRST_NAME.getKey()) + " "
 					+ submitter.getString(PackageKeys.LAST_NAME.getKey());
 			packageData.put("Package ID", packageInfo.getString(PackageKeys.ID.getKey()));
+			packageData.put("In ERROR?", packageInfo.getString("inError"));
 			packageData.put("Submitter", submitterName);
 			packageData.put("TIS Name", packageInfo.getString(PackageKeys.TIS_NAME.getKey()));
 			packageData.put("Specimen ID", packageInfo.getString(PackageKeys.SUBJECT_ID.getKey()));
@@ -90,14 +91,19 @@ public class GenerateUploadReport implements CommandLineRunner {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeToCSV(List<Map> packageDatas) throws FileNotFoundException, IOException {
-		FileOutputStream report = new FileOutputStream(new File("report.csv"));
+		FileOutputStream report = new FileOutputStream(new File("report.tsv"));
+		if (packageDatas.size() == 0) {
+			System.err.println("****  Retrieved 0 packages. NO REPORT GENERATED!  ****");
+			System.exit(0);
+		}
+
 		Map<String, Object> firstPackage = packageDatas.get(0);
 		Set<String> headers = firstPackage.keySet();
 
 		int count = 0;
 		for (String header : headers) {
 			if (count > 0) {
-				report.write(",".getBytes());
+				report.write("\t".getBytes());
 			}
 			report.write(header.getBytes());
 			count++;
@@ -108,7 +114,7 @@ public class GenerateUploadReport implements CommandLineRunner {
 		for (Map packageData : packageDatas) {
 			for (String key : headers) {
 				if (count > 0) {
-					report.write(",".getBytes());
+					report.write("\t".getBytes());
 				}
 				if (packageData.get(key) == null) {
 					report.write("N/A".getBytes());

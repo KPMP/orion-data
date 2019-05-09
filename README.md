@@ -5,13 +5,18 @@
 
 ## GenerateUploadReport
 To generate an upload report (before production release):
-1. Check out the latest from orion-data
-2. Connect to prod mongo
+1. Shut down any running docker containers with mongo
+2. Until we have better state tracking, we need to update the 'inError' flag on packages that were unable to generate a zip file.
+- Connect to production mongo
+- Navigate to http://upload.kpmp.org
+- Make sure any packages that are missing a download button have the 'inError' attribute in mongo
+3. Check out the latest from orion-data
+4. Connect to prod mongo
  `ssh uploader-prod -L 27017:localhost:27017`
-3. Change src/main/resources/application.properties spring.data.mongodb.uri to `spring.data.mongodb.uri=mongodb://localhost:27017/dataLake`
-4. Rebuild the orion-data jar
+5. Change src/main/resources/application.properties spring.data.mongodb.uri to `spring.data.mongodb.uri=mongodb://localhost:27017/dataLake`
+6. Rebuild the orion-data jar
 `./gradlew build`
-5. Run the report generator
+7. Run the report generator
 `java -cp build/libs/orion-data.jar -Dloader.main=org.kpmp.GenerateUploadReport org.springframework.boot.loader.PropertiesLauncher`
 
 This will generate a report.csv file in your current directory
