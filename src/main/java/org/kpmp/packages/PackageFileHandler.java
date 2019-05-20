@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class PackageFileHandler {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private FilePathHelper filePathHelper;
 
 	@Autowired
@@ -39,6 +42,18 @@ public class PackageFileHandler {
 			FileOutputStream fileOutputStream = new FileOutputStream(fileToSave, shouldAppend);
 
 			IOUtils.copy(inputStream, fileOutputStream);
+		}
+	}
+
+	public void assertPackageFileHasSize(String packageId, String filename, long expectedSize) throws RuntimeException {
+		String packageDirectoryPath = filePathHelper.getPackagePath(packageId);
+		File savedFile = new File(packageDirectoryPath + File.separator + filename);
+		long actualSize = savedFile.length();
+		String msg = String.format("Request|assertPackageFileHasSize|%s|%s|%d|%d", packageId, filename, expectedSize, actualSize);
+		log.info(msg);
+
+		if(actualSize != expectedSize) {
+			throw new RuntimeException(msg);
 		}
 	}
 

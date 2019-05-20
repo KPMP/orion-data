@@ -64,7 +64,7 @@ public class PackageController {
 		log.info(fileUploadRequest
 				.format(new Object[] { "postFilesToPackage", filename, packageId, fileSize, chunks, chunk }));
 
-		packageService.saveFile(file, packageId, filename, shouldAppend(chunk));
+		packageService.saveFile(file, packageId, filename, fileSize, shouldAppend(chunk));
 
 		return new FileUploadResponse(true);
 	}

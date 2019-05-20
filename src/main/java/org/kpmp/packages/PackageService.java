@@ -79,13 +79,14 @@ public class PackageService {
 		return packageRepository.findByPackageId(packageId);
 	}
 
-	public void saveFile(MultipartFile file, String packageId, String filename, boolean shouldAppend) throws Exception {
+	public void saveFile(MultipartFile file, String packageId, String filename, long fileSize, boolean shouldAppend) throws Exception {
 
 		if (filename.equalsIgnoreCase("metadata.json")) {
 			filename = filename.replace(".", "_user.");
 		}
 
 		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
+		packageFileHandler.assertPackageFileHasSize(packageId, filename, fileSize);
 	}
 
 	public void createZipFile(String packageId) throws Exception {

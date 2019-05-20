@@ -72,7 +72,7 @@ public class PackageControllerTest {
 		MultipartFile file = mock(MultipartFile.class);
 		controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 2);
 
-		verify(packageService).saveFile(file, "packageId", "filename", true);
+		verify(packageService).saveFile(file, "packageId", "filename", 1234, true);
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class PackageControllerTest {
 		MultipartFile file = mock(MultipartFile.class);
 		controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0);
 
-		verify(packageService).saveFile(file, "packageId", "filename", false);
+		verify(packageService).saveFile(file, "packageId", "filename", 1234,false);
 	}
 
 	@Test

@@ -101,7 +101,7 @@ public class PackageServiceTest {
 		MultipartFile file = mock(MultipartFile.class);
 		boolean shouldAppend = false;
 
-		service.saveFile(file, "packageId", "metadata.json", shouldAppend);
+		service.saveFile(file, "packageId", "metadata.json", file.getSize(), shouldAppend);
 
 		verify(packageFileHandler).saveMultipartFile(file, "packageId", "metadata_user.json", shouldAppend);
 	}
@@ -113,7 +113,7 @@ public class PackageServiceTest {
 		when(packageRepository.findByPackageId("packageId")).thenReturn(packageToUpdate);
 		boolean shouldAppend = false;
 
-		service.saveFile(file, "packageId", "filename", shouldAppend);
+		service.saveFile(file, "packageId", "filename", file.getSize(), shouldAppend);
 
 		verify(packageFileHandler).saveMultipartFile(file, "packageId", "filename", shouldAppend);
 	}
@@ -128,7 +128,7 @@ public class PackageServiceTest {
 		when(packageToUpdate.getAttachments()).thenReturn(files);
 		boolean shouldAppend = true;
 
-		service.saveFile(file, "packageId", "filename", shouldAppend);
+		service.saveFile(file, "packageId", "filename", file.getSize(), shouldAppend);
 
 		verify(packageFileHandler).saveMultipartFile(file, "packageId", "filename", shouldAppend);
 		verify(packageRepository, times(0)).findByPackageId("packageId");
@@ -144,8 +144,30 @@ public class PackageServiceTest {
 				shouldAppend);
 
 		try {
-			service.saveFile(file, "packageId", "filename", shouldAppend);
+			service.saveFile(file, "packageId", "filename", file.getSize(), shouldAppend);
 			fail("Should have thrown exception");
+		} catch (Exception actual) {
+			assertEquals(expectedException, actual);
+		}
+	}
+
+	@SuppressWarnings({ "unchecked" })
+	@Test
+	public void testSaveFile_whenFileIncorrectSizeException() throws Exception {
+		MultipartFile file = mock(MultipartFile.class);
+		Package packageToUpdate = mock(Package.class);
+		when(packageRepository.findByPackageId("packageId")).thenReturn(packageToUpdate);
+		ArrayList<Attachment> files = mock(ArrayList.class);
+		when(packageToUpdate.getAttachments()).thenReturn(files);
+		boolean shouldAppend = true;
+		long expectedSize = file.getSize() + 100;
+		Exception expectedException = new RuntimeException();
+		doThrow(expectedException).when(packageFileHandler).assertPackageFileHasSize("packageId", "filename",
+				expectedSize);
+
+		try {
+			service.saveFile(file, "packageId", "filename", expectedSize, shouldAppend);
+			fail("Should have failed test file size " + file.getSize() + " with expected size " + expectedSize);
 		} catch (Exception actual) {
 			assertEquals(expectedException, actual);
 		}
