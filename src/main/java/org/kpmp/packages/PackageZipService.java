@@ -11,11 +11,15 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PackageZipService {
+
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private static final String METADATA_JSON_FILENAME = "metadata.json";
 	private static final String PACKAGE_ID = "packageId";
@@ -27,7 +31,7 @@ public class PackageZipService {
 		this.filePathHelper = filePathHelper;
 	}
 
-	public void createZipFile(String packageMetadataString) throws JSONException, IOException {
+	public void createZipFile(String packageMetadataString) throws RuntimeException, JSONException, IOException {
 		JSONObject packageMetadata = new JSONObject(packageMetadataString);
 		JSONArray files = (JSONArray) packageMetadata.get(PackageKeys.FILES.getKey());
 		String packageId = packageMetadata.getString(PackageKeys.ID.getKey());
@@ -41,6 +45,8 @@ public class PackageZipService {
 			for (int i = 0; i < files.length(); i++) {
 				JSONObject fileObject = files.getJSONObject(i);
 				String fileName = fileObject.getString(PackageKeys.FILE_NAME.getKey());
+				Long expectedFilesize = fileObject.getLong(PackageKeys.SIZE.getKey());
+				assertPackageFileHasSize(packageId, fileName, expectedFilesize);
 				File file = new File(packagePath + fileName);
 				ZipArchiveEntry entry = new ZipArchiveEntry(fileName);
 				entry.setSize(fileObject.getLong(PackageKeys.SIZE.getKey()));
@@ -85,6 +91,18 @@ public class PackageZipService {
 		submitterObject.remove(SUBMITTER_ID);
 		json.put(PackageKeys.SUBMITTER.getKey(), submitterObject);
 		return json;
+	}
+
+	public void assertPackageFileHasSize(String packageId, String filename, long expectedSize) throws RuntimeException {
+		String packageDirectoryPath = filePathHelper.getPackagePath(packageId);
+		File savedFile = new File(packageDirectoryPath + File.separator + filename);
+		long actualSize = savedFile.length();
+		String msg = String.format("Request|assertPackageFileHasSize|%s|%s|%d|%d", packageId, filename, expectedSize, actualSize);
+		log.info(msg);
+
+		if(actualSize != expectedSize) {
+			throw new RuntimeException(msg);
+		}
 	}
 
 }
