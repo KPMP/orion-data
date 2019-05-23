@@ -219,30 +219,89 @@ public class PackageServiceTest {
 	}
 
 	@Test
-	public void testCheckFilesExistTrue() throws Exception {
-		when(packageRepository.findByPackageId("123")).thenReturn(mock(Package.class));
+	public void testValidateFileLengthsMatch_whenMatch() throws Exception {
+		Logger testLogger = (Logger) LoggerFactory.getLogger(PackageService.class);
+		ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+		listAppender.start();
+		testLogger.addAppender(listAppender);
+		Path packagePath = Files.createTempDirectory("data");
+		packagePath.toFile().deleteOnExit();
+		String file1Path = Paths.get(packagePath.toString(), "file1").toString();
+		String file2Path = Paths.get(packagePath.toString(), "file2").toString();
+		File file1 = new File(file1Path);
+		File file2 = new File(file2Path);
+		file1.createNewFile();
+		file1.deleteOnExit();
+		file2.createNewFile();
+		file2.deleteOnExit();
 		Attachment attachment1 = new Attachment();
 		attachment1.setFileName("file1");
+		attachment1.setSize(file1.length());
 		Attachment attachment2 = new Attachment();
 		attachment2.setFileName("file2");
-		when(filePathHelper.getPackagePath("123")).thenReturn("path");
-		when(filePathHelper.getFilenames("path")).thenReturn(Arrays.asList("file2", "file1"));
+		attachment2.setSize(file2.length());
+		List<Attachment> attachments = Arrays.asList(attachment1, attachment2);
 
-		assertEquals(true, service.checkFilesExist("123"));
+		assertEquals(true, service.validateFileLengthsMatch(attachments, packagePath.toString()));
+		List<ILoggingEvent> logsList = listAppender.list;
+		assertEquals(0, logsList.size());
+	}
+
+	@Test
+	public void testValidateFileLengthsMatch_whenNoMatch() throws Exception {
+		Logger testLogger = (Logger) LoggerFactory.getLogger(PackageService.class);
+		ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+		listAppender.start();
+		testLogger.addAppender(listAppender);
+		Path packagePath = Files.createTempDirectory("data");
+		packagePath.toFile().deleteOnExit();
+		String file1Path = Paths.get(packagePath.toString(), "file1").toString();
+		String file2Path = Paths.get(packagePath.toString(), "file2").toString();
+		File file1 = new File(file1Path);
+		File file2 = new File(file2Path);
+		file1.createNewFile();
+		file1.deleteOnExit();
+		file2.createNewFile();
+		file2.deleteOnExit();
+		Attachment attachment1 = new Attachment();
+		attachment1.setFileName("file1");
+		attachment1.setSize(file1.length());
+		Attachment attachment2 = new Attachment();
+		attachment2.setFileName("file2");
+		attachment2.setSize(1234l);
+		List<Attachment> attachments = Arrays.asList(attachment1, attachment2);
+
+		assertEquals(false, service.validateFileLengthsMatch(attachments, packagePath.toString()));
+		List<ILoggingEvent> logsList = listAppender.list;
+		String errorMessage = logsList.get(0).getMessage();
+		assertEquals("ERROR|zip|File size in metadata does not match file size on disk for file: file2", errorMessage);
+
+	}
+
+	@Test
+	public void testCheckFilesExistTrue() throws Exception {
+		Logger testLogger = (Logger) LoggerFactory.getLogger(PackageService.class);
+		ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+		listAppender.start();
+		testLogger.addAppender(listAppender);
+
+		assertEquals(true, service.checkFilesExist(Arrays.asList("file1", "file2"), Arrays.asList("file1", "file2")));
+		List<ILoggingEvent> logsList = listAppender.list;
+		assertEquals(0, logsList.size());
 	}
 
 	@Test
 	public void testCheckFilesExistFalse() throws Exception {
-		Package packageInfo = new Package();
-		when(packageRepository.findByPackageId("123")).thenReturn(packageInfo);
-		Attachment attachment1 = new Attachment();
-		attachment1.setFileName("file1");
-		Attachment attachment2 = new Attachment();
-		attachment2.setFileName("file2");
-		packageInfo.setAttachments(Arrays.asList(attachment1, attachment2));
-		when(filePathHelper.getPackagePath("123")).thenReturn("path");
-		when(filePathHelper.getFilenames("path")).thenReturn(Arrays.asList("file1"));
-		assertEquals(false, service.checkFilesExist("123"));
+		Logger testLogger = (Logger) LoggerFactory.getLogger(PackageService.class);
+		ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+		listAppender.start();
+		testLogger.addAppender(listAppender);
+
+		assertEquals(false,
+				service.checkFilesExist(Arrays.asList("file1", "file2"), Arrays.asList("file1", "file2, file3")));
+		List<ILoggingEvent> logsList = listAppender.list;
+		String errorMessage = logsList.get(0).getMessage();
+		assertEquals("ERROR|zip|File list in metadata does not match file list on disk", errorMessage);
 	}
 
 }
