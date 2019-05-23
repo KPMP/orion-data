@@ -1,7 +1,6 @@
 package org.kpmp.shibboleth;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,12 +26,6 @@ public class ShibbolethUserService {
 		user.setLastName(lastName);
 		user.setFirstName(firstName);
 		user.setEmail(email);
-
-		Enumeration<String> headerNames = request.getHeaderNames();
-		while (headerNames.hasMoreElements()) {
-			String attribute = (String) headerNames.nextElement();
-			System.err.println(attribute + ": " + request.getHeader(attribute));
-		}
 
 		return user;
 
