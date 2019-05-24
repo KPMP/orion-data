@@ -31,6 +31,7 @@ public class PackageService {
 	private static final MessageFormat fileUploadFinishTiming = new MessageFormat(
 			"Timing|end|{0}|{1}|{2}|{3} files|{4}|{5}|{6}");
 	private static final MessageFormat zipTiming = new MessageFormat("Timing|zip|{0}|{1}|{2}|{3} files|{4}|{5}");
+	private static final MessageFormat zipIssue = new MessageFormat("ERROR|zip|{0}");
 
 	private PackageFileHandler packageFileHandler;
 	private PackageZipService packageZipper;
@@ -144,14 +145,36 @@ public class PackageService {
 		return (double) totalSize / megabyteValue;
 	}
 
-	public Boolean checkFilesExist(String packageId) {
+	public boolean validatePackageForZipping(String packageId) {
 		Package packageInformation = findPackage(packageId);
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
 		List<String> filesInPackage = getAttachmentFilenames(packageInformation);
 		Collections.sort(filesOnDisk);
 		Collections.sort(filesInPackage);
-		return filesOnDisk.equals(filesInPackage);
+		return checkFilesExist(filesOnDisk, filesInPackage)
+				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath);
+	}
+
+	protected boolean validateFileLengthsMatch(List<Attachment> filesInPackage, String packagePath) {
+		boolean everythingMatches = true;
+		for (Attachment attachment : filesInPackage) {
+			String filename = attachment.getFileName();
+			if (new File(packagePath + filename).length() != attachment.getSize()) {
+				log.error(zipIssue.format(new Object[] {
+						"File size in metadata does not match file size on disk for file: " + filename }));
+				everythingMatches = false;
+			}
+		}
+		return everythingMatches;
+	}
+
+	protected boolean checkFilesExist(List<String> filesOnDisk, List<String> filesInPackage) {
+		boolean sameFiles = filesOnDisk.equals(filesInPackage);
+		if (!sameFiles) {
+			log.error(zipIssue.format(new Object[] { "File list in metadata does not match file list on disk" }));
+		}
+		return sameFiles;
 	}
 
 	private List<String> getAttachmentFilenames(Package packageInformation) {

@@ -85,35 +85,35 @@ public class PackageControllerTest {
 
 	@Test
 	public void testFinishUpload() throws Exception {
-		when(packageService.checkFilesExist("3545")).thenReturn(true);
+		when(packageService.validatePackageForZipping("3545")).thenReturn(true);
 
 		FileUploadResponse result = controller.finishUpload("3545");
 
 		verify(packageService).createZipFile("3545");
-		verify(packageService).checkFilesExist("3545");
+		verify(packageService).validatePackageForZipping("3545");
 		assertEquals(true, result.isSuccess());
 	}
 
 	@Test
 	public void testFinishUpload_whenCreateZipThrows() throws Exception {
-		when(packageService.checkFilesExist("3545")).thenReturn(true);
+		when(packageService.validatePackageForZipping("3545")).thenReturn(true);
 		doThrow(new JSONException("OOF")).when(packageService).createZipFile("3545");
 
 		FileUploadResponse result = controller.finishUpload("3545");
 
 		verify(packageService).createZipFile("3545");
-		verify(packageService).checkFilesExist("3545");
+		verify(packageService).validatePackageForZipping("3545");
 		assertEquals(false, result.isSuccess());
 	}
 
 	@Test
 	public void testFinishUpload_whenMismatchedFiles() throws Exception {
-		when(packageService.checkFilesExist("3545")).thenReturn(false);
+		when(packageService.validatePackageForZipping("3545")).thenReturn(false);
 
 		FileUploadResponse result = controller.finishUpload("3545");
 
 		verify(packageService, times(0)).createZipFile("3545");
-		verify(packageService).checkFilesExist("3545");
+		verify(packageService).validatePackageForZipping("3545");
 		assertEquals(false, result.isSuccess());
 	}
 

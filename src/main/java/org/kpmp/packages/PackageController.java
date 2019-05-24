@@ -88,7 +88,7 @@ public class PackageController {
 	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId) {
 		FileUploadResponse fileUploadResponse;
 		log.info(finish.format(new Object[] { "finishUpload", packageId }));
-		if (packageService.checkFilesExist(packageId)) {
+		if (packageService.validatePackageForZipping(packageId)) {
 			try {
 				packageService.createZipFile(packageId);
 				fileUploadResponse = new FileUploadResponse(true);
@@ -97,7 +97,7 @@ public class PackageController {
 				fileUploadResponse = new FileUploadResponse(false);
 			}
 		} else {
-			log.error(finish.format(new Object[] { "mismatchedFiles", packageId }));
+			log.error(finish.format(new Object[] { "Unable to zip package: ", packageId }));
 			fileUploadResponse = new FileUploadResponse(false);
 		}
 		return fileUploadResponse;
