@@ -30,7 +30,7 @@ public class AuthenticationFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		log.info("Initializing filter: {}", this);
+		log.info("Initializing filter: {}", this.getClass().getSimpleName());
 
 	}
 
@@ -44,32 +44,35 @@ public class AuthenticationFilter implements Filter {
 
 		String header = request.getHeader(AUTHORIZATION);
 		if (header == null || !header.startsWith(BEARER)) {
+			log.error("Request {} unauthorized.  No JWT present", request.getRequestURI());
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-		}
-		URL url = new URL("http://auth.kpmp.org/api/auth");
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestProperty(AUTHORIZATION, request.getHeader(AUTHORIZATION));
-		connection.setRequestProperty(CONTENT_TYPE, "application/json");
-		connection.setRequestMethod(GET);
-		int status = connection.getResponseCode();
-
-		if (status > 299) {
-			response.sendError(status, connection.getResponseMessage());
 		} else {
-			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			if (in.readLine() != null) {
-				chain.doFilter(incomingRequest, incomingResponse);
+			URL url = new URL("http://auth.kpmp.org/api/auth");
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestProperty(AUTHORIZATION, request.getHeader(AUTHORIZATION));
+			connection.setRequestProperty(CONTENT_TYPE, "application/json");
+			connection.setRequestMethod(GET);
+			int status = connection.getResponseCode();
+
+			if (status > 299) {
+				log.error("Request {} unauthorized with response code {}", request.getRequestURI(), status);
+				response.sendError(status, connection.getResponseMessage());
+			} else {
+				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				if (in.readLine() != null) {
+					chain.doFilter(incomingRequest, incomingResponse);
+				}
 			}
+
+			connection.disconnect();
+
+			log.info("Response: {}", response.getContentType());
 		}
-
-		connection.disconnect();
-
-		log.info("Response: {}", response.getContentType());
 	}
 
 	@Override
 	public void destroy() {
-		log.info("Destroying filter: {}", this);
+		log.info("Destroying filter: {}", this.getClass().getSimpleName());
 	}
 
 }
