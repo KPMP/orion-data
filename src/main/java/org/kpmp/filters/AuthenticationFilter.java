@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,6 +29,8 @@ public class AuthenticationFilter implements Filter {
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String CONTENT_TYPE = "Content-Type";
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	@Value("#{'${exclude.from.auth}'.split(',')}")
+	private List<String> excludedUrls;
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -40,31 +44,36 @@ public class AuthenticationFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) incomingRequest;
 		HttpServletResponse response = (HttpServletResponse) incomingResponse;
 		log.info("Request {} : {}", request.getMethod(), request.getRequestURI());
-		log.info("Checking authentication for request: {}", request.getRequestURI());
 
-		String header = request.getHeader(AUTHORIZATION);
-		if (header == null || !header.startsWith(BEARER)) {
-			log.error("Request {} unauthorized.  No JWT present", request.getRequestURI());
-			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-		} else {
-			URL url = new URL("http://auth.kpmp.org/api/auth");
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestProperty(AUTHORIZATION, request.getHeader(AUTHORIZATION));
-			connection.setRequestProperty(CONTENT_TYPE, "application/json");
-			connection.setRequestMethod(GET);
-			int status = connection.getResponseCode();
+		String uri = request.getRequestURI();
+		if (!excludedUrls.contains(uri)) {
 
-			if (status > 299) {
-				log.error("Request {} unauthorized with response code {}", request.getRequestURI(), status);
-				response.sendError(status, connection.getResponseMessage());
+			log.info("Checking authentication for request: {}", uri);
+
+			String header = request.getHeader(AUTHORIZATION);
+			if (header == null || !header.startsWith(BEARER)) {
+				log.error("Request {} unauthorized.  No JWT present", uri);
+				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 			} else {
-				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-				if (in.readLine() != null) {
-					chain.doFilter(incomingRequest, incomingResponse);
-				}
-			}
+				URL url = new URL("http://auth.kpmp.org/api/auth");
+				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+				connection.setRequestProperty(AUTHORIZATION, request.getHeader(AUTHORIZATION));
+				connection.setRequestProperty(CONTENT_TYPE, "application/json");
+				connection.setRequestMethod(GET);
+				int status = connection.getResponseCode();
 
-			connection.disconnect();
+				if (status > 299 && status != 302) {
+					log.error("Request {} unauthorized with response code {}", uri, status);
+					response.sendError(status, connection.getResponseMessage());
+				} else {
+					BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+					if (in.readLine() != null) {
+						chain.doFilter(incomingRequest, incomingResponse);
+					}
+				}
+
+				connection.disconnect();
+			}
 
 			log.info("Response: {}", response.getContentType());
 		}
