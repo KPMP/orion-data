@@ -21,16 +21,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Component
 public class AuthenticationFilter implements Filter {
 
-	private static final String HTTP_AUTH_KPMP_ORG_API_AUTH = "http://auth.kpmp.org/api/auth";
-	private static final String GET = "GET";
+	private static final String PROD_AUTH = "http://auth.kpmp.org/api/auth";
 	private static final String BEARER = "Bearer ";
-	private static final String AUTHORIZATION = "Authorization";
-	private static final String CONTENT_TYPE = "Content-Type";
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	@Value("#{'${exclude.from.auth}'.split(',')}")
 	private List<String> excludedUrls;
@@ -53,7 +53,7 @@ public class AuthenticationFilter implements Filter {
 
 			log.info("Checking authentication for request: {}", uri);
 
-			String header = request.getHeader(AUTHORIZATION);
+			String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 			if (header == null || !header.startsWith(BEARER)) {
 				log.error("Request {} unauthorized.  No JWT present", uri);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
@@ -70,11 +70,11 @@ public class AuthenticationFilter implements Filter {
 	private void authenticate(ServletRequest incomingRequest, ServletResponse incomingResponse, FilterChain chain,
 			HttpServletRequest request, HttpServletResponse response, String uri)
 			throws MalformedURLException, IOException, ProtocolException, ServletException {
-		URL url = new URL(HTTP_AUTH_KPMP_ORG_API_AUTH);
+		URL url = new URL(PROD_AUTH);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestProperty(AUTHORIZATION, request.getHeader(AUTHORIZATION));
-		connection.setRequestProperty(CONTENT_TYPE, "application/json");
-		connection.setRequestMethod(GET);
+		connection.setRequestProperty(HttpHeaders.AUTHORIZATION, request.getHeader(HttpHeaders.AUTHORIZATION));
+		connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+		connection.setRequestMethod(RequestMethod.GET.name());
 		int status = connection.getResponseCode();
 
 		if (status > 299 && status != 302) {
