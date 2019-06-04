@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthenticationFilter implements Filter {
 
+	private static final String HTTP_AUTH_KPMP_ORG_API_AUTH = "http://auth.kpmp.org/api/auth";
 	private static final String GET = "GET";
 	private static final String BEARER = "Bearer ";
 	private static final String AUTHORIZATION = "Authorization";
@@ -55,28 +58,36 @@ public class AuthenticationFilter implements Filter {
 				log.error("Request {} unauthorized.  No JWT present", uri);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 			} else {
-				URL url = new URL("http://auth.kpmp.org/api/auth");
-				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				connection.setRequestProperty(AUTHORIZATION, request.getHeader(AUTHORIZATION));
-				connection.setRequestProperty(CONTENT_TYPE, "application/json");
-				connection.setRequestMethod(GET);
-				int status = connection.getResponseCode();
-
-				if (status > 299 && status != 302) {
-					log.error("Request {} unauthorized with response code {}", uri, status);
-					response.sendError(status, connection.getResponseMessage());
-				} else {
-					BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-					if (in.readLine() != null) {
-						chain.doFilter(incomingRequest, incomingResponse);
-					}
-				}
-
-				connection.disconnect();
+				authenticate(incomingRequest, incomingResponse, chain, request, response, uri);
 			}
-
-			log.info("Response: {}", response.getContentType());
+		} else {
+			log.info("No authentication required for request: {}", uri);
+			chain.doFilter(incomingRequest, incomingResponse);
 		}
+		log.info("Response: {}", response.getContentType());
+	}
+
+	private void authenticate(ServletRequest incomingRequest, ServletResponse incomingResponse, FilterChain chain,
+			HttpServletRequest request, HttpServletResponse response, String uri)
+			throws MalformedURLException, IOException, ProtocolException, ServletException {
+		URL url = new URL(HTTP_AUTH_KPMP_ORG_API_AUTH);
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestProperty(AUTHORIZATION, request.getHeader(AUTHORIZATION));
+		connection.setRequestProperty(CONTENT_TYPE, "application/json");
+		connection.setRequestMethod(GET);
+		int status = connection.getResponseCode();
+
+		if (status > 299 && status != 302) {
+			log.error("Request {} unauthorized with response code {}", uri, status);
+			response.sendError(status, connection.getResponseMessage());
+		} else {
+			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			if (in.readLine() != null) {
+				chain.doFilter(incomingRequest, incomingResponse);
+			}
+		}
+
+		connection.disconnect();
 	}
 
 	@Override
