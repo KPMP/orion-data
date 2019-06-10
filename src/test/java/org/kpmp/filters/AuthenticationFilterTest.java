@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.kpmp.JWTHandler;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -36,12 +37,14 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 
-public class AuthenticationFilterTest extends AuthenticationFilter {
+public class AuthenticationFilterTest {
 
 	private AuthenticationFilter filter;
 	@SuppressWarnings("rawtypes")
 	@Mock
 	private Appender appender;
+	@Mock
+	private JWTHandler jwtHandler;
 	@Captor
 	private ArgumentCaptor<LoggingEvent> captureLoggingEvent;
 	private static MockHttpUrlStreamHandler urlStreamHandler;
@@ -63,7 +66,7 @@ public class AuthenticationFilterTest extends AuthenticationFilter {
 		Logger root = (Logger) LoggerFactory.getLogger(AuthenticationFilter.class);
 		root.addAppender(appender);
 		root.setLevel(Level.INFO);
-		filter = new AuthenticationFilter();
+		filter = new AuthenticationFilter(jwtHandler);
 		ReflectionTestUtils.setField(filter, "excludedUrls", Arrays.asList("/this/api", "/that/api"));
 	}
 
@@ -149,6 +152,7 @@ public class AuthenticationFilterTest extends AuthenticationFilter {
 		urlStreamHandler.addConnection(new URL(href), urlConnection);
 		when(urlConnection.getResponseCode()).thenReturn(500);
 		when(urlConnection.getResponseMessage()).thenReturn("No good");
+		when(jwtHandler.getJWTFromHeader(incomingRequest)).thenReturn("stuff");
 		when(incomingRequest.getHeader("Authorization")).thenReturn("Bearer stuff");
 		when(incomingRequest.getMethod()).thenReturn("myMethod");
 		when(incomingRequest.getRequestURI()).thenReturn("/request/uri");
@@ -176,6 +180,7 @@ public class AuthenticationFilterTest extends AuthenticationFilter {
 		when(urlConnection.getResponseCode()).thenReturn(200);
 		when(urlConnection.getResponseMessage()).thenReturn("All good");
 		when(incomingRequest.getHeader("Authorization")).thenReturn("Bearer stuff");
+		when(jwtHandler.getJWTFromHeader(incomingRequest)).thenReturn("stuff");
 		when(incomingRequest.getMethod()).thenReturn("myMethod");
 		when(incomingRequest.getRequestURI()).thenReturn("/request/uri");
 		when(urlConnection.getInputStream()).thenReturn(IOUtils.toInputStream("some dummy data", "UTF-8"));
@@ -194,6 +199,7 @@ public class AuthenticationFilterTest extends AuthenticationFilter {
 		when(incomingRequest.getMethod()).thenReturn("myMethod");
 		when(incomingRequest.getRequestURI()).thenReturn("/request/uri");
 		when(incomingRequest.getHeader("Authorization")).thenReturn("Bearer stuff");
+		when(jwtHandler.getJWTFromHeader(incomingRequest)).thenReturn("stuff");
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		when(incomingResponse.getContentType()).thenReturn("awesome content");
 		FilterChain chain = mock(FilterChain.class);

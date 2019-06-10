@@ -68,9 +68,9 @@ public class JWTHandlerTest extends JWTHandler {
 		assertEquals("", user);
 		verify(appender, times(1)).doAppend(captureLoggingEvent.capture());
 		LoggingEvent event = captureLoggingEvent.getAllValues().get(0);
-		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {}", event.getMessage());
+		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
 		assertEquals(
-				"USERID: null | PKGID: null | URI: JWTHandler.getUserIdFromToken | MSG: Unable to get UserID from JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9eyJzdWIiOiJyb3NlbWlAdW1pY2guZWR1IiwiZXhwIjoxNTU5OTQ2MTE5LCJ1c2VyIjoie1wiZmlyc3ROYW1lXCI6XCJNaWNoYWVsXCIsXCJsYXN0TmFtZVwiOlwiUm9zZVwiLFwiZGlzcGxheU5hbWVcIjpcIk1pY2hhZWwgUm9zZVwiLFwiZW1haWxcIjpcInJvc2VtaUB1bWljaC5lZHVcIn0ifQPVhgjr36JX9jk7NocOhpchVkr3iImzfhJRsOIhJmO0OoLTTJMPHNI6mWKCUWP9ecDMHboc-U00BVt6YlG26-3Q",
+				"USERID: null | PKGID: null | URI: JWTHandler.getUserIdFromToken | MSG: Unable to get UserID from JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9eyJzdWIiOiJyb3NlbWlAdW1pY2guZWR1IiwiZXhwIjoxNTU5OTQ2MTE5LCJ1c2VyIjoie1wiZmlyc3ROYW1lXCI6XCJNaWNoYWVsXCIsXCJsYXN0TmFtZVwiOlwiUm9zZVwiLFwiZGlzcGxheU5hbWVcIjpcIk1pY2hhZWwgUm9zZVwiLFwiZW1haWxcIjpcInJvc2VtaUB1bWljaC5lZHVcIn0ifQPVhgjr36JX9jk7NocOhpchVkr3iImzfhJRsOIhJmO0OoLTTJMPHNI6mWKCUWP9ecDMHboc-U00BVt6YlG26-3Q ",
 				event.getFormattedMessage());
 		assertEquals(Level.WARN, event.getLevel());
 	}
@@ -84,9 +84,9 @@ public class JWTHandlerTest extends JWTHandler {
 		assertEquals("", user);
 		verify(appender, times(1)).doAppend(captureLoggingEvent.capture());
 		LoggingEvent event = captureLoggingEvent.getAllValues().get(0);
-		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {}", event.getMessage());
+		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
 		assertEquals(
-				"USERID: null | PKGID: null | URI: JWTHandler.getUserIdFromToken | MSG: Unable to get UserID from JWT null",
+				"USERID: null | PKGID: null | URI: JWTHandler.getUserIdFromToken | MSG: Unable to get UserID from JWT null ",
 				event.getFormattedMessage());
 		assertEquals(Level.WARN, event.getLevel());
 	}
@@ -112,9 +112,9 @@ public class JWTHandlerTest extends JWTHandler {
 		assertEquals(null, token);
 		verify(appender, times(1)).doAppend(captureLoggingEvent.capture());
 		LoggingEvent event = captureLoggingEvent.getAllValues().get(0);
-		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {}", event.getMessage());
+		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
 		assertEquals(
-				"USERID: null | PKGID: null | URI: JWTHandler.getJWTFromHeader | MSG: Authorization Header either missing or malformed",
+				"USERID: null | PKGID: null | URI: JWTHandler.getJWTFromHeader | MSG: Authorization Header either missing or malformed ",
 				event.getFormattedMessage());
 		assertEquals(Level.WARN, event.getLevel());
 	}
@@ -129,9 +129,9 @@ public class JWTHandlerTest extends JWTHandler {
 		assertEquals(null, token);
 		verify(appender, times(1)).doAppend(captureLoggingEvent.capture());
 		LoggingEvent event = captureLoggingEvent.getAllValues().get(0);
-		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {}", event.getMessage());
+		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
 		assertEquals(
-				"USERID: null | PKGID: null | URI: JWTHandler.getJWTFromHeader | MSG: Authorization Header either missing or malformed",
+				"USERID: null | PKGID: null | URI: JWTHandler.getJWTFromHeader | MSG: Authorization Header either missing or malformed ",
 				event.getFormattedMessage());
 		assertEquals(Level.WARN, event.getLevel());
 	}

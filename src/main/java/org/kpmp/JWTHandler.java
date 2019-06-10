@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class JWTHandler {
 
-	private static final String LOG_MESSAGE_FORMAT = "USERID: {} | PKGID: {} | URI: {} | MSG: {}";
 	private static final String BEARER = "Bearer ";
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -34,7 +33,7 @@ public class JWTHandler {
 			}
 		}
 
-		log.warn(LOG_MESSAGE_FORMAT, null, null, "JWTHandler.getUserIdFromToken",
+		log.warn(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, "JWTHandler.getUserIdFromToken",
 				"Unable to get UserID from JWT " + token);
 		return "";
 	}
@@ -49,7 +48,7 @@ public class JWTHandler {
 			}
 		}
 
-		log.warn(LOG_MESSAGE_FORMAT, null, null, "JWTHandler.getJWTFromHeader",
+		log.warn(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, "JWTHandler.getJWTFromHeader",
 				"Authorization Header either missing or malformed");
 
 		return null;

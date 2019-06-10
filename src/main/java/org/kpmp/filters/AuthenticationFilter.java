@@ -18,8 +18,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.kpmp.JWTHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -30,10 +32,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AuthenticationFilter implements Filter {
 
 	private static final String PROD_AUTH = "http://auth.kpmp.org/api/auth";
-	private static final String BEARER = "Bearer ";
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	@Value("#{'${exclude.from.auth}'.split(',')}")
 	private List<String> excludedUrls;
+	private JWTHandler jwtHandler;
+
+	@Autowired
+	public AuthenticationFilter(JWTHandler jwtHandler) {
+		this.jwtHandler = jwtHandler;
+	}
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -53,8 +60,8 @@ public class AuthenticationFilter implements Filter {
 
 			log.info("Checking authentication for request: {}", uri);
 
-			String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-			if (header == null || !header.startsWith(BEARER)) {
+			String header = jwtHandler.getJWTFromHeader(request);
+			if (header == null) {
 				log.error("Request {} unauthorized.  No JWT present", uri);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 			} else {
