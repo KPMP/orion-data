@@ -7,9 +7,12 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.JWTHandler;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +27,7 @@ public class ErrorControllerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		controller = new ErrorController();
+		controller = new ErrorController(new JWTHandler());
 	}
 
 	@After
@@ -42,7 +45,7 @@ public class ErrorControllerTest {
 		when(errorMessage.getError()).thenReturn("error");
 		when(errorMessage.getStackTrace()).thenReturn("stacktrace");
 
-		ResponseEntity<Boolean> result = controller.logError(errorMessage);
+		ResponseEntity<Boolean> result = controller.logError(errorMessage, mock(HttpServletRequest.class));
 
 		List<ILoggingEvent> logsList = listAppender.list;
 		String message = logsList.get(0).getMessage();
