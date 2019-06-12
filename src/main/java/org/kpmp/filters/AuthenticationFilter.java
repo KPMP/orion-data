@@ -18,6 +18,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.kpmp.ApplicationConstants;
 import org.kpmp.JWTHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,8 @@ public class AuthenticationFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		log.info("Initializing filter: {}", this.getClass().getSimpleName());
+		log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, this.getClass().getSimpleName() + ".init",
+				"Initializing filter: " + this.getClass().getSimpleName());
 
 	}
 
@@ -53,25 +55,31 @@ public class AuthenticationFilter implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) incomingRequest;
 		HttpServletResponse response = (HttpServletResponse) incomingResponse;
-		log.info("Request {} : {}", request.getMethod(), request.getRequestURI());
+		log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, this.getClass().getSimpleName() + ".doFilter",
+				"Request " + request.getMethod() + " : " + request.getRequestURI());
 
 		String uri = request.getRequestURI();
 		if (!excludedUrls.contains(uri)) {
 
-			log.info("Checking authentication for request: {}", uri);
+			log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, this.getClass().getSimpleName() + ".doFilter",
+					"Checking authentication for request: " + uri);
 
 			String header = jwtHandler.getJWTFromHeader(request);
 			if (header == null) {
-				log.error("Request {} unauthorized.  No JWT present", uri);
+				log.error(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null,
+						this.getClass().getSimpleName() + ".doFilter",
+						"Request " + uri + " unauthorized.  No JWT present");
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 			} else {
 				authenticate(incomingRequest, incomingResponse, chain, request, response, uri);
 			}
 		} else {
-			log.info("No authentication required for request: {}", uri);
+			log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, this.getClass().getSimpleName() + ".doFilter",
+					"No authentication required for request: " + uri);
 			chain.doFilter(incomingRequest, incomingResponse);
 		}
-		log.info("Response: {}", response.getContentType());
+		log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, this.getClass().getSimpleName() + ".doFilter",
+				"Response: " + response.getContentType());
 	}
 
 	private void authenticate(ServletRequest incomingRequest, ServletResponse incomingResponse, FilterChain chain,
@@ -85,7 +93,9 @@ public class AuthenticationFilter implements Filter {
 		int status = connection.getResponseCode();
 
 		if (status > 299 && status != 302) {
-			log.error("Request {} unauthorized with response code {}", uri, status);
+			log.error(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null,
+					this.getClass().getSimpleName() + ".authenticate",
+					"Request " + uri + " unauthorized with response code " + status);
 			response.sendError(status, connection.getResponseMessage());
 		} else {
 			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -99,7 +109,8 @@ public class AuthenticationFilter implements Filter {
 
 	@Override
 	public void destroy() {
-		log.info("Destroying filter: {}", this.getClass().getSimpleName());
+		log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, this.getClass().getSimpleName() + ".destroy",
+				"Destroying filter: " + this.getClass().getSimpleName());
 	}
 
 }

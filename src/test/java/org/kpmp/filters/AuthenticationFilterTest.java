@@ -86,8 +86,10 @@ public class AuthenticationFilterTest {
 
 		verify(appender, times(1)).doAppend(captureLoggingEvent.capture());
 		LoggingEvent event = captureLoggingEvent.getAllValues().get(0);
-		assertEquals("Initializing filter: {}", event.getMessage());
-		assertEquals("Initializing filter: AuthenticationFilter", event.getFormattedMessage());
+		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
+		assertEquals(
+				"USERID: null | PKGID: null | URI: AuthenticationFilter.init | MSG: Initializing filter: AuthenticationFilter ",
+				event.getFormattedMessage());
 		assertEquals(Level.INFO, event.getLevel());
 	}
 
@@ -113,8 +115,10 @@ public class AuthenticationFilterTest {
 		verify(appender, times(3)).doAppend(captureLoggingEvent.capture());
 		List<LoggingEvent> loggingValues = captureLoggingEvent.getAllValues();
 		LoggingEvent event = loggingValues.get(1);
-		assertEquals("No authentication required for request: {}", event.getMessage());
-		assertEquals("No authentication required for request: /this/api", event.getFormattedMessage());
+		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
+		assertEquals(
+				"USERID: null | PKGID: null | URI: AuthenticationFilter.doFilter | MSG: No authentication required for request: /this/api ",
+				event.getFormattedMessage());
 		assertEquals(Level.INFO, event.getLevel());
 	}
 
@@ -136,8 +140,10 @@ public class AuthenticationFilterTest {
 		verify(appender, times(4)).doAppend(captureLoggingEvent.capture());
 		List<LoggingEvent> loggingValues = captureLoggingEvent.getAllValues();
 		LoggingEvent event = loggingValues.get(2);
-		assertEquals("Request {} unauthorized.  No JWT present", event.getMessage());
-		assertEquals("Request /request/uri unauthorized.  No JWT present", event.getFormattedMessage());
+		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
+		assertEquals(
+				"USERID: null | PKGID: null | URI: AuthenticationFilter.doFilter | MSG: Request /request/uri unauthorized.  No JWT present ",
+				event.getFormattedMessage());
 		assertEquals(Level.ERROR, event.getLevel());
 	}
 
@@ -163,8 +169,10 @@ public class AuthenticationFilterTest {
 		verify(appender, times(4)).doAppend(captureLoggingEvent.capture());
 		List<LoggingEvent> loggingValues = captureLoggingEvent.getAllValues();
 		LoggingEvent event = loggingValues.get(2);
-		assertEquals("Request {} unauthorized with response code {}", event.getMessage());
-		assertEquals("Request /request/uri unauthorized with response code 500", event.getFormattedMessage());
+		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
+		assertEquals(
+				"USERID: null | PKGID: null | URI: AuthenticationFilter.authenticate | MSG: Request /request/uri unauthorized with response code 500 ",
+				event.getFormattedMessage());
 		assertEquals(Level.ERROR, event.getLevel());
 		verify(urlConnection).disconnect();
 	}
@@ -213,16 +221,22 @@ public class AuthenticationFilterTest {
 		verify(appender, times(3)).doAppend(captureLoggingEvent.capture());
 		List<LoggingEvent> loggingValues = captureLoggingEvent.getAllValues();
 		LoggingEvent event = loggingValues.get(0);
-		assertEquals("Request {} : {}", event.getMessage());
-		assertEquals("Request myMethod : /request/uri", event.getFormattedMessage());
+		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
+		assertEquals(
+				"USERID: null | PKGID: null | URI: AuthenticationFilter.doFilter | MSG: Request myMethod : /request/uri ",
+				event.getFormattedMessage());
 		assertEquals(Level.INFO, event.getLevel());
 		event = loggingValues.get(1);
-		assertEquals("Checking authentication for request: {}", event.getMessage());
-		assertEquals("Checking authentication for request: /request/uri", event.getFormattedMessage());
+		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
+		assertEquals(
+				"USERID: null | PKGID: null | URI: AuthenticationFilter.doFilter | MSG: Checking authentication for request: /request/uri ",
+				event.getFormattedMessage());
 		assertEquals(Level.INFO, event.getLevel());
 		event = loggingValues.get(2);
-		assertEquals("Response: {}", event.getMessage());
-		assertEquals("Response: awesome content", event.getFormattedMessage());
+		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
+		assertEquals(
+				"USERID: null | PKGID: null | URI: AuthenticationFilter.doFilter | MSG: Response: awesome content ",
+				event.getFormattedMessage());
 		assertEquals(Level.INFO, event.getLevel());
 	}
 
@@ -234,8 +248,10 @@ public class AuthenticationFilterTest {
 
 		verify(appender, times(1)).doAppend(captureLoggingEvent.capture());
 		LoggingEvent event = captureLoggingEvent.getAllValues().get(0);
-		assertEquals("Destroying filter: {}", event.getMessage());
-		assertEquals("Destroying filter: AuthenticationFilter", event.getFormattedMessage());
+		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
+		assertEquals(
+				"USERID: null | PKGID: null | URI: AuthenticationFilter.destroy | MSG: Destroying filter: AuthenticationFilter ",
+				event.getFormattedMessage());
 		assertEquals(Level.INFO, event.getLevel());
 	}
 
