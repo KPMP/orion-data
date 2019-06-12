@@ -2,9 +2,6 @@ package org.kpmp.forms;
 
 import java.text.MessageFormat;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.kpmp.JWTHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +20,12 @@ public class FormController {
 	private FormRepository repository;
 
 	@Autowired
-	public FormController(FormRepository repository, JWTHandler jwtHandler) {
+	public FormController(FormRepository repository) {
 		this.repository = repository;
 	}
 
 	@RequestMapping(value = "/v1/form", method = RequestMethod.GET)
-	public @ResponseBody Form getFormDTD(HttpServletRequest request) {
+	public @ResponseBody Form getFormDTD() {
 		log.info(formRequest.format(new Object[] { "getFormDTD" }));
 		return this.repository.findTopByOrderByVersionDesc();
 	}
