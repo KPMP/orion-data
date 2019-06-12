@@ -78,8 +78,8 @@ public class AuthenticationFilter implements Filter {
 					"No authentication required for request: " + uri);
 			chain.doFilter(incomingRequest, incomingResponse);
 		}
-		log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, this.getClass().getSimpleName() + ".doFilter",
-				"Response: " + response.getContentType());
+		log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, jwtHandler.getUserIdFromHeader(request), null,
+				this.getClass().getSimpleName() + ".doFilter", "Response: " + response.getContentType());
 	}
 
 	private void authenticate(ServletRequest incomingRequest, ServletResponse incomingResponse, FilterChain chain,

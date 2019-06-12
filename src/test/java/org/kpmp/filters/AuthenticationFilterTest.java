@@ -215,6 +215,7 @@ public class AuthenticationFilterTest {
 		HttpURLConnection urlConnection = mock(HttpURLConnection.class);
 		urlStreamHandler.addConnection(new URL(href), urlConnection);
 		when(urlConnection.getInputStream()).thenReturn(IOUtils.toInputStream("some dummy data", "UTF-8"));
+		when(jwtHandler.getUserIdFromHeader(incomingRequest)).thenReturn("user123");
 
 		filter.doFilter(incomingRequest, incomingResponse, chain);
 
@@ -235,7 +236,7 @@ public class AuthenticationFilterTest {
 		event = loggingValues.get(2);
 		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
 		assertEquals(
-				"USERID: null | PKGID: null | URI: AuthenticationFilter.doFilter | MSG: Response: awesome content ",
+				"USERID: user123 | PKGID: null | URI: AuthenticationFilter.doFilter | MSG: Response: awesome content ",
 				event.getFormattedMessage());
 		assertEquals(Level.INFO, event.getLevel());
 	}

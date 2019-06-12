@@ -77,6 +77,24 @@ public class JWTHandlerTest extends JWTHandler {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	public void testGetUserIdFromToken_whenTokenNotBase64() throws Exception {
+		String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzUxMiJ9.eyJzdWIiOiJyb3NlbWlAdW1pY2guFFFR1IiwiZXhwIjoxNTU5OTQ2MTE5LCJ1c2VyIjoie1wiZmlyc3ROYW1lXCI6XCJNaWNoYWVsXCIsXCJsYXN0TmFtZVwiOlwiUm9zZVwiLFwiZGlzcGxheU5hbWVcIjpcIk1pY2hhZWwgUm9zZVwiLFwiZW1haWxcIjpcInJvc2VtaUB1bWljaC5lZHVcIn0ifQ.PVhgjr36JX9jk7NocOhpchVkr3iImzfhJRsOIhJmO0OoLTTJMPHNI6mWKCUWP9ecDMHboc-U00BVt6YlG26-3Q";
+
+		String user = jwtHandler.getUserIdFromToken(token);
+
+		assertEquals("", user);
+		verify(appender, times(1)).doAppend(captureLoggingEvent.capture());
+		LoggingEvent event = captureLoggingEvent.getAllValues().get(0);
+		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
+		assertEquals(
+				"USERID: null | PKGID: null | URI: JWTHandler.getUserIdFromToken | MSG: Unable to get UserID from token: Illegal unquoted character ((CTRL-CHAR, code 20)): has to be escaped using backslash to be included in string value\n"
+						+ " at [Source: (String)\"{\"sub\":\"rosemi@umich.QQԈ����������������䰉�͕Ȉ��p������9���p��p�5������p��p�����9���p��p�I�͕p��p��������9���p��p�5�������I�͕p��p������p��p�ɽ͕��յ�������p���\"; line: 1, column: 23] ",
+				event.getFormattedMessage());
+		assertEquals(Level.ERROR, event.getLevel());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
 	public void testGetUserIdFromToken_whenTokenIsNull() throws Exception {
 
 		String user = jwtHandler.getUserIdFromToken(null);

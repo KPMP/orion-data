@@ -2,6 +2,7 @@ package org.kpmp.error;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.kpmp.ApplicationConstants;
 import org.kpmp.JWTHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,18 +19,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ErrorController {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	private JWTHandler handler;
+	private JWTHandler jwtHandler;
 
 	@Autowired
-	public ErrorController(JWTHandler handler) {
-		this.handler = handler;
+	public ErrorController(JWTHandler jwtHandler) {
+		this.jwtHandler = jwtHandler;
 	}
 
 	@RequestMapping(value = "/v1/error", method = RequestMethod.POST, consumes = "application/json")
 	public @ResponseBody ResponseEntity<Boolean> logError(@RequestBody FrontEndError errorMessage,
 			HttpServletRequest request) {
+		String userId = jwtHandler.getUserIdFromHeader(request);
 
-		log.error(errorMessage.getError() + " with stacktrace: " + errorMessage.getStackTrace());
+		log.error(ApplicationConstants.LOG_MESSAGE_FORMAT, userId, null, request.getRequestURI(),
+				errorMessage.getError() + " with stacktrace: " + errorMessage.getStackTrace());
+
 		return new ResponseEntity<>(true, HttpStatus.OK);
 	}
 

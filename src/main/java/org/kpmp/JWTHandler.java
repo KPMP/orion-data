@@ -1,7 +1,5 @@
 package org.kpmp;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -19,22 +17,29 @@ public class JWTHandler {
 	private static final String BEARER = "Bearer ";
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public String getUserIdFromToken(String token) throws IOException {
+	public String getUserIdFromToken(String token) {
 		if (token != null) {
 			String[] pieces = token.split("\\.");
 			if (pieces.length == 3) {
 				String base64Payload = pieces[1];
-				String jsonString = new String(Base64.decodeBase64(base64Payload), "UTF-8");
+				String jsonString;
+				try {
+					jsonString = new String(Base64.decodeBase64(base64Payload), "UTF-8");
 
-				ObjectMapper mapper = new ObjectMapper();
-				JsonNode jsonObject = mapper.readTree(jsonString);
-
-				return jsonObject.get("sub").textValue();
+					ObjectMapper mapper = new ObjectMapper();
+					JsonNode jsonObject = mapper.readTree(jsonString);
+					return jsonObject.get("sub").textValue();
+				} catch (Exception e) {
+					log.error(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null,
+							this.getClass().getSimpleName() + ".getUserIdFromToken",
+							"Unable to get UserID from token: " + e.getMessage());
+					return "";
+				}
 			}
 		}
 
-		log.warn(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, "JWTHandler.getUserIdFromToken",
-				"Unable to get UserID from JWT " + token);
+		log.warn(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null,
+				this.getClass().getSimpleName() + ".getUserIdFromToken", "Unable to get UserID from JWT " + token);
 		return "";
 	}
 
@@ -52,6 +57,11 @@ public class JWTHandler {
 				"Authorization Header either missing or malformed");
 
 		return null;
+	}
+
+	public String getUserIdFromHeader(HttpServletRequest request) {
+		String token = getJWTFromHeader(request);
+		return getUserIdFromToken(token);
 	}
 
 }
