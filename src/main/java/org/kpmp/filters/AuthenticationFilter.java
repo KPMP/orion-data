@@ -53,29 +53,30 @@ public class AuthenticationFilter implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) incomingRequest;
 		HttpServletResponse response = (HttpServletResponse) incomingResponse;
-		logger.logInfoMessage(this.getClass(), null, null, this.getClass().getSimpleName() + ".doFilter",
+		String userId = jwtHandler.getUserIdFromHeader(request);
+		logger.logInfoMessage(this.getClass(), userId, null, this.getClass().getSimpleName() + ".doFilter",
 				"Request " + request.getMethod() + " : " + request.getRequestURI());
 		String uri = request.getRequestURI();
 		if (!excludedUrls.contains(uri)) {
 
-			logger.logInfoMessage(this.getClass(), null, null, this.getClass().getSimpleName() + ".doFilter",
+			logger.logInfoMessage(this.getClass(), userId, null, this.getClass().getSimpleName() + ".doFilter",
 					"Checking authentication for request: " + uri);
 
 			String header = jwtHandler.getJWTFromHeader(request);
 			if (header == null) {
-				logger.logErrorMessage(this.getClass(), null, null, this.getClass().getSimpleName() + ".doFilter",
+				logger.logErrorMessage(this.getClass(), userId, null, this.getClass().getSimpleName() + ".doFilter",
 						"Request " + uri + " unauthorized.  No JWT present");
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 			} else {
 				authenticate(incomingRequest, incomingResponse, chain, request, response, uri);
 			}
 		} else {
-			logger.logInfoMessage(this.getClass(), null, null, this.getClass().getSimpleName() + ".doFilter",
+			logger.logInfoMessage(this.getClass(), userId, null, this.getClass().getSimpleName() + ".doFilter",
 					"No authentication required for request: " + uri);
 			chain.doFilter(incomingRequest, incomingResponse);
 		}
-		logger.logInfoMessage(this.getClass(), jwtHandler.getUserIdFromHeader(request), null,
-				this.getClass().getSimpleName() + ".doFilter", "Response: " + response.getContentType());
+		logger.logInfoMessage(this.getClass(), userId, null, this.getClass().getSimpleName() + ".doFilter",
+				"Response: " + response.getContentType());
 	}
 
 	private void authenticate(ServletRequest incomingRequest, ServletResponse incomingResponse, FilterChain chain,
