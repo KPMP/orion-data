@@ -18,10 +18,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.kpmp.ApplicationConstants;
 import org.kpmp.JWTHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.kpmp.logging.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -33,21 +31,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AuthenticationFilter implements Filter {
 
 	private static final String PROD_AUTH = "http://auth.kpmp.org/api/auth";
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	@Value("#{'${exclude.from.auth}'.split(',')}")
 	private List<String> excludedUrls;
 	private JWTHandler jwtHandler;
+	private LoggingService logger;
 
 	@Autowired
-	public AuthenticationFilter(JWTHandler jwtHandler) {
+	public AuthenticationFilter(JWTHandler jwtHandler, LoggingService logger) {
 		this.jwtHandler = jwtHandler;
+		this.logger = logger;
 	}
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, this.getClass().getSimpleName() + ".init",
+		logger.logInfoMessage(this.getClass(), null, null, this.getClass().getSimpleName() + ".init",
 				"Initializing filter: " + this.getClass().getSimpleName());
-
 	}
 
 	@Override
@@ -55,30 +53,28 @@ public class AuthenticationFilter implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) incomingRequest;
 		HttpServletResponse response = (HttpServletResponse) incomingResponse;
-		log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, this.getClass().getSimpleName() + ".doFilter",
+		logger.logInfoMessage(this.getClass(), null, null, this.getClass().getSimpleName() + ".doFilter",
 				"Request " + request.getMethod() + " : " + request.getRequestURI());
-
 		String uri = request.getRequestURI();
 		if (!excludedUrls.contains(uri)) {
 
-			log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, this.getClass().getSimpleName() + ".doFilter",
+			logger.logInfoMessage(this.getClass(), null, null, this.getClass().getSimpleName() + ".doFilter",
 					"Checking authentication for request: " + uri);
 
 			String header = jwtHandler.getJWTFromHeader(request);
 			if (header == null) {
-				log.error(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null,
-						this.getClass().getSimpleName() + ".doFilter",
+				logger.logErrorMessage(this.getClass(), null, null, this.getClass().getSimpleName() + ".doFilter",
 						"Request " + uri + " unauthorized.  No JWT present");
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 			} else {
 				authenticate(incomingRequest, incomingResponse, chain, request, response, uri);
 			}
 		} else {
-			log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, this.getClass().getSimpleName() + ".doFilter",
+			logger.logInfoMessage(this.getClass(), null, null, this.getClass().getSimpleName() + ".doFilter",
 					"No authentication required for request: " + uri);
 			chain.doFilter(incomingRequest, incomingResponse);
 		}
-		log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, jwtHandler.getUserIdFromHeader(request), null,
+		logger.logInfoMessage(this.getClass(), jwtHandler.getUserIdFromHeader(request), null,
 				this.getClass().getSimpleName() + ".doFilter", "Response: " + response.getContentType());
 	}
 
@@ -93,8 +89,7 @@ public class AuthenticationFilter implements Filter {
 		int status = connection.getResponseCode();
 
 		if (status > 299 && status != 302) {
-			log.error(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null,
-					this.getClass().getSimpleName() + ".authenticate",
+			logger.logErrorMessage(this.getClass(), null, null, this.getClass().getSimpleName() + ".authenticate",
 					"Request " + uri + " unauthorized with response code " + status);
 			response.sendError(status, connection.getResponseMessage());
 		} else {
@@ -109,7 +104,7 @@ public class AuthenticationFilter implements Filter {
 
 	@Override
 	public void destroy() {
-		log.info(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, this.getClass().getSimpleName() + ".destroy",
+		logger.logInfoMessage(this.getClass(), null, null, this.getClass().getSimpleName() + ".destroy",
 				"Destroying filter: " + this.getClass().getSimpleName());
 	}
 

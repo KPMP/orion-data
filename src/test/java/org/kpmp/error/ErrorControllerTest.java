@@ -2,7 +2,6 @@ package org.kpmp.error;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,49 +13,32 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.JWTHandler;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
+import org.kpmp.logging.LoggingService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.LoggingEvent;
-import ch.qos.logback.core.Appender;
 
 public class ErrorControllerTest {
 
 	private ErrorController controller;
-	@SuppressWarnings("rawtypes")
-	@Mock
-	private Appender appender;
-	@Captor
-	private ArgumentCaptor<LoggingEvent> captureLoggingEvent;
 	@Mock
 	private JWTHandler jwtHandler;
+	@Mock
+	private LoggingService logger;
 
-	@SuppressWarnings("unchecked")
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		Logger root = (Logger) LoggerFactory.getLogger(ErrorController.class);
-		root.addAppender(appender);
-		root.setLevel(Level.INFO);
-		controller = new ErrorController(jwtHandler);
+		controller = new ErrorController(jwtHandler, logger);
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		controller = null;
-		appender = null;
 		jwtHandler = null;
-		captureLoggingEvent = null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testLogError() throws IOException {
 		FrontEndError errorMessage = mock(FrontEndError.class);
@@ -68,13 +50,8 @@ public class ErrorControllerTest {
 
 		ResponseEntity<Boolean> result = controller.logError(errorMessage, request);
 
-		verify(appender, times(1)).doAppend(captureLoggingEvent.capture());
-		LoggingEvent event = captureLoggingEvent.getAllValues().get(0);
-		assertEquals("USERID: {} | PKGID: {} | URI: {} | MSG: {} ", event.getMessage());
-		assertEquals(
-				"USERID: userID | PKGID: null | URI: /v1/error | MSG: error with stacktrace: oh noes...something terrible happened ",
-				event.getFormattedMessage());
-		assertEquals(Level.ERROR, event.getLevel());
+		verify(logger).logErrorMessage(ErrorController.class, "userID", null, "/v1/error",
+				"error with stacktrace: oh noes...something terrible happened");
 		assertEquals(new ResponseEntity<>(true, HttpStatus.OK), result);
 	}
 

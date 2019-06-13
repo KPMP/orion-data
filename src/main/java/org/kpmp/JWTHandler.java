@@ -3,8 +3,8 @@ package org.kpmp;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.kpmp.logging.LoggingService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JWTHandler {
 
 	private static final String BEARER = "Bearer ";
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private LoggingService logger;
+
+	@Autowired
+	public JWTHandler(LoggingService logger) {
+		this.logger = logger;
+	}
 
 	public String getUserIdFromToken(String token) {
 		if (token != null) {
@@ -30,7 +35,7 @@ public class JWTHandler {
 					JsonNode jsonObject = mapper.readTree(jsonString);
 					return jsonObject.get("sub").textValue();
 				} catch (Exception e) {
-					log.error(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null,
+					logger.logErrorMessage(this.getClass(), null, null,
 							this.getClass().getSimpleName() + ".getUserIdFromToken",
 							"Unable to get UserID from token: " + e.getMessage());
 					return "";
@@ -38,8 +43,8 @@ public class JWTHandler {
 			}
 		}
 
-		log.warn(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null,
-				this.getClass().getSimpleName() + ".getUserIdFromToken", "Unable to get UserID from JWT " + token);
+		logger.logWarnMessage(this.getClass(), null, null, this.getClass().getSimpleName() + ".getUserIdFromToken",
+				"Unable to get UserID from JWT " + token);
 		return "";
 	}
 
@@ -53,7 +58,7 @@ public class JWTHandler {
 			}
 		}
 
-		log.warn(ApplicationConstants.LOG_MESSAGE_FORMAT, null, null, "JWTHandler.getJWTFromHeader",
+		logger.logWarnMessage(this.getClass(), null, null, "JWTHandler.getJWTFromHeader",
 				"Authorization Header either missing or malformed");
 
 		return null;
