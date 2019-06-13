@@ -166,7 +166,8 @@ public class PackageControllerTest {
 	@Test
 	public void testDownloadPackage() throws Exception {
 		String packageId = "1234";
-		when(packageService.getPackageFile(packageId)).thenReturn(Paths.get("foo", "1234.zip"));
+		Path filePath = Paths.get("foo", "1234.zip");
+		when(packageService.getPackageFile(packageId)).thenReturn(filePath);
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		when(request.getRequestURI()).thenReturn("/v1/packages/1234/files");
 		when(jwtHandler.getUserIdFromHeader(request)).thenReturn("userID");
@@ -176,7 +177,7 @@ public class PackageControllerTest {
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertTrue(response.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).iterator().next().contains("1234.zip"));
 		verify(logger).logInfoMessage(PackageController.class, "userID", packageId, "/v1/packages/1234/files",
-				"Requesting package download with id 1234, filename URL [file:/Users/rlreamy/git/kpmp/orion-data/foo/1234.zip]");
+				"Requesting package download with id 1234, filename URL [file:" + filePath.toAbsolutePath() + "]");
 	}
 
 	@Test
