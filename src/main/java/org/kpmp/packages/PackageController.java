@@ -57,9 +57,10 @@ public class PackageController {
 	public @ResponseBody String postPackageInformation(@RequestBody String packageInfoString,
 			HttpServletRequest request) throws JSONException {
 		JSONObject packageInfo = new JSONObject(packageInfoString);
-		logger.logInfoMessage(this.getClass(), jwtHandler.getUserIdFromHeader(request), null, request.getRequestURI(),
+		String userId = jwtHandler.getUserIdFromHeader(request);
+		logger.logInfoMessage(this.getClass(), userId, null, request.getRequestURI(),
 				"Posting package info: " + packageInfo);
-		String packageId = packageService.savePackageInformation(packageInfo);
+		String packageId = packageService.savePackageInformation(packageInfo, userId);
 		return packageId;
 	}
 
@@ -110,9 +111,9 @@ public class PackageController {
 		String userId = jwtHandler.getUserIdFromHeader(request);
 		String requestURI = request.getRequestURI();
 		logger.logInfoMessage(this.getClass(), userId, packageId, requestURI, message);
-		if (packageService.validatePackageForZipping(packageId)) {
+		if (packageService.validatePackageForZipping(packageId, userId)) {
 			try {
-				packageService.createZipFile(packageId);
+				packageService.createZipFile(packageId, userId);
 				fileUploadResponse = new FileUploadResponse(true);
 			} catch (Exception e) {
 				logger.logErrorMessage(this.getClass(), userId, packageId, requestURI,

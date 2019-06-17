@@ -17,8 +17,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.kpmp.logging.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,8 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class PackageService {
 
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	private static final MessageFormat zipPackage = new MessageFormat("Service|{0}|{1}");
+	private static final MessageFormat zipPackage = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadFinishTiming = new MessageFormat(
 			"Timing|end|{0}|{1}|{2}|{3} files|{4}|{5}|{6}");
 	private static final MessageFormat zipTiming = new MessageFormat("Timing|zip|{0}|{1}|{2}|{3} files|{4}|{5}");
@@ -37,14 +35,16 @@ public class PackageService {
 	private PackageZipService packageZipper;
 	private FilePathHelper filePathHelper;
 	private CustomPackageRepository packageRepository;
+	private LoggingService logger;
 
 	@Autowired
 	public PackageService(PackageFileHandler packageFileHandler, PackageZipService packageZipper,
-			FilePathHelper filePathHelper, CustomPackageRepository packageRepository) {
+			FilePathHelper filePathHelper, CustomPackageRepository packageRepository, LoggingService logger) {
 		this.filePathHelper = filePathHelper;
 		this.packageFileHandler = packageFileHandler;
 		this.packageZipper = packageZipper;
 		this.packageRepository = packageRepository;
+		this.logger = logger;
 	}
 
 	public List<PackageView> findAllPackages() throws JSONException, IOException {
@@ -72,8 +72,8 @@ public class PackageService {
 		return filePath;
 	}
 
-	public String savePackageInformation(JSONObject packageMetadata) throws JSONException {
-		return packageRepository.saveDynamicForm(packageMetadata);
+	public String savePackageInformation(JSONObject packageMetadata, String userId) throws JSONException {
+		return packageRepository.saveDynamicForm(packageMetadata, userId);
 	}
 
 	public Package findPackage(String packageId) {
@@ -89,7 +89,7 @@ public class PackageService {
 		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 	}
 
-	public void createZipFile(String packageId) throws Exception {
+	public void createZipFile(String packageId, String userId) throws Exception {
 
 		Package packageInfo = packageRepository.findByPackageId(packageId);
 		String packageMetadata = packageRepository.getJSONByPackageId(packageId);
@@ -100,23 +100,30 @@ public class PackageService {
 		double uploadRate = calculateUploadRate(duration, attachments);
 		DecimalFormat rateFormat = new DecimalFormat("###.###");
 
-		log.info(fileUploadFinishTiming.format(
-				new Object[] { finishUploadTime, packageInfo.getSubmitter().getEmail(), packageId, attachments.size(),
-						displaySize, duration + " seconds", rateFormat.format(uploadRate) + " MB/sec" }));
+		logger.logInfoMessage(this.getClass(), userId, packageId, this.getClass().getSimpleName() + ".createZipFile",
+				fileUploadFinishTiming.format(new Object[] { finishUploadTime, packageInfo.getSubmitter().getEmail(),
+						packageId, attachments.size(), displaySize, duration + " seconds",
+						rateFormat.format(uploadRate) + " MB/sec" }));
 
 		new Thread() {
 			public void run() {
 				try {
 					packageZipper.createZipFile(packageMetadata);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.logErrorMessage(PackageService.class, userId, packageId,
+							PackageService.class.getSimpleName(), e.getMessage());
 				}
-				log.info(zipPackage.format(new Object[] { "createZipFile", packageId }));
+				logger.logInfoMessage(PackageService.class, userId, packageId,
+						PackageService.class.getSimpleName() + ".createZipFile",
+						zipPackage.format(new Object[] { "Zip file created for package: ", packageId }));
 				long zipDuration = calculateDurationInSeconds(finishUploadTime, new Date());
-				log.info(zipTiming.format(
-						new Object[] { packageInfo.getCreatedAt(), packageInfo.getSubmitter().getEmail(), packageId,
-								packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
+				logger.logInfoMessage(PackageService.class, userId, packageId,
+						PackageService.class.getSimpleName() + ".createZipFile",
+						zipTiming.format(new Object[] { packageInfo.getCreatedAt(),
+								packageInfo.getSubmitter().getEmail(), packageId, packageInfo.getAttachments().size(),
+								displaySize, zipDuration + " seconds" }));
 			}
+
 		}.start();
 	}
 
@@ -145,34 +152,39 @@ public class PackageService {
 		return (double) totalSize / megabyteValue;
 	}
 
-	public boolean validatePackageForZipping(String packageId) {
+	public boolean validatePackageForZipping(String packageId, String userId) {
 		Package packageInformation = findPackage(packageId);
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
 		List<String> filesInPackage = getAttachmentFilenames(packageInformation);
 		Collections.sort(filesOnDisk);
 		Collections.sort(filesInPackage);
-		return checkFilesExist(filesOnDisk, filesInPackage)
-				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath);
+		return checkFilesExist(filesOnDisk, filesInPackage, userId, packageId)
+				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, userId, packageId);
 	}
 
-	protected boolean validateFileLengthsMatch(List<Attachment> filesInPackage, String packagePath) {
+	protected boolean validateFileLengthsMatch(List<Attachment> filesInPackage, String packagePath, String userId,
+			String packageId) {
 		boolean everythingMatches = true;
 		for (Attachment attachment : filesInPackage) {
 			String filename = attachment.getFileName();
 			if (new File(packagePath + filename).length() != attachment.getSize()) {
-				log.error(zipIssue.format(new Object[] {
-						"File size in metadata does not match file size on disk for file: " + filename }));
+				logger.logErrorMessage(this.getClass(), userId, packageId,
+						this.getClass().getSimpleName() + ".validateFileLengthsMatch", zipIssue.format(new Object[] {
+								"File size in metadata does not match file size on disk for file: " + filename }));
 				everythingMatches = false;
 			}
 		}
 		return everythingMatches;
 	}
 
-	protected boolean checkFilesExist(List<String> filesOnDisk, List<String> filesInPackage) {
+	protected boolean checkFilesExist(List<String> filesOnDisk, List<String> filesInPackage, String userId,
+			String packageId) {
 		boolean sameFiles = filesOnDisk.equals(filesInPackage);
 		if (!sameFiles) {
-			log.error(zipIssue.format(new Object[] { "File list in metadata does not match file list on disk" }));
+			logger.logErrorMessage(this.getClass(), userId, packageId,
+					this.getClass().getSimpleName() + ".checkFilesExist",
+					zipIssue.format(new Object[] { "File list in metadata does not match file list on disk" }));
 		}
 		return sameFiles;
 	}

@@ -73,7 +73,7 @@ public class PackageControllerTest {
 	@Test
 	public void testPostPackageInfo() throws Exception {
 		String packageInfoString = "{}";
-		when(packageService.savePackageInformation(any(JSONObject.class))).thenReturn("universalId");
+		when(packageService.savePackageInformation(any(JSONObject.class), any(String.class))).thenReturn("universalId");
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		when(request.getRequestURI()).thenReturn("/v1/packages");
 		when(jwtHandler.getUserIdFromHeader(request)).thenReturn("userID");
@@ -81,7 +81,7 @@ public class PackageControllerTest {
 		String universalId = controller.postPackageInformation(packageInfoString, request);
 
 		assertEquals("universalId", universalId);
-		verify(packageService).savePackageInformation(any(JSONObject.class));
+		verify(packageService).savePackageInformation(any(JSONObject.class), any(String.class));
 		verify(logger).logInfoMessage(PackageController.class, "userID", null, "/v1/packages",
 				"Posting package info: {}");
 	}
@@ -116,15 +116,15 @@ public class PackageControllerTest {
 
 	@Test
 	public void testFinishUpload() throws Exception {
-		when(packageService.validatePackageForZipping("3545")).thenReturn(true);
+		when(packageService.validatePackageForZipping("3545", "userID")).thenReturn(true);
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		when(request.getRequestURI()).thenReturn("/v1/packages/3545/files/finish");
 		when(jwtHandler.getUserIdFromHeader(request)).thenReturn("userID");
 
 		FileUploadResponse result = controller.finishUpload("3545", request);
 
-		verify(packageService).createZipFile("3545");
-		verify(packageService).validatePackageForZipping("3545");
+		verify(packageService).createZipFile("3545", "userID");
+		verify(packageService).validatePackageForZipping("3545", "userID");
 		assertEquals(true, result.isSuccess());
 		verify(logger).logInfoMessage(PackageController.class, "userID", "3545", "/v1/packages/3545/files/finish",
 				"Finishing file upload with packageId:  3545");
@@ -132,16 +132,16 @@ public class PackageControllerTest {
 
 	@Test
 	public void testFinishUpload_whenCreateZipThrows() throws Exception {
-		when(packageService.validatePackageForZipping("3545")).thenReturn(true);
-		doThrow(new JSONException("OOF")).when(packageService).createZipFile("3545");
+		when(packageService.validatePackageForZipping("3545", "userID")).thenReturn(true);
+		doThrow(new JSONException("OOF")).when(packageService).createZipFile("3545", "userID");
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		when(request.getRequestURI()).thenReturn("/v1/packages/3545/files/finish");
 		when(jwtHandler.getUserIdFromHeader(request)).thenReturn("userID");
 
 		FileUploadResponse result = controller.finishUpload("3545", request);
 
-		verify(packageService).createZipFile("3545");
-		verify(packageService).validatePackageForZipping("3545");
+		verify(packageService).createZipFile("3545", "userID");
+		verify(packageService).validatePackageForZipping("3545", "userID");
 		assertEquals(false, result.isSuccess());
 		verify(logger).logErrorMessage(PackageController.class, "userID", "3545", "/v1/packages/3545/files/finish",
 				"error getting metadata for package id:  3545");
@@ -149,15 +149,15 @@ public class PackageControllerTest {
 
 	@Test
 	public void testFinishUpload_whenMismatchedFiles() throws Exception {
-		when(packageService.validatePackageForZipping("3545")).thenReturn(false);
+		when(packageService.validatePackageForZipping("3545", "userID")).thenReturn(false);
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		when(request.getRequestURI()).thenReturn("/v1/packages/3545/files/finish");
 		when(jwtHandler.getUserIdFromHeader(request)).thenReturn("userID");
 
 		FileUploadResponse result = controller.finishUpload("3545", request);
 
-		verify(packageService, times(0)).createZipFile("3545");
-		verify(packageService).validatePackageForZipping("3545");
+		verify(packageService, times(0)).createZipFile("3545", "userID");
+		verify(packageService).validatePackageForZipping("3545", "userID");
 		assertEquals(false, result.isSuccess());
 		verify(logger).logErrorMessage(PackageController.class, "userID", "3545", "/v1/packages/3545/files/finish",
 				"Unable to zip package with package id:  3545");
