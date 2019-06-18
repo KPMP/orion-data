@@ -21,6 +21,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.UniversalIdGenerator;
+import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.kpmp.users.UserRepository;
 import org.mockito.ArgumentCaptor;
@@ -49,12 +50,14 @@ public class CustomPackageRepositoryTest {
 	@Mock
 	private JsonWriterSettingsConstructor jsonWriterSettings;
 	private CustomPackageRepository repo;
+	@Mock
+	private LoggingService logger;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		repo = new CustomPackageRepository(packageRepository, mongoTemplate, universalIdGenerator, userRepo,
-				jsonWriterSettings);
+				jsonWriterSettings, logger);
 	}
 
 	@After
@@ -62,7 +65,7 @@ public class CustomPackageRepositoryTest {
 		repo = null;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void testSaveDynamicForm_happyPath() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
@@ -80,7 +83,7 @@ public class CustomPackageRepositoryTest {
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
 
-		String packageId = repo.saveDynamicForm(packageMetadata);
+		String packageId = repo.saveDynamicForm(packageMetadata, "userId");
 
 		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
 		verify(mongoCollection).insertOne(documentCaptor.capture());
@@ -98,9 +101,22 @@ public class CustomPackageRepositoryTest {
 		assertEquals("users", submitter.getCollectionName());
 		ObjectId objectId = (ObjectId) submitter.getId();
 		assertEquals(new ObjectId("5c2f9e01cb5e710049f33121"), objectId);
+		ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
+		ArgumentCaptor<String> userIdCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
+		verify(logger).logInfoMessage(classCaptor.capture(), userIdCaptor.capture(), packageIdCaptor.capture(),
+				uriCaptor.capture(), messageCaptor.capture());
+		assertEquals(CustomPackageRepository.class, classCaptor.getValue());
+		assertEquals("userId", userIdCaptor.getValue());
+		assertEquals(packageId, packageIdCaptor.getValue());
+		assertEquals("CustomPackageRepository.saveDynamicForm", uriCaptor.getValue());
+		assertEquals(true, messageCaptor.getValue().startsWith("Timing|start|"));
+		assertEquals(true, messageCaptor.getValue().endsWith("|emailAddress|123|1 files"));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void testSaveDynamicForm_whenNewUser() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
@@ -126,7 +142,7 @@ public class CustomPackageRepositoryTest {
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
 
-		String packageId = repo.saveDynamicForm(packageMetadata);
+		String packageId = repo.saveDynamicForm(packageMetadata, "userId");
 
 		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
 		verify(mongoCollection).insertOne(documentCaptor.capture());
@@ -151,7 +167,19 @@ public class CustomPackageRepositoryTest {
 		assertEquals("emailAddress2", actualUser.getEmail());
 		assertEquals("firstName", actualUser.getFirstName());
 		assertEquals("lastName", actualUser.getLastName());
-
+		ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
+		ArgumentCaptor<String> userIdCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
+		verify(logger).logInfoMessage(classCaptor.capture(), userIdCaptor.capture(), packageIdCaptor.capture(),
+				uriCaptor.capture(), messageCaptor.capture());
+		assertEquals(CustomPackageRepository.class, classCaptor.getValue());
+		assertEquals("userId", userIdCaptor.getValue());
+		assertEquals(packageId, packageIdCaptor.getValue());
+		assertEquals("CustomPackageRepository.saveDynamicForm", uriCaptor.getValue());
+		assertEquals(true, messageCaptor.getValue().startsWith("Timing|start|"));
+		assertEquals(true, messageCaptor.getValue().endsWith("|emailAddress|123|1 files"));
 	}
 
 	@Test
