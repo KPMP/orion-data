@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.kpmp.JWTHandler;
 import org.kpmp.logging.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -36,20 +35,17 @@ public class PackageController {
 	private static final MessageFormat fileDownloadRequest = new MessageFormat(
 			"Requesting package download with id {0}, filename {1}");
 	private LoggingService logger;
-	private JWTHandler jwtHandler;
 
 	@Autowired
-	public PackageController(PackageService packageService, LoggingService logger, JWTHandler jwtHandler) {
+	public PackageController(PackageService packageService, LoggingService logger) {
 		this.packageService = packageService;
 		this.logger = logger;
-		this.jwtHandler = jwtHandler;
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
 	public @ResponseBody List<PackageView> getAllPackages(HttpServletRequest request)
 			throws JSONException, IOException {
-		logger.logInfoMessage(this.getClass(), jwtHandler.getUserIdFromHeader(request), null, request.getRequestURI(),
-				"Request for all packages");
+		logger.logInfoMessage(this.getClass(), null, null, request.getRequestURI(), "Request for all packages");
 		return packageService.findAllPackages();
 	}
 
@@ -57,10 +53,9 @@ public class PackageController {
 	public @ResponseBody String postPackageInformation(@RequestBody String packageInfoString,
 			HttpServletRequest request) throws JSONException {
 		JSONObject packageInfo = new JSONObject(packageInfoString);
-		String userId = jwtHandler.getUserIdFromHeader(request);
-		logger.logInfoMessage(this.getClass(), userId, null, request.getRequestURI(),
+		logger.logInfoMessage(this.getClass(), null, null, request.getRequestURI(),
 				"Posting package info: " + packageInfo);
-		String packageId = packageService.savePackageInformation(packageInfo, userId);
+		String packageId = packageService.savePackageInformation(packageInfo);
 		return packageId;
 	}
 
@@ -74,8 +69,7 @@ public class PackageController {
 			throws Exception {
 
 		String message = fileUploadRequest.format(new Object[] { filename, packageId, fileSize, chunk, chunks });
-		logger.logInfoMessage(this.getClass(), jwtHandler.getUserIdFromHeader(request), packageId,
-				request.getRequestURI(), message);
+		logger.logInfoMessage(this.getClass(), null, packageId, request.getRequestURI(), message);
 
 		packageService.saveFile(file, packageId, filename, shouldAppend(chunk));
 
@@ -86,17 +80,16 @@ public class PackageController {
 	public @ResponseBody ResponseEntity<Resource> downloadPackage(@PathVariable String packageId,
 			HttpServletRequest request) {
 		Resource resource = null;
-		String userId = jwtHandler.getUserIdFromHeader(request);
 		String requestURI = request.getRequestURI();
 		try {
 			resource = new UrlResource(packageService.getPackageFile(packageId).toUri());
 		} catch (Exception e) {
-			logger.logErrorMessage(this.getClass(), userId, packageId, requestURI,
+			logger.logErrorMessage(this.getClass(), null, packageId, requestURI,
 					"Unable to get package zip with id: " + packageId);
 			throw new RuntimeException(e);
 		}
 		String message = fileDownloadRequest.format(new Object[] { packageId, resource.toString() });
-		logger.logInfoMessage(this.getClass(), userId, packageId, requestURI, message);
+		logger.logInfoMessage(this.getClass(), null, packageId, requestURI, message);
 
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
@@ -108,20 +101,19 @@ public class PackageController {
 			HttpServletRequest request) {
 		FileUploadResponse fileUploadResponse;
 		String message = finish.format(new Object[] { "Finishing file upload with packageId: ", packageId });
-		String userId = jwtHandler.getUserIdFromHeader(request);
 		String requestURI = request.getRequestURI();
-		logger.logInfoMessage(this.getClass(), userId, packageId, requestURI, message);
-		if (packageService.validatePackageForZipping(packageId, userId)) {
+		logger.logInfoMessage(this.getClass(), null, packageId, requestURI, message);
+		if (packageService.validatePackageForZipping(packageId)) {
 			try {
-				packageService.createZipFile(packageId, userId);
+				packageService.createZipFile(packageId);
 				fileUploadResponse = new FileUploadResponse(true);
 			} catch (Exception e) {
-				logger.logErrorMessage(this.getClass(), userId, packageId, requestURI,
+				logger.logErrorMessage(this.getClass(), null, packageId, requestURI,
 						finish.format(new Object[] { "error getting metadata for package id: ", packageId }));
 				fileUploadResponse = new FileUploadResponse(false);
 			}
 		} else {
-			logger.logErrorMessage(this.getClass(), userId, packageId, requestURI,
+			logger.logErrorMessage(this.getClass(), null, packageId, requestURI,
 					finish.format(new Object[] { "Unable to zip package with package id: ", packageId }));
 			fileUploadResponse = new FileUploadResponse(false);
 		}

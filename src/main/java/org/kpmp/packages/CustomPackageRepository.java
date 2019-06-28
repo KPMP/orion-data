@@ -62,13 +62,13 @@ public class CustomPackageRepository {
 		this.logger = logger;
 	}
 
-	public String saveDynamicForm(JSONObject packageMetadata, String userId) throws JSONException {
+	public String saveDynamicForm(JSONObject packageMetadata) throws JSONException {
 		Date startTime = new Date();
 		String packageId = universalIdGenerator.generateUniversalId();
 		String submitterEmail = packageMetadata.getString(PackageKeys.SUBMITTER_EMAIL.getKey());
 		JSONArray files = packageMetadata.getJSONArray(PackageKeys.FILES.getKey());
 
-		logger.logInfoMessage(this.getClass(), userId, packageId, this.getClass().getSimpleName() + ".saveDynamicForm",
+		logger.logInfoMessage(this.getClass(), null, packageId, this.getClass().getSimpleName() + ".saveDynamicForm",
 				fileUploadStartTiming.format(new Object[] { startTime, submitterEmail, packageId, files.length() }));
 
 		for (int i = 0; i < files.length(); i++) {

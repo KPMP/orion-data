@@ -76,12 +76,12 @@ public class PackageServiceTest {
 	@Test
 	public void testSavePackageInformation() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
-		when(packageRepository.saveDynamicForm(packageMetadata, "userId")).thenReturn("awesomeNewId");
+		when(packageRepository.saveDynamicForm(packageMetadata)).thenReturn("awesomeNewId");
 
-		String packageId = service.savePackageInformation(packageMetadata, "userId");
+		String packageId = service.savePackageInformation(packageMetadata);
 
 		assertEquals("awesomeNewId", packageId);
-		verify(packageRepository).saveDynamicForm(packageMetadata, "userId");
+		verify(packageRepository).saveDynamicForm(packageMetadata);
 	}
 
 	@Test
@@ -271,11 +271,10 @@ public class PackageServiceTest {
 		attachment2.setSize(file2.length());
 		List<Attachment> attachments = Arrays.asList(attachment1, attachment2);
 
-		assertEquals(true,
-				service.validateFileLengthsMatch(attachments, packagePath.toString(), "userId", "packageId"));
+		assertEquals(true, service.validateFileLengthsMatch(attachments, packagePath.toString(), "packageId"));
 		List<ILoggingEvent> logsList = listAppender.list;
 		assertEquals(0, logsList.size());
-		verify(logger, times(0)).logErrorMessage(PackageService.class, "userId", "packageId",
+		verify(logger, times(0)).logErrorMessage(PackageService.class, null, "packageId",
 				"PackageService.validateFileLengthsMatch",
 				"ERROR|zip|File size in metadata does not match file size on disk for file: file2");
 	}
@@ -300,9 +299,8 @@ public class PackageServiceTest {
 		attachment2.setSize(1234l);
 		List<Attachment> attachments = Arrays.asList(attachment1, attachment2);
 
-		assertEquals(false,
-				service.validateFileLengthsMatch(attachments, packagePath.toString(), "userId", "packageId"));
-		verify(logger).logErrorMessage(PackageService.class, "userId", "packageId",
+		assertEquals(false, service.validateFileLengthsMatch(attachments, packagePath.toString(), "packageId"));
+		verify(logger).logErrorMessage(PackageService.class, null, "packageId",
 				"PackageService.validateFileLengthsMatch",
 				"ERROR|zip|File size in metadata does not match file size on disk for file: file2");
 
@@ -311,9 +309,9 @@ public class PackageServiceTest {
 	@Test
 	public void testCheckFilesExistTrue() throws Exception {
 
-		assertEquals(true, service.checkFilesExist(Arrays.asList("file1", "file2"), Arrays.asList("file1", "file2"),
-				"userid", "packageId"));
-		verify(logger, times(0)).logErrorMessage(PackageService.class, "userId", "packageId",
+		assertEquals(true,
+				service.checkFilesExist(Arrays.asList("file1", "file2"), Arrays.asList("file1", "file2"), "packageId"));
+		verify(logger, times(0)).logErrorMessage(PackageService.class, null, "packageId",
 				"PackageService.checkFilesExist", "ERROR|zip|File list in metadata does not match file list on disk");
 	}
 
@@ -321,8 +319,8 @@ public class PackageServiceTest {
 	public void testCheckFilesExistFalse() throws Exception {
 
 		assertEquals(false, service.checkFilesExist(Arrays.asList("file1", "file2"),
-				Arrays.asList("file1", "file2, file3"), "userId", "packageId"));
-		verify(logger).logErrorMessage(PackageService.class, "userId", "packageId", "PackageService.checkFilesExist",
+				Arrays.asList("file1", "file2, file3"), "packageId"));
+		verify(logger).logErrorMessage(PackageService.class, null, "packageId", "PackageService.checkFilesExist",
 				"ERROR|zip|File list in metadata does not match file list on disk");
 	}
 

@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kpmp.JWTHandler;
 import org.kpmp.logging.LoggingService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -24,14 +23,12 @@ class UserControllerTest {
 	private UserService userService;
 	private UserController controller;
 	@Mock
-	private JWTHandler jwtHandler;
-	@Mock
 	private LoggingService logger;
 
 	@BeforeEach
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		controller = new UserController(userService, jwtHandler, logger);
+		controller = new UserController(userService, logger);
 	}
 
 	@AfterEach
@@ -44,13 +41,12 @@ class UserControllerTest {
 		List<User> users = Arrays.asList(mock(User.class));
 		when(userService.findAll()).thenReturn(users);
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(jwtHandler.getUserIdFromHeader(request)).thenReturn("userID");
 		when(request.getRequestURI()).thenReturn("/v1/users");
 
 		List<User> result = controller.getUsers("false", request);
 
 		assertEquals(users, result);
-		verify(logger).logInfoMessage(UserController.class, "userID", null, "/v1/users", "Getting all users");
+		verify(logger).logInfoMessage(UserController.class, null, null, "/v1/users", "Getting all users");
 	}
 
 	@Test
@@ -58,13 +54,12 @@ class UserControllerTest {
 		List<User> users = Arrays.asList(mock(User.class));
 		when(userService.findAllWithPackages()).thenReturn(users);
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(jwtHandler.getUserIdFromHeader(request)).thenReturn("userID");
 		when(request.getRequestURI()).thenReturn("/v1/users");
 
 		List<User> result = controller.getUsers("true", request);
 
 		assertEquals(users, result);
-		verify(logger).logInfoMessage(UserController.class, "userID", null, "/v1/users", "Getting users with packages");
+		verify(logger).logInfoMessage(UserController.class, null, null, "/v1/users", "Getting users with packages");
 	}
 
 }
