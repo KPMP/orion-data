@@ -26,8 +26,8 @@ public class ErrorController {
 	public @ResponseBody ResponseEntity<Boolean> logError(@RequestBody FrontEndError errorMessage,
 			HttpServletRequest request) {
 
-		logger.logErrorMessage(this.getClass(), null, null, request.getRequestURI(),
-				errorMessage.getError() + " with stacktrace: " + errorMessage.getStackTrace());
+		logger.logErrorMessage(this.getClass(), null,
+				errorMessage.getError() + " with stacktrace: " + errorMessage.getStackTrace(), request);
 
 		return new ResponseEntity<>(true, HttpStatus.OK);
 	}

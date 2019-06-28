@@ -24,14 +24,13 @@ public class FormController {
 
 	@RequestMapping(value = "/v1/form", method = RequestMethod.GET)
 	public @ResponseBody Form getFormDTD(HttpServletRequest request) {
-		logger.logInfoMessage(this.getClass(), null, null, request.getRequestURI(), "Request for all forms");
+		logger.logInfoMessage(this.getClass(), null, "Request for all forms", request);
 		return this.repository.findTopByOrderByVersionDesc();
 	}
 
 	@RequestMapping(value = "/v1/form/version/{version}", method = RequestMethod.GET)
 	public @ResponseBody Form getFormDTD(@PathVariable Double version, HttpServletRequest request) {
-		logger.logInfoMessage(this.getClass(), null, null, request.getRequestURI(),
-				"Request for form with version: " + version);
+		logger.logInfoMessage(this.getClass(), null, "Request for form with version: " + version, request);
 		return this.repository.findByVersion(version).get(0);
 	}
 

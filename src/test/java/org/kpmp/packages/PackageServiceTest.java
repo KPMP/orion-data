@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.logging.LoggingService;
+import org.kpmp.users.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.LoggerFactory;
@@ -270,11 +271,13 @@ public class PackageServiceTest {
 		attachment2.setFileName("file2");
 		attachment2.setSize(file2.length());
 		List<Attachment> attachments = Arrays.asList(attachment1, attachment2);
+		User user = mock(User.class);
+		when(user.getEmail()).thenReturn("email");
 
-		assertEquals(true, service.validateFileLengthsMatch(attachments, packagePath.toString(), "packageId"));
+		assertEquals(true, service.validateFileLengthsMatch(attachments, packagePath.toString(), "packageId", user));
 		List<ILoggingEvent> logsList = listAppender.list;
 		assertEquals(0, logsList.size());
-		verify(logger, times(0)).logErrorMessage(PackageService.class, null, "packageId",
+		verify(logger, times(0)).logErrorMessage(PackageService.class, "email", "packageId",
 				"PackageService.validateFileLengthsMatch",
 				"ERROR|zip|File size in metadata does not match file size on disk for file: file2");
 	}
@@ -298,9 +301,11 @@ public class PackageServiceTest {
 		attachment2.setFileName("file2");
 		attachment2.setSize(1234l);
 		List<Attachment> attachments = Arrays.asList(attachment1, attachment2);
+		User user = mock(User.class);
+		when(user.getEmail()).thenReturn("email");
 
-		assertEquals(false, service.validateFileLengthsMatch(attachments, packagePath.toString(), "packageId"));
-		verify(logger).logErrorMessage(PackageService.class, null, "packageId",
+		assertEquals(false, service.validateFileLengthsMatch(attachments, packagePath.toString(), "packageId", user));
+		verify(logger).logErrorMessage(PackageService.class, "email", "packageId",
 				"PackageService.validateFileLengthsMatch",
 				"ERROR|zip|File size in metadata does not match file size on disk for file: file2");
 
@@ -308,19 +313,23 @@ public class PackageServiceTest {
 
 	@Test
 	public void testCheckFilesExistTrue() throws Exception {
+		User user = mock(User.class);
+		when(user.getEmail()).thenReturn("email");
 
-		assertEquals(true,
-				service.checkFilesExist(Arrays.asList("file1", "file2"), Arrays.asList("file1", "file2"), "packageId"));
-		verify(logger, times(0)).logErrorMessage(PackageService.class, null, "packageId",
+		assertEquals(true, service.checkFilesExist(Arrays.asList("file1", "file2"), Arrays.asList("file1", "file2"),
+				"packageId", user));
+		verify(logger, times(0)).logErrorMessage(PackageService.class, "email", "packageId",
 				"PackageService.checkFilesExist", "ERROR|zip|File list in metadata does not match file list on disk");
 	}
 
 	@Test
 	public void testCheckFilesExistFalse() throws Exception {
+		User user = mock(User.class);
+		when(user.getEmail()).thenReturn("email");
 
 		assertEquals(false, service.checkFilesExist(Arrays.asList("file1", "file2"),
-				Arrays.asList("file1", "file2, file3"), "packageId"));
-		verify(logger).logErrorMessage(PackageService.class, null, "packageId", "PackageService.checkFilesExist",
+				Arrays.asList("file1", "file2, file3"), "packageId", user));
+		verify(logger).logErrorMessage(PackageService.class, "email", "packageId", "PackageService.checkFilesExist",
 				"ERROR|zip|File list in metadata does not match file list on disk");
 	}
 

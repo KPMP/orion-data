@@ -40,12 +40,11 @@ public class FormControllerTest {
 		Form expectedForm = mock(Form.class);
 		when(repository.findTopByOrderByVersionDesc()).thenReturn(expectedForm);
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getRequestURI()).thenReturn("/v1/form");
 
 		Form formDTD = controller.getFormDTD(request);
 
 		assertEquals(expectedForm, formDTD);
-		verify(logger).logInfoMessage(FormController.class, null, null, "/v1/form", "Request for all forms");
+		verify(logger).logInfoMessage(FormController.class, null, "Request for all forms", request);
 	}
 
 	@Test
@@ -53,13 +52,11 @@ public class FormControllerTest {
 		Form expectedForm = mock(Form.class);
 		when(repository.findByVersion(1.0)).thenReturn(Arrays.asList(expectedForm));
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getRequestURI()).thenReturn("/v1/form/version/1.0");
 
 		Form formDTD = controller.getFormDTD(1.0, request);
 
 		assertEquals(expectedForm, formDTD);
-		verify(logger).logInfoMessage(FormController.class, null, null, "/v1/form/version/1.0",
-				"Request for form with version: 1.0");
+		verify(logger).logInfoMessage(FormController.class, null, "Request for form with version: 1.0", request);
 	}
 
 }

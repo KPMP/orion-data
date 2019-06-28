@@ -26,14 +26,13 @@ public class ReleaseController {
 
 	@RequestMapping(value = "/v1/releases", method = RequestMethod.GET)
 	public @ResponseBody List<Release> getMetadataRelease(HttpServletRequest request) {
-		logger.logInfoMessage(this.getClass(), null, null, request.getRequestURI(), "Getting all release information");
+		logger.logInfoMessage(this.getClass(), null, "Getting all release information", request);
 		return this.repository.findAll();
 	}
 
 	@RequestMapping(value = "/v1/releases/version/{version}", method = RequestMethod.GET)
 	public @ResponseBody Release getMetadataReleaseByVersion(@PathVariable String version, HttpServletRequest request) {
-		logger.logInfoMessage(this.getClass(), null, null, request.getRequestURI(),
-				"Getting release information for version " + version);
+		logger.logInfoMessage(this.getClass(), null, "Getting release information for version " + version, request);
 		return this.repository.findByVersion(version);
 	}
 }

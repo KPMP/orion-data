@@ -5,12 +5,20 @@ import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.kpmp.users.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ShibbolethUserService {
 
-	public User getUser(HttpServletRequest request, UTF8Encoder encoder) throws UnsupportedEncodingException {
+	private UTF8Encoder encoder;
+
+	@Autowired
+	public ShibbolethUserService(UTF8Encoder encoder) {
+		this.encoder = encoder;
+	}
+
+	public User getUser(HttpServletRequest request) throws UnsupportedEncodingException {
 
 		String value = handleNull(request.getHeader("mail"));
 		String email = encoder.convertFromLatin1(value);

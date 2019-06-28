@@ -109,7 +109,7 @@ public class CustomPackageRepositoryTest {
 		verify(logger).logInfoMessage(classCaptor.capture(), userIdCaptor.capture(), packageIdCaptor.capture(),
 				uriCaptor.capture(), messageCaptor.capture());
 		assertEquals(CustomPackageRepository.class, classCaptor.getValue());
-		assertEquals(null, userIdCaptor.getValue());
+		assertEquals("emailAddress", userIdCaptor.getValue());
 		assertEquals(packageId, packageIdCaptor.getValue());
 		assertEquals("CustomPackageRepository.saveDynamicForm", uriCaptor.getValue());
 		assertEquals(true, messageCaptor.getValue().startsWith("Timing|start|"));
@@ -175,7 +175,7 @@ public class CustomPackageRepositoryTest {
 		verify(logger).logInfoMessage(classCaptor.capture(), userIdCaptor.capture(), packageIdCaptor.capture(),
 				uriCaptor.capture(), messageCaptor.capture());
 		assertEquals(CustomPackageRepository.class, classCaptor.getValue());
-		assertEquals(null, userIdCaptor.getValue());
+		assertEquals("emailAddress", userIdCaptor.getValue());
 		assertEquals(packageId, packageIdCaptor.getValue());
 		assertEquals("CustomPackageRepository.saveDynamicForm", uriCaptor.getValue());
 		assertEquals(true, messageCaptor.getValue().startsWith("Timing|start|"));

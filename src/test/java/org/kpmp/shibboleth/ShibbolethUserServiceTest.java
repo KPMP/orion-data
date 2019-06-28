@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.users.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -23,7 +24,7 @@ public class ShibbolethUserServiceTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		shibbolethUserService = new ShibbolethUserService();
+		shibbolethUserService = new ShibbolethUserService(utf8Encoder);
 	}
 
 	@After
@@ -38,16 +39,17 @@ public class ShibbolethUserServiceTest {
 		when(request.getHeader("givenname")).thenReturn("Johnny");
 		when(request.getHeader("sn")).thenReturn("Cash");
 		when(request.getHeader("displayname")).thenReturn("Johnny Cash");
-
 		when(utf8Encoder.convertFromLatin1("Johnny")).thenReturn("Johnny");
 		when(utf8Encoder.convertFromLatin1("Cash")).thenReturn("Cash");
 		when(utf8Encoder.convertFromLatin1("Johnny Cash")).thenReturn("Johnny Cash");
 		when(utf8Encoder.convertFromLatin1("maninblack@jcash.com")).thenReturn("maninblack@jcash.com");
 
-		assertEquals("maninblack@jcash.com", shibbolethUserService.getUser(request, utf8Encoder).getEmail());
-		assertEquals("Johnny Cash", shibbolethUserService.getUser(request, utf8Encoder).getDisplayName());
-		assertEquals("Cash", shibbolethUserService.getUser(request, utf8Encoder).getLastName());
-		assertEquals("Johnny", shibbolethUserService.getUser(request, utf8Encoder).getFirstName());
+		User user = shibbolethUserService.getUser(request);
+
+		assertEquals("maninblack@jcash.com", user.getEmail());
+		assertEquals("Johnny Cash", user.getDisplayName());
+		assertEquals("Cash", user.getLastName());
+		assertEquals("Johnny", user.getFirstName());
 
 	}
 

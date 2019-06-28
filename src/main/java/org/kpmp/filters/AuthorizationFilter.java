@@ -8,8 +8,11 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.kpmp.logging.LoggingService;
+import org.kpmp.shibboleth.ShibbolethUserService;
+import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,10 +20,12 @@ import org.springframework.stereotype.Component;
 public class AuthorizationFilter implements Filter {
 
 	private LoggingService logger;
+	private ShibbolethUserService shibUserService;
 
 	@Autowired
-	public AuthorizationFilter(LoggingService logger) {
+	public AuthorizationFilter(LoggingService logger, ShibbolethUserService shibUserService) {
 		this.logger = logger;
+		this.shibUserService = shibUserService;
 	}
 
 	@Override
@@ -33,10 +38,12 @@ public class AuthorizationFilter implements Filter {
 	public void doFilter(ServletRequest incomingRequest, ServletResponse incomingResponse, FilterChain chain)
 			throws IOException, ServletException {
 
+		HttpServletRequest request = (HttpServletRequest) incomingRequest;
+		User user = shibUserService.getUser(request);
 		// This is where we will implement the logic to talk to the user portal and do
 		// authorization.
 
-		logger.logInfoMessage(this.getClass(), null, null, this.getClass().getSimpleName() + ".doFilter",
+		logger.logInfoMessage(this.getClass(), user.getEmail(), null, this.getClass().getSimpleName() + ".doFilter",
 				"Passing through authentication filter");
 		chain.doFilter(incomingRequest, incomingResponse);
 	}

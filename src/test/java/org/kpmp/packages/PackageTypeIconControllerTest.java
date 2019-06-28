@@ -41,13 +41,12 @@ public class PackageTypeIconControllerTest {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		List<PackageTypeIcon> expectedList = Arrays.asList(mock(PackageTypeIcon.class));
 		when(packageTypeIconRepository.findAll()).thenReturn(expectedList);
-		when(request.getRequestURI()).thenReturn("/v1/packageTypeIcons");
 
 		List<PackageTypeIcon> packageTypeIcons = controller.getAllPackageTypeIcons(request);
 
 		assertEquals(expectedList, packageTypeIcons);
-		verify(logger).logInfoMessage(PackageTypeIconController.class, null, null, "/v1/packageTypeIcons",
-				"Getting list of package type icons");
+		verify(logger).logInfoMessage(PackageTypeIconController.class, null, "Getting list of package type icons",
+				request);
 
 	}
 

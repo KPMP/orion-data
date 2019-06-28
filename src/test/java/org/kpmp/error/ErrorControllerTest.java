@@ -41,12 +41,11 @@ public class ErrorControllerTest {
 		when(errorMessage.getError()).thenReturn("error");
 		when(errorMessage.getStackTrace()).thenReturn("oh noes...something terrible happened");
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getRequestURI()).thenReturn("/v1/error");
 
 		ResponseEntity<Boolean> result = controller.logError(errorMessage, request);
 
-		verify(logger).logErrorMessage(ErrorController.class, null, null, "/v1/error",
-				"error with stacktrace: oh noes...something terrible happened");
+		verify(logger).logErrorMessage(ErrorController.class, null,
+				"error with stacktrace: oh noes...something terrible happened", request);
 		assertEquals(new ResponseEntity<>(true, HttpStatus.OK), result);
 	}
 

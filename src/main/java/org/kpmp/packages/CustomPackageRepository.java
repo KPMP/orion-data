@@ -68,7 +68,8 @@ public class CustomPackageRepository {
 		String submitterEmail = packageMetadata.getString(PackageKeys.SUBMITTER_EMAIL.getKey());
 		JSONArray files = packageMetadata.getJSONArray(PackageKeys.FILES.getKey());
 
-		logger.logInfoMessage(this.getClass(), null, packageId, this.getClass().getSimpleName() + ".saveDynamicForm",
+		logger.logInfoMessage(this.getClass(), submitterEmail, packageId,
+				this.getClass().getSimpleName() + ".saveDynamicForm",
 				fileUploadStartTiming.format(new Object[] { startTime, submitterEmail, packageId, files.length() }));
 
 		for (int i = 0; i < files.length(); i++) {

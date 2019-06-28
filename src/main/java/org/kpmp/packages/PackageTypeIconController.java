@@ -26,8 +26,7 @@ public class PackageTypeIconController {
 
 	@RequestMapping(value = "/v1/packageTypeIcons", method = RequestMethod.GET)
 	public @ResponseBody List<PackageTypeIcon> getAllPackageTypeIcons(HttpServletRequest request) {
-		loggingService.logInfoMessage(this.getClass(), null, null, request.getRequestURI(),
-				"Getting list of package type icons");
+		loggingService.logInfoMessage(this.getClass(), null, "Getting list of package type icons", request);
 
 		return packageTypeIconRepository.findAll();
 	}

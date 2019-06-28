@@ -41,12 +41,11 @@ class UserControllerTest {
 		List<User> users = Arrays.asList(mock(User.class));
 		when(userService.findAll()).thenReturn(users);
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getRequestURI()).thenReturn("/v1/users");
 
 		List<User> result = controller.getUsers("false", request);
 
 		assertEquals(users, result);
-		verify(logger).logInfoMessage(UserController.class, null, null, "/v1/users", "Getting all users");
+		verify(logger).logInfoMessage(UserController.class, null, "Getting all users", request);
 	}
 
 	@Test
@@ -54,12 +53,11 @@ class UserControllerTest {
 		List<User> users = Arrays.asList(mock(User.class));
 		when(userService.findAllWithPackages()).thenReturn(users);
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getRequestURI()).thenReturn("/v1/users");
 
 		List<User> result = controller.getUsers("true", request);
 
 		assertEquals(users, result);
-		verify(logger).logInfoMessage(UserController.class, null, null, "/v1/users", "Getting users with packages");
+		verify(logger).logInfoMessage(UserController.class, null, "Getting users with packages", request);
 	}
 
 }

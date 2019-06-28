@@ -29,10 +29,10 @@ public class UserController {
 			@RequestParam(value = "hasPackage", defaultValue = "false") String hasPackage, HttpServletRequest request) {
 		List<User> users;
 		if (hasPackage.equals("true")) {
-			logger.logInfoMessage(this.getClass(), null, null, request.getRequestURI(), "Getting users with packages");
+			logger.logInfoMessage(this.getClass(), null, "Getting users with packages", request);
 			users = userService.findAllWithPackages();
 		} else {
-			logger.logInfoMessage(this.getClass(), null, null, request.getRequestURI(), "Getting all users");
+			logger.logInfoMessage(this.getClass(), null, "Getting all users", request);
 			users = userService.findAll();
 		}
 		return users;

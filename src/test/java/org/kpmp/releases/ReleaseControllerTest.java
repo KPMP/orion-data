@@ -42,13 +42,11 @@ public class ReleaseControllerTest {
 		Release expectedRelease = mock(Release.class);
 		when(repository.findAll()).thenReturn(Arrays.asList(expectedRelease));
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getRequestURI()).thenReturn("/v1/releases");
 
 		List<Release> releaseInfo = controller.getMetadataRelease(request);
 
 		assertEquals(Arrays.asList(expectedRelease), releaseInfo);
-		verify(logger).logInfoMessage(ReleaseController.class, null, null, "/v1/releases",
-				"Getting all release information");
+		verify(logger).logInfoMessage(ReleaseController.class, null, "Getting all release information", request);
 	}
 
 	@Test
@@ -56,13 +54,12 @@ public class ReleaseControllerTest {
 		Release expectedRelease = mock(Release.class);
 		when(repository.findByVersion("1.01")).thenReturn(expectedRelease);
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getRequestURI()).thenReturn("/v1/releases/version/1.01");
 
 		Release releaseInfo = controller.getMetadataReleaseByVersion("1.01", request);
 
 		assertEquals(expectedRelease, releaseInfo);
-		verify(logger).logInfoMessage(ReleaseController.class, null, null, "/v1/releases/version/1.01",
-				"Getting release information for version 1.01");
+		verify(logger).logInfoMessage(ReleaseController.class, null, "Getting release information for version 1.01",
+				request);
 	}
 
 }
