@@ -83,7 +83,7 @@ public class CustomPackageRepositoryTest {
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
 
-		String packageId = repo.saveDynamicForm(packageMetadata, "userId");
+		String packageId = repo.saveDynamicForm(packageMetadata);
 
 		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
 		verify(mongoCollection).insertOne(documentCaptor.capture());
@@ -109,7 +109,7 @@ public class CustomPackageRepositoryTest {
 		verify(logger).logInfoMessage(classCaptor.capture(), userIdCaptor.capture(), packageIdCaptor.capture(),
 				uriCaptor.capture(), messageCaptor.capture());
 		assertEquals(CustomPackageRepository.class, classCaptor.getValue());
-		assertEquals("userId", userIdCaptor.getValue());
+		assertEquals("emailAddress", userIdCaptor.getValue());
 		assertEquals(packageId, packageIdCaptor.getValue());
 		assertEquals("CustomPackageRepository.saveDynamicForm", uriCaptor.getValue());
 		assertEquals(true, messageCaptor.getValue().startsWith("Timing|start|"));
@@ -142,7 +142,7 @@ public class CustomPackageRepositoryTest {
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
 
-		String packageId = repo.saveDynamicForm(packageMetadata, "userId");
+		String packageId = repo.saveDynamicForm(packageMetadata);
 
 		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
 		verify(mongoCollection).insertOne(documentCaptor.capture());
@@ -175,7 +175,7 @@ public class CustomPackageRepositoryTest {
 		verify(logger).logInfoMessage(classCaptor.capture(), userIdCaptor.capture(), packageIdCaptor.capture(),
 				uriCaptor.capture(), messageCaptor.capture());
 		assertEquals(CustomPackageRepository.class, classCaptor.getValue());
-		assertEquals("userId", userIdCaptor.getValue());
+		assertEquals("emailAddress", userIdCaptor.getValue());
 		assertEquals(packageId, packageIdCaptor.getValue());
 		assertEquals("CustomPackageRepository.saveDynamicForm", uriCaptor.getValue());
 		assertEquals(true, messageCaptor.getValue().startsWith("Timing|start|"));

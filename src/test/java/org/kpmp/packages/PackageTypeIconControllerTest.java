@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.JWTHandler;
 import org.kpmp.logging.LoggingService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -24,14 +23,12 @@ public class PackageTypeIconControllerTest {
 	private PackageTypeIconRepository packageTypeIconRepository;
 	@Mock
 	private LoggingService logger;
-	@Mock
-	private JWTHandler jwtHandler;
 	private PackageTypeIconController controller;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		controller = new PackageTypeIconController(packageTypeIconRepository, jwtHandler, logger);
+		controller = new PackageTypeIconController(packageTypeIconRepository, logger);
 	}
 
 	@After
@@ -44,14 +41,12 @@ public class PackageTypeIconControllerTest {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		List<PackageTypeIcon> expectedList = Arrays.asList(mock(PackageTypeIcon.class));
 		when(packageTypeIconRepository.findAll()).thenReturn(expectedList);
-		when(request.getRequestURI()).thenReturn("/v1/packageTypeIcons");
-		when(jwtHandler.getUserIdFromHeader(request)).thenReturn("userID");
 
 		List<PackageTypeIcon> packageTypeIcons = controller.getAllPackageTypeIcons(request);
 
 		assertEquals(expectedList, packageTypeIcons);
-		verify(logger).logInfoMessage(PackageTypeIconController.class, "userID", null, "/v1/packageTypeIcons",
-				"Getting list of package type icons");
+		verify(logger).logInfoMessage(PackageTypeIconController.class, null, "Getting list of package type icons",
+				request);
 
 	}
 

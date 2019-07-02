@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.kpmp.JWTHandler;
 import org.kpmp.logging.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,27 +16,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ReleaseController {
 
 	private ReleaseRepository repository;
-	private JWTHandler jwtHandler;
 	private LoggingService logger;
 
 	@Autowired
-	public ReleaseController(ReleaseRepository repository, JWTHandler jwtHandler, LoggingService logger) {
+	public ReleaseController(ReleaseRepository repository, LoggingService logger) {
 		this.repository = repository;
-		this.jwtHandler = jwtHandler;
 		this.logger = logger;
 	}
 
 	@RequestMapping(value = "/v1/releases", method = RequestMethod.GET)
 	public @ResponseBody List<Release> getMetadataRelease(HttpServletRequest request) {
-		logger.logInfoMessage(this.getClass(), jwtHandler.getUserIdFromHeader(request), null, request.getRequestURI(),
-				"Getting all release information");
+		logger.logInfoMessage(this.getClass(), null, "Getting all release information", request);
 		return this.repository.findAll();
 	}
 
 	@RequestMapping(value = "/v1/releases/version/{version}", method = RequestMethod.GET)
 	public @ResponseBody Release getMetadataReleaseByVersion(@PathVariable String version, HttpServletRequest request) {
-		logger.logInfoMessage(this.getClass(), jwtHandler.getUserIdFromHeader(request), null, request.getRequestURI(),
-				"Getting release information for version " + version);
+		logger.logInfoMessage(this.getClass(), null, "Getting release information for version " + version, request);
 		return this.repository.findByVersion(version);
 	}
 }

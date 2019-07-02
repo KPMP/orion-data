@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.JWTHandler;
 import org.kpmp.logging.LoggingService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -24,14 +23,12 @@ public class ReleaseControllerTest {
 	private ReleaseRepository repository;
 	private ReleaseController controller;
 	@Mock
-	private JWTHandler jwtHandler;
-	@Mock
 	private LoggingService logger;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		controller = new ReleaseController(repository, jwtHandler, logger);
+		controller = new ReleaseController(repository, logger);
 	}
 
 	@After
@@ -45,14 +42,11 @@ public class ReleaseControllerTest {
 		Release expectedRelease = mock(Release.class);
 		when(repository.findAll()).thenReturn(Arrays.asList(expectedRelease));
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getRequestURI()).thenReturn("/v1/releases");
-		when(jwtHandler.getUserIdFromHeader(request)).thenReturn("userID");
 
 		List<Release> releaseInfo = controller.getMetadataRelease(request);
 
 		assertEquals(Arrays.asList(expectedRelease), releaseInfo);
-		verify(logger).logInfoMessage(ReleaseController.class, "userID", null, "/v1/releases",
-				"Getting all release information");
+		verify(logger).logInfoMessage(ReleaseController.class, null, "Getting all release information", request);
 	}
 
 	@Test
@@ -60,14 +54,12 @@ public class ReleaseControllerTest {
 		Release expectedRelease = mock(Release.class);
 		when(repository.findByVersion("1.01")).thenReturn(expectedRelease);
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getRequestURI()).thenReturn("/v1/releases/version/1.01");
-		when(jwtHandler.getUserIdFromHeader(request)).thenReturn("userID");
 
 		Release releaseInfo = controller.getMetadataReleaseByVersion("1.01", request);
 
 		assertEquals(expectedRelease, releaseInfo);
-		verify(logger).logInfoMessage(ReleaseController.class, "userID", null, "/v1/releases/version/1.01",
-				"Getting release information for version 1.01");
+		verify(logger).logInfoMessage(ReleaseController.class, null, "Getting release information for version 1.01",
+				request);
 	}
 
 }
