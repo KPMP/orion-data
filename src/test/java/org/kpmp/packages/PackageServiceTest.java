@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.logging.LoggingService;
+import org.kpmp.packages.state.StateHandlerService;
 import org.kpmp.users.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -47,11 +48,14 @@ public class PackageServiceTest {
 	private PackageService service;
 	@Mock
 	private LoggingService logger;
+	@Mock
+	private StateHandlerService stateHandlerService;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		service = new PackageService(packageFileHandler, packageZipService, filePathHelper, packageRepository, logger);
+		service = new PackageService(packageFileHandler, packageZipService, filePathHelper, packageRepository,
+				stateHandlerService, logger);
 	}
 
 	@After

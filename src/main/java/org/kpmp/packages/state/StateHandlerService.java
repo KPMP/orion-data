@@ -3,6 +3,7 @@ package org.kpmp.packages.state;
 import java.util.Date;
 
 import org.kpmp.logging.LoggingService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,6 +18,7 @@ public class StateHandlerService {
 	private RestTemplate restTemplate;
 	private LoggingService logger;
 
+	@Autowired
 	public StateHandlerService(RestTemplate restTemplate, LoggingService logger) {
 		this.restTemplate = restTemplate;
 		this.logger = logger;

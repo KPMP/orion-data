@@ -18,6 +18,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.kpmp.logging.LoggingService;
+import org.kpmp.packages.state.StateHandlerService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,14 +38,17 @@ public class PackageService {
 	private FilePathHelper filePathHelper;
 	private CustomPackageRepository packageRepository;
 	private LoggingService logger;
+	private StateHandlerService stateHandler;
 
 	@Autowired
 	public PackageService(PackageFileHandler packageFileHandler, PackageZipService packageZipper,
-			FilePathHelper filePathHelper, CustomPackageRepository packageRepository, LoggingService logger) {
+			FilePathHelper filePathHelper, CustomPackageRepository packageRepository, StateHandlerService stateHandler,
+			LoggingService logger) {
 		this.filePathHelper = filePathHelper;
 		this.packageFileHandler = packageFileHandler;
 		this.packageZipper = packageZipper;
 		this.packageRepository = packageRepository;
+		this.stateHandler = stateHandler;
 		this.logger = logger;
 	}
 
@@ -112,6 +116,9 @@ public class PackageService {
 			public void run() {
 				try {
 					packageZipper.createZipFile(packageMetadata);
+					stateHandler.sendNotification(packageId, packageInfo.getPackageType(), packageInfo.getCreatedAt(),
+							packageInfo.getSubmitter().getFirstName(), packageInfo.getSubmitter().getLastName(),
+							packageInfo.getSubjectId());
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, submitterEmail, packageId,
 							PackageService.class.getSimpleName(), e.getMessage());
