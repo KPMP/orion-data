@@ -109,6 +109,7 @@ public class PackageController {
 		if (packageService.validatePackageForZipping(packageId, shibUserService.getUser(request))) {
 			try {
 				packageService.createZipFile(packageId);
+
 				fileUploadResponse = new FileUploadResponse(true);
 			} catch (Exception e) {
 				logger.logErrorMessage(this.getClass(), packageId,
