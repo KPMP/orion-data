@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.web.client.RestTemplate;
 
 import com.mongodb.MongoClient;
 
@@ -44,6 +45,11 @@ public class TestMongoConfig {
 
 		MongoTemplate mongoTemplate = new MongoTemplate(mongoClient, MONGO_DB_NAME);
 		return mongoTemplate;
+	}
+
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
 	}
 
 }
