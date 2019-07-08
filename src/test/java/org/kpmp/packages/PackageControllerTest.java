@@ -111,6 +111,7 @@ public class PackageControllerTest {
 	public void testFinishUpload() throws Exception {
 		User user = mock(User.class);
 		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(request.getHeader(HttpHeaders.ORIGIN)).thenReturn("origin");
 		when(shibUserService.getUser(request)).thenReturn(user);
 		when(packageService.validatePackageForZipping("3545", user)).thenReturn(true);
 
@@ -126,6 +127,7 @@ public class PackageControllerTest {
 	@Test
 	public void testFinishUpload_whenCreateZipThrows() throws Exception {
 		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(request.getHeader(HttpHeaders.ORIGIN)).thenReturn("origin");
 		User user = mock(User.class);
 		when(shibUserService.getUser(request)).thenReturn(user);
 		when(packageService.validatePackageForZipping("3545", user)).thenReturn(true);
