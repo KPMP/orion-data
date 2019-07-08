@@ -9,17 +9,19 @@ public class PackageNotificationInfo {
 	private Date datePackageSubmitted;
 	private String submitter;
 	private String specimenId;
+	private String origin;
 
 	public PackageNotificationInfo() {
 	}
 
 	public PackageNotificationInfo(String packageId, String packageType, Date datePackageSubmitted,
-			String submitterName, String specimenId) {
+			String submitterName, String specimenId, String origin) {
 		this.packageId = packageId;
 		this.packageType = packageType;
 		this.datePackageSubmitted = datePackageSubmitted;
 		submitter = submitterName;
 		this.specimenId = specimenId;
+		this.setOrigin(origin);
 	}
 
 	public String getPackageId() {
@@ -60,6 +62,14 @@ public class PackageNotificationInfo {
 
 	public void setSpecimenId(String specimenId) {
 		this.specimenId = specimenId;
+	}
+
+	public String getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(String origin) {
+		this.origin = origin;
 	}
 
 }

@@ -26,11 +26,11 @@ public class StateHandlerService {
 
 	// this method will go away when we implement the state manager
 	public void sendNotification(String packageId, String packageType, Date datePackageSubmitted,
-			String submitterFirstName, String submitterLastName, String specimenId) {
+			String submitterFirstName, String submitterLastName, String specimenId, String origin) {
 
 		String submitterName = submitterFirstName + " " + submitterLastName;
 		PackageNotificationInfo packageNotification = new PackageNotificationInfo(packageId, packageType,
-				datePackageSubmitted, submitterName, specimenId);
+				datePackageSubmitted, submitterName, specimenId, origin);
 
 		Boolean response = restTemplate.postForObject(notificationServiceHost + notificationEndpoint,
 				packageNotification, Boolean.class);

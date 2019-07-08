@@ -47,7 +47,7 @@ public class StateHandlerServiceTest {
 				.thenReturn(true);
 
 		service.sendNotification("packageId", "packageType", datePackageSubmitted, "submitterFirstName",
-				"submitterLastName", "specimenId");
+				"submitterLastName", "specimenId", "origin");
 
 		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<PackageNotificationInfo> packageInfoCaptor = ArgumentCaptor
@@ -61,6 +61,7 @@ public class StateHandlerServiceTest {
 		assertEquals(datePackageSubmitted, packageInfo.getDatePackageSubmitted());
 		assertEquals("submitterFirstName submitterLastName", packageInfo.getSubmitter());
 		assertEquals("specimenId", packageInfo.getSpecimenId());
+		assertEquals("origin", packageInfo.getOrigin());
 		assertEquals(Boolean.class, classCaptor.getValue());
 		verify(logger, times(0)).logErrorMessage(any(Class.class), any(String.class), any(String.class),
 				any(String.class), any(String.class));
@@ -74,7 +75,7 @@ public class StateHandlerServiceTest {
 				.thenReturn(false);
 
 		service.sendNotification("packageId", "packageType", datePackageSubmitted, "submitterFirstName",
-				"submitterLastName", "specimenId");
+				"submitterLastName", "specimenId", "origin");
 
 		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<PackageNotificationInfo> packageInfoCaptor = ArgumentCaptor
@@ -88,6 +89,7 @@ public class StateHandlerServiceTest {
 		assertEquals(datePackageSubmitted, packageInfo.getDatePackageSubmitted());
 		assertEquals("submitterFirstName submitterLastName", packageInfo.getSubmitter());
 		assertEquals("specimenId", packageInfo.getSpecimenId());
+		assertEquals("origin", packageInfo.getOrigin());
 		assertEquals(Boolean.class, classCaptor.getValue());
 		verify(logger, times(1)).logErrorMessage(StateHandlerService.class, null, "packageId",
 				"StateHandlerService.sendNotification", "Notification message failed to send.");
