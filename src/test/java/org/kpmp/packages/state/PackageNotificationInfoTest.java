@@ -26,13 +26,14 @@ public class PackageNotificationInfoTest {
 	public void testConstructor() {
 		Date datePackageSubmitted = new Date();
 		PackageNotificationInfo packageInfo = new PackageNotificationInfo("packageId", "packageType",
-				datePackageSubmitted, "submitterName", "specimenId");
+				datePackageSubmitted, "submitterName", "specimenId", "origin");
 
 		assertEquals("packageId", packageInfo.getPackageId());
 		assertEquals("packageType", packageInfo.getPackageType());
 		assertEquals(datePackageSubmitted, packageInfo.getDatePackageSubmitted());
 		assertEquals("submitterName", packageInfo.getSubmitter());
 		assertEquals("specimenId", packageInfo.getSpecimenId());
+		assertEquals("origin", packageInfo.getOrigin());
 	}
 
 	@Test
@@ -64,6 +65,12 @@ public class PackageNotificationInfoTest {
 	public void testSetSpecimenId() {
 		info.setSpecimenId("specimenId");
 		assertEquals("specimenId", info.getSpecimenId());
+	}
+
+	@Test
+	public void testOrigin() throws Exception {
+		info.setOrigin("origin");
+		assertEquals("origin", info.getOrigin());
 	}
 
 }

@@ -94,7 +94,7 @@ public class PackageService {
 		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 	}
 
-	public void createZipFile(String packageId) throws Exception {
+	public void createZipFile(String packageId, String origin) throws Exception {
 
 		Package packageInfo = packageRepository.findByPackageId(packageId);
 		String packageMetadata = packageRepository.getJSONByPackageId(packageId);
@@ -118,7 +118,7 @@ public class PackageService {
 					packageZipper.createZipFile(packageMetadata);
 					stateHandler.sendNotification(packageId, packageInfo.getPackageType(), packageInfo.getCreatedAt(),
 							packageInfo.getSubmitter().getFirstName(), packageInfo.getSubmitter().getLastName(),
-							packageInfo.getSubjectId());
+							packageInfo.getSubjectId(), origin);
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, submitterEmail, packageId,
 							PackageService.class.getSimpleName(), e.getMessage());
