@@ -109,7 +109,8 @@ public class PackageController {
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
 		if (packageService.validatePackageForZipping(packageId, shibUserService.getUser(request))) {
 			try {
-				packageService.createZipFile(packageId, hostname);
+				String removeErrantEqualSign = hostname.replace("=", "");
+				packageService.createZipFile(packageId, removeErrantEqualSign);
 
 				fileUploadResponse = new FileUploadResponse(true);
 			} catch (Exception e) {
