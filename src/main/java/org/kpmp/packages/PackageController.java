@@ -102,14 +102,14 @@ public class PackageController {
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files/finish", method = RequestMethod.POST)
 	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId,
-			HttpServletRequest request) throws UnsupportedEncodingException {
+			@RequestBody String hostname, HttpServletRequest request) throws UnsupportedEncodingException {
 
 		FileUploadResponse fileUploadResponse;
 		String message = finish.format(new Object[] { "Finishing file upload with packageId: ", packageId });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
 		if (packageService.validatePackageForZipping(packageId, shibUserService.getUser(request))) {
 			try {
-				packageService.createZipFile(packageId, request.getHeader(HttpHeaders.ORIGIN));
+				packageService.createZipFile(packageId, hostname);
 
 				fileUploadResponse = new FileUploadResponse(true);
 			} catch (Exception e) {
