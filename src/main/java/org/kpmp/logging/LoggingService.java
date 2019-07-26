@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoggingService {
 
-	private static final String LOG_MESSAGE_FORMAT = "USERID: {} | PKGID: {} | URI: {} | MSG: {} ";
+	private static final String LOG_MESSAGE_FORMAT = "USER: {} | PKGID: {} | URI: {} | MSG: {} ";
 	private ShibbolethUserService shibUserService;
 
 	@Autowired
@@ -27,7 +27,7 @@ public class LoggingService {
 		Logger log = LoggerFactory.getLogger(clazz);
 		try {
 			User user = shibUserService.getUser(request);
-			log.info(LOG_MESSAGE_FORMAT, user.getEmail(), packageId, request.getRequestURI(), message);
+			log.info(LOG_MESSAGE_FORMAT, user.toString(), packageId, request.getRequestURI(), message);
 		} catch (UnsupportedEncodingException e) {
 			log.error(LOG_MESSAGE_FORMAT, "unknown", packageId, request.getRequestURI(),
 					"ERROR: Unable to get user information from request: " + e.getMessage());
@@ -35,9 +35,9 @@ public class LoggingService {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void logInfoMessage(Class clazz, String userId, String packageId, String uri, String message) {
+	public void logInfoMessage(Class clazz, User user, String packageId, String uri, String message) {
 		Logger log = LoggerFactory.getLogger(clazz);
-		log.info(LOG_MESSAGE_FORMAT, userId, packageId, uri, message);
+		log.info(LOG_MESSAGE_FORMAT, user.toString(), packageId, uri, message);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -45,7 +45,7 @@ public class LoggingService {
 		Logger log = LoggerFactory.getLogger(clazz);
 		try {
 			User user = shibUserService.getUser(request);
-			log.error(LOG_MESSAGE_FORMAT, user.getEmail(), packageId, request.getRequestURI(), message);
+			log.error(LOG_MESSAGE_FORMAT, user.toString(), packageId, request.getRequestURI(), message);
 		} catch (UnsupportedEncodingException e) {
 			log.error(LOG_MESSAGE_FORMAT, "unknown", packageId, request.getRequestURI(),
 					"ERROR: Unable to get user information from request: " + e.getMessage());
@@ -53,9 +53,9 @@ public class LoggingService {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void logErrorMessage(Class clazz, String userId, String packageId, String uri, String message) {
+	public void logErrorMessage(Class clazz, User user, String packageId, String uri, String message) {
 		Logger log = LoggerFactory.getLogger(clazz);
-		log.error(LOG_MESSAGE_FORMAT, userId, packageId, uri, message);
+		log.error(LOG_MESSAGE_FORMAT, user.toString(), packageId, uri, message);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -63,7 +63,7 @@ public class LoggingService {
 		Logger log = LoggerFactory.getLogger(clazz);
 		try {
 			User user = shibUserService.getUser(request);
-			log.warn(LOG_MESSAGE_FORMAT, user.getEmail(), packageId, request.getRequestURI(), message);
+			log.warn(LOG_MESSAGE_FORMAT, user.toString(), packageId, request.getRequestURI(), message);
 		} catch (UnsupportedEncodingException e) {
 			log.error(LOG_MESSAGE_FORMAT, "unknown", packageId, request.getRequestURI(),
 					"ERROR: Unable to get user information from request: " + e.getMessage());
@@ -71,9 +71,9 @@ public class LoggingService {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void logWarnMessage(Class clazz, String userId, String packageId, String uri, String message) {
+	public void logWarnMessage(Class clazz, User user, String packageId, String uri, String message) {
 		Logger log = LoggerFactory.getLogger(clazz);
-		log.warn(LOG_MESSAGE_FORMAT, userId, packageId, uri, message);
+		log.warn(LOG_MESSAGE_FORMAT, user.toString(), packageId, uri, message);
 	}
 
 }

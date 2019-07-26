@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
+import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -57,10 +58,11 @@ public class PackageController {
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)
 	public @ResponseBody String postPackageInformation(@RequestBody String packageInfoString,
-			HttpServletRequest request) throws JSONException {
+			HttpServletRequest request) throws JSONException, UnsupportedEncodingException {
 		JSONObject packageInfo = new JSONObject(packageInfoString);
 		logger.logInfoMessage(this.getClass(), null, "Posting package info: " + packageInfo, request);
-		String packageId = packageService.savePackageInformation(packageInfo);
+		User user = shibUserService.getUser(request);
+		String packageId = packageService.savePackageInformation(packageInfo, user);
 		return packageId;
 	}
 
@@ -110,7 +112,7 @@ public class PackageController {
 		if (packageService.validatePackageForZipping(packageId, shibUserService.getUser(request))) {
 			try {
 				String removeErrantEqualSign = hostname.replace("=", "");
-				packageService.createZipFile(packageId, removeErrantEqualSign);
+				packageService.createZipFile(packageId, removeErrantEqualSign, shibUserService.getUser(request));
 
 				fileUploadResponse = new FileUploadResponse(true);
 			} catch (Exception e) {

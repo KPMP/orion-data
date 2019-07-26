@@ -43,7 +43,7 @@ public class AuthorizationFilter implements Filter {
 		// This is where we will implement the logic to talk to the user portal and do
 		// authorization.
 
-		logger.logInfoMessage(this.getClass(), user.getEmail(), null, this.getClass().getSimpleName() + ".doFilter",
+		logger.logInfoMessage(this.getClass(), user, null, this.getClass().getSimpleName() + ".doFilter",
 				"Passing through authentication filter");
 		chain.doFilter(incomingRequest, incomingResponse);
 	}

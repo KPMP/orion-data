@@ -77,8 +77,8 @@ public class PackageService {
 		return filePath;
 	}
 
-	public String savePackageInformation(JSONObject packageMetadata) throws JSONException {
-		return packageRepository.saveDynamicForm(packageMetadata);
+	public String savePackageInformation(JSONObject packageMetadata, User user) throws JSONException {
+		return packageRepository.saveDynamicForm(packageMetadata, user);
 	}
 
 	public Package findPackage(String packageId) {
@@ -94,10 +94,10 @@ public class PackageService {
 		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 	}
 
-	public void createZipFile(String packageId, String origin) throws Exception {
+	public void createZipFile(String packageId, String origin, User user) throws Exception {
 
 		Package packageInfo = packageRepository.findByPackageId(packageId);
-		String packageMetadata = packageRepository.getJSONByPackageId(packageId);
+
 		List<Attachment> attachments = packageInfo.getAttachments();
 		String displaySize = FileUtils.byteCountToDisplaySize(getTotalSizeOfAttachmentsInBytes(attachments));
 		Date finishUploadTime = new Date();
@@ -105,31 +105,30 @@ public class PackageService {
 		double uploadRate = calculateUploadRate(duration, attachments);
 		DecimalFormat rateFormat = new DecimalFormat("###.###");
 
-		String submitterEmail = packageInfo.getSubmitter().getEmail();
-		logger.logInfoMessage(this.getClass(), submitterEmail, packageId,
-				this.getClass().getSimpleName() + ".createZipFile",
+		logger.logInfoMessage(this.getClass(), user, packageId, this.getClass().getSimpleName() + ".createZipFile",
 				fileUploadFinishTiming
-						.format(new Object[] { finishUploadTime, submitterEmail, packageId, attachments.size(),
+						.format(new Object[] { finishUploadTime, user.toString(), packageId, attachments.size(),
 								displaySize, duration + " seconds", rateFormat.format(uploadRate) + " MB/sec" }));
 
 		new Thread() {
 			public void run() {
 				try {
+					String packageMetadata = packageRepository.getJSONByPackageId(packageId);
 					packageZipper.createZipFile(packageMetadata);
 					stateHandler.sendNotification(packageId, packageInfo.getPackageType(), packageInfo.getCreatedAt(),
 							packageInfo.getSubmitter().getFirstName(), packageInfo.getSubmitter().getLastName(),
 							packageInfo.getSubjectId(), origin);
 				} catch (Exception e) {
-					logger.logErrorMessage(PackageService.class, submitterEmail, packageId,
-							PackageService.class.getSimpleName(), e.getMessage());
+					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
+							e.getMessage());
 				}
 				logger.logInfoMessage(PackageService.class, null, packageId,
 						PackageService.class.getSimpleName() + ".createZipFile",
 						zipPackage.format(new Object[] { "Zip file created for package: ", packageId }));
 				long zipDuration = calculateDurationInSeconds(finishUploadTime, new Date());
-				logger.logInfoMessage(PackageService.class, submitterEmail, packageId,
+				logger.logInfoMessage(PackageService.class, user, packageId,
 						PackageService.class.getSimpleName() + ".createZipFile",
-						zipTiming.format(new Object[] { packageInfo.getCreatedAt(), submitterEmail, packageId,
+						zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
 								packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
 			}
 
@@ -178,7 +177,7 @@ public class PackageService {
 		for (Attachment attachment : filesInPackage) {
 			String filename = attachment.getFileName();
 			if (new File(packagePath + filename).length() != attachment.getSize()) {
-				logger.logErrorMessage(this.getClass(), user.getEmail(), packageId,
+				logger.logErrorMessage(this.getClass(), user, packageId,
 						this.getClass().getSimpleName() + ".validateFileLengthsMatch", zipIssue.format(new Object[] {
 								"File size in metadata does not match file size on disk for file: " + filename }));
 				everythingMatches = false;
@@ -191,7 +190,7 @@ public class PackageService {
 			User user) {
 		boolean sameFiles = filesOnDisk.equals(filesInPackage);
 		if (!sameFiles) {
-			logger.logErrorMessage(this.getClass(), user.getEmail(), packageId,
+			logger.logErrorMessage(this.getClass(), user, packageId,
 					this.getClass().getSimpleName() + ".checkFilesExist",
 					zipIssue.format(new Object[] { "File list in metadata does not match file list on disk" }));
 		}

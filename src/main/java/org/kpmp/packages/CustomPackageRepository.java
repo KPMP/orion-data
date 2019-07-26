@@ -62,13 +62,13 @@ public class CustomPackageRepository {
 		this.logger = logger;
 	}
 
-	public String saveDynamicForm(JSONObject packageMetadata) throws JSONException {
+	public String saveDynamicForm(JSONObject packageMetadata, User userFromHeader) throws JSONException {
 		Date startTime = new Date();
 		String packageId = universalIdGenerator.generateUniversalId();
-		String submitterEmail = packageMetadata.getString(PackageKeys.SUBMITTER_EMAIL.getKey());
+		String submitterEmail = userFromHeader.getEmail();
 		JSONArray files = packageMetadata.getJSONArray(PackageKeys.FILES.getKey());
 
-		logger.logInfoMessage(this.getClass(), submitterEmail, packageId,
+		logger.logInfoMessage(this.getClass(), userFromHeader, packageId,
 				this.getClass().getSimpleName() + ".saveDynamicForm",
 				fileUploadStartTiming.format(new Object[] { startTime, submitterEmail, packageId, files.length() }));
 
@@ -77,7 +77,7 @@ public class CustomPackageRepository {
 			file.put(PackageKeys.ID.getKey(), universalIdGenerator.generateUniversalId());
 		}
 
-		User user = findUser(packageMetadata, submitterEmail);
+		User user = findUser(userFromHeader);
 		cleanUpObject(packageMetadata);
 
 		DBRef userRef = new DBRef(USERS_COLLECTION, new ObjectId(user.getId()));
@@ -102,17 +102,10 @@ public class CustomPackageRepository {
 		packageMetadata.remove(PackageKeys.SUBMITTER_LAST_NAME.getKey());
 	}
 
-	private User findUser(JSONObject packageMetadata, String submitterEmail) throws JSONException {
-		User user = userRepository.findByEmail(submitterEmail);
+	private User findUser(User userFromHeader) throws JSONException {
+		User user = userRepository.findByEmail(userFromHeader.getEmail());
 		if (user == null) {
-			User newUser = new User();
-			JSONObject submitter = packageMetadata.getJSONObject(PackageKeys.SUBMITTER.getKey());
-			if (submitter.has(PackageKeys.DISPLAY_NAME.getKey())) {
-				newUser.setDisplayName(submitter.getString(PackageKeys.DISPLAY_NAME.getKey()));
-			}
-			newUser.setEmail(submitter.getString(PackageKeys.EMAIL.getKey()));
-			newUser.setFirstName(submitter.getString(PackageKeys.FIRST_NAME.getKey()));
-			newUser.setLastName(submitter.getString(PackageKeys.LAST_NAME.getKey()));
+			User newUser = userFromHeader;
 			user = userRepository.save(newUser);
 		}
 		return user;
