@@ -28,12 +28,15 @@ public class ShibbolethUserService {
 		String firstName = encoder.convertFromLatin1(value);
 		value = handleNull(request.getHeader("sn"));
 		String lastName = encoder.convertFromLatin1(value);
+		value = handleNull(request.getHeader("eppn"));
+		String shibId = encoder.convertFromLatin1(value);
 
 		User user = new User();
 		user.setDisplayName(displayName);
 		user.setLastName(lastName);
 		user.setFirstName(firstName);
 		user.setEmail(email);
+		user.setShibId(shibId);
 
 		return user;
 

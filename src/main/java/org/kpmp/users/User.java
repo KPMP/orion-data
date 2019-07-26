@@ -12,11 +12,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class User {
 
 	@Id
-	String id;
-	String firstName;
-	String lastName;
-	String displayName;
-	String email;
+	private String id;
+	private String firstName;
+	private String lastName;
+	private String displayName;
+	private String email;
+	private String shibId;
 
 	public String getId() {
 		return id;
@@ -61,7 +62,7 @@ public class User {
 	@Override
 	public String toString() {
 		return "userId: " + id + ", firstName: " + firstName + ", lastName: " + lastName + ", displayName: "
-				+ displayName + ", email: " + email;
+				+ displayName + ", email: " + email + ", shibId: " + shibId;
 	}
 
 	public String generateJSON() throws JsonProcessingException {
@@ -75,5 +76,13 @@ public class User {
 	public String generateJSONForApp() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(this);
+	}
+
+	public String getShibId() {
+		return shibId;
+	}
+
+	public void setShibId(String shibId) {
+		this.shibId = shibId;
 	}
 }
