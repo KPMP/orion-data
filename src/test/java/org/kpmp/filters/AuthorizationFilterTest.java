@@ -61,8 +61,8 @@ public class AuthorizationFilterTest {
 		filter.doFilter(incomingRequest, incomingResponse, chain);
 
 		verify(chain).doFilter(incomingRequest, incomingResponse);
-		verify(logger, times(1)).logInfoMessage(AuthorizationFilter.class, "jimmy@buffet.org", null,
-				"AuthorizationFilter.doFilter", "Passing through authentication filter");
+		verify(logger, times(1)).logInfoMessage(AuthorizationFilter.class, user, null, "AuthorizationFilter.doFilter",
+				"Passing through authentication filter");
 	}
 
 	@Test

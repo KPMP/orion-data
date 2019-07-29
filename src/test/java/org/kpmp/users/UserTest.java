@@ -57,8 +57,9 @@ public class UserTest {
 		testUser.setFirstName("Ziggy");
 		testUser.setLastName("Stardust");
 		testUser.setEmail("ziggy@mars.com");
+		testUser.setShibId("ziggy@mars.com");
 		assertEquals("userId: 12345" + ", firstName: Ziggy" + ", lastName: Stardust" + ", displayName: Space Oddity"
-				+ ", email: ziggy@mars.com", testUser.toString());
+				+ ", email: ziggy@mars.com, shibId: ziggy@mars.com", testUser.toString());
 	}
 
 	@Test
@@ -68,6 +69,7 @@ public class UserTest {
 		testUser.setFirstName("firstName");
 		testUser.setId("id");
 		testUser.setLastName("lastName");
+		testUser.setShibId("shibId");
 
 		assertEquals("{\"firstName\":\"firstName\",\"lastName\":\"lastName\","
 				+ "\"displayName\":\"displayName\",\"email\":\"emailAddress\"}", testUser.generateJSON());
@@ -80,8 +82,11 @@ public class UserTest {
 		testUser.setFirstName("firstName");
 		testUser.setId("id");
 		testUser.setLastName("lastName");
+		testUser.setShibId("shibId");
 
-		assertEquals("{\"id\":\"id\",\"firstName\":\"firstName\",\"lastName\":\"lastName\","
-				+ "\"displayName\":\"displayName\",\"email\":\"emailAddress\"}", testUser.generateJSONForApp());
+		assertEquals(
+				"{\"id\":\"id\",\"firstName\":\"firstName\",\"lastName\":\"lastName\","
+						+ "\"displayName\":\"displayName\",\"email\":\"emailAddress\",\"shibId\":\"shibId\"}",
+				testUser.generateJSONForApp());
 	}
 }

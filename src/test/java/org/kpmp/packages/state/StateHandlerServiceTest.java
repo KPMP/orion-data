@@ -12,6 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.logging.LoggingService;
+import org.kpmp.users.User;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -63,7 +64,7 @@ public class StateHandlerServiceTest {
 		assertEquals("specimenId", packageInfo.getSpecimenId());
 		assertEquals("origin", packageInfo.getOrigin());
 		assertEquals(Boolean.class, classCaptor.getValue());
-		verify(logger, times(0)).logErrorMessage(any(Class.class), any(String.class), any(String.class),
+		verify(logger, times(0)).logErrorMessage(any(Class.class), any(User.class), any(String.class),
 				any(String.class), any(String.class));
 	}
 
