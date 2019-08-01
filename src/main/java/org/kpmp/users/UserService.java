@@ -13,22 +13,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    private PackageRepository packageRepository;
+	private PackageRepository packageRepository;
+	private UserRepository userRepository;
 
-    @Autowired
-    public UserService(PackageRepository packageRepository) {
-        this.packageRepository = packageRepository;
-    }
+	@Autowired
+	public UserService(PackageRepository packageRepository, UserRepository userRepository) {
+		this.packageRepository = packageRepository;
+		this.userRepository = userRepository;
+	}
 
-    public List<User> findAllWithPackages() {
-        List<Package> packages = packageRepository.findAll();
-        Map<String, User> users = new HashMap<>();
+	public List<User> findAllWithPackages() {
+		List<Package> packages = packageRepository.findAll();
+		Map<String, User> users = new HashMap<>();
 
-        for (Package aPackage : packages) {
-            users.put(aPackage.getSubmitter().getId(), aPackage.getSubmitter());
-        }
+		for (Package aPackage : packages) {
+			users.put(aPackage.getSubmitter().getId(), aPackage.getSubmitter());
+		}
 
-        return new ArrayList<>(users.values());
-    }
+		return new ArrayList<>(users.values());
+	}
 
+	public List<User> findAll() {
+		return userRepository.findAll();
+	}
 }

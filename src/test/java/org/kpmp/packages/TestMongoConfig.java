@@ -2,6 +2,10 @@ package org.kpmp.packages;
 
 import java.io.IOException;
 
+import org.kpmp.Application;
+import org.kpmp.GenerateUploadReport;
+import org.kpmp.RegenerateZipFiles;
+import org.kpmp.WebConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -10,16 +14,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.web.client.RestTemplate;
 
 import com.mongodb.MongoClient;
 
 import cz.jirutka.spring.embedmongo.EmbeddedMongoFactoryBean;
 
 @Configuration
-@ComponentScan(basePackages = { "org.kpmp.packages",
-		"org.kpmp.users" }, excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-				PackageController.class, PackageService.class, CustomPackageRepository.class }))
-@EnableMongoRepositories(basePackages = { "org.kpmp.packages", "org.kpmp.users" })
+@ComponentScan(basePackages = { "org.kpmp.packages", "org.kpmp.users", "org.kpmp",
+		"org.kpmp.forms" }, excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+				PackageController.class, PackageService.class, CustomPackageRepository.class, Application.class,
+				GenerateUploadReport.class, RegenerateZipFiles.class, WebConfig.class }))
+@EnableMongoRepositories(basePackages = { "org.kpmp.packages", "org.kpmp.users", "org.kpmp.forms", "org.kpmp" })
 public class TestMongoConfig {
 
 	private static final String MONGO_DB_URL = "localhost";
@@ -39,6 +45,11 @@ public class TestMongoConfig {
 
 		MongoTemplate mongoTemplate = new MongoTemplate(mongoClient, MONGO_DB_NAME);
 		return mongoTemplate;
+	}
+
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
 	}
 
 }

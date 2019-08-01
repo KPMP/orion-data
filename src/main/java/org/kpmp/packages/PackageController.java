@@ -1,14 +1,17 @@
 package org.kpmp.packages;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.kpmp.logging.LoggingService;
+import org.kpmp.shibboleth.ShibbolethUserService;
+import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -28,28 +31,38 @@ import org.springframework.web.multipart.MultipartFile;
 public class PackageController {
 
 	private PackageService packageService;
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private static final MessageFormat packageInfoPost = new MessageFormat("Request|{0}|{1}");
-	private static final MessageFormat finish = new MessageFormat("Request|{0}|{1}");
-	private static final MessageFormat fileUploadRequest = new MessageFormat("Request|{0}|{1}|{2}|{3}|{4}|{5}");
-	private static final MessageFormat fileDownloadRequest = new MessageFormat("Request|{0}|{1}");
+	private static final MessageFormat finish = new MessageFormat("{0} {1}");
+	private static final MessageFormat fileUploadRequest = new MessageFormat(
+			"Posting file: {0} to package with id: {1}, filesize: {2}, chunk: {3} out of {4} chunks");
+	private static final MessageFormat fileDownloadRequest = new MessageFormat(
+			"Requesting package download with id {0}, filename {1}");
+	private LoggingService logger;
+
+	private ShibbolethUserService shibUserService;
 
 	@Autowired
-	public PackageController(PackageService packageService) {
+	public PackageController(PackageService packageService, LoggingService logger,
+			ShibbolethUserService shibUserService) {
 		this.packageService = packageService;
+		this.logger = logger;
+		this.shibUserService = shibUserService;
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
-	public @ResponseBody List<PackageView> getAllPackages() throws JSONException, IOException {
+	public @ResponseBody List<PackageView> getAllPackages(HttpServletRequest request)
+			throws JSONException, IOException {
+		logger.logInfoMessage(this.getClass(), null, "Request for all packages", request);
 		return packageService.findAllPackages();
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)
-	public @ResponseBody String postPackageInformation(@RequestBody String packageInfoString) throws JSONException {
+	public @ResponseBody String postPackageInformation(@RequestBody String packageInfoString,
+			HttpServletRequest request) throws JSONException, UnsupportedEncodingException {
 		JSONObject packageInfo = new JSONObject(packageInfoString);
-		log.info(packageInfoPost.format(new Object[] { "postPackageInfo", packageInfo }));
-		String packageId = packageService.savePackageInformation(packageInfo);
+		logger.logInfoMessage(this.getClass(), null, "Posting package info: " + packageInfo, request);
+		User user = shibUserService.getUser(request);
+		String packageId = packageService.savePackageInformation(packageInfo, user);
 		return packageId;
 	}
 
@@ -59,10 +72,11 @@ public class PackageController {
 			@RequestParam("qqfile") MultipartFile file, @RequestParam("qqfilename") String filename,
 			@RequestParam("qqtotalfilesize") long fileSize,
 			@RequestParam(name = "qqtotalparts", defaultValue = "1") int chunks,
-			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk) throws Exception {
+			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk, HttpServletRequest request)
+			throws Exception {
 
-		log.info(fileUploadRequest
-				.format(new Object[] { "postFilesToPackage", filename, packageId, fileSize, chunks, chunk }));
+		String message = fileUploadRequest.format(new Object[] { filename, packageId, fileSize, chunk, chunks });
+		logger.logInfoMessage(this.getClass(), packageId, message, request);
 
 		packageService.saveFile(file, packageId, filename, shouldAppend(chunk));
 
@@ -70,14 +84,18 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Resource> downloadPackage(@PathVariable String packageId) {
+	public @ResponseBody ResponseEntity<Resource> downloadPackage(@PathVariable String packageId,
+			HttpServletRequest request) {
 		Resource resource = null;
 		try {
 			resource = new UrlResource(packageService.getPackageFile(packageId).toUri());
-		} catch (MalformedURLException e) {
+		} catch (Exception e) {
+			logger.logErrorMessage(this.getClass(), packageId, "Unable to get package zip with id: " + packageId,
+					request);
 			throw new RuntimeException(e);
 		}
-		log.info(fileDownloadRequest.format(new Object[] { packageId, resource.toString() }));
+		String message = fileDownloadRequest.format(new Object[] { packageId, resource.toString() });
+		logger.logInfoMessage(this.getClass(), packageId, message, request);
 
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
@@ -85,19 +103,26 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files/finish", method = RequestMethod.POST)
-	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId) {
+	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId,
+			@RequestBody String hostname, HttpServletRequest request) throws UnsupportedEncodingException {
+
 		FileUploadResponse fileUploadResponse;
-		log.info(finish.format(new Object[] { "finishUpload", packageId }));
-		if (packageService.checkFilesExist(packageId)) {
+		String message = finish.format(new Object[] { "Finishing file upload with packageId: ", packageId });
+		logger.logInfoMessage(this.getClass(), packageId, message, request);
+		if (packageService.validatePackageForZipping(packageId, shibUserService.getUser(request))) {
 			try {
-				packageService.createZipFile(packageId);
+				String removeErrantEqualSign = hostname.replace("=", "");
+				packageService.createZipFile(packageId, removeErrantEqualSign, shibUserService.getUser(request));
+
 				fileUploadResponse = new FileUploadResponse(true);
 			} catch (Exception e) {
-				log.error(finish.format(new Object[] { "error getting metadata", packageId }));
+				logger.logErrorMessage(this.getClass(), packageId,
+						finish.format(new Object[] { "error getting metadata for package id: ", packageId }), request);
 				fileUploadResponse = new FileUploadResponse(false);
 			}
 		} else {
-			log.error(finish.format(new Object[] { "mismatchedFiles", packageId }));
+			logger.logErrorMessage(this.getClass(), packageId,
+					finish.format(new Object[] { "Unable to zip package with package id: ", packageId }), request);
 			fileUploadResponse = new FileUploadResponse(false);
 		}
 		return fileUploadResponse;

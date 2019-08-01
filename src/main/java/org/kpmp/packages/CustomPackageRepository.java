@@ -17,10 +17,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.kpmp.UniversalIdGenerator;
+import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.kpmp.users.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -43,39 +42,42 @@ public class CustomPackageRepository {
 	private static final String USERS_COLLECTION = "users";
 
 	private static final MessageFormat fileUploadStartTiming = new MessageFormat("Timing|start|{0}|{1}|{2}|{3} files");
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private PackageRepository repo;
 	private MongoTemplate mongoTemplate;
 	private UniversalIdGenerator universalIdGenerator;
 	private UserRepository userRepository;
 	private JsonWriterSettingsConstructor jsonSettings;
+	private LoggingService logger;
 
 	@Autowired
 	public CustomPackageRepository(PackageRepository repo, MongoTemplate mongoTemplate,
 			UniversalIdGenerator universalIdGenerator, UserRepository userRepo,
-			JsonWriterSettingsConstructor jsonSettings) {
+			JsonWriterSettingsConstructor jsonSettings, LoggingService logger) {
 		this.repo = repo;
 		this.mongoTemplate = mongoTemplate;
 		this.universalIdGenerator = universalIdGenerator;
 		this.userRepository = userRepo;
 		this.jsonSettings = jsonSettings;
+		this.logger = logger;
 	}
 
-	public String saveDynamicForm(JSONObject packageMetadata) throws JSONException {
+	public String saveDynamicForm(JSONObject packageMetadata, User userFromHeader) throws JSONException {
 		Date startTime = new Date();
 		String packageId = universalIdGenerator.generateUniversalId();
-		String submitterEmail = packageMetadata.getString(PackageKeys.SUBMITTER_EMAIL.getKey());
+		String submitterEmail = userFromHeader.getEmail();
 		JSONArray files = packageMetadata.getJSONArray(PackageKeys.FILES.getKey());
 
-		log.info(fileUploadStartTiming.format(new Object[] { startTime, submitterEmail, packageId, files.length() }));
+		logger.logInfoMessage(this.getClass(), userFromHeader, packageId,
+				this.getClass().getSimpleName() + ".saveDynamicForm",
+				fileUploadStartTiming.format(new Object[] { startTime, submitterEmail, packageId, files.length() }));
 
 		for (int i = 0; i < files.length(); i++) {
 			JSONObject file = files.getJSONObject(i);
 			file.put(PackageKeys.ID.getKey(), universalIdGenerator.generateUniversalId());
 		}
 
-		User user = findUser(packageMetadata, submitterEmail);
+		User user = findUser(userFromHeader);
 		cleanUpObject(packageMetadata);
 
 		DBRef userRef = new DBRef(USERS_COLLECTION, new ObjectId(user.getId()));
@@ -100,17 +102,10 @@ public class CustomPackageRepository {
 		packageMetadata.remove(PackageKeys.SUBMITTER_LAST_NAME.getKey());
 	}
 
-	private User findUser(JSONObject packageMetadata, String submitterEmail) throws JSONException {
-		User user = userRepository.findByEmail(submitterEmail);
+	private User findUser(User userFromHeader) throws JSONException {
+		User user = userRepository.findByEmail(userFromHeader.getEmail());
 		if (user == null) {
-			User newUser = new User();
-			JSONObject submitter = packageMetadata.getJSONObject(PackageKeys.SUBMITTER.getKey());
-			if (submitter.has(PackageKeys.DISPLAY_NAME.getKey())) {
-				newUser.setDisplayName(submitter.getString(PackageKeys.DISPLAY_NAME.getKey()));
-			}
-			newUser.setEmail(submitter.getString(PackageKeys.EMAIL.getKey()));
-			newUser.setFirstName(submitter.getString(PackageKeys.FIRST_NAME.getKey()));
-			newUser.setLastName(submitter.getString(PackageKeys.LAST_NAME.getKey()));
+			User newUser = userFromHeader;
 			user = userRepository.save(newUser);
 		}
 		return user;

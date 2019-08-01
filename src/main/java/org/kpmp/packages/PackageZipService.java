@@ -27,7 +27,7 @@ public class PackageZipService {
 		this.filePathHelper = filePathHelper;
 	}
 
-	public void createZipFile(String packageMetadataString) throws JSONException, IOException {
+	public void createZipFile(String packageMetadataString) throws RuntimeException, JSONException, IOException {
 		JSONObject packageMetadata = new JSONObject(packageMetadataString);
 		JSONArray files = (JSONArray) packageMetadata.get(PackageKeys.FILES.getKey());
 		String packageId = packageMetadata.getString(PackageKeys.ID.getKey());
