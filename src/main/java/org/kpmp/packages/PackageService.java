@@ -110,29 +110,34 @@ public class PackageService {
 						.format(new Object[] { finishUploadTime, user.toString(), packageId, attachments.size(),
 								displaySize, duration + " seconds", rateFormat.format(uploadRate) + " MB/sec" }));
 
-		new Thread() {
-			public void run() {
-				try {
-					String packageMetadata = packageRepository.getJSONByPackageId(packageId);
-					packageZipper.createZipFile(packageMetadata);
-					stateHandler.sendNotification(packageId, packageInfo.getPackageType(), packageInfo.getCreatedAt(),
-							packageInfo.getSubmitter().getFirstName(), packageInfo.getSubmitter().getLastName(),
-							packageInfo.getSubjectId(), origin);
-				} catch (Exception e) {
-					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
-							e.getMessage());
-				}
-				logger.logInfoMessage(PackageService.class, null, packageId,
-						PackageService.class.getSimpleName() + ".createZipFile",
-						zipPackage.format(new Object[] { "Zip file created for package: ", packageId }));
-				long zipDuration = calculateDurationInSeconds(finishUploadTime, new Date());
-				logger.logInfoMessage(PackageService.class, user, packageId,
-						PackageService.class.getSimpleName() + ".createZipFile",
-						zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
-								packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
-			}
+		// loop through the attachments and create a list of files with full paths
+		// create a string with the full path and name of the zip file
+		// Create a string that contains the metadata
+		// call to the zip worker
 
-		}.start();
+//		new Thread() {
+//			public void run() {
+//				try {
+//					String packageMetadata = packageRepository.getJSONByPackageId(packageId);
+//					packageZipper.createZipFile(packageMetadata);
+//					stateHandler.sendNotification(packageId, packageInfo.getPackageType(), packageInfo.getCreatedAt(),
+//							packageInfo.getSubmitter().getFirstName(), packageInfo.getSubmitter().getLastName(),
+//							packageInfo.getSubjectId(), origin);
+//				} catch (Exception e) {
+//					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
+//							e.getMessage());
+//				}
+//				logger.logInfoMessage(PackageService.class, null, packageId,
+//						PackageService.class.getSimpleName() + ".createZipFile",
+//						zipPackage.format(new Object[] { "Zip file created for package: ", packageId }));
+//				long zipDuration = calculateDurationInSeconds(finishUploadTime, new Date());
+//				logger.logInfoMessage(PackageService.class, user, packageId,
+//						PackageService.class.getSimpleName() + ".createZipFile",
+//						zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
+//								packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
+//			}
+//
+//		}.start();
 	}
 
 	private double calculateUploadRate(long duration, List<Attachment> attachments) {

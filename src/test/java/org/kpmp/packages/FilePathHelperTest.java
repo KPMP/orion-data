@@ -30,12 +30,6 @@ public class FilePathHelperTest {
 	}
 
 	@Test
-	public void testGetPackagePath() throws Exception {
-		assertEquals(File.separator + "data" + File.separator + "fff" + File.separator + "package_1234_UUID"
-				+ File.separator, filePathHelper.getPackagePath("fff", "1234_UUID"));
-	}
-
-	@Test
 	public void testGetPackagePath_OnlySuffix() throws Exception {
 		assertEquals(File.separator + "data" + File.separator + "package_1234_UUID" + File.separator,
 				filePathHelper.getPackagePath("1234_UUID"));
