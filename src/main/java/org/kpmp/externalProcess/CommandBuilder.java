@@ -32,7 +32,7 @@ public class CommandBuilder {
 
 		String zipFileName = filePathHelper.getZipFileName(packageId);
 		commandArgs.add("--zip.zipFilePath=" + zipFileName);
-		commandArgs.add("--zip.additionalFileData=\"metadata.json|" + metadataJson + "\"");
+		commandArgs.add("--zip.additionalFileData=metadata.json|" + metadataJson);
 
 		return commandArgs.toArray(new String[0]);
 	}
