@@ -35,11 +35,15 @@ public class CommandBuilderTest {
 		when(filePathHelper.getFilenames("/here/is/a/path")).thenReturn(Arrays.asList("/here/is/a/path/file1.txt"));
 		when(filePathHelper.getZipFileName("packageId")).thenReturn("/here/is/a/path/packageId.zip");
 
-		String command = builder.buildZipCommand("packageId", "metadata contents");
+		String[] command = builder.buildZipCommand("packageId", "metadata contents");
 
-		assertEquals(
-				"java -jar zipWorker.jar --zip.fileNames=/here/is/a/path/file1.txt --zip.zipFilePath=/here/is/a/path/packageId.zip --zip.additionalFileData=\"metadata.json|metadata contents\"",
-				command);
+		assertEquals(6, command.length);
+		assertEquals("java", command[0]);
+		assertEquals("-jar", command[1]);
+		assertEquals("/home/gradle/zipWorker/zipWorker.jar", command[2]);
+		assertEquals("--zip.fileNames=/here/is/a/path/file1.txt", command[3]);
+		assertEquals("--zip.zipFilePath=/here/is/a/path/packageId.zip", command[4]);
+		assertEquals("--zip.additionalFileData=\"metadata.json|metadata contents\"", command[5]);
 	}
 
 	@Test
@@ -49,12 +53,16 @@ public class CommandBuilderTest {
 				.thenReturn(Arrays.asList("/here/is/a/path/file1.txt", "/here/is/a/path/file2.txt"));
 		when(filePathHelper.getZipFileName("packageId")).thenReturn("/here/is/a/path/packageId.zip");
 
-		String command = builder.buildZipCommand("packageId", "metadata contents");
+		String[] command = builder.buildZipCommand("packageId", "metadata contents");
 
-		assertEquals(
-				"java -jar zipWorker.jar --zip.fileNames=/here/is/a/path/file1.txt --zip.fileNames=/here/is/a/path/file2.txt "
-						+ "--zip.zipFilePath=/here/is/a/path/packageId.zip --zip.additionalFileData=\"metadata.json|metadata contents\"",
-				command);
+		assertEquals(7, command.length);
+		assertEquals("java", command[0]);
+		assertEquals("-jar", command[1]);
+		assertEquals("/home/gradle/zipWorker/zipWorker.jar", command[2]);
+		assertEquals("--zip.fileNames=/here/is/a/path/file1.txt", command[3]);
+		assertEquals("--zip.fileNames=/here/is/a/path/file2.txt", command[4]);
+		assertEquals("--zip.zipFilePath=/here/is/a/path/packageId.zip", command[5]);
+		assertEquals("--zip.additionalFileData=\"metadata.json|metadata contents\"", command[6]);
 	}
 
 }

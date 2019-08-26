@@ -118,23 +118,28 @@ public class PackageService {
 			public void run() {
 				try {
 					String packageMetadata = packageRepository.getJSONByPackageId(packageId);
-					String zipCommand = commandBuilder.buildZipCommand(packageId, packageMetadata);
-					processExecutor.executeProcess(zipCommand);
-					stateHandler.sendNotification(packageId, packageInfo.getPackageType(), packageInfo.getCreatedAt(),
-							packageInfo.getSubmitter().getFirstName(), packageInfo.getSubmitter().getLastName(),
-							packageInfo.getSubjectId(), origin);
+					String[] zipCommand = commandBuilder.buildZipCommand(packageId, packageMetadata);
+					boolean success = processExecutor.executeProcess(zipCommand);
+					if (success) {
+						logger.logInfoMessage(PackageService.class, null, packageId,
+								PackageService.class.getSimpleName() + ".createZipFile",
+								zipPackage.format(new Object[] { "Zip file created for package: ", packageId }));
+						long zipDuration = calculateDurationInSeconds(finishUploadTime, new Date());
+						logger.logInfoMessage(PackageService.class, user, packageId,
+								PackageService.class.getSimpleName() + ".createZipFile",
+								zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
+										packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
+						stateHandler.sendNotification(packageId, packageInfo.getPackageType(),
+								packageInfo.getCreatedAt(), packageInfo.getSubmitter().getFirstName(),
+								packageInfo.getSubmitter().getLastName(), packageInfo.getSubjectId(), origin);
+					} else {
+						logger.logErrorMessage(PackageService.class, user, packageId,
+								PackageService.class.getSimpleName(), "Unable to zip package");
+					}
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
 				}
-				logger.logInfoMessage(PackageService.class, null, packageId,
-						PackageService.class.getSimpleName() + ".createZipFile",
-						zipPackage.format(new Object[] { "Zip file created for package: ", packageId }));
-				long zipDuration = calculateDurationInSeconds(finishUploadTime, new Date());
-				logger.logInfoMessage(PackageService.class, user, packageId,
-						PackageService.class.getSimpleName() + ".createZipFile",
-						zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
-								packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
 			}
 
 		}.start();

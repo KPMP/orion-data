@@ -13,7 +13,7 @@ public class ProcessExecutor {
 	 * very straightforward, and ProcessBuilder is final (making it very difficult
 	 * to mock), we are going to forego any unit testing of this method
 	 */
-	public boolean executeProcess(String command) throws IOException, InterruptedException {
+	public boolean executeProcess(String[] command) throws IOException, InterruptedException {
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
 		boolean processSuccessful = false;
 		processBuilder.command(command);
