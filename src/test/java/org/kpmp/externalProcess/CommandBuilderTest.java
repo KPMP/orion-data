@@ -8,7 +8,6 @@ import java.util.Arrays;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.logging.LoggingService;
 import org.kpmp.packages.FilePathHelper;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -18,13 +17,11 @@ public class CommandBuilderTest {
 	@Mock
 	private FilePathHelper filePathHelper;
 	private CommandBuilder builder;
-	@Mock
-	private LoggingService loggingService;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		builder = new CommandBuilder(filePathHelper, loggingService);
+		builder = new CommandBuilder(filePathHelper);
 	}
 
 	@After

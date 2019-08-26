@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kpmp.logging.LoggingService;
 import org.kpmp.packages.FilePathHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,12 +12,10 @@ import org.springframework.stereotype.Component;
 public class CommandBuilder {
 
 	private FilePathHelper filePathHelper;
-	private LoggingService logger;
 
 	@Autowired
-	public CommandBuilder(FilePathHelper filePathHelper, LoggingService logger) {
+	public CommandBuilder(FilePathHelper filePathHelper) {
 		this.filePathHelper = filePathHelper;
-		this.logger = logger;
 	}
 
 	public String[] buildZipCommand(String packageId, String metadataJson) {
@@ -28,13 +25,8 @@ public class CommandBuilder {
 		commandArgs.add("/home/gradle/zipWorker/zipWorker.jar");
 
 		String packagePath = filePathHelper.getPackagePath(packageId);
-		logger.logInfoMessage(this.getClass(), null, packageId, "CommandBuilder.buildZipCommand",
-				"package path is: " + packagePath);
 		List<String> fileNames = filePathHelper.getFilenames(packagePath);
 		for (String fileName : fileNames) {
-
-			logger.logInfoMessage(this.getClass(), null, packageId, "CommandBuilder.buildZipCommand",
-					"file path is: " + fileName);
 			commandArgs.add("--zip.fileNames=" + packagePath + File.separator + fileName);
 		}
 
