@@ -43,7 +43,7 @@ public class CommandBuilderTest {
 		assertEquals("/home/gradle/zipWorker/zipWorker.jar", command[2]);
 		assertEquals("--zip.fileNames=/here/is/a/path/file1.txt", command[3]);
 		assertEquals("--zip.zipFilePath=/here/is/a/path/packageId.zip", command[4]);
-		assertEquals("--zip.additionalFileData=\"metadata.json|metadata contents\"", command[5]);
+		assertEquals("--zip.additionalFileData=metadata.json|metadata contents", command[5]);
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class CommandBuilderTest {
 		assertEquals("--zip.fileNames=/here/is/a/path/file1.txt", command[3]);
 		assertEquals("--zip.fileNames=/here/is/a/path/file2.txt", command[4]);
 		assertEquals("--zip.zipFilePath=/here/is/a/path/packageId.zip", command[5]);
-		assertEquals("--zip.additionalFileData=\"metadata.json|metadata contents\"", command[6]);
+		assertEquals("--zip.additionalFileData=metadata.json|metadata contents", command[6]);
 	}
 
 }
