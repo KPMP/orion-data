@@ -2,6 +2,10 @@ package org.kpmp;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -50,12 +54,19 @@ public class RegenerateZipFiles implements CommandLineRunner {
 			String packageMetadata = packageRepository.getJSONByPackageId(packageId);
 			String zipFileName = pathHelper.getZipFileName(packageId);
 			if (packageInfo.getBoolean(PackageKeys.REGENERATE_ZIP.getKey())) {
+				Date startRezipTime = new Date();
+				log.info("Rezipping package: " + packageId);
 				try {
 					File existingZipFile = new File(zipFileName);
 					existingZipFile.delete();
 					String[] zipCommand = commandBuilder.buildZipCommand(packageId, packageMetadata);
 					boolean success = processExecutor.executeProcess(zipCommand);
 					if (success) {
+						LocalDateTime start = LocalDateTime.ofInstant(startRezipTime.toInstant(),
+								ZoneId.systemDefault());
+						LocalDateTime end = LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault());
+						long totalTime = ChronoUnit.SECONDS.between(start, end);
+						log.info("Timing: " + totalTime + " seconds");
 						packageRepository.updateField(packageId, PackageKeys.REGENERATE_ZIP.getKey(), false);
 					} else {
 						log.error("Unable to zip files for package " + packageId);
@@ -66,4 +77,5 @@ public class RegenerateZipFiles implements CommandLineRunner {
 			}
 		}
 	}
+
 }
