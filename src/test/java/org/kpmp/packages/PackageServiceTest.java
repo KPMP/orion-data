@@ -23,6 +23,8 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.externalProcess.CommandBuilder;
+import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.packages.state.StateHandlerService;
 import org.kpmp.users.User;
@@ -42,20 +44,22 @@ public class PackageServiceTest {
 	@Mock
 	private PackageFileHandler packageFileHandler;
 	@Mock
-	private PackageZipService packageZipService;
-	@Mock
 	private FilePathHelper filePathHelper;
 	private PackageService service;
 	@Mock
 	private LoggingService logger;
 	@Mock
 	private StateHandlerService stateHandlerService;
+	@Mock
+	private CommandBuilder commandBuilder;
+	@Mock
+	private ProcessExecutor processExecutor;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		service = new PackageService(packageFileHandler, packageZipService, filePathHelper, packageRepository,
-				stateHandlerService, logger);
+		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService,
+				commandBuilder, processExecutor, logger);
 	}
 
 	@After

@@ -17,6 +17,8 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.kpmp.externalProcess.CommandBuilder;
+import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.packages.state.StateHandlerService;
 import org.kpmp.users.User;
@@ -34,21 +36,23 @@ public class PackageService {
 	private static final MessageFormat zipIssue = new MessageFormat("ERROR|zip|{0}");
 
 	private PackageFileHandler packageFileHandler;
-	private PackageZipService packageZipper;
 	private FilePathHelper filePathHelper;
 	private CustomPackageRepository packageRepository;
 	private LoggingService logger;
 	private StateHandlerService stateHandler;
+	private CommandBuilder commandBuilder;
+	private ProcessExecutor processExecutor;
 
 	@Autowired
-	public PackageService(PackageFileHandler packageFileHandler, PackageZipService packageZipper,
-			FilePathHelper filePathHelper, CustomPackageRepository packageRepository, StateHandlerService stateHandler,
-			LoggingService logger) {
+	public PackageService(PackageFileHandler packageFileHandler, FilePathHelper filePathHelper,
+			CustomPackageRepository packageRepository, StateHandlerService stateHandler, CommandBuilder commandBuilder,
+			ProcessExecutor processExecutor, LoggingService logger) {
 		this.filePathHelper = filePathHelper;
 		this.packageFileHandler = packageFileHandler;
-		this.packageZipper = packageZipper;
 		this.packageRepository = packageRepository;
 		this.stateHandler = stateHandler;
+		this.commandBuilder = commandBuilder;
+		this.processExecutor = processExecutor;
 		this.logger = logger;
 	}
 
@@ -114,22 +118,28 @@ public class PackageService {
 			public void run() {
 				try {
 					String packageMetadata = packageRepository.getJSONByPackageId(packageId);
-					packageZipper.createZipFile(packageMetadata);
-					stateHandler.sendNotification(packageId, packageInfo.getPackageType(), packageInfo.getCreatedAt(),
-							packageInfo.getSubmitter().getFirstName(), packageInfo.getSubmitter().getLastName(),
-							packageInfo.getSubjectId(), origin);
+					String[] zipCommand = commandBuilder.buildZipCommand(packageId, packageMetadata);
+					boolean success = processExecutor.executeProcess(zipCommand);
+					if (success) {
+						logger.logInfoMessage(PackageService.class, null, packageId,
+								PackageService.class.getSimpleName() + ".createZipFile",
+								zipPackage.format(new Object[] { "Zip file created for package: ", packageId }));
+						long zipDuration = calculateDurationInSeconds(finishUploadTime, new Date());
+						logger.logInfoMessage(PackageService.class, user, packageId,
+								PackageService.class.getSimpleName() + ".createZipFile",
+								zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
+										packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
+						stateHandler.sendNotification(packageId, packageInfo.getPackageType(),
+								packageInfo.getCreatedAt(), packageInfo.getSubmitter().getFirstName(),
+								packageInfo.getSubmitter().getLastName(), packageInfo.getSubjectId(), origin);
+					} else {
+						logger.logErrorMessage(PackageService.class, user, packageId,
+								PackageService.class.getSimpleName(), "Unable to zip package");
+					}
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
 				}
-				logger.logInfoMessage(PackageService.class, null, packageId,
-						PackageService.class.getSimpleName() + ".createZipFile",
-						zipPackage.format(new Object[] { "Zip file created for package: ", packageId }));
-				long zipDuration = calculateDurationInSeconds(finishUploadTime, new Date());
-				logger.logInfoMessage(PackageService.class, user, packageId,
-						PackageService.class.getSimpleName() + ".createZipFile",
-						zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
-								packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
 			}
 
 		}.start();

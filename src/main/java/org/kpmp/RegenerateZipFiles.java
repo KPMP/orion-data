@@ -1,13 +1,17 @@
 package org.kpmp;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import org.json.JSONObject;
+import org.kpmp.externalProcess.CommandBuilder;
+import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.packages.CustomPackageRepository;
 import org.kpmp.packages.FilePathHelper;
 import org.kpmp.packages.PackageKeys;
-import org.kpmp.packages.PackageZipService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,15 +22,18 @@ import org.springframework.context.annotation.ComponentScan;
 public class RegenerateZipFiles implements CommandLineRunner {
 
 	private CustomPackageRepository packageRepository;
-	private PackageZipService zipService;
 	private FilePathHelper pathHelper;
+	private CommandBuilder commandBuilder;
+	private ProcessExecutor processExecutor;
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
-	public RegenerateZipFiles(CustomPackageRepository packageRepository, PackageZipService zipService,
-			FilePathHelper pathHelper) {
+	public RegenerateZipFiles(CustomPackageRepository packageRepository, CommandBuilder commandBuilder,
+			FilePathHelper pathHelper, ProcessExecutor processExecutor) {
 		this.packageRepository = packageRepository;
-		this.zipService = zipService;
+		this.commandBuilder = commandBuilder;
 		this.pathHelper = pathHelper;
+		this.processExecutor = processExecutor;
 	}
 
 	public static void main(String[] args) {
@@ -40,14 +47,21 @@ public class RegenerateZipFiles implements CommandLineRunner {
 		List<JSONObject> jsons = packageRepository.findAll();
 		for (JSONObject packageInfo : jsons) {
 			String packageId = packageInfo.getString(PackageKeys.ID.getKey());
+			String packageMetadata = packageRepository.getJSONByPackageId(packageId);
 			String zipFileName = pathHelper.getZipFileName(packageId);
 			if (packageInfo.getBoolean(PackageKeys.REGENERATE_ZIP.getKey())) {
 				try {
-					packageInfo.remove(PackageKeys.REGENERATE_ZIP.getKey());
-					zipService.createZipFile(packageInfo.toString());
-					packageRepository.updateField(packageId, PackageKeys.REGENERATE_ZIP.getKey(), false);
+					File existingZipFile = new File(zipFileName);
+					existingZipFile.delete();
+					String[] zipCommand = commandBuilder.buildZipCommand(packageId, packageMetadata);
+					boolean success = processExecutor.executeProcess(zipCommand);
+					if (success) {
+						packageRepository.updateField(packageId, PackageKeys.REGENERATE_ZIP.getKey(), false);
+					} else {
+						log.error("Unable to zip files for package " + packageId);
+					}
 				} catch (IOException e) {
-					System.err.println("Unable to delete file, invalid permissions: " + zipFileName);
+					log.error("Unable to delete file, invalid permissions: " + zipFileName);
 				}
 			}
 		}
