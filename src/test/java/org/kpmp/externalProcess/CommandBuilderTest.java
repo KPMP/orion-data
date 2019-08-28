@@ -52,7 +52,7 @@ public class CommandBuilderTest {
 		when(filePathHelper.getFilenames("/here/is/a/path")).thenReturn(Arrays.asList("file1.txt", "file2.txt"));
 		when(filePathHelper.getZipFileName("packageId")).thenReturn("/here/is/a/path/packageId.zip");
 
-		String[] command = builder.buildZipCommand("packageId", "metadata contents");
+		String[] command = builder.buildZipCommand("packageId", "metadata contents with a /");
 
 		assertEquals(7, command.length);
 		assertEquals("java", command[0]);
@@ -61,7 +61,7 @@ public class CommandBuilderTest {
 		assertEquals("--zip.fileNames=/here/is/a/path/file1.txt", command[3]);
 		assertEquals("--zip.fileNames=/here/is/a/path/file2.txt", command[4]);
 		assertEquals("--zip.zipFilePath=/here/is/a/path/packageId.zip", command[5]);
-		assertEquals("--zip.additionalFileData=metadata.json|metadata contents", command[6]);
+		assertEquals("--zip.additionalFileData=metadata.json|metadata contents with a /", command[6]);
 	}
 
 }
