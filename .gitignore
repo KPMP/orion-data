@@ -11,4 +11,6 @@ build
 *.log.*
 *.log
 out
-
+.idea
+.settings
+.classpath
