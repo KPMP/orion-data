@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.bson.Document;
 import org.bson.codecs.BsonTypeClassMap;
 import org.bson.codecs.DocumentCodec;
@@ -156,7 +157,8 @@ public class CustomPackageRepository {
 		String json = document.toJson(settings, codec);
 
 		JSONObject jsonObject = setUserInformation(json);
-		return jsonObject.toString();
+		jsonObject.remove(PackageKeys.REGENERATE_ZIP.getKey());
+		return StringEscapeUtils.unescapeJava(jsonObject.toString());
 	}
 
 	private JSONObject setUserInformation(String json) throws JSONException, JsonProcessingException {
