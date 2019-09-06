@@ -28,8 +28,15 @@ public class StateHandlerService {
 		this.logger = logger;
 	}
 
-	public void sendStateChange(String packageId, String state, String codicil) {
+	public void sendStateChange(String packageId, String stateString, String codicil) {
+		State state = new State(packageId, stateString, codicil);
+		String stateId = restTemplate.postForObject(stateServiceHost + stateServiceEndpoint, state, String.class);
 
+		if (stateId == null) {
+			logger.logErrorMessage(this.getClass(), null, packageId,
+					this.getClass().getSimpleName() + ".sendStateChange",
+					"Error saving state change for package id: " + packageId + " and state: " + stateString);
+		}
 	}
 
 	public void sendNotification(String packageId, String packageType, Date datePackageSubmitted,

@@ -33,6 +33,8 @@ public class StateHandlerServiceTest {
 		service = new StateHandlerService(restTemplate, logger);
 		ReflectionTestUtils.setField(service, "notificationServiceHost", "hostname");
 		ReflectionTestUtils.setField(service, "notificationEndpoint", "/uri/to/endpoint");
+		ReflectionTestUtils.setField(service, "stateServiceHost", "state.hostname");
+		ReflectionTestUtils.setField(service, "stateServiceEndpoint", "/uri/to/state/endpoint");
 	}
 
 	@After
@@ -94,6 +96,47 @@ public class StateHandlerServiceTest {
 		assertEquals(Boolean.class, classCaptor.getValue());
 		verify(logger, times(1)).logErrorMessage(StateHandlerService.class, null, "packageId",
 				"StateHandlerService.sendNotification", "Notification message failed to send.");
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testSendStateChange_whenSuccess() throws Exception {
+		when(restTemplate.postForObject(any(String.class), any(State.class), any(Class.class))).thenReturn("newId");
+
+		service.sendStateChange("packageId", "stateString", "codicil");
+
+		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
+		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
+		verify(restTemplate).postForObject(uriCaptor.capture(), stateCaptor.capture(), classCaptor.capture());
+		assertEquals("state.hostname/uri/to/state/endpoint", uriCaptor.getValue());
+		assertEquals(String.class, classCaptor.getValue());
+		State expectedState = stateCaptor.getValue();
+		assertEquals("packageId", expectedState.getPackageId());
+		assertEquals("stateString", expectedState.getState());
+		assertEquals("codicil", expectedState.getCodicil());
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testSendStateChange_whenFailure() throws Exception {
+		when(restTemplate.postForObject(any(String.class), any(State.class), any(Class.class))).thenReturn(null);
+
+		service.sendStateChange("packageId", "stateString", "codicil");
+
+		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
+		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
+		verify(restTemplate).postForObject(uriCaptor.capture(), stateCaptor.capture(), classCaptor.capture());
+		assertEquals("state.hostname/uri/to/state/endpoint", uriCaptor.getValue());
+		assertEquals(String.class, classCaptor.getValue());
+		State expectedState = stateCaptor.getValue();
+		assertEquals("packageId", expectedState.getPackageId());
+		assertEquals("stateString", expectedState.getState());
+		assertEquals("codicil", expectedState.getCodicil());
+		verify(logger, times(1)).logErrorMessage(StateHandlerService.class, null, "packageId",
+				"StateHandlerService.sendStateChange",
+				"Error saving state change for package id: packageId and state: stateString");
 	}
 
 }
