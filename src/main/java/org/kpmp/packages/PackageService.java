@@ -82,6 +82,7 @@ public class PackageService {
 	}
 
 	public String savePackageInformation(JSONObject packageMetadata, User user) throws JSONException {
+		// TODO: Set state as METADATA_RECEIVED
 		return packageRepository.saveDynamicForm(packageMetadata, user);
 	}
 
@@ -129,6 +130,9 @@ public class PackageService {
 								PackageService.class.getSimpleName() + ".createZipFile",
 								zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
 										packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
+
+						// TODO: Set state to UPLOAD_SUCCEEDED
+
 						stateHandler.sendNotification(packageId, packageInfo.getPackageType(),
 								packageInfo.getCreatedAt(), packageInfo.getSubmitter().getFirstName(),
 								packageInfo.getSubmitter().getLastName(), packageInfo.getSubjectId(), origin);

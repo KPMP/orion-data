@@ -15,6 +15,10 @@ public class StateHandlerService {
 	private String notificationServiceHost;
 	@Value("${notification.endpoint}")
 	private String notificationEndpoint;
+	@Value("${state.service.host}")
+	private String stateServiceHost;
+	@Value("${state.service.endpoint}")
+	private String stateServiceEndpoint;
 	private RestTemplate restTemplate;
 	private LoggingService logger;
 
@@ -24,7 +28,10 @@ public class StateHandlerService {
 		this.logger = logger;
 	}
 
-	// this method will go away when we implement the state manager
+	public void sendStateChange(String packageId, String state, String codicil) {
+
+	}
+
 	public void sendNotification(String packageId, String packageType, Date datePackageSubmitted,
 			String submitterFirstName, String submitterLastName, String specimenId, String origin) {
 
