@@ -28,6 +28,10 @@ public class StateHandlerService {
 		this.logger = logger;
 	}
 
+	public void sendStateChange(String packageId, String stateString) {
+		sendStateChange(packageId, stateString, null);
+	}
+
 	public void sendStateChange(String packageId, String stateString, String codicil) {
 		State state = new State(packageId, stateString, codicil);
 		String stateId = restTemplate.postForObject(stateServiceHost + stateServiceEndpoint, state, String.class);

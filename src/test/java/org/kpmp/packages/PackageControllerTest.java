@@ -130,6 +130,7 @@ public class PackageControllerTest {
 		assertEquals(true, result.isSuccess());
 		verify(logger).logInfoMessage(PackageController.class, "3545", "Finishing file upload with packageId:  3545",
 				request);
+		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null);
 	}
 
 	@Test
@@ -147,6 +148,7 @@ public class PackageControllerTest {
 		assertEquals(false, result.isSuccess());
 		verify(logger).logErrorMessage(PackageController.class, "3545", "error getting metadata for package id:  3545",
 				request);
+		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null);
 	}
 
 	@Test
@@ -163,6 +165,7 @@ public class PackageControllerTest {
 		assertEquals(false, result.isSuccess());
 		verify(logger).logErrorMessage(PackageController.class, "3545", "Unable to zip package with package id:  3545",
 				request);
+		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null);
 	}
 
 	@Test

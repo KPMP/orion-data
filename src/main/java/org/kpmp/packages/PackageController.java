@@ -30,15 +30,15 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class PackageController {
 
-	private PackageService packageService;
-
+	private static final String FILES_RECEIVED_STATE = "FILES_RECEIVED";
 	private static final MessageFormat finish = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat(
 			"Posting file: {0} to package with id: {1}, filesize: {2}, chunk: {3} out of {4} chunks");
 	private static final MessageFormat fileDownloadRequest = new MessageFormat(
 			"Requesting package download with id {0}, filename {1}");
-	private LoggingService logger;
 
+	private LoggingService logger;
+	private PackageService packageService;
 	private ShibbolethUserService shibUserService;
 
 	@Autowired
@@ -106,7 +106,7 @@ public class PackageController {
 	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId,
 			@RequestBody String hostname, HttpServletRequest request) throws UnsupportedEncodingException {
 
-		// TODO: Set state to FILES_RECEIVED
+		packageService.sendStateChangeEvent(packageId, FILES_RECEIVED_STATE, null);
 
 		FileUploadResponse fileUploadResponse;
 		String message = finish.format(new Object[] { "Finishing file upload with packageId: ", packageId });

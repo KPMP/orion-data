@@ -29,6 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class PackageService {
 
+	private static final String UPLOAD_SUCCEEDED_STATE = "UPLOAD_SUCCEEDED";
+	private static final String METADATA_RECEIVED_STATE = "METADATA_RECEIVED";
 	private static final MessageFormat zipPackage = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadFinishTiming = new MessageFormat(
 			"Timing|end|{0}|{1}|{2}|{3} files|{4}|{5}|{6}");
@@ -82,8 +84,9 @@ public class PackageService {
 	}
 
 	public String savePackageInformation(JSONObject packageMetadata, User user) throws JSONException {
-		// TODO: Set state as METADATA_RECEIVED
-		return packageRepository.saveDynamicForm(packageMetadata, user);
+		String packageId = packageRepository.saveDynamicForm(packageMetadata, user);
+		stateHandler.sendStateChange(packageId, METADATA_RECEIVED_STATE);
+		return packageId;
 	}
 
 	public Package findPackage(String packageId) {
@@ -95,7 +98,6 @@ public class PackageService {
 		if (filename.equalsIgnoreCase("metadata.json")) {
 			filename = filename.replace(".", "_user.");
 		}
-
 		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 	}
 
@@ -131,7 +133,7 @@ public class PackageService {
 								zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
 										packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
 
-						// TODO: Set state to UPLOAD_SUCCEEDED
+						stateHandler.sendStateChange(packageId, UPLOAD_SUCCEEDED_STATE);
 
 						stateHandler.sendNotification(packageId, packageInfo.getPackageType(),
 								packageInfo.getCreatedAt(), packageInfo.getSubmitter().getFirstName(),
@@ -183,6 +185,10 @@ public class PackageService {
 		Collections.sort(filesInPackage);
 		return checkFilesExist(filesOnDisk, filesInPackage, packageId, user)
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
+	}
+
+	public void sendStateChangeEvent(String packageId, String stateString, String codicil) {
+		stateHandler.sendStateChange(packageId, stateString, codicil);
 	}
 
 	protected boolean validateFileLengthsMatch(List<Attachment> filesInPackage, String packagePath, String packageId,

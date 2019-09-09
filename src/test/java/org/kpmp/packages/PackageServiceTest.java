@@ -68,6 +68,13 @@ public class PackageServiceTest {
 	}
 
 	@Test
+	public void testSendStateChangeEvent() throws Exception {
+		service.sendStateChangeEvent("packageId", "stateString", "codicil");
+
+		verify(stateHandlerService).sendStateChange("packageId", "stateString", "codicil");
+	}
+
+	@Test
 	public void testFindAllPackages() throws JSONException, IOException {
 		JSONObject uploadedPackage = mock(JSONObject.class);
 		when(uploadedPackage.toString()).thenReturn("");
@@ -92,6 +99,7 @@ public class PackageServiceTest {
 
 		assertEquals("awesomeNewId", packageId);
 		verify(packageRepository).saveDynamicForm(packageMetadata, user);
+		verify(stateHandlerService).sendStateChange("awesomeNewId", "METADATA_RECEIVED");
 	}
 
 	@Test
