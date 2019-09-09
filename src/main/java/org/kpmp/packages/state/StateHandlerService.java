@@ -28,6 +28,12 @@ public class StateHandlerService {
 		this.logger = logger;
 	}
 
+	public State getState(String packageId) {
+		String uri = stateServiceHost + stateServiceEndpoint + "/" + packageId;
+		State state = restTemplate.getForObject(uri, State.class);
+		return state;
+	}
+
 	public void sendStateChange(String packageId, String stateString) {
 		sendStateChange(packageId, stateString, null);
 	}

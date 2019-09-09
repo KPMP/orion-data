@@ -1,10 +1,16 @@
 package org.kpmp.packages.state;
 
-class State {
+import java.util.Date;
+
+public class State {
 
 	private String packageId;
 	private String state;
 	private String codicil;
+	private Date stateChangeDate;
+
+	public State() {
+	}
 
 	public State(String packageId, String state, String codicil) {
 		this.packageId = packageId;
@@ -34,6 +40,14 @@ class State {
 
 	public void setCodicil(String codicil) {
 		this.codicil = codicil;
+	}
+
+	public Date getStateChangeDate() {
+		return stateChangeDate;
+	}
+
+	public void setStateChangeDate(Date stateChangedDate) {
+		this.stateChangeDate = stateChangedDate;
 	}
 
 }

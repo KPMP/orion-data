@@ -67,7 +67,9 @@ public class PackageService {
 		List<PackageView> packageViews = new ArrayList<>();
 		for (JSONObject packageToCheck : jsons) {
 			PackageView packageView = new PackageView(packageToCheck);
-			String zipFileName = filePathHelper.getZipFileName(packageToCheck.getString("_id"));
+			String packageId = packageToCheck.getString("_id");
+			packageView.setState(stateHandler.getState(packageId));
+			String zipFileName = filePathHelper.getZipFileName(packageId);
 			if (new File(zipFileName).exists()) {
 				packageView.setIsDownloadable(true);
 			} else {
