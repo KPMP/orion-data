@@ -31,6 +31,7 @@ import org.kpmp.users.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import ch.qos.logback.classic.Logger;
@@ -60,11 +61,20 @@ public class PackageServiceTest {
 		MockitoAnnotations.initMocks(this);
 		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService,
 				commandBuilder, processExecutor, logger);
+		ReflectionTestUtils.setField(service, "uploadSucceededState", "UPLOAD_SUCCEEDED");
+		ReflectionTestUtils.setField(service, "metadataReceivedState", "METADATA_RECEIVED");
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		service = null;
+	}
+
+	@Test
+	public void testSendStateChangeEvent() throws Exception {
+		service.sendStateChangeEvent("packageId", "stateString", "codicil");
+
+		verify(stateHandlerService).sendStateChange("packageId", "stateString", "codicil");
 	}
 
 	@Test
@@ -86,12 +96,12 @@ public class PackageServiceTest {
 	public void testSavePackageInformation() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
 		User user = mock(User.class);
-		when(packageRepository.saveDynamicForm(packageMetadata, user)).thenReturn("awesomeNewId");
 
-		String packageId = service.savePackageInformation(packageMetadata, user);
+		String packageId = service.savePackageInformation(packageMetadata, user, "awesomeNewId");
 
 		assertEquals("awesomeNewId", packageId);
-		verify(packageRepository).saveDynamicForm(packageMetadata, user);
+		verify(packageRepository).saveDynamicForm(packageMetadata, user, "awesomeNewId");
+		verify(stateHandlerService).sendStateChange("awesomeNewId", "METADATA_RECEIVED");
 	}
 
 	@Test

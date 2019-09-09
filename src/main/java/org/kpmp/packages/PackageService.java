@@ -23,11 +23,17 @@ import org.kpmp.logging.LoggingService;
 import org.kpmp.packages.state.StateHandlerService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class PackageService {
+
+	@Value("${package.state.upload.succeeded}")
+	private String uploadSucceededState;
+	@Value("${package.state.metadata.received}")
+	private String metadataReceivedState;
 
 	private static final MessageFormat zipPackage = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadFinishTiming = new MessageFormat(
@@ -81,8 +87,10 @@ public class PackageService {
 		return filePath;
 	}
 
-	public String savePackageInformation(JSONObject packageMetadata, User user) throws JSONException {
-		return packageRepository.saveDynamicForm(packageMetadata, user);
+	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
+		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
+		stateHandler.sendStateChange(packageId, metadataReceivedState);
+		return packageId;
 	}
 
 	public Package findPackage(String packageId) {
@@ -94,7 +102,6 @@ public class PackageService {
 		if (filename.equalsIgnoreCase("metadata.json")) {
 			filename = filename.replace(".", "_user.");
 		}
-
 		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 	}
 
@@ -129,6 +136,9 @@ public class PackageService {
 								PackageService.class.getSimpleName() + ".createZipFile",
 								zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
 										packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
+
+						stateHandler.sendStateChange(packageId, uploadSucceededState);
+
 						stateHandler.sendNotification(packageId, packageInfo.getPackageType(),
 								packageInfo.getCreatedAt(), packageInfo.getSubmitter().getFirstName(),
 								packageInfo.getSubmitter().getLastName(), packageInfo.getSubjectId(), origin);
@@ -179,6 +189,10 @@ public class PackageService {
 		Collections.sort(filesInPackage);
 		return checkFilesExist(filesOnDisk, filesInPackage, packageId, user)
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
+	}
+
+	public void sendStateChangeEvent(String packageId, String stateString, String codicil) {
+		stateHandler.sendStateChange(packageId, stateString, codicil);
 	}
 
 	protected boolean validateFileLengthsMatch(List<Attachment> filesInPackage, String packagePath, String packageId,
