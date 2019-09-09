@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.kpmp.UniversalIdGenerator;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
@@ -33,6 +34,8 @@ public class PackageController {
 
 	@Value("${package.state.files.received}")
 	private String filesReceivedState;
+	@Value("${package.state.upload.started}")
+	private String uploadStartedState;
 	private static final MessageFormat finish = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat(
 			"Posting file: {0} to package with id: {1}, filesize: {2}, chunk: {3} out of {4} chunks");
@@ -42,13 +45,15 @@ public class PackageController {
 	private LoggingService logger;
 	private PackageService packageService;
 	private ShibbolethUserService shibUserService;
+	private UniversalIdGenerator universalIdGenerator;
 
 	@Autowired
 	public PackageController(PackageService packageService, LoggingService logger,
-			ShibbolethUserService shibUserService) {
+			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator) {
 		this.packageService = packageService;
 		this.logger = logger;
 		this.shibUserService = shibUserService;
+		this.universalIdGenerator = universalIdGenerator;
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
@@ -61,10 +66,13 @@ public class PackageController {
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)
 	public @ResponseBody String postPackageInformation(@RequestBody String packageInfoString,
 			HttpServletRequest request) throws JSONException, UnsupportedEncodingException {
+		String packageId = universalIdGenerator.generateUniversalId();
+		packageService.sendStateChangeEvent(packageId, uploadStartedState, null);
 		JSONObject packageInfo = new JSONObject(packageInfoString);
-		logger.logInfoMessage(this.getClass(), null, "Posting package info: " + packageInfo, request);
+		logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
 		User user = shibUserService.getUser(request);
-		String packageId = packageService.savePackageInformation(packageInfo, user);
+		packageService.savePackageInformation(packageInfo, user, packageId);
+
 		return packageId;
 	}
 

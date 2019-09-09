@@ -96,12 +96,11 @@ public class PackageServiceTest {
 	public void testSavePackageInformation() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
 		User user = mock(User.class);
-		when(packageRepository.saveDynamicForm(packageMetadata, user)).thenReturn("awesomeNewId");
 
-		String packageId = service.savePackageInformation(packageMetadata, user);
+		String packageId = service.savePackageInformation(packageMetadata, user, "awesomeNewId");
 
 		assertEquals("awesomeNewId", packageId);
-		verify(packageRepository).saveDynamicForm(packageMetadata, user);
+		verify(packageRepository).saveDynamicForm(packageMetadata, user, "awesomeNewId");
 		verify(stateHandlerService).sendStateChange("awesomeNewId", "METADATA_RECEIVED");
 	}
 

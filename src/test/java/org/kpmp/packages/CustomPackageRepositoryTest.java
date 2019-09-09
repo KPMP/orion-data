@@ -70,7 +70,7 @@ public class CustomPackageRepositoryTest {
 	public void testSaveDynamicForm_happyPath() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
 		when(packageMetadata.toString()).thenReturn("{}");
-		when(universalIdGenerator.generateUniversalId()).thenReturn("123").thenReturn("456");
+		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
 		when(packageMetadata.getString("submitterEmail")).thenReturn("emailAddress");
 		User user = mock(User.class);
 		when(user.getEmail()).thenReturn("emailAddress");
@@ -84,7 +84,7 @@ public class CustomPackageRepositoryTest {
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
 
-		String packageId = repo.saveDynamicForm(packageMetadata, user);
+		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
 
 		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
 		verify(mongoCollection).insertOne(documentCaptor.capture());
@@ -122,7 +122,7 @@ public class CustomPackageRepositoryTest {
 	public void testSaveDynamicForm_whenNewUser() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
 		when(packageMetadata.toString()).thenReturn("{}");
-		when(universalIdGenerator.generateUniversalId()).thenReturn("123").thenReturn("456");
+		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
 		User user = mock(User.class);
 		when(user.getDisplayName()).thenReturn("displayName");
 		when(user.getEmail()).thenReturn("emailAddress2");
@@ -139,7 +139,7 @@ public class CustomPackageRepositoryTest {
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
 
-		String packageId = repo.saveDynamicForm(packageMetadata, user);
+		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
 
 		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
 		verify(mongoCollection).insertOne(documentCaptor.capture());

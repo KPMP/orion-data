@@ -87,8 +87,8 @@ public class PackageService {
 		return filePath;
 	}
 
-	public String savePackageInformation(JSONObject packageMetadata, User user) throws JSONException {
-		String packageId = packageRepository.saveDynamicForm(packageMetadata, user);
+	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
+		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
 		stateHandler.sendStateChange(packageId, metadataReceivedState);
 		return packageId;
 	}
