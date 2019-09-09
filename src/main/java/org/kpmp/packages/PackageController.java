@@ -13,6 +13,7 @@ import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class PackageController {
 
-	private static final String FILES_RECEIVED_STATE = "FILES_RECEIVED";
+	@Value("${package.state.files.received}")
+	private String filesReceivedState;
 	private static final MessageFormat finish = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat(
 			"Posting file: {0} to package with id: {1}, filesize: {2}, chunk: {3} out of {4} chunks");
@@ -106,7 +108,7 @@ public class PackageController {
 	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId,
 			@RequestBody String hostname, HttpServletRequest request) throws UnsupportedEncodingException {
 
-		packageService.sendStateChangeEvent(packageId, FILES_RECEIVED_STATE, null);
+		packageService.sendStateChangeEvent(packageId, filesReceivedState, null);
 
 		FileUploadResponse fileUploadResponse;
 		String message = finish.format(new Object[] { "Finishing file upload with packageId: ", packageId });

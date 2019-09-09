@@ -33,6 +33,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 public class PackageControllerTest {
@@ -49,6 +50,7 @@ public class PackageControllerTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		controller = new PackageController(packageService, logger, shibUserService);
+		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
 	}
 
 	@After

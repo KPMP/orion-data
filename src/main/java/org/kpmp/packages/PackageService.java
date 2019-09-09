@@ -23,14 +23,18 @@ import org.kpmp.logging.LoggingService;
 import org.kpmp.packages.state.StateHandlerService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class PackageService {
 
-	private static final String UPLOAD_SUCCEEDED_STATE = "UPLOAD_SUCCEEDED";
-	private static final String METADATA_RECEIVED_STATE = "METADATA_RECEIVED";
+	@Value("${package.state.upload.succeeded}")
+	private String uploadSucceededState;
+	@Value("${package.state.metadata.received}")
+	private String metadataReceivedState;
+
 	private static final MessageFormat zipPackage = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadFinishTiming = new MessageFormat(
 			"Timing|end|{0}|{1}|{2}|{3} files|{4}|{5}|{6}");
@@ -85,7 +89,7 @@ public class PackageService {
 
 	public String savePackageInformation(JSONObject packageMetadata, User user) throws JSONException {
 		String packageId = packageRepository.saveDynamicForm(packageMetadata, user);
-		stateHandler.sendStateChange(packageId, METADATA_RECEIVED_STATE);
+		stateHandler.sendStateChange(packageId, metadataReceivedState);
 		return packageId;
 	}
 
@@ -133,7 +137,7 @@ public class PackageService {
 								zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
 										packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
 
-						stateHandler.sendStateChange(packageId, UPLOAD_SUCCEEDED_STATE);
+						stateHandler.sendStateChange(packageId, uploadSucceededState);
 
 						stateHandler.sendNotification(packageId, packageInfo.getPackageType(),
 								packageInfo.getCreatedAt(), packageInfo.getSubmitter().getFirstName(),
