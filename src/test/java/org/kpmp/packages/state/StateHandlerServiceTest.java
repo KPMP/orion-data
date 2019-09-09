@@ -2,6 +2,7 @@ package org.kpmp.packages.state;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,6 +41,22 @@ public class StateHandlerServiceTest {
 	@After
 	public void tearDown() throws Exception {
 		service = null;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testGetState() throws Exception {
+		State newState = mock(State.class);
+		when(restTemplate.getForObject(any(String.class), any(Class.class))).thenReturn(newState);
+
+		State currentState = service.getState("packageId");
+
+		assertEquals(newState, currentState);
+		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
+		verify(restTemplate).getForObject(uriCaptor.capture(), classCaptor.capture());
+		assertEquals("state.hostname/uri/to/state/endpoint/packageId", uriCaptor.getValue());
+		assertEquals(State.class, classCaptor.getValue());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

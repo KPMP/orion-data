@@ -1,6 +1,7 @@
 package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 
@@ -8,6 +9,7 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.packages.state.State;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,6 +40,15 @@ public class PackageViewTest {
 		packageView.setPackageInfo(packageInfo);
 
 		assertEquals(mapper.readTree(packageInfo.toString()), packageView.getPackageInfo());
+	}
+
+	@Test
+	public void testSetState() throws Exception {
+		State newState = mock(State.class);
+
+		packageView.setState(newState);
+
+		assertEquals(newState, packageView.getState());
 	}
 
 }

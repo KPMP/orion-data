@@ -2,6 +2,8 @@ package org.kpmp.packages.state;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Date;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +46,13 @@ public class StateTest {
 		assertEquals("a package id", constructorTest.getPackageId());
 		assertEquals("a state", constructorTest.getState());
 		assertEquals("reasons", constructorTest.getCodicil());
+	}
+
+	@Test
+	public void testSetStateChangeDate() throws Exception {
+		Date date = new Date();
+		state.setStateChangeDate(date);
+		assertEquals(date, state.getStateChangeDate());
 	}
 
 }
