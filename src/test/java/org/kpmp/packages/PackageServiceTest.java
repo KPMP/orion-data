@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONException;
@@ -81,7 +82,10 @@ public class PackageServiceTest {
 	@Test
 	public void testFindAllPackages() throws JSONException, IOException {
 		State newState = mock(State.class);
-		when(stateHandlerService.getState("packageId")).thenReturn(newState);
+		HashMap<String, State> stateMap = new HashMap<String, State>();
+		stateMap.put("packageId", newState);
+		stateMap.put("anotherId", mock(State.class));
+		when(stateHandlerService.getState()).thenReturn(stateMap);
 		JSONObject uploadedPackage = mock(JSONObject.class);
 		when(uploadedPackage.toString()).thenReturn("");
 		when(uploadedPackage.getString("_id")).thenReturn("packageId");
@@ -94,7 +98,7 @@ public class PackageServiceTest {
 		assertEquals(false, packages.get(0).isDownloadable());
 		assertEquals(newState, packages.get(0).getState());
 		verify(packageRepository).findAll();
-		verify(stateHandlerService).getState("packageId");
+		verify(stateHandlerService).getState();
 	}
 
 	@Test

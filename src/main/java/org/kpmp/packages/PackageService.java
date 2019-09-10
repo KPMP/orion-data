@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
@@ -20,6 +21,7 @@ import org.json.JSONObject;
 import org.kpmp.externalProcess.CommandBuilder;
 import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.logging.LoggingService;
+import org.kpmp.packages.state.State;
 import org.kpmp.packages.state.StateHandlerService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,10 +67,11 @@ public class PackageService {
 	public List<PackageView> findAllPackages() throws JSONException, IOException {
 		List<JSONObject> jsons = packageRepository.findAll();
 		List<PackageView> packageViews = new ArrayList<>();
+		Map<String, State> stateMap = stateHandler.getState();
 		for (JSONObject packageToCheck : jsons) {
 			PackageView packageView = new PackageView(packageToCheck);
 			String packageId = packageToCheck.getString("_id");
-			packageView.setState(stateHandler.getState(packageId));
+			packageView.setState(stateMap.get(packageId));
 			String zipFileName = filePathHelper.getZipFileName(packageId);
 			if (new File(zipFileName).exists()) {
 				packageView.setIsDownloadable(true);
