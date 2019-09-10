@@ -1,10 +1,16 @@
 package org.kpmp.packages.state;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.kpmp.logging.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,10 +34,21 @@ public class StateHandlerService {
 		this.logger = logger;
 	}
 
-	public State getState(String packageId) {
-		String uri = stateServiceHost + stateServiceEndpoint + "/" + packageId;
-		State state = restTemplate.getForObject(uri, State.class);
-		return state;
+	public Map<String, State> getState() {
+		Map<String, State> stateMap = new HashMap<String, State>();
+
+		String uri = stateServiceHost + stateServiceEndpoint;
+		ResponseEntity<List<State>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<State>>() {
+				});
+		List<State> states = response.getBody();
+
+		for (int i = 0; i < states.size(); i++) {
+			State state = states.get(i);
+			stateMap.put(state.getPackageId(), state);
+		}
+
+		return stateMap;
 	}
 
 	public void sendStateChange(String packageId, String stateString) {

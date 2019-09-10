@@ -7,7 +7,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -47,16 +50,19 @@ public class StateHandlerServiceTest {
 	@Test
 	public void testGetState() throws Exception {
 		State newState = mock(State.class);
-		when(restTemplate.getForObject(any(String.class), any(Class.class))).thenReturn(newState);
+		when(newState.getPackageId()).thenReturn("1");
+		when(restTemplate.getForObject("state.hostname/uri/to/state/endpoint", List.class))
+				.thenReturn(Arrays.asList(newState));
 
-		State currentState = service.getState("packageId");
+		Map<String, State> stateMap = service.getState();
 
-		assertEquals(newState, currentState);
+		assertEquals(1, stateMap.size());
+		assertEquals(newState, stateMap.get("1"));
 		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
 		verify(restTemplate).getForObject(uriCaptor.capture(), classCaptor.capture());
-		assertEquals("state.hostname/uri/to/state/endpoint/packageId", uriCaptor.getValue());
-		assertEquals(State.class, classCaptor.getValue());
+		assertEquals("state.hostname/uri/to/state/endpoint", uriCaptor.getValue());
+		assertEquals(List.class, classCaptor.getValue());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
