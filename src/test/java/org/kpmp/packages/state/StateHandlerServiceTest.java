@@ -20,6 +20,9 @@ import org.kpmp.users.User;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -51,18 +54,16 @@ public class StateHandlerServiceTest {
 	public void testGetState() throws Exception {
 		State newState = mock(State.class);
 		when(newState.getPackageId()).thenReturn("1");
-		when(restTemplate.getForObject("state.hostname/uri/to/state/endpoint", List.class))
-				.thenReturn(Arrays.asList(newState));
+		ResponseEntity response = mock(ResponseEntity.class);
+		when(response.getBody()).thenReturn(Arrays.asList(newState));
+		when(restTemplate.exchange("state.hostname/uri/to/state/endpoint", HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<State>>() {
+				})).thenReturn(response);
 
 		Map<String, State> stateMap = service.getState();
 
 		assertEquals(1, stateMap.size());
 		assertEquals(newState, stateMap.get("1"));
-		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
-		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
-		verify(restTemplate).getForObject(uriCaptor.capture(), classCaptor.capture());
-		assertEquals("state.hostname/uri/to/state/endpoint", uriCaptor.getValue());
-		assertEquals(List.class, classCaptor.getValue());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
