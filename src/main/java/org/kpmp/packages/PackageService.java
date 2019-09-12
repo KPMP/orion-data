@@ -94,7 +94,6 @@ public class PackageService {
 
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
 		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
-		stateHandler.sendStateChange(packageId, metadataReceivedState);
 		return packageId;
 	}
 

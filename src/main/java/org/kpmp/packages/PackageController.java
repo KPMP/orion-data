@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.kpmp.UniversalIdGenerator;
+import org.kpmp.googleDrive.GoogleDriveService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
@@ -36,6 +37,9 @@ public class PackageController {
 	private String filesReceivedState;
 	@Value("${package.state.upload.started}")
 	private String uploadStartedState;
+	@Value("METADATA_RECEIVED")
+	private String metadataReceivedState;
+
 	private static final MessageFormat finish = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat(
 			"Posting file: {0} to package with id: {1}, filesize: {2}, chunk: {3} out of {4} chunks");
@@ -46,14 +50,16 @@ public class PackageController {
 	private PackageService packageService;
 	private ShibbolethUserService shibUserService;
 	private UniversalIdGenerator universalIdGenerator;
+	private GoogleDriveService driveService;
 
 	@Autowired
 	public PackageController(PackageService packageService, LoggingService logger,
-			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator) {
+			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator, GoogleDriveService driveService) {
 		this.packageService = packageService;
 		this.logger = logger;
 		this.shibUserService = shibUserService;
 		this.universalIdGenerator = universalIdGenerator;
+		this.driveService = driveService;
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
@@ -117,7 +123,6 @@ public class PackageController {
 			@RequestBody String hostname, HttpServletRequest request) throws UnsupportedEncodingException {
 
 		packageService.sendStateChangeEvent(packageId, filesReceivedState, null);
-
 		FileUploadResponse fileUploadResponse;
 		String message = finish.format(new Object[] { "Finishing file upload with packageId: ", packageId });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
@@ -139,6 +144,15 @@ public class PackageController {
 		}
 		return fileUploadResponse;
 	}
+
+	@RequestMapping(value = "/v1/packages/{packageId}/files/process-large-files", method = RequestMethod.POST)
+	public @ResponseBody String processLargeFiles(@PathVariable("packageId") String packageId,
+														 @RequestBody String hostname, HttpServletRequest request) throws IOException {
+		String folderId = driveService.createFolder(packageId);
+		packageService.sendStateChangeEvent(packageId, metadataReceivedState, folderId);
+		return folderId;
+	}
+
 
 	private boolean shouldAppend(int chunk) {
 		return chunk != 0;
