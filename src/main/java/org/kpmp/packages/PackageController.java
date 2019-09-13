@@ -37,7 +37,7 @@ public class PackageController {
 	private String filesReceivedState;
 	@Value("${package.state.upload.started}")
 	private String uploadStartedState;
-	@Value("METADATA_RECEIVED")
+	@Value("${package.state.metadata.received}")
 	private String metadataReceivedState;
 
 	private static final MessageFormat finish = new MessageFormat("{0} {1}");
@@ -71,15 +71,20 @@ public class PackageController {
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)
 	public @ResponseBody String postPackageInformation(@RequestBody String packageInfoString,
-			HttpServletRequest request) throws JSONException, UnsupportedEncodingException {
+			HttpServletRequest request) throws JSONException, IOException {
 		String packageId = universalIdGenerator.generateUniversalId();
+		String gdriveId  = null;
 		packageService.sendStateChangeEvent(packageId, uploadStartedState, null);
 		JSONObject packageInfo = new JSONObject(packageInfoString);
 		logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
 		User user = shibUserService.getUser(request);
 		packageService.savePackageInformation(packageInfo, user, packageId);
-
-		return packageId;
+		Boolean largeFilesChecked = (Boolean) packageInfo.get("largeFilesChecked");
+		if (largeFilesChecked) {
+			gdriveId = driveService.createFolder(packageId);
+			packageService.sendStateChangeEvent(packageId, metadataReceivedState, gdriveId);
+		}
+		return "{\"packageId\":\"" + packageId +"\",\"gdriveId\":\""+ gdriveId + "\"}";
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.POST, consumes = {
