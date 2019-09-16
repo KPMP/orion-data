@@ -6,6 +6,7 @@ import org.kpmp.Application;
 import org.kpmp.GenerateUploadReport;
 import org.kpmp.RegenerateZipFiles;
 import org.kpmp.WebConfig;
+import org.kpmp.googleDrive.GoogleDriveService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -23,7 +24,7 @@ import cz.jirutka.spring.embedmongo.EmbeddedMongoFactoryBean;
 @Configuration
 @ComponentScan(basePackages = { "org.kpmp.packages", "org.kpmp.users", "org.kpmp",
 		"org.kpmp.forms" }, excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-				PackageController.class, PackageService.class, CustomPackageRepository.class, Application.class,
+		GoogleDriveService.class, PackageController.class, PackageService.class, CustomPackageRepository.class, Application.class,
 				GenerateUploadReport.class, RegenerateZipFiles.class, WebConfig.class }))
 @EnableMongoRepositories(basePackages = { "org.kpmp.packages", "org.kpmp.users", "org.kpmp.forms", "org.kpmp" })
 public class TestMongoConfig {
