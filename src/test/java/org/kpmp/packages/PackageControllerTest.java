@@ -127,7 +127,7 @@ public class PackageControllerTest {
 		assertEquals("blah", jsonCaptor.getValue().get("packageType"));
 		assertEquals("universalId", packageIdCaptor.getValue());
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
-				"Posting package info: {\"packageType\":\"blah\"}", request);
+				"Posting package info: {\"packageType\":\"blah\",\"largeFilesChecked\":true}", request);
 		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null);
 		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "newGdriveId");
 	}
