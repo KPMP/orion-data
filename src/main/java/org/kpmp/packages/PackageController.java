@@ -79,7 +79,7 @@ public class PackageController {
 		logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
 		User user = shibUserService.getUser(request);
 		packageService.savePackageInformation(packageInfo, user, packageId);
-		Boolean largeFilesChecked = (Boolean) packageInfo.get("largeFilesChecked");
+		Boolean largeFilesChecked = (Boolean) packageInfo.optBoolean("largeFilesChecked");
 		if (largeFilesChecked) {
 			gdriveId = driveService.createFolder(packageId);
 			packageService.sendStateChangeEvent(packageId, metadataReceivedState, gdriveId);
