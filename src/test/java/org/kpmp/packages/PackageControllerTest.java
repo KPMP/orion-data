@@ -100,23 +100,27 @@ public class PackageControllerTest {
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
 				"Posting package info: {\"packageType\":\"blah\"}", request);
 		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null);
+		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", null);
 	}
 
 	@Test
 	public void testPostPackageInfoLargeFile() throws Exception {
-		String packageInfoString = "{\"packageType\":\"blah\"}";
+		String packageInfoString = "{\"packageType\":\"blah\",\"largeFilesChecked\":true}";
 		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
 
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
 		when(shibUserService.getUser(request)).thenReturn(user);
+		when(googleDriveService.createFolder("universalId")).thenReturn("newGdriveId");
 
 		String response = controller.postPackageInformation(packageInfoString, request);
 
-		assertEquals("{\"packageId\":\"universalId\",\"gdriveId\":\"null\"}", response);
+		assertEquals("{\"packageId\":\"universalId\",\"gdriveId\":\"newGdriveId\"}", response);
 		ArgumentCaptor<JSONObject> jsonCaptor = ArgumentCaptor.forClass(JSONObject.class);
 		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
+		verify(packageService).savePackageInformation(jsonCaptor.capture(), userCaptor.capture(),
+				packageIdCaptor.capture());
 		verify(packageService).savePackageInformation(jsonCaptor.capture(), userCaptor.capture(),
 				packageIdCaptor.capture());
 		assertEquals(user, userCaptor.getValue());
@@ -125,6 +129,7 @@ public class PackageControllerTest {
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
 				"Posting package info: {\"packageType\":\"blah\"}", request);
 		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null);
+		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "newGdriveId");
 	}
 
 	@Test

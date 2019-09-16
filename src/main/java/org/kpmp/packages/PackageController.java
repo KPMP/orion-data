@@ -82,8 +82,8 @@ public class PackageController {
 		Boolean largeFilesChecked = (Boolean) packageInfo.optBoolean("largeFilesChecked");
 		if (largeFilesChecked) {
 			gdriveId = driveService.createFolder(packageId);
-			packageService.sendStateChangeEvent(packageId, metadataReceivedState, gdriveId);
 		}
+		packageService.sendStateChangeEvent(packageId, metadataReceivedState, gdriveId);
 		return "{\"packageId\":\"" + packageId +"\",\"gdriveId\":\""+ gdriveId + "\"}";
 	}
 
