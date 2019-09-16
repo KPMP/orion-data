@@ -57,6 +57,8 @@ public class PackageControllerTest {
 		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator, googleDriveService);
 		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
+		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
+
 	}
 
 	@After
@@ -127,7 +129,7 @@ public class PackageControllerTest {
 		assertEquals("blah", jsonCaptor.getValue().get("packageType"));
 		assertEquals("universalId", packageIdCaptor.getValue());
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
-				"Posting package info: {\"packageType\":\"blah\",\"largeFilesChecked\":true}", request);
+				"Posting package info: {\"largeFilesChecked\":true,\"packageType\":\"blah\"}", request);
 		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null);
 		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "newGdriveId");
 	}
