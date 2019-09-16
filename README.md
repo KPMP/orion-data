@@ -37,9 +37,9 @@ To regenerate zip files:
 7. Run the zip generator
 `java -cp build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher`
 
-## Getting the credentials for Google Drive
-1. Get the credentials.json file from kpmp-secure/orion-data and put in src/main/resources
-2. Bring up Docker containers
-3. Check the spring logs for a URL: `docker-compose -f .\docker-compose.prod.yml logs --f spring`
+## Getting and storing the credentials for Google Drive
+1. Get the credentials.json file from kpmp-secure/orion-data and put it in the src/main/resources directory
+2. Get the StoredCredential file from kpmp-secure/orion-data and put it in the tokens directory (create if it doesn't exist)
+3. Restart the spring container
 
 
