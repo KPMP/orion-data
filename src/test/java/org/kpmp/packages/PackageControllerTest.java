@@ -86,9 +86,9 @@ public class PackageControllerTest {
 		User user = mock(User.class);
 		when(shibUserService.getUser(request)).thenReturn(user);
 
-		String universalId = controller.postPackageInformation(packageInfoString, request);
+		String response = controller.postPackageInformation(packageInfoString, request);
 
-		assertEquals("universalId", universalId);
+		assertEquals("{\"packageId\":\"universalId\",\"gdriveId\":\"null\"}", response);
 		ArgumentCaptor<JSONObject> jsonCaptor = ArgumentCaptor.forClass(JSONObject.class);
 		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
