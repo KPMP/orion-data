@@ -64,7 +64,6 @@ public class PackageServiceTest {
 		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService,
 				commandBuilder, processExecutor, logger);
 		ReflectionTestUtils.setField(service, "uploadSucceededState", "UPLOAD_SUCCEEDED");
-		ReflectionTestUtils.setField(service, "metadataReceivedState", "METADATA_RECEIVED");
 	}
 
 	@After
@@ -110,7 +109,6 @@ public class PackageServiceTest {
 
 		assertEquals("awesomeNewId", packageId);
 		verify(packageRepository).saveDynamicForm(packageMetadata, user, "awesomeNewId");
-		verify(stateHandlerService).sendStateChange("awesomeNewId", "METADATA_RECEIVED");
 	}
 
 	@Test

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.kpmp.UniversalIdGenerator;
+import org.kpmp.googleDrive.GoogleDriveService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
@@ -36,6 +37,9 @@ public class PackageController {
 	private String filesReceivedState;
 	@Value("${package.state.upload.started}")
 	private String uploadStartedState;
+	@Value("${package.state.metadata.received}")
+	private String metadataReceivedState;
+
 	private static final MessageFormat finish = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat(
 			"Posting file: {0} to package with id: {1}, filesize: {2}, chunk: {3} out of {4} chunks");
@@ -46,14 +50,16 @@ public class PackageController {
 	private PackageService packageService;
 	private ShibbolethUserService shibUserService;
 	private UniversalIdGenerator universalIdGenerator;
+	private GoogleDriveService driveService;
 
 	@Autowired
 	public PackageController(PackageService packageService, LoggingService logger,
-			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator) {
+			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator, GoogleDriveService driveService) {
 		this.packageService = packageService;
 		this.logger = logger;
 		this.shibUserService = shibUserService;
 		this.universalIdGenerator = universalIdGenerator;
+		this.driveService = driveService;
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
@@ -64,16 +70,22 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)
-	public @ResponseBody String postPackageInformation(@RequestBody String packageInfoString,
-			HttpServletRequest request) throws JSONException, UnsupportedEncodingException {
+	public @ResponseBody PackageResponse postPackageInformation(@RequestBody String packageInfoString,
+			HttpServletRequest request) throws JSONException, IOException {
+	    PackageResponse packageResponse = new PackageResponse();
 		String packageId = universalIdGenerator.generateUniversalId();
+		packageResponse.setPackageId(packageId);
 		packageService.sendStateChangeEvent(packageId, uploadStartedState, null);
 		JSONObject packageInfo = new JSONObject(packageInfoString);
 		logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
 		User user = shibUserService.getUser(request);
 		packageService.savePackageInformation(packageInfo, user, packageId);
-
-		return packageId;
+		Boolean largeFilesChecked = (Boolean) packageInfo.optBoolean("largeFilesChecked");
+		if (largeFilesChecked) {
+			packageResponse.setGdriveId(driveService.createFolder(packageId));
+		}
+		packageService.sendStateChangeEvent(packageId, metadataReceivedState, packageResponse.getGdriveId());
+		return packageResponse;
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.POST, consumes = {
@@ -117,7 +129,6 @@ public class PackageController {
 			@RequestBody String hostname, HttpServletRequest request) throws UnsupportedEncodingException {
 
 		packageService.sendStateChangeEvent(packageId, filesReceivedState, null);
-
 		FileUploadResponse fileUploadResponse;
 		String message = finish.format(new Object[] { "Finishing file upload with packageId: ", packageId });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);

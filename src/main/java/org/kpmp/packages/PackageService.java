@@ -34,8 +34,6 @@ public class PackageService {
 
 	@Value("${package.state.upload.succeeded}")
 	private String uploadSucceededState;
-	@Value("${package.state.metadata.received}")
-	private String metadataReceivedState;
 
 	private static final MessageFormat zipPackage = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadFinishTiming = new MessageFormat(
@@ -94,7 +92,6 @@ public class PackageService {
 
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
 		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
-		stateHandler.sendStateChange(packageId, metadataReceivedState);
 		return packageId;
 	}
 

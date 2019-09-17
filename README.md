@@ -37,3 +37,17 @@ To regenerate zip files:
 7. Run the zip generator
 `java -cp build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher`
 
+## Getting and storing the credentials for Google Drive
+1. Get the credentials.json file from kpmp-secure/orion-data and put it in the `src/main/resources` directory.
+2. Get the StoredCredential file from kpmp-secure/orion-data and put it in the `tokens` directory (create if it doesn't exist).
+3. Restart the spring container.
+
+## Creating new credentials files
+NOTE: You need to create a new credentials file if the permissions change
+1. Delete (if necessary) the old `tokens` directory.
+2. Bring the application down and then back up.
+3. Spring will generate a URL and print it to stdout, grab it and open it in a browser.
+4. Authenticate as kpmp-datalake@umich.edu and grant the requested access.
+5. The redirect to localhost will probably fail, since you're not running the app locally. Copy this URL.
+6. Go into the spring container and do a wget on the pasted URL. This will create the credentials file and the app will start running.
+
