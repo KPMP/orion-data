@@ -70,10 +70,11 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)
-	public @ResponseBody String postPackageInformation(@RequestBody String packageInfoString,
+	public @ResponseBody PackageResponse postPackageInformation(@RequestBody String packageInfoString,
 			HttpServletRequest request) throws JSONException, IOException {
+	    PackageResponse packageResponse = new PackageResponse();
 		String packageId = universalIdGenerator.generateUniversalId();
-		String gdriveId  = null;
+		packageResponse.setPackageId(packageId);
 		packageService.sendStateChangeEvent(packageId, uploadStartedState, null);
 		JSONObject packageInfo = new JSONObject(packageInfoString);
 		logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
@@ -81,10 +82,10 @@ public class PackageController {
 		packageService.savePackageInformation(packageInfo, user, packageId);
 		Boolean largeFilesChecked = (Boolean) packageInfo.optBoolean("largeFilesChecked");
 		if (largeFilesChecked) {
-			gdriveId = driveService.createFolder(packageId);
+			packageResponse.setGdriveId(driveService.createFolder(packageId));
 		}
-		packageService.sendStateChangeEvent(packageId, metadataReceivedState, gdriveId);
-		return "{\"packageId\":\"" + packageId +"\",\"gdriveId\":\""+ gdriveId + "\"}";
+		packageService.sendStateChangeEvent(packageId, metadataReceivedState, packageResponse.getGdriveId());
+		return packageResponse;
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.POST, consumes = {
@@ -149,15 +150,6 @@ public class PackageController {
 		}
 		return fileUploadResponse;
 	}
-
-	@RequestMapping(value = "/v1/packages/{packageId}/files/process-large-files", method = RequestMethod.POST)
-	public @ResponseBody String processLargeFiles(@PathVariable("packageId") String packageId,
-														 @RequestBody String hostname, HttpServletRequest request) throws IOException {
-		String folderId = driveService.createFolder(packageId);
-		packageService.sendStateChangeEvent(packageId, metadataReceivedState, folderId);
-		return folderId;
-	}
-
 
 	private boolean shouldAppend(int chunk) {
 		return chunk != 0;

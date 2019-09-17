@@ -88,9 +88,10 @@ public class PackageControllerTest {
 		User user = mock(User.class);
 		when(shibUserService.getUser(request)).thenReturn(user);
 
-		String response = controller.postPackageInformation(packageInfoString, request);
+		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
 
-		assertEquals("{\"packageId\":\"universalId\",\"gdriveId\":\"null\"}", response);
+		assertEquals("universalId", response.getPackageId());
+		assertEquals(null, response.getGdriveId());
 		ArgumentCaptor<JSONObject> jsonCaptor = ArgumentCaptor.forClass(JSONObject.class);
 		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
@@ -115,9 +116,10 @@ public class PackageControllerTest {
 		when(shibUserService.getUser(request)).thenReturn(user);
 		when(googleDriveService.createFolder("universalId")).thenReturn("newGdriveId");
 
-		String response = controller.postPackageInformation(packageInfoString, request);
+		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
 
-		assertEquals("{\"packageId\":\"universalId\",\"gdriveId\":\"newGdriveId\"}", response);
+		assertEquals("universalId", response.getPackageId());
+		assertEquals("newGdriveId", response.getGdriveId());
 		ArgumentCaptor<JSONObject> jsonCaptor = ArgumentCaptor.forClass(JSONObject.class);
 		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);

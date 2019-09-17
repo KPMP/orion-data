@@ -36,10 +36,6 @@ public class GoogleDriveService {
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
     private static final String TOP_LEVEL_FOLDER_ID = "1WEfJYFDqxLBBAdsKDC3zqvq0owW8hLwH";
 
-    /**
-     * Global instance of the scopes required by this quickstart.
-     * If modifying these scopes, delete your previously saved tokens/ folder.
-     */
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_FILE);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
     private final Drive driveService;
