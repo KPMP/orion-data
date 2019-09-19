@@ -70,7 +70,7 @@ public class CustomPackageRepositoryTest {
 	public void testSaveDynamicForm_happyPath() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
 		when(packageMetadata.toString()).thenReturn("{}");
-		when(universalIdGenerator.generateUniversalId()).thenReturn("123").thenReturn("456");
+		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
 		when(packageMetadata.getString("submitterEmail")).thenReturn("emailAddress");
 		User user = mock(User.class);
 		when(user.getEmail()).thenReturn("emailAddress");
@@ -84,7 +84,7 @@ public class CustomPackageRepositoryTest {
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
 
-		String packageId = repo.saveDynamicForm(packageMetadata, user);
+		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
 
 		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
 		verify(mongoCollection).insertOne(documentCaptor.capture());
@@ -122,7 +122,7 @@ public class CustomPackageRepositoryTest {
 	public void testSaveDynamicForm_whenNewUser() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
 		when(packageMetadata.toString()).thenReturn("{}");
-		when(universalIdGenerator.generateUniversalId()).thenReturn("123").thenReturn("456");
+		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
 		User user = mock(User.class);
 		when(user.getDisplayName()).thenReturn("displayName");
 		when(user.getEmail()).thenReturn("emailAddress2");
@@ -139,7 +139,7 @@ public class CustomPackageRepositoryTest {
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
 
-		String packageId = repo.saveDynamicForm(packageMetadata, user);
+		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
 
 		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
 		verify(mongoCollection).insertOne(documentCaptor.capture());
@@ -203,7 +203,7 @@ public class CustomPackageRepositoryTest {
 		JsonWriterSettings jsonWriterSettingsReturn = mock(JsonWriterSettings.class);
 		when(jsonWriterSettings.getSettings()).thenReturn(jsonWriterSettingsReturn);
 		when(document.toJson(any(JsonWriterSettings.class), any(DocumentCodec.class))).thenReturn(
-				"{ \"_id\": \"123\", \"key\": \"value\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
+				"{ \"_id\": \"123\", \"key\": \"value with /\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
 		when(result.first()).thenReturn(document);
 		User user = mock(User.class);
 		when(user.generateJSONForApp()).thenReturn("{user: information, exists: here}");
@@ -212,7 +212,7 @@ public class CustomPackageRepositoryTest {
 		String packageJson = repo.getJSONByPackageId("123");
 
 		assertEquals(
-				"{\"regenerateZip\":true,\"createdAt\":{\"$date\":123567},\"submitter\":{\"exists\":\"here\",\"user\":\"information\"},\"_id\":\"123\",\"key\":\"value\"}",
+				"{\"createdAt\":{\"$date\":123567},\"submitter\":{\"exists\":\"here\",\"user\":\"information\"},\"_id\":\"123\",\"key\":\"value with /\"}",
 				packageJson);
 		ArgumentCaptor<BasicDBObject> queryCaptor = ArgumentCaptor.forClass(BasicDBObject.class);
 		verify(mongoCollection).find(queryCaptor.capture());

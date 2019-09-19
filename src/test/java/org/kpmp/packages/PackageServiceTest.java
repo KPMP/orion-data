@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONException;
@@ -23,12 +24,16 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.externalProcess.CommandBuilder;
+import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.logging.LoggingService;
+import org.kpmp.packages.state.State;
 import org.kpmp.packages.state.StateHandlerService;
 import org.kpmp.users.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import ch.qos.logback.classic.Logger;
@@ -42,20 +47,23 @@ public class PackageServiceTest {
 	@Mock
 	private PackageFileHandler packageFileHandler;
 	@Mock
-	private PackageZipService packageZipService;
-	@Mock
 	private FilePathHelper filePathHelper;
 	private PackageService service;
 	@Mock
 	private LoggingService logger;
 	@Mock
 	private StateHandlerService stateHandlerService;
+	@Mock
+	private CommandBuilder commandBuilder;
+	@Mock
+	private ProcessExecutor processExecutor;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		service = new PackageService(packageFileHandler, packageZipService, filePathHelper, packageRepository,
-				stateHandlerService, logger);
+		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService,
+				commandBuilder, processExecutor, logger);
+		ReflectionTestUtils.setField(service, "uploadSucceededState", "UPLOAD_SUCCEEDED");
 	}
 
 	@After
@@ -64,7 +72,19 @@ public class PackageServiceTest {
 	}
 
 	@Test
+	public void testSendStateChangeEvent() throws Exception {
+		service.sendStateChangeEvent("packageId", "stateString", "codicil");
+
+		verify(stateHandlerService).sendStateChange("packageId", "stateString", "codicil");
+	}
+
+	@Test
 	public void testFindAllPackages() throws JSONException, IOException {
+		State newState = mock(State.class);
+		HashMap<String, State> stateMap = new HashMap<String, State>();
+		stateMap.put("packageId", newState);
+		stateMap.put("anotherId", mock(State.class));
+		when(stateHandlerService.getState()).thenReturn(stateMap);
 		JSONObject uploadedPackage = mock(JSONObject.class);
 		when(uploadedPackage.toString()).thenReturn("");
 		when(uploadedPackage.getString("_id")).thenReturn("packageId");
@@ -75,19 +95,20 @@ public class PackageServiceTest {
 		List<PackageView> packages = service.findAllPackages();
 
 		assertEquals(false, packages.get(0).isDownloadable());
+		assertEquals(newState, packages.get(0).getState());
 		verify(packageRepository).findAll();
+		verify(stateHandlerService).getState();
 	}
 
 	@Test
 	public void testSavePackageInformation() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
 		User user = mock(User.class);
-		when(packageRepository.saveDynamicForm(packageMetadata, user)).thenReturn("awesomeNewId");
 
-		String packageId = service.savePackageInformation(packageMetadata, user);
+		String packageId = service.savePackageInformation(packageMetadata, user, "awesomeNewId");
 
 		assertEquals("awesomeNewId", packageId);
-		verify(packageRepository).saveDynamicForm(packageMetadata, user);
+		verify(packageRepository).saveDynamicForm(packageMetadata, user, "awesomeNewId");
 	}
 
 	@Test
