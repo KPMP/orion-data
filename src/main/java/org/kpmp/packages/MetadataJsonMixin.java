@@ -16,4 +16,7 @@ abstract class MetadataJsonMixin {
 	@JsonIgnore
 	abstract Boolean getRegenerateZip();
 
+	@JsonIgnore
+	abstract Boolean getLargeFilesChecked();
+
 }

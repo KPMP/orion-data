@@ -34,6 +34,8 @@ public class Package {
 	private User submitter;
 	@Nullable
 	private Boolean regenerateZip = false;
+	@Nullable
+	private Boolean largeFilesChecked = false;
 
 	@Field("files")
 	private List<Attachment> attachments = new ArrayList<>();
@@ -76,6 +78,15 @@ public class Package {
 
 	public void setAttachments(List<Attachment> attachments) {
 		this.attachments = attachments;
+	}
+
+	@Nullable
+	public Boolean getLargeFilesChecked() {
+		return largeFilesChecked;
+	}
+
+	public void setLargeFilesChecked(@Nullable Boolean largeFilesChecked) {
+		this.largeFilesChecked = largeFilesChecked;
 	}
 
 	public String getProtocol() {
