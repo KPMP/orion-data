@@ -8,7 +8,7 @@ public class PackageKeysTest {
 
 	@Test
 	public void testLength() throws Exception {
-		assertEquals(25, PackageKeys.values().length);
+		assertEquals(26, PackageKeys.values().length);
 	}
 
 	@Test
@@ -38,6 +38,7 @@ public class PackageKeysTest {
 		assertEquals("tisInternalExperimentID", PackageKeys.TIS_INTERNAL_EXPERIMENT_ID.getKey());
 		assertEquals("tisName", PackageKeys.TIS_NAME.getKey());
 		assertEquals("version", PackageKeys.VERSION.getKey());
+		assertEquals("largeFilesChecked", PackageKeys.LARGE_FILES_CHECKED.getKey());
 	}
 
 }
