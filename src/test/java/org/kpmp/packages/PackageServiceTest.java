@@ -30,6 +30,7 @@ import org.kpmp.logging.LoggingService;
 import org.kpmp.packages.state.State;
 import org.kpmp.packages.state.StateHandlerService;
 import org.kpmp.users.User;
+import org.kpmp.zip.ZipService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.LoggerFactory;
@@ -57,12 +58,14 @@ public class PackageServiceTest {
 	private CommandBuilder commandBuilder;
 	@Mock
 	private ProcessExecutor processExecutor;
+	@Mock
+	private ZipService zipWorker;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService,
-				commandBuilder, processExecutor, logger);
+				commandBuilder, processExecutor, logger, zipWorker);
 		ReflectionTestUtils.setField(service, "uploadSucceededState", "UPLOAD_SUCCEEDED");
 	}
 
