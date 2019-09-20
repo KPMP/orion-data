@@ -8,7 +8,7 @@ public enum PackageKeys {
 	REGENERATE_ZIP("regenerateZip"), SIZE("size"), SUBJECT_ID("subjectId"), SUBMITTER("submitter"),
 	SUBMITTER_EMAIL("submitterEmail"), SUBMITTER_FIRST_NAME("submitterFirstName"), SUBMITTER_ID("$oid"),
 	SUBMITTER_ID_OBJECT("$id"), SUBMITTER_LAST_NAME("submitterLastName"),
-	TIS_INTERNAL_EXPERIMENT_ID("tisInternalExperimentID"), TIS_NAME("tisName"), VERSION("version");
+	TIS_INTERNAL_EXPERIMENT_ID("tisInternalExperimentID"), TIS_NAME("tisName"), VERSION("version"), LARGE_FILES_CHECKED("largeFilesChecked");
 
 	private String key;
 

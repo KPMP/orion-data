@@ -158,6 +158,7 @@ public class CustomPackageRepository {
 
 		JSONObject jsonObject = setUserInformation(json);
 		jsonObject.remove(PackageKeys.REGENERATE_ZIP.getKey());
+		jsonObject.remove(PackageKeys.LARGE_FILES_CHECKED.getKey());
 		return StringEscapeUtils.unescapeJava(jsonObject.toString());
 	}
 
