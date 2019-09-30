@@ -1,6 +1,5 @@
 package org.kpmp.packages;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,6 +8,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class PackageFileHandler {
 		}
 	}
 
-	public void saveFile(String fileContents, String packageId, String filename, boolean shouldOverwrite)
+	public File saveFile(String fileContents, String packageId, String filename, boolean shouldOverwrite)
 			throws IOException {
 		String packageDirectoryPath = filePathHelper.getPackagePath(packageId);
 		File packageDirectory = new File(packageDirectoryPath);
@@ -60,8 +60,8 @@ public class PackageFileHandler {
 			throw new FileAlreadyExistsException(fileToSave.getPath());
 		}
 
-		InputStream inputStream = new ByteArrayInputStream(fileContents.getBytes());
-		FileOutputStream fileOutputStream = new FileOutputStream(fileToSave);
-		IOUtils.copy(inputStream, fileOutputStream);
+		FileUtils.writeStringToFile(fileToSave, fileContents, "UTF-8");
+
+		return fileToSave;
 	}
 }

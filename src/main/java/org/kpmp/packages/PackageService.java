@@ -127,10 +127,12 @@ public class PackageService {
 			public void run() {
 				try {
 					String packageMetadata = packageRepository.getJSONByPackageId(packageId);
-					// TODO: Write out metadata.json file to package directory
+					File metadataJson = packageFileHandler.saveFile(packageMetadata, packageId, "metadata.json", true);
 
 					String[] zipCommand = commandBuilder.buildZipCommand(packageId);
 					boolean success = processExecutor.executeProcess(zipCommand);
+					metadataJson.delete();
+
 					if (success) {
 						logger.logInfoMessage(PackageService.class, null, packageId,
 								PackageService.class.getSimpleName() + ".createZipFile",
@@ -154,7 +156,6 @@ public class PackageService {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
 				}
-				// TODO: Delete metadata.json file if exists
 			}
 
 		}.start();
