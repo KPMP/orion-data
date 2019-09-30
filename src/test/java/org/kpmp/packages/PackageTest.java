@@ -3,12 +3,9 @@ package org.kpmp.packages;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.junit.After;
 import org.junit.Before;
@@ -116,51 +113,11 @@ public class PackageTest {
 		user.setId("1234");
 		packageInfo.setSubmitter(user);
 
-		assertEquals("packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", "
-				+ "submitterId: 1234, "
-				+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
-				+ "tisName: TIS, number of attachments: 1, regenerateZip: true", packageInfo.toString());
-	}
-
-	@Test
-	public void testGenerateJSON() throws Exception {
-		Date createdAt = new Date();
-		Date experimentDate = new Date();
-		Package packageInfo = new Package();
-		Attachment attachment = new Attachment();
-		attachment.setFileName("filename");
-		attachment.setId("fileId");
-		attachment.setSize(433);
-		packageInfo.setAttachments(Arrays.asList(attachment));
-		packageInfo.setCreatedAt(createdAt);
-		packageInfo.setDescription("description");
-		packageInfo.setTisName("TIS");
-		packageInfo.setPackageId("packageId");
-		packageInfo.setPackageType("packageType");
-		packageInfo.setProtocol("protocol");
-		packageInfo.setSubjectId("subjectId");
-		User testUser = new User();
-		testUser.setId("1234");
-		testUser.setFirstName("Arnold");
-		testUser.setLastName("Schwarzenegger");
-		testUser.setDisplayName("Conan");
-		testUser.setEmail("arnie@illbeback.com");
-		packageInfo.setSubmitter(testUser);
-		packageInfo.setExperimentDate(experimentDate);
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'UTC'");
-		df.setTimeZone(TimeZone.getTimeZone("UTC"));
-		String createdAtString = df.format(createdAt);
-		DateFormat experimentDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		String experimentDateString = experimentDateFormat.format(experimentDate);
-
 		assertEquals(
-				"{\"packageId\":\"packageId\",\"createdAt\":\"" + createdAtString + "\","
-						+ "\"packageType\":\"packageType\"," +
-						"\"submitter\":{\"firstName\":\"Arnold\",\"lastName\":\"Schwarzenegger\","
-						+ "\"displayName\":\"Conan\",\"email\":\"arnie@illbeback.com\"},"
-						+ "\"tisName\":\"TIS\"," + "\"protocol\":\"protocol\",\"subjectId\":\"subjectId\","
-						+ "\"experimentDate\":\"" + experimentDateString + "\",\"description\":\"description\","
-						+ "\"attachments\":[{\"fileName\":\"filename\",\"size\":433,\"id\":\"fileId\"}]}",
-				packageInfo.generateJSON());
+				"packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", " + "submitterId: 1234, "
+						+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
+						+ "tisName: TIS, number of attachments: 1, regenerateZip: true",
+				packageInfo.toString());
 	}
+
 }

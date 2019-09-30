@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.kpmp.users.User;
-import org.kpmp.users.UserJsonMixin;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,8 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Document(collection = "packages")
 @JsonPropertyOrder({ "packageId", "createdAt", "packageType", "submitter", "tisName", "protocol", "subjectId",
@@ -142,15 +139,8 @@ public class Package {
 	public String toString() {
 		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
 				+ ", submitterId: " + submitter.getId() + ", protocol: " + protocol + ", subjectId: " + subjectId
-				+ ", experimentDate: " + experimentDate + ", description: " + description + ", tisName: "
-				+ tisName + ", number of attachments: " + attachments.size() + ", regenerateZip: " + regenerateZip;
-	}
-
-	public String generateJSON() throws JsonProcessingException {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.addMixIn(Package.class, MetadataJsonMixin.class);
-		mapper.addMixIn(User.class, UserJsonMixin.class);
-		return mapper.writeValueAsString(this);
+				+ ", experimentDate: " + experimentDate + ", description: " + description + ", tisName: " + tisName
+				+ ", number of attachments: " + attachments.size() + ", regenerateZip: " + regenerateZip;
 	}
 
 }
