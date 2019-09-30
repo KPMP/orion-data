@@ -18,7 +18,7 @@ public class CommandBuilder {
 		this.filePathHelper = filePathHelper;
 	}
 
-	public String[] buildZipCommand(String packageId, String metadataJson) {
+	public String[] buildZipCommand(String packageId) {
 		List<String> commandArgs = new ArrayList<>();
 		commandArgs.add("java");
 		commandArgs.add("-jar");
@@ -29,10 +29,10 @@ public class CommandBuilder {
 		for (String fileName : fileNames) {
 			commandArgs.add("--zip.fileNames=" + packagePath + File.separator + fileName);
 		}
+		commandArgs.add("--zip.fileNames=" + packagePath + File.separator + "metadata.json");
 
 		String zipFileName = filePathHelper.getZipFileName(packageId);
 		commandArgs.add("--zip.zipFilePath=" + zipFileName);
-		commandArgs.add("--zip.additionalFileData=metadata.json|" + metadataJson);
 
 		return commandArgs.toArray(new String[0]);
 	}

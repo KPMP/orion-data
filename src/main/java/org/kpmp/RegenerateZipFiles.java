@@ -59,7 +59,9 @@ public class RegenerateZipFiles implements CommandLineRunner {
 				try {
 					File existingZipFile = new File(zipFileName);
 					existingZipFile.delete();
-					String[] zipCommand = commandBuilder.buildZipCommand(packageId, packageMetadata);
+					String[] zipCommand = commandBuilder.buildZipCommand(packageId);
+					// TODO: Write out metadata.json file
+
 					boolean success = processExecutor.executeProcess(zipCommand);
 					if (success) {
 						LocalDateTime start = LocalDateTime.ofInstant(startRezipTime.toInstant(),
@@ -76,6 +78,7 @@ public class RegenerateZipFiles implements CommandLineRunner {
 				}
 			}
 		}
+		// TODO: Delete metadata.json file if exists
 	}
 
 }

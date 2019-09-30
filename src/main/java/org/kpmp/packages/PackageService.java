@@ -127,7 +127,9 @@ public class PackageService {
 			public void run() {
 				try {
 					String packageMetadata = packageRepository.getJSONByPackageId(packageId);
-					String[] zipCommand = commandBuilder.buildZipCommand(packageId, packageMetadata);
+					// TODO: Write out metadata.json file to package directory
+
+					String[] zipCommand = commandBuilder.buildZipCommand(packageId);
 					boolean success = processExecutor.executeProcess(zipCommand);
 					if (success) {
 						logger.logInfoMessage(PackageService.class, null, packageId,
@@ -152,6 +154,7 @@ public class PackageService {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
 				}
+				// TODO: Delete metadata.json file if exists
 			}
 
 		}.start();

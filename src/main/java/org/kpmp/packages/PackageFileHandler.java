@@ -1,5 +1,6 @@
 package org.kpmp.packages;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,4 +43,25 @@ public class PackageFileHandler {
 		}
 	}
 
+	public void saveFile(String fileContents, String packageId, String filename, boolean shouldOverwrite)
+			throws IOException {
+		String packageDirectoryPath = filePathHelper.getPackagePath(packageId);
+		File packageDirectory = new File(packageDirectoryPath);
+
+		if (!packageDirectory.exists()) {
+			Files.createDirectories(Paths.get(packageDirectoryPath));
+		}
+
+		File fileToSave = new File(packageDirectoryPath + File.separator + filename);
+
+		if (fileToSave.exists() && shouldOverwrite) {
+			fileToSave.delete();
+		} else if (fileToSave.exists() && !shouldOverwrite) {
+			throw new FileAlreadyExistsException(fileToSave.getPath());
+		}
+
+		InputStream inputStream = new ByteArrayInputStream(fileContents.getBytes());
+		FileOutputStream fileOutputStream = new FileOutputStream(fileToSave);
+		IOUtils.copy(inputStream, fileOutputStream);
+	}
 }
