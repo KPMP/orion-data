@@ -33,7 +33,7 @@ To regenerate zip files:
 5. Bash into the spring container
 `docker exec -it spring bash`
 6. Rebuild the orion-data jar
-`./gradlew build`
+`./gradlew build -x test`
 7. Run the zip generator
 `java -cp build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher`
 
