@@ -32,7 +32,7 @@ public class CommandBuilderTest {
 	@Test
 	public void testBuildZipCommand_oneFile() {
 		when(filePathHelper.getPackagePath("packageId")).thenReturn("/here/is/a/path");
-		when(filePathHelper.getFilenames("/here/is/a/path")).thenReturn(Arrays.asList("file1.txt"));
+		when(filePathHelper.getFilenames("/here/is/a/path")).thenReturn(Arrays.asList("file1.txt", "metadata.json"));
 		when(filePathHelper.getZipFileName("packageId")).thenReturn("/here/is/a/path/packageId.zip");
 
 		String[] command = builder.buildZipCommand("packageId");
@@ -49,7 +49,8 @@ public class CommandBuilderTest {
 	@Test
 	public void testBuildZipCommand_multipleFiles() {
 		when(filePathHelper.getPackagePath("packageId")).thenReturn("/here/is/a/path");
-		when(filePathHelper.getFilenames("/here/is/a/path")).thenReturn(Arrays.asList("file1.txt", "file2.txt"));
+		when(filePathHelper.getFilenames("/here/is/a/path"))
+				.thenReturn(Arrays.asList("file1.txt", "file2.txt", "metadata.json"));
 		when(filePathHelper.getZipFileName("packageId")).thenReturn("/here/is/a/path/packageId.zip");
 
 		String[] command = builder.buildZipCommand("packageId");
