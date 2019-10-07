@@ -29,7 +29,6 @@ public class CommandBuilder {
 		for (String fileName : fileNames) {
 			commandArgs.add("--zip.fileNames=" + packagePath + File.separator + fileName);
 		}
-		commandArgs.add("--zip.fileNames=" + packagePath + File.separator + "metadata.json");
 
 		String zipFileName = filePathHelper.getZipFileName(packageId);
 		commandArgs.add("--zip.zipFilePath=" + zipFileName);
