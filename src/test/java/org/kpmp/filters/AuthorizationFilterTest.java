@@ -238,7 +238,7 @@ public class AuthorizationFilterTest {
 		filter.doFilter(incomingRequest, incomingResponse, chain);
 
 		verify(chain, times(0)).doFilter(incomingRequest, incomingResponse);
-		verify(incomingResponse).setStatus(HttpStatus.FAILED_DEPENDENCY.value());
+		verify(incomingResponse).setStatus(HttpStatus.NOT_FOUND.value());
 		verify(logger).logErrorMessage(AuthorizationFilter.class, null,
 				"User does not exist in User Portal: shibboleth id", incomingRequest);
 	}

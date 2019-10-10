@@ -117,7 +117,7 @@ public class AuthorizationFilter implements Filter {
 			} catch (HttpClientErrorException e) {
 				int statusCode = e.getRawStatusCode();
 				if (statusCode == HttpStatus.NOT_FOUND.value()) {
-					handleError(USER_DOES_NOT_EXIST + shibId, HttpStatus.FAILED_DEPENDENCY, request, response);
+					handleError(USER_DOES_NOT_EXIST + shibId, HttpStatus.NOT_FOUND, request, response);
 				} else if (statusCode != HttpStatus.OK.value()) {
 					handleError("Unable to get user information. User auth returned status code: " + statusCode,
 							HttpStatus.FAILED_DEPENDENCY, request, response);
