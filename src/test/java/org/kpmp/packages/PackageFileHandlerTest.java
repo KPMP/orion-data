@@ -2,7 +2,6 @@ package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -198,10 +197,13 @@ public class PackageFileHandlerTest {
 		InputStream testInputStream2 = IOUtils.toInputStream("Here is the data in file 2", "UTF-8");
 		when(fileTwo.getInputStream()).thenReturn(testInputStream2);
 
-		fileHandler.saveMultipartFile(fileOne, "packageId", "filename.txt", false);
+		try {
+			fileHandler.saveMultipartFile(fileOne, "packageId", "filename.txt", false);
+			fileHandler.saveMultipartFile(fileOne, "packageId", "filename.txt", false);
+			fail("Should have thrown exception");
+		} catch (FileAlreadyExistsException e) {
 
-		assertThrows(FileAlreadyExistsException.class,
-				() -> fileHandler.saveMultipartFile(fileTwo, "packageId", "filename.txt", false));
+		}
 
 	}
 
