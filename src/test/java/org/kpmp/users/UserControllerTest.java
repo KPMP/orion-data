@@ -10,14 +10,14 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.kpmp.logging.LoggingService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-class UserControllerTest {
+public class UserControllerTest {
 
 	@Mock
 	private UserService userService;
@@ -25,13 +25,13 @@ class UserControllerTest {
 	@Mock
 	private LoggingService logger;
 
-	@BeforeEach
+	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		controller = new UserController(userService, logger);
 	}
 
-	@AfterEach
+	@After
 	public void tearDown() throws Exception {
 		controller = null;
 	}

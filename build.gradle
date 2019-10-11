@@ -15,33 +15,11 @@ apply plugin: 'io.spring.dependency-management'
 
 jar {
     baseName='orion-data'
-    version= '2.4'
+    version= '2.5'
 }
 
 repositories {
     mavenCentral()
-}
-
-sourceSets {
-	integrationTest {
-		java {
-			compileClasspath += main.output + test.output
-			runtimeClasspath += main.output + test.output
-			srcDir file('src/integration-test/java')
-		}
-		resources.srcDir file('src/integration-test/resources')
-	}
-}
-
-configurations {
-	integrationTestCompile.extendsFrom testCompile
-	integrationTestRuntime.extendsFrom testRuntime
-}
-
-processResources {
-    filesMatching('application.properties') {
-        expand(project.properties)
-    }
 }
 
 sourceCompatibility = 1.8
@@ -50,46 +28,18 @@ targetCompatibility = 1.8
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web' 
 	compile 'commons-io:commons-io:2.6' 
-	compile 'org.mockito:mockito-core'
-    compile 'org.junit.jupiter:junit-jupiter-engine:5.2.0' 
     compile 'mysql:mysql-connector-java:6.0.5'
-	compile 'org.springframework.boot:spring-boot-starter-test'
 	compile 'org.springframework:spring-test:5.0.5.RELEASE'
 	compile 'org.springframework.data:spring-data-mongodb:2.0.8.RELEASE'
 	compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
-	testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1'
-	testCompile 'cz.jirutka.spring:embedmongo-spring:1.3.1'
 	compile 'org.apache.commons:commons-compress:1.17'
 	compile 'org.apache.commons:commons-text:1.7'
 	compile 'com.google.api-client:google-api-client:1.23.0'
 	compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
 	compile 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
+	compile 'org.springframework.boot:spring-boot-starter-test'
+	testCompile 'org.mockito:mockito-core'
 }
-
-ext {
-	snippetsDir = file('build/generated-snippets')
-}
-
-test {
-	outputs.dir snippetsDir
-}
-
-tasks.withType(Test) {
-	testLogging {
-	  exceptionFormat "full"
-	  events "skipped", "passed", "failed"
-	  showStandardStreams false
-	}
-  }
-
-task integrationTest(type: Test) {
-	testClassesDirs = sourceSets.integrationTest.output.classesDirs
-	classpath = sourceSets.integrationTest.runtimeClasspath
-	outputs.upToDateWhen { false }
-}
-
-check.dependsOn integrationTest
-integrationTest.mustRunAfter test
 
 springBoot {
     mainClassName = "org.kpmp.Application"
