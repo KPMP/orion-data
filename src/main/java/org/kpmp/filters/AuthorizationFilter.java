@@ -95,7 +95,7 @@ public class AuthorizationFilter implements Filter {
 					JSONObject userJson = new JSONObject(userInfo);
 					JSONArray userGroups = userJson.getJSONArray(GROUPS_KEY);
 
-					if (isAllowed(userGroups)) {
+					if (isAllowed(userGroups) && userJson.getBoolean("active")) {
 						HttpSession session = request.getSession(true);
 						session.setMaxInactiveInterval(SESSION_TIMEOUT_SECONDS);
 						Cookie message = new Cookie(COOKIE_NAME, shibId);
