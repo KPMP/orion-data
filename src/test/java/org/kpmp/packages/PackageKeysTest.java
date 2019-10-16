@@ -8,7 +8,7 @@ public class PackageKeysTest {
 
 	@Test
 	public void testLength() throws Exception {
-		assertEquals(26, PackageKeys.values().length);
+		assertEquals(27, PackageKeys.values().length);
 	}
 
 	@Test
@@ -27,6 +27,7 @@ public class PackageKeysTest {
 		assertEquals("packageType", PackageKeys.PACKAGE_TYPE.getKey());
 		assertEquals("protocol", PackageKeys.PROTOCOL.getKey());
 		assertEquals("regenerateZip", PackageKeys.REGENERATE_ZIP.getKey());
+		assertEquals("shibId", PackageKeys.SHIBID.getKey());
 		assertEquals("size", PackageKeys.SIZE.getKey());
 		assertEquals("subjectId", PackageKeys.SUBJECT_ID.getKey());
 		assertEquals("submitter", PackageKeys.SUBMITTER.getKey());

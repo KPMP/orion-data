@@ -159,7 +159,7 @@ public class AuthorizationFilterTest {
 		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		when(incomingRequest.getSession(false)).thenReturn(null);
 		ResponseEntity<String> response = mock(ResponseEntity.class);
-		when(response.getBody()).thenReturn("{groups: [ 'group1', 'another group']}");
+		when(response.getBody()).thenReturn("{groups: [ 'group1', 'another group'], active: true}");
 		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
 
 		filter.doFilter(incomingRequest, incomingResponse, chain);

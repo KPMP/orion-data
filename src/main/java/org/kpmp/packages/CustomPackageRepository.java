@@ -169,6 +169,7 @@ public class CustomPackageRepository {
 		String submitterId = submitterIdObject.getString(PackageKeys.SUBMITTER_ID.getKey());
 		Optional<User> userOptional = userRepository.findById(submitterId);
 		jsonObject.remove(PackageKeys.SUBMITTER.getKey());
+		jsonObject.remove(PackageKeys.SHIBID.getKey());
 		if (userOptional.isPresent()) {
 			User user = userOptional.get();
 			String submitterJsonString = user.generateJSONForApp();
