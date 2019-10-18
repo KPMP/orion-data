@@ -169,11 +169,11 @@ public class CustomPackageRepository {
 		String submitterId = submitterIdObject.getString(PackageKeys.SUBMITTER_ID.getKey());
 		Optional<User> userOptional = userRepository.findById(submitterId);
 		jsonObject.remove(PackageKeys.SUBMITTER.getKey());
-		jsonObject.remove(PackageKeys.SHIBID.getKey());
 		if (userOptional.isPresent()) {
 			User user = userOptional.get();
 			String submitterJsonString = user.generateJSONForApp();
 			JSONObject submitterJson = new JSONObject(submitterJsonString);
+			submitterJson.remove(PackageKeys.SHIBID.getKey());
 			jsonObject.put(PackageKeys.SUBMITTER.getKey(), submitterJson);
 		}
 		return jsonObject;
