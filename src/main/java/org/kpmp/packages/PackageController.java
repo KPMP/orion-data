@@ -1,7 +1,6 @@
 package org.kpmp.packages;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -140,7 +139,7 @@ public class PackageController {
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files/finish", method = RequestMethod.POST)
 	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId,
-			@RequestBody String hostname, HttpServletRequest request) throws UnsupportedEncodingException {
+			@RequestBody String hostname, HttpServletRequest request) {
 
 		packageService.sendStateChangeEvent(packageId, filesReceivedState, null);
 		FileUploadResponse fileUploadResponse;
@@ -150,17 +149,19 @@ public class PackageController {
 			try {
 				String removeErrantEqualSign = hostname.replace("=", "");
 				packageService.createZipFile(packageId, removeErrantEqualSign, shibUserService.getUser(request));
-
 				fileUploadResponse = new FileUploadResponse(true);
 			} catch (Exception e) {
-				logger.logErrorMessage(this.getClass(), packageId,
-						finish.format(new Object[] { "error getting metadata for package id: ", packageId }), request);
+				String errorMessage = finish
+						.format(new Object[] { "error getting metadata for package id: ", packageId });
+				logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
 				fileUploadResponse = new FileUploadResponse(false);
+				packageService.sendStateChangeEvent(packageId, uploadFailedState, errorMessage);
 			}
 		} else {
-			logger.logErrorMessage(this.getClass(), packageId,
-					finish.format(new Object[] { "Unable to zip package with package id: ", packageId }), request);
+			String errorMessage = finish.format(new Object[] { "Unable to zip package with package id: ", packageId });
+			logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
 			fileUploadResponse = new FileUploadResponse(false);
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, errorMessage);
 		}
 		return fileUploadResponse;
 	}

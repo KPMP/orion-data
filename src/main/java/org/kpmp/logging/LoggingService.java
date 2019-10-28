@@ -1,7 +1,5 @@
 package org.kpmp.logging;
 
-import java.io.UnsupportedEncodingException;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.kpmp.shibboleth.ShibbolethUserService;
@@ -25,16 +23,11 @@ public class LoggingService {
 	@SuppressWarnings("rawtypes")
 	public void logInfoMessage(Class clazz, String packageId, String message, HttpServletRequest request) {
 		Logger log = LoggerFactory.getLogger(clazz);
-		try {
-			User user = shibUserService.getUser(request);
-			if (user == null) {
-				log.info(LOG_MESSAGE_FORMAT, "Unknown user", packageId, request.getRequestURI(), message);
-			} else {
-				log.info(LOG_MESSAGE_FORMAT, user.toString(), packageId, request.getRequestURI(), message);
-			}
-		} catch (UnsupportedEncodingException e) {
-			log.error(LOG_MESSAGE_FORMAT, "unknown", packageId, request.getRequestURI(),
-					"ERROR: Unable to get user information from request: " + e.getMessage());
+		User user = shibUserService.getUser(request);
+		if (user == null) {
+			log.info(LOG_MESSAGE_FORMAT, "Unknown user", packageId, request.getRequestURI(), message);
+		} else {
+			log.info(LOG_MESSAGE_FORMAT, user.toString(), packageId, request.getRequestURI(), message);
 		}
 	}
 
@@ -51,16 +44,11 @@ public class LoggingService {
 	@SuppressWarnings("rawtypes")
 	public void logErrorMessage(Class clazz, String packageId, String message, HttpServletRequest request) {
 		Logger log = LoggerFactory.getLogger(clazz);
-		try {
-			User user = shibUserService.getUser(request);
-			if (user == null) {
-				log.error(LOG_MESSAGE_FORMAT, "Unknown user", packageId, request.getRequestURI(), message);
-			} else {
-				log.error(LOG_MESSAGE_FORMAT, user.toString(), packageId, request.getRequestURI(), message);
-			}
-		} catch (UnsupportedEncodingException e) {
-			log.error(LOG_MESSAGE_FORMAT, "unknown", packageId, request.getRequestURI(),
-					"ERROR: Unable to get user information from request: " + e.getMessage());
+		User user = shibUserService.getUser(request);
+		if (user == null) {
+			log.error(LOG_MESSAGE_FORMAT, "Unknown user", packageId, request.getRequestURI(), message);
+		} else {
+			log.error(LOG_MESSAGE_FORMAT, user.toString(), packageId, request.getRequestURI(), message);
 		}
 	}
 
@@ -77,16 +65,11 @@ public class LoggingService {
 	@SuppressWarnings("rawtypes")
 	public void logWarnMessage(Class clazz, String packageId, String message, HttpServletRequest request) {
 		Logger log = LoggerFactory.getLogger(clazz);
-		try {
-			User user = shibUserService.getUser(request);
-			if (user == null) {
-				log.warn(LOG_MESSAGE_FORMAT, "Unknown user", packageId, request.getRequestURI(), message);
-			} else {
-				log.warn(LOG_MESSAGE_FORMAT, user.toString(), packageId, request.getRequestURI(), message);
-			}
-		} catch (UnsupportedEncodingException e) {
-			log.error(LOG_MESSAGE_FORMAT, "unknown", packageId, request.getRequestURI(),
-					"ERROR: Unable to get user information from request: " + e.getMessage());
+		User user = shibUserService.getUser(request);
+		if (user == null) {
+			log.warn(LOG_MESSAGE_FORMAT, "Unknown user", packageId, request.getRequestURI(), message);
+		} else {
+			log.warn(LOG_MESSAGE_FORMAT, user.toString(), packageId, request.getRequestURI(), message);
 		}
 	}
 

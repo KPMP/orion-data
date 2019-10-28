@@ -1,7 +1,5 @@
 package org.kpmp.shibboleth;
 
-import java.io.UnsupportedEncodingException;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.kpmp.users.User;
@@ -18,7 +16,7 @@ public class ShibbolethUserService {
 		this.encoder = encoder;
 	}
 
-	public User getUser(HttpServletRequest request) throws UnsupportedEncodingException {
+	public User getUser(HttpServletRequest request) {
 
 		String value = handleNull(request.getHeader("mail"));
 		String email = encoder.convertFromLatin1(value);

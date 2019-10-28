@@ -11,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -98,20 +97,6 @@ public class PackageControllerTest {
 		assertEquals(null, response.getGdriveId());
 		verify(logger).logErrorMessage(PackageController.class, "universalId", "FAIL", request);
 		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", "FAIL");
-	}
-
-	@Test
-	public void testPostPackageInformation_whenShibUserServiceThrowsException() throws Exception {
-		String packageInfoString = "{\"packageType\":\"blah\"}";
-		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(shibUserService.getUser(request)).thenThrow(new UnsupportedEncodingException("WHAT?"));
-
-		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
-
-		assertEquals(null, response.getGdriveId());
-		verify(logger).logErrorMessage(PackageController.class, "universalId", "WHAT?", request);
-		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", "WHAT?");
 	}
 
 	@Test
@@ -204,12 +189,26 @@ public class PackageControllerTest {
 		MultipartFile file = mock(MultipartFile.class);
 		HttpServletRequest request = mock(HttpServletRequest.class);
 
-		controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
+		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
 
+		assertEquals(true, response.isSuccess());
 		verify(packageService).saveFile(file, "packageId", "filename", false);
 		verify(logger).logInfoMessage(PackageController.class, "packageId",
 				"Posting file: filename to package with id: packageId, filesize: 1,234, chunk: 0 out of 3 chunks",
 				request);
+	}
+
+	@Test
+	public void testPostFilesToPackage_whenSaveThrowsException() throws Exception {
+		MultipartFile file = mock(MultipartFile.class);
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		doThrow(new Exception("NOPE")).when(packageService).saveFile(file, "packageId", "filename", false);
+
+		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
+
+		assertEquals(false, response.isSuccess());
+		verify(logger).logErrorMessage(PackageController.class, "packageId", "NOPE", request);
+		verify(packageService).sendStateChangeEvent("packageId", "UPLOAD_FAILED", "NOPE");
 	}
 
 	@Test
@@ -245,6 +244,8 @@ public class PackageControllerTest {
 		verify(logger).logErrorMessage(PackageController.class, "3545", "error getting metadata for package id:  3545",
 				request);
 		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null);
+		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED",
+				"error getting metadata for package id:  3545");
 	}
 
 	@Test
@@ -262,6 +263,8 @@ public class PackageControllerTest {
 		verify(logger).logErrorMessage(PackageController.class, "3545", "Unable to zip package with package id:  3545",
 				request);
 		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null);
+		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED",
+				"Unable to zip package with package id:  3545");
 	}
 
 	@Test
