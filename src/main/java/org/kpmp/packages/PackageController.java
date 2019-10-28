@@ -39,6 +39,8 @@ public class PackageController {
 	private String uploadStartedState;
 	@Value("${package.state.metadata.received}")
 	private String metadataReceivedState;
+	@Value("${package.state.upload.failed}")
+	private String uploadFailedState;
 
 	private static final MessageFormat finish = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat(
@@ -54,7 +56,8 @@ public class PackageController {
 
 	@Autowired
 	public PackageController(PackageService packageService, LoggingService logger,
-			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator, GoogleDriveService driveService) {
+			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator,
+			GoogleDriveService driveService) {
 		this.packageService = packageService;
 		this.logger = logger;
 		this.shibUserService = shibUserService;
@@ -71,20 +74,26 @@ public class PackageController {
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)
 	public @ResponseBody PackageResponse postPackageInformation(@RequestBody String packageInfoString,
-			HttpServletRequest request) throws JSONException, IOException {
-	    PackageResponse packageResponse = new PackageResponse();
+			HttpServletRequest request) {
+		PackageResponse packageResponse = new PackageResponse();
 		String packageId = universalIdGenerator.generateUniversalId();
 		packageResponse.setPackageId(packageId);
 		packageService.sendStateChangeEvent(packageId, uploadStartedState, null);
-		JSONObject packageInfo = new JSONObject(packageInfoString);
-		logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
-		User user = shibUserService.getUser(request);
-		packageService.savePackageInformation(packageInfo, user, packageId);
-		Boolean largeFilesChecked = (Boolean) packageInfo.optBoolean("largeFilesChecked");
-		if (largeFilesChecked) {
-			packageResponse.setGdriveId(driveService.createFolder(packageId));
+		JSONObject packageInfo;
+		try {
+			packageInfo = new JSONObject(packageInfoString);
+			logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
+			User user = shibUserService.getUser(request);
+			packageService.savePackageInformation(packageInfo, user, packageId);
+			Boolean largeFilesChecked = (Boolean) packageInfo.optBoolean("largeFilesChecked");
+			if (largeFilesChecked) {
+				packageResponse.setGdriveId(driveService.createFolder(packageId));
+			}
+			packageService.sendStateChangeEvent(packageId, metadataReceivedState, packageResponse.getGdriveId());
+		} catch (JSONException | IOException e) {
+			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, e.getMessage());
 		}
-		packageService.sendStateChangeEvent(packageId, metadataReceivedState, packageResponse.getGdriveId());
 		return packageResponse;
 	}
 
@@ -94,13 +103,18 @@ public class PackageController {
 			@RequestParam("qqfile") MultipartFile file, @RequestParam("qqfilename") String filename,
 			@RequestParam("qqtotalfilesize") long fileSize,
 			@RequestParam(name = "qqtotalparts", defaultValue = "1") int chunks,
-			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk, HttpServletRequest request)
-			throws Exception {
+			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk, HttpServletRequest request) {
 
 		String message = fileUploadRequest.format(new Object[] { filename, packageId, fileSize, chunk, chunks });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
 
-		packageService.saveFile(file, packageId, filename, shouldAppend(chunk));
+		try {
+			packageService.saveFile(file, packageId, filename, shouldAppend(chunk));
+		} catch (Exception e) {
+			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, e.getMessage());
+			return new FileUploadResponse(false);
+		}
 
 		return new FileUploadResponse(true);
 	}

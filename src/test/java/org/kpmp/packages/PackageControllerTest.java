@@ -3,6 +3,7 @@ package org.kpmp.packages;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -54,10 +56,12 @@ public class PackageControllerTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator, googleDriveService);
+		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator,
+				googleDriveService);
 		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
+		ReflectionTestUtils.setField(controller, "uploadFailedState", "UPLOAD_FAILED");
 
 	}
 
@@ -80,10 +84,56 @@ public class PackageControllerTest {
 	}
 
 	@Test
-	public void testPostPackageInfo() throws Exception {
+	public void testPostPackageInformation_whenSaveThrowsException() throws Exception {
 		String packageInfoString = "{\"packageType\":\"blah\"}";
 		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
+		when(packageService.savePackageInformation(any(JSONObject.class), any(User.class), any(String.class)))
+				.thenThrow(new JSONException("FAIL"));
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		User user = mock(User.class);
+		when(shibUserService.getUser(request)).thenReturn(user);
 
+		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
+
+		assertEquals(null, response.getGdriveId());
+		verify(logger).logErrorMessage(PackageController.class, "universalId", "FAIL", request);
+		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", "FAIL");
+	}
+
+	@Test
+	public void testPostPackageInformation_whenShibUserServiceThrowsException() throws Exception {
+		String packageInfoString = "{\"packageType\":\"blah\"}";
+		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(shibUserService.getUser(request)).thenThrow(new UnsupportedEncodingException("WHAT?"));
+
+		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
+
+		assertEquals(null, response.getGdriveId());
+		verify(logger).logErrorMessage(PackageController.class, "universalId", "WHAT?", request);
+		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", "WHAT?");
+	}
+
+	@Test
+	public void testPostPackageInformation_whenGoogleDriveServiceThrowsException() throws Exception {
+		String packageInfoString = "{\"packageType\":\"blah\",\"largeFilesChecked\":true}";
+		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		User user = mock(User.class);
+		when(shibUserService.getUser(request)).thenReturn(user);
+		when(googleDriveService.createFolder("universalId")).thenThrow(new IOException("NO DICE"));
+
+		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
+
+		assertEquals(null, response.getGdriveId());
+		verify(logger).logErrorMessage(PackageController.class, "universalId", "NO DICE", request);
+		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", "NO DICE");
+	}
+
+	@Test
+	public void testPostPackageInformation() throws Exception {
+		String packageInfoString = "{\"packageType\":\"blah\"}";
+		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
 		when(shibUserService.getUser(request)).thenReturn(user);
@@ -107,7 +157,7 @@ public class PackageControllerTest {
 	}
 
 	@Test
-	public void testPostPackageInfoLargeFile() throws Exception {
+	public void testPostPackageInformationLargeFile() throws Exception {
 		String packageInfoString = "{\"packageType\":\"blah\",\"largeFilesChecked\":true}";
 		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
 
