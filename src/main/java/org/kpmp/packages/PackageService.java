@@ -32,6 +32,8 @@ public class PackageService {
 
 	@Value("${package.state.upload.succeeded}")
 	private String uploadSucceededState;
+	@Value("${package.state.upload.failed}")
+	private String uploadFailedState;
 
 	private static final MessageFormat zipPackage = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadFinishTiming = new MessageFormat(
@@ -149,10 +151,12 @@ public class PackageService {
 					} else {
 						logger.logErrorMessage(PackageService.class, user, packageId,
 								PackageService.class.getSimpleName(), "Unable to zip package");
+						sendStateChangeEvent(packageId, uploadFailedState, "Unable to zip package");
 					}
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
+					sendStateChangeEvent(packageId, uploadFailedState, e.getMessage());
 				}
 			}
 

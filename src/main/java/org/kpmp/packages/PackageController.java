@@ -89,7 +89,7 @@ public class PackageController {
 				packageResponse.setGdriveId(driveService.createFolder(packageId));
 			}
 			packageService.sendStateChangeEvent(packageId, metadataReceivedState, packageResponse.getGdriveId());
-		} catch (JSONException | IOException e) {
+		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
 			packageService.sendStateChangeEvent(packageId, uploadFailedState, e.getMessage());
 		}
