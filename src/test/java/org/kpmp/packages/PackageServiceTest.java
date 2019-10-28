@@ -27,8 +27,6 @@ import org.junit.Test;
 import org.kpmp.externalProcess.CommandBuilder;
 import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.logging.LoggingService;
-import org.kpmp.packages.state.State;
-import org.kpmp.packages.state.StateHandlerService;
 import org.kpmp.users.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;

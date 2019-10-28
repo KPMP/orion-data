@@ -3,7 +3,6 @@ package org.kpmp.packages;
 import java.io.IOException;
 
 import org.json.JSONObject;
-import org.kpmp.packages.state.State;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
