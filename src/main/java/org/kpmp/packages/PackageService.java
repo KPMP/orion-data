@@ -70,12 +70,6 @@ public class PackageService {
 			PackageView packageView = new PackageView(packageToCheck);
 			String packageId = packageToCheck.getString("_id");
 			packageView.setState(stateMap.get(packageId));
-			String zipFileName = filePathHelper.getZipFileName(packageId);
-			if (new File(zipFileName).exists()) {
-				packageView.setIsDownloadable(true);
-			} else {
-				packageView.setIsDownloadable(false);
-			}
 			packageViews.add(packageView);
 		}
 		return packageViews;
