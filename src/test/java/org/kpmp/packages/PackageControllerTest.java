@@ -3,6 +3,7 @@ package org.kpmp.packages;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -53,10 +54,12 @@ public class PackageControllerTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator, googleDriveService);
+		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator,
+				googleDriveService);
 		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
+		ReflectionTestUtils.setField(controller, "uploadFailedState", "UPLOAD_FAILED");
 
 	}
 
@@ -79,10 +82,42 @@ public class PackageControllerTest {
 	}
 
 	@Test
-	public void testPostPackageInfo() throws Exception {
+	public void testPostPackageInformation_whenSaveThrowsException() throws Exception {
 		String packageInfoString = "{\"packageType\":\"blah\"}";
 		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
+		when(packageService.savePackageInformation(any(JSONObject.class), any(User.class), any(String.class)))
+				.thenThrow(new JSONException("FAIL"));
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		User user = mock(User.class);
+		when(shibUserService.getUser(request)).thenReturn(user);
 
+		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
+
+		assertEquals(null, response.getGdriveId());
+		verify(logger).logErrorMessage(PackageController.class, "universalId", "FAIL", request);
+		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", "FAIL");
+	}
+
+	@Test
+	public void testPostPackageInformation_whenGoogleDriveServiceThrowsException() throws Exception {
+		String packageInfoString = "{\"packageType\":\"blah\",\"largeFilesChecked\":true}";
+		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		User user = mock(User.class);
+		when(shibUserService.getUser(request)).thenReturn(user);
+		when(googleDriveService.createFolder("universalId")).thenThrow(new IOException("NO DICE"));
+
+		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
+
+		assertEquals(null, response.getGdriveId());
+		verify(logger).logErrorMessage(PackageController.class, "universalId", "NO DICE", request);
+		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", "NO DICE");
+	}
+
+	@Test
+	public void testPostPackageInformation() throws Exception {
+		String packageInfoString = "{\"packageType\":\"blah\"}";
+		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
 		when(shibUserService.getUser(request)).thenReturn(user);
@@ -106,7 +141,7 @@ public class PackageControllerTest {
 	}
 
 	@Test
-	public void testPostPackageInfoLargeFile() throws Exception {
+	public void testPostPackageInformationLargeFile() throws Exception {
 		String packageInfoString = "{\"packageType\":\"blah\",\"largeFilesChecked\":true}";
 		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
 
@@ -153,12 +188,26 @@ public class PackageControllerTest {
 		MultipartFile file = mock(MultipartFile.class);
 		HttpServletRequest request = mock(HttpServletRequest.class);
 
-		controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
+		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
 
+		assertEquals(true, response.isSuccess());
 		verify(packageService).saveFile(file, "packageId", "filename", false);
 		verify(logger).logInfoMessage(PackageController.class, "packageId",
 				"Posting file: filename to package with id: packageId, filesize: 1,234, chunk: 0 out of 3 chunks",
 				request);
+	}
+
+	@Test
+	public void testPostFilesToPackage_whenSaveThrowsException() throws Exception {
+		MultipartFile file = mock(MultipartFile.class);
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		doThrow(new Exception("NOPE")).when(packageService).saveFile(file, "packageId", "filename", false);
+
+		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
+
+		assertEquals(false, response.isSuccess());
+		verify(logger).logErrorMessage(PackageController.class, "packageId", "NOPE", request);
+		verify(packageService).sendStateChangeEvent("packageId", "UPLOAD_FAILED", "NOPE");
 	}
 
 	@Test
@@ -194,6 +243,8 @@ public class PackageControllerTest {
 		verify(logger).logErrorMessage(PackageController.class, "3545", "error getting metadata for package id:  3545",
 				request);
 		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null);
+		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED",
+				"error getting metadata for package id:  3545");
 	}
 
 	@Test
@@ -211,6 +262,8 @@ public class PackageControllerTest {
 		verify(logger).logErrorMessage(PackageController.class, "3545", "Unable to zip package with package id:  3545",
 				request);
 		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null);
+		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED",
+				"Unable to zip package with package id:  3545");
 	}
 
 	@Test
