@@ -1,4 +1,4 @@
-package org.kpmp;
+package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.packages.UniversalIdGenerator;
 
 public class UniversalIdGeneratorTest {
 

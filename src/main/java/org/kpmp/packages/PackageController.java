@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.kpmp.UniversalIdGenerator;
 import org.kpmp.googleDrive.GoogleDriveService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
