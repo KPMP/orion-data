@@ -17,7 +17,6 @@ import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.kpmp.UniversalIdGenerator;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.kpmp.users.UserRepository;
