@@ -27,12 +27,6 @@ public class PackageViewTest {
 	}
 
 	@Test
-	public void testSetIsDownloadable() {
-		packageView.setIsDownloadable(true);
-		assertEquals(true, packageView.isDownloadable());
-	}
-
-	@Test
 	public void testSetPackageJSON() throws IOException {
 		JSONObject packageInfo = new JSONObject();
 		ObjectMapper mapper = new ObjectMapper();

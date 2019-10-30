@@ -92,7 +92,6 @@ public class PackageServiceTest {
 
 		List<PackageView> packages = service.findAllPackages();
 
-		assertEquals(false, packages.get(0).isDownloadable());
 		assertEquals(newState, packages.get(0).getState());
 		verify(packageRepository).findAll();
 		verify(stateHandlerService).getState();
