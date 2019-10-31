@@ -1,4 +1,4 @@
-package org.kpmp.packages.state;
+package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,6 +16,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.logging.LoggingService;
+import org.kpmp.packages.PackageNotificationInfo;
+import org.kpmp.packages.State;
+import org.kpmp.packages.StateHandlerService;
 import org.kpmp.users.User;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;

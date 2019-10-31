@@ -27,8 +27,6 @@ import org.junit.Test;
 import org.kpmp.externalProcess.CommandBuilder;
 import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.logging.LoggingService;
-import org.kpmp.packages.state.State;
-import org.kpmp.packages.state.StateHandlerService;
 import org.kpmp.users.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -94,7 +92,6 @@ public class PackageServiceTest {
 
 		List<PackageView> packages = service.findAllPackages();
 
-		assertEquals(false, packages.get(0).isDownloadable());
 		assertEquals(newState, packages.get(0).getState());
 		verify(packageRepository).findAll();
 		verify(stateHandlerService).getState();

@@ -1,7 +1,7 @@
 package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,8 +40,80 @@ public class PackageFileHandlerTest {
 	}
 
 	@Test
+	public void testSaveFile() throws Exception {
+		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
+		File tempDirectory = new File(dataDirectory.toString());
+		tempDirectory.deleteOnExit();
+		String dataDirectoryPath = dataDirectory.toString();
+		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
+		String fileContents = "Here is the data in the file with special characters: µg/µL";
+
+		fileHandler.saveFile(fileContents, "packageId", "metadata.json", true);
+
+		File savedFile = new File(dataDirectoryPath + File.separator + "metadata.json");
+		assertEquals(true, savedFile.exists());
+		BufferedReader reader = new BufferedReader(new FileReader(savedFile));
+		String line = "";
+		String actualFileContents = "";
+		while ((line = reader.readLine()) != null) {
+			actualFileContents += line;
+		}
+
+		assertEquals("Here is the data in the file with special characters: µg/µL", actualFileContents);
+		reader.close();
+	}
+
+	@Test
+	public void testSaveFile_whenFileExistsAndShouldOverwrite() throws Exception {
+		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
+		File tempDirectory = new File(dataDirectory.toString());
+		tempDirectory.deleteOnExit();
+		File existingFile = new File(dataDirectory + File.separator + "metadata.json");
+		existingFile.createNewFile();
+		String dataDirectoryPath = dataDirectory.toString();
+		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
+		String fileContents = "Here is the data in the file with special characters: µg/µL";
+
+		fileHandler.saveFile(fileContents, "packageId", "metadata.json", true);
+
+		File savedFile = new File(dataDirectoryPath + File.separator + "metadata.json");
+		assertEquals(true, savedFile.exists());
+		BufferedReader reader = new BufferedReader(new FileReader(savedFile));
+		String line = "";
+		String actualFileContents = "";
+		while ((line = reader.readLine()) != null) {
+			actualFileContents += line;
+		}
+		assertEquals("Here is the data in the file with special characters: µg/µL", actualFileContents);
+		reader.close();
+	}
+
+	@Test
+	public void testSaveFile_whenFileExistsAndShouldNotOverwrite() throws Exception {
+		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
+		File tempDirectory = new File(dataDirectory.toString());
+		tempDirectory.deleteOnExit();
+		File existingFile = new File(dataDirectory + File.separator + "metadata.json");
+		existingFile.createNewFile();
+		String dataDirectoryPath = dataDirectory.toString();
+		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
+		String fileContents = "Here is the data in the file with special characters: µg/µL";
+
+		try {
+			fileHandler.saveFile(fileContents, "packageId", "metadata.json", false);
+			// cleaning up after ourselves
+			fail("Should have thrown " + IOException.class);
+		} catch (IOException expected) {
+			assertEquals(dataDirectory + File.separator + "metadata.json", expected.getMessage());
+		}
+
+	}
+
+	@Test
 	public void testSaveMultipartFile_firstPart() throws IOException {
 		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
+		File tempDirectory = new File(dataDirectory.toString());
+		tempDirectory.deleteOnExit();
 		String dataDirectoryPath = dataDirectory.toString();
 		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
 		MultipartFile file = mock(MultipartFile.class);
@@ -65,6 +137,8 @@ public class PackageFileHandlerTest {
 	@Test
 	public void testSaveMultipartFile_createsMissingDirectories() throws IOException {
 		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
+		File tempDirectory = new File(dataDirectory.toString());
+		tempDirectory.deleteOnExit();
 		String dataDirectoryPath = dataDirectory.toString() + File.separator + "anotherDirectory";
 		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
 		MultipartFile file = mock(MultipartFile.class);
@@ -80,6 +154,8 @@ public class PackageFileHandlerTest {
 	@Test
 	public void testSaveMultipartFile_twoParts() throws IOException {
 		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
+		File tempDirectory = new File(dataDirectory.toString());
+		tempDirectory.deleteOnExit();
 		String dataDirectoryPath = dataDirectory.toString();
 		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
 		MultipartFile filePartOne = mock(MultipartFile.class);
@@ -110,6 +186,8 @@ public class PackageFileHandlerTest {
 	@Test
 	public void testSaveMultipartFile_fileExists() throws IOException {
 		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
+		File tempDirectory = new File(dataDirectory.toString());
+		tempDirectory.deleteOnExit();
 		String dataDirectoryPath = dataDirectory.toString();
 		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
 		MultipartFile fileOne = mock(MultipartFile.class);
@@ -119,10 +197,13 @@ public class PackageFileHandlerTest {
 		InputStream testInputStream2 = IOUtils.toInputStream("Here is the data in file 2", "UTF-8");
 		when(fileTwo.getInputStream()).thenReturn(testInputStream2);
 
-		fileHandler.saveMultipartFile(fileOne, "packageId", "filename.txt", false);
+		try {
+			fileHandler.saveMultipartFile(fileOne, "packageId", "filename.txt", false);
+			fileHandler.saveMultipartFile(fileOne, "packageId", "filename.txt", false);
+			fail("Should have thrown exception");
+		} catch (FileAlreadyExistsException e) {
 
-		assertThrows(FileAlreadyExistsException.class, () -> fileHandler.saveMultipartFile(fileTwo, "packageId", "filename.txt", false));
-
+		}
 
 	}
 

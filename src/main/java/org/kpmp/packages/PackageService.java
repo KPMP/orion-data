@@ -21,8 +21,6 @@ import org.json.JSONObject;
 import org.kpmp.externalProcess.CommandBuilder;
 import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.logging.LoggingService;
-import org.kpmp.packages.state.State;
-import org.kpmp.packages.state.StateHandlerService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +32,8 @@ public class PackageService {
 
 	@Value("${package.state.upload.succeeded}")
 	private String uploadSucceededState;
+	@Value("${package.state.upload.failed}")
+	private String uploadFailedState;
 
 	private static final MessageFormat zipPackage = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadFinishTiming = new MessageFormat(
@@ -70,12 +70,6 @@ public class PackageService {
 			PackageView packageView = new PackageView(packageToCheck);
 			String packageId = packageToCheck.getString("_id");
 			packageView.setState(stateMap.get(packageId));
-			String zipFileName = filePathHelper.getZipFileName(packageId);
-			if (new File(zipFileName).exists()) {
-				packageView.setIsDownloadable(true);
-			} else {
-				packageView.setIsDownloadable(false);
-			}
 			packageViews.add(packageView);
 		}
 		return packageViews;
@@ -127,8 +121,12 @@ public class PackageService {
 			public void run() {
 				try {
 					String packageMetadata = packageRepository.getJSONByPackageId(packageId);
-					String[] zipCommand = commandBuilder.buildZipCommand(packageId, packageMetadata);
+					File metadataJson = packageFileHandler.saveFile(packageMetadata, packageId, "metadata.json", true);
+
+					String[] zipCommand = commandBuilder.buildZipCommand(packageId);
 					boolean success = processExecutor.executeProcess(zipCommand);
+					metadataJson.delete();
+
 					if (success) {
 						logger.logInfoMessage(PackageService.class, null, packageId,
 								PackageService.class.getSimpleName() + ".createZipFile",
@@ -147,10 +145,12 @@ public class PackageService {
 					} else {
 						logger.logErrorMessage(PackageService.class, user, packageId,
 								PackageService.class.getSimpleName(), "Unable to zip package");
+						sendStateChangeEvent(packageId, uploadFailedState, "Unable to zip package");
 					}
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
+					sendStateChangeEvent(packageId, uploadFailedState, e.getMessage());
 				}
 			}
 

@@ -1,6 +1,6 @@
 package org.kpmp.externalProcess;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -32,27 +32,28 @@ public class CommandBuilderTest {
 	@Test
 	public void testBuildZipCommand_oneFile() {
 		when(filePathHelper.getPackagePath("packageId")).thenReturn("/here/is/a/path");
-		when(filePathHelper.getFilenames("/here/is/a/path")).thenReturn(Arrays.asList("file1.txt"));
+		when(filePathHelper.getFilenames("/here/is/a/path")).thenReturn(Arrays.asList("file1.txt", "metadata.json"));
 		when(filePathHelper.getZipFileName("packageId")).thenReturn("/here/is/a/path/packageId.zip");
 
-		String[] command = builder.buildZipCommand("packageId", "metadata contents");
+		String[] command = builder.buildZipCommand("packageId");
 
 		assertEquals(6, command.length);
 		assertEquals("java", command[0]);
 		assertEquals("-jar", command[1]);
 		assertEquals("/home/gradle/zipWorker/zipWorker.jar", command[2]);
 		assertEquals("--zip.fileNames=/here/is/a/path/file1.txt", command[3]);
-		assertEquals("--zip.zipFilePath=/here/is/a/path/packageId.zip", command[4]);
-		assertEquals("--zip.additionalFileData=metadata.json|metadata contents", command[5]);
+		assertEquals("--zip.fileNames=/here/is/a/path/metadata.json", command[4]);
+		assertEquals("--zip.zipFilePath=/here/is/a/path/packageId.zip", command[5]);
 	}
 
 	@Test
 	public void testBuildZipCommand_multipleFiles() {
 		when(filePathHelper.getPackagePath("packageId")).thenReturn("/here/is/a/path");
-		when(filePathHelper.getFilenames("/here/is/a/path")).thenReturn(Arrays.asList("file1.txt", "file2.txt"));
+		when(filePathHelper.getFilenames("/here/is/a/path"))
+				.thenReturn(Arrays.asList("file1.txt", "file2.txt", "metadata.json"));
 		when(filePathHelper.getZipFileName("packageId")).thenReturn("/here/is/a/path/packageId.zip");
 
-		String[] command = builder.buildZipCommand("packageId", "metadata contents with a /");
+		String[] command = builder.buildZipCommand("packageId");
 
 		assertEquals(7, command.length);
 		assertEquals("java", command[0]);
@@ -60,8 +61,8 @@ public class CommandBuilderTest {
 		assertEquals("/home/gradle/zipWorker/zipWorker.jar", command[2]);
 		assertEquals("--zip.fileNames=/here/is/a/path/file1.txt", command[3]);
 		assertEquals("--zip.fileNames=/here/is/a/path/file2.txt", command[4]);
-		assertEquals("--zip.zipFilePath=/here/is/a/path/packageId.zip", command[5]);
-		assertEquals("--zip.additionalFileData=metadata.json|metadata contents with a /", command[6]);
+		assertEquals("--zip.fileNames=/here/is/a/path/metadata.json", command[5]);
+		assertEquals("--zip.zipFilePath=/here/is/a/path/packageId.zip", command[6]);
 	}
 
 }

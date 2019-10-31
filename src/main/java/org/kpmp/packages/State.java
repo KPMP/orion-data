@@ -1,4 +1,4 @@
-package org.kpmp.packages.state;
+package org.kpmp.packages;
 
 import java.util.Date;
 

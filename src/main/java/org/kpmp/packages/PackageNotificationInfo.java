@@ -1,8 +1,8 @@
-package org.kpmp.packages.state;
+package org.kpmp.packages;
 
 import java.util.Date;
 
-public class PackageNotificationInfo {
+class PackageNotificationInfo {
 
 	private String packageId;
 	private String packageType;

@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.packages.state.State;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,12 +24,6 @@ public class PackageViewTest {
 	@After
 	public void tearDown() throws Exception {
 		packageView = null;
-	}
-
-	@Test
-	public void testSetIsDownloadable() {
-		packageView.setIsDownloadable(true);
-		assertEquals(true, packageView.isDownloadable());
 	}
 
 	@Test

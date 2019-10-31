@@ -20,7 +20,6 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.UniversalIdGenerator;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.kpmp.users.UserRepository;
@@ -203,7 +202,7 @@ public class CustomPackageRepositoryTest {
 		JsonWriterSettings jsonWriterSettingsReturn = mock(JsonWriterSettings.class);
 		when(jsonWriterSettings.getSettings()).thenReturn(jsonWriterSettingsReturn);
 		when(document.toJson(any(JsonWriterSettings.class), any(DocumentCodec.class))).thenReturn(
-				"{ \"_id\": \"123\", \"key\": \"value with /\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
+				"{ \"_id\": \"123\", \"key\": \"value with /\", \"submitter\": { $id: { $oid: '123' }, \"shibId\": \"555\"}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
 		when(result.first()).thenReturn(document);
 		User user = mock(User.class);
 		when(user.generateJSONForApp()).thenReturn("{user: information, exists: here}");
