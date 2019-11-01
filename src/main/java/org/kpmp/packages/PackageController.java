@@ -1,14 +1,8 @@
 package org.kpmp.packages;
 
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.kpmp.googleDrive.GoogleDriveService;
+import org.kpmp.globus.GlobusService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
@@ -20,13 +14,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.List;
 
 @Controller
 public class PackageController {
@@ -50,17 +44,17 @@ public class PackageController {
 	private PackageService packageService;
 	private ShibbolethUserService shibUserService;
 	private UniversalIdGenerator universalIdGenerator;
-	private GoogleDriveService driveService;
+	private GlobusService globusService;
 
 	@Autowired
 	public PackageController(PackageService packageService, LoggingService logger,
 			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator,
-			GoogleDriveService driveService) {
+			GlobusService globusService) {
 		this.packageService = packageService;
 		this.logger = logger;
 		this.shibUserService = shibUserService;
 		this.universalIdGenerator = universalIdGenerator;
-		this.driveService = driveService;
+		this.globusService = globusService;
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
@@ -85,7 +79,7 @@ public class PackageController {
 			packageService.savePackageInformation(packageInfo, user, packageId);
 			Boolean largeFilesChecked = (Boolean) packageInfo.optBoolean("largeFilesChecked");
 			if (largeFilesChecked) {
-				packageResponse.setGdriveId(driveService.createFolder(packageId));
+				packageResponse.setGlobusURL(globusService.createDirectory(packageId));
 			}
 			packageService.sendStateChangeEvent(packageId, metadataReceivedState, packageResponse.getGdriveId());
 		} catch (Exception e) {

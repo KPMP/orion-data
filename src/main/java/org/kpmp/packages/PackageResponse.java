@@ -4,6 +4,7 @@ public class PackageResponse {
 
     private String packageId;
     private String gdriveId;
+    private String globusURL;
 
     public String getPackageId() {
         return packageId;
@@ -19,5 +20,13 @@ public class PackageResponse {
 
     public void setGdriveId(String gdriveId) {
         this.gdriveId = gdriveId;
+    }
+
+    public String getGlobusURL() {
+        return globusURL;
+    }
+
+    public void setGlobusURL(String globusURL) {
+        this.globusURL = globusURL;
     }
 }
