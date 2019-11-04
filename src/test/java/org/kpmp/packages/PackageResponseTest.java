@@ -27,10 +27,10 @@ public class PackageResponseTest {
     }
 
     @Test
-    public void testSetGdriveId()
+    public void testSetGlobusURL()
     {
-        packageResponse.setGdriveId("googleId");
-        assertEquals("googleId", packageResponse.getGdriveId());
+        packageResponse.setGlobusURL("globusURL");
+        assertEquals("globusURL", packageResponse.getGlobusURL());
     }
 
 }

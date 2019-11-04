@@ -81,7 +81,7 @@ public class PackageController {
 			if (largeFilesChecked) {
 				packageResponse.setGlobusURL(globusService.createDirectory(packageId));
 			}
-			packageService.sendStateChangeEvent(packageId, metadataReceivedState, packageResponse.getGdriveId());
+			packageService.sendStateChangeEvent(packageId, metadataReceivedState, packageResponse.getGlobusURL());
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
 			packageService.sendStateChangeEvent(packageId, uploadFailedState, e.getMessage());

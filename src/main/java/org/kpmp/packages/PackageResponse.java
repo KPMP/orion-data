@@ -3,7 +3,6 @@ package org.kpmp.packages;
 public class PackageResponse {
 
     private String packageId;
-    private String gdriveId;
     private String globusURL;
 
     public String getPackageId() {
@@ -12,14 +11,6 @@ public class PackageResponse {
 
     public void setPackageId(String packageId) {
         this.packageId = packageId;
-    }
-
-    public String getGdriveId() {
-        return gdriveId;
-    }
-
-    public void setGdriveId(String gdriveId) {
-        this.gdriveId = gdriveId;
     }
 
     public String getGlobusURL() {
