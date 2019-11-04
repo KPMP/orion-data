@@ -11,8 +11,6 @@ import java.util.ArrayList;
 
 public class GlobusAuthorizationCodeInstalledApp  extends AuthorizationCodeInstalledApp {
     private final AuthorizationCodeFlow flow;
-
-    /** Verification code receiver. */
     private final VerificationCodeReceiver receiver;
 
     public GlobusAuthorizationCodeInstalledApp(AuthorizationCodeFlow flow, VerificationCodeReceiver receiver) {
