@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class GlobusAuthorizationCodeInstalledApp  extends AuthorizationCodeInstalledApp {
     private final AuthorizationCodeFlow flow;
 
+    /** Verification code receiver. */
     private final VerificationCodeReceiver receiver;
 
     public GlobusAuthorizationCodeInstalledApp(AuthorizationCodeFlow flow, VerificationCodeReceiver receiver) {
@@ -21,14 +22,12 @@ public class GlobusAuthorizationCodeInstalledApp  extends AuthorizationCodeInsta
     }
 
     public Credential globusAuthorize(String userId) throws IOException {
-        GlobusCredential globusCredential = new GlobusCredential();
         try {
             Credential credential = flow.loadCredential(userId);
             if (credential != null
                     && (credential.getRefreshToken() != null ||
                     credential.getExpiresInSeconds() == null ||
                     credential.getExpiresInSeconds() > 60)) {
-                globusCredential.setCredential(credential);
                 return credential;
             }
             String redirectUri = receiver.getRedirectUri();
