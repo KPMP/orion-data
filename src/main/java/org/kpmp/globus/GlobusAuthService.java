@@ -23,13 +23,11 @@ public class GlobusAuthService {
     private final File DATA_STORE_DIR =
             new File("globus_tokens");
 
-    private final LoggingService logger;
     private final String apiKey;
     private final String apiSecret;
     private JsonFactory JSON_FACTORY = new JacksonFactory();
 
-    public GlobusAuthService(Environment env, LoggingService logger) {
-        this.logger = logger;
+    public GlobusAuthService(Environment env) {
         this.apiKey = env.getProperty("GLOBUS_API_KEY");
         this.apiSecret = env.getProperty("GLOBUS_API_SECRET");
     }
