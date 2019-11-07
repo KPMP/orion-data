@@ -29,7 +29,7 @@ import java.io.IOException;
 
         private class GlobusTransferRequest {
             private String path;
-            private String DATA_TYPE;
+            private String dataType;
 
             public String getPath() {
                 return path;
@@ -40,13 +40,13 @@ import java.io.IOException;
             }
 
             @JsonProperty("DATA_TYPE")
-            public String getDATA_TYPE() {
-                return DATA_TYPE;
+            public String getDataType() {
+                return dataType;
             }
 
             @JsonProperty("DATA_TYPE")
-            public void setDATA_TYPE(String DATA_TYPE) {
-                this.DATA_TYPE = DATA_TYPE;
+            public void setDataType(String dataType) {
+                this.dataType = dataType;
             }
         }
 
@@ -62,7 +62,7 @@ import java.io.IOException;
             String fullDirName = topDirectory + dirName;
             GlobusTransferRequest globusTransferRequest = new GlobusTransferRequest();
             globusTransferRequest.setPath(fullDirName);
-            globusTransferRequest.setDATA_TYPE("mkdir");
+            globusTransferRequest.setDataType("mkdir");
             HttpRequest request = requestFactory.buildPostRequest(url, ByteArrayContent.fromString("application/json", mapper.writeValueAsString(globusTransferRequest)));
             request.execute();
             return getFileManagerUrl(fullDirName);

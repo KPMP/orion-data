@@ -10,7 +10,6 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
-import org.kpmp.logging.LoggingService;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
