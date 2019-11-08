@@ -1,29 +1,11 @@
 package org.kpmp.packages;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.googleDrive.GoogleDriveService;
+import org.kpmp.globus.GlobusService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
@@ -37,6 +19,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 public class PackageControllerTest {
 
 	private PackageController controller;
@@ -49,13 +42,13 @@ public class PackageControllerTest {
 	@Mock
 	private UniversalIdGenerator universalIdGenerator;
 	@Mock
-	private GoogleDriveService googleDriveService;
+	private GlobusService globusService;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator,
-				googleDriveService);
+				globusService);
 		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
@@ -93,7 +86,7 @@ public class PackageControllerTest {
 
 		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
 
-		assertEquals(null, response.getGdriveId());
+		assertEquals(null, response.getGlobusURL());
 		verify(logger).logErrorMessage(PackageController.class, "universalId", "FAIL", request);
 		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", "FAIL");
 	}
@@ -105,11 +98,11 @@ public class PackageControllerTest {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
 		when(shibUserService.getUser(request)).thenReturn(user);
-		when(googleDriveService.createFolder("universalId")).thenThrow(new IOException("NO DICE"));
+		when(globusService.createDirectory("universalId")).thenThrow(new IOException("NO DICE"));
 
 		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
 
-		assertEquals(null, response.getGdriveId());
+		assertEquals(null, response.getGlobusURL());
 		verify(logger).logErrorMessage(PackageController.class, "universalId", "NO DICE", request);
 		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", "NO DICE");
 	}
@@ -125,7 +118,7 @@ public class PackageControllerTest {
 		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
 
 		assertEquals("universalId", response.getPackageId());
-		assertEquals(null, response.getGdriveId());
+		assertEquals(null, response.getGlobusURL());
 		ArgumentCaptor<JSONObject> jsonCaptor = ArgumentCaptor.forClass(JSONObject.class);
 		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
@@ -148,12 +141,12 @@ public class PackageControllerTest {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
 		when(shibUserService.getUser(request)).thenReturn(user);
-		when(googleDriveService.createFolder("universalId")).thenReturn("newGdriveId");
+		when(globusService.createDirectory("universalId")).thenReturn("theWholeURL");
 
 		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
 
 		assertEquals("universalId", response.getPackageId());
-		assertEquals("newGdriveId", response.getGdriveId());
+		assertEquals("theWholeURL", response.getGlobusURL());
 		ArgumentCaptor<JSONObject> jsonCaptor = ArgumentCaptor.forClass(JSONObject.class);
 		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
@@ -167,7 +160,7 @@ public class PackageControllerTest {
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
 				"Posting package info: {\"largeFilesChecked\":true,\"packageType\":\"blah\"}", request);
 		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null);
-		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "newGdriveId");
+		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "theWholeURL");
 	}
 
 	@Test
