@@ -22,11 +22,19 @@ To regenerate zip files:
  2. Get the StoredCredential file from kpmp-secure/orion-data and put it in the `tokens` directory (create if it doesn't  exist).
  3. Restart the spring container.
 
-## Creating new credentials files
+## Creating new credentials files for Google Drive
 NOTE: You need to create a new credentials file if the permissions change
  1. Delete (if necessary) the old `tokens` directory.
  2. Bring the application down and then back up.
  3. Spring will generate a URL and print it to stdout, grab it and open it in a browser.
  4. Authenticate as kpmp-datalake@umich.edu and grant the requested access.
+ 5. The redirect to localhost will probably fail, since you're not running the app locally. Copy this URL.
+ 6. Go into the spring container and do a wget on the pasted URL. This will create the credentials file and the app will start running.
+
+## Creating new credentials files for Globus
+ 1. Delete (if necessary) the `StoredCredential` file in the `globus_tokens` directory.
+ 2. Bring the application down and then back up.
+ 3. Spring will generate a URL and print it to stdout (you may have to look in Kibana), grab it and open it in a browser.
+ 4. Authenticate.
  5. The redirect to localhost will probably fail, since you're not running the app locally. Copy this URL.
  6. Go into the spring container and do a wget on the pasted URL. This will create the credentials file and the app will start running.
