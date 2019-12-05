@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -16,10 +15,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.logging.LoggingService;
-import org.kpmp.packages.PackageNotificationInfo;
-import org.kpmp.packages.State;
-import org.kpmp.packages.StateHandlerService;
-import org.kpmp.users.User;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -71,72 +66,16 @@ public class StateHandlerServiceTest {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
-	public void testSendNotification() {
-		Date datePackageSubmitted = new Date();
-		when(restTemplate.postForObject(any(String.class), any(PackageNotificationInfo.class), any(Class.class)))
-				.thenReturn(true);
-
-		service.sendNotification("packageId", "packageType", datePackageSubmitted, "submitterFirstName",
-				"submitterLastName", "specimenId", "origin");
-
-		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
-		ArgumentCaptor<PackageNotificationInfo> packageInfoCaptor = ArgumentCaptor
-				.forClass(PackageNotificationInfo.class);
-		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
-		verify(restTemplate).postForObject(uriCaptor.capture(), packageInfoCaptor.capture(), classCaptor.capture());
-		assertEquals("hostname/uri/to/endpoint", uriCaptor.getValue());
-		PackageNotificationInfo packageInfo = packageInfoCaptor.getValue();
-		assertEquals("packageId", packageInfo.getPackageId());
-		assertEquals("packageType", packageInfo.getPackageType());
-		assertEquals(datePackageSubmitted, packageInfo.getDatePackageSubmitted());
-		assertEquals("submitterFirstName submitterLastName", packageInfo.getSubmitter());
-		assertEquals("specimenId", packageInfo.getSpecimenId());
-		assertEquals("origin", packageInfo.getOrigin());
-		assertEquals(Boolean.class, classCaptor.getValue());
-		verify(logger, times(0)).logErrorMessage(any(Class.class), any(User.class), any(String.class),
-				any(String.class), any(String.class));
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Test
-	public void testSendNotification_whenMessageFails() {
-		Date datePackageSubmitted = new Date();
-		when(restTemplate.postForObject(any(String.class), any(PackageNotificationInfo.class), any(Class.class)))
-				.thenReturn(false);
-
-		service.sendNotification("packageId", "packageType", datePackageSubmitted, "submitterFirstName",
-				"submitterLastName", "specimenId", "origin");
-
-		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
-		ArgumentCaptor<PackageNotificationInfo> packageInfoCaptor = ArgumentCaptor
-				.forClass(PackageNotificationInfo.class);
-		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
-		verify(restTemplate).postForObject(uriCaptor.capture(), packageInfoCaptor.capture(), classCaptor.capture());
-		assertEquals("hostname/uri/to/endpoint", uriCaptor.getValue());
-		PackageNotificationInfo packageInfo = packageInfoCaptor.getValue();
-		assertEquals("packageId", packageInfo.getPackageId());
-		assertEquals("packageType", packageInfo.getPackageType());
-		assertEquals(datePackageSubmitted, packageInfo.getDatePackageSubmitted());
-		assertEquals("submitterFirstName submitterLastName", packageInfo.getSubmitter());
-		assertEquals("specimenId", packageInfo.getSpecimenId());
-		assertEquals("origin", packageInfo.getOrigin());
-		assertEquals(Boolean.class, classCaptor.getValue());
-		verify(logger, times(1)).logErrorMessage(StateHandlerService.class, null, "packageId",
-				"StateHandlerService.sendNotification", "Notification message failed to send.");
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Test
 	public void testSendStateChange_whenSuccess() throws Exception {
 		when(restTemplate.postForObject(any(String.class), any(State.class), any(Class.class))).thenReturn("newId");
 
-		service.sendStateChange("packageId", "stateString", "codicil");
+		service.sendStateChange("packageId", "stateString", "codicil", "hostname");
 
 		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
 		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
 		verify(restTemplate).postForObject(uriCaptor.capture(), stateCaptor.capture(), classCaptor.capture());
-		assertEquals("state.hostname/uri/to/state/endpoint", uriCaptor.getValue());
+		assertEquals("state.hostname/uri/to/state/endpoint/host/hostname", uriCaptor.getValue());
 		assertEquals(String.class, classCaptor.getValue());
 		State expectedState = stateCaptor.getValue();
 		assertEquals("packageId", expectedState.getPackageId());
@@ -149,13 +88,13 @@ public class StateHandlerServiceTest {
 	public void testSendStateChange_whenFailure() throws Exception {
 		when(restTemplate.postForObject(any(String.class), any(State.class), any(Class.class))).thenReturn(null);
 
-		service.sendStateChange("packageId", "stateString", "codicil");
+		service.sendStateChange("packageId", "stateString", "codicil", "hostname");
 
 		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
 		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
 		verify(restTemplate).postForObject(uriCaptor.capture(), stateCaptor.capture(), classCaptor.capture());
-		assertEquals("state.hostname/uri/to/state/endpoint", uriCaptor.getValue());
+		assertEquals("state.hostname/uri/to/state/endpoint/host/hostname", uriCaptor.getValue());
 		assertEquals(String.class, classCaptor.getValue());
 		State expectedState = stateCaptor.getValue();
 		assertEquals("packageId", expectedState.getPackageId());

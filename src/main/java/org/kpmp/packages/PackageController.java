@@ -1,5 +1,11 @@
 package org.kpmp.packages;
 
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.kpmp.globus.GlobusService;
@@ -14,13 +20,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.List;
 
 @Controller
 public class PackageController {
@@ -66,11 +72,12 @@ public class PackageController {
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)
 	public @ResponseBody PackageResponse postPackageInformation(@RequestBody String packageInfoString,
-			HttpServletRequest request) {
+			@RequestParam("hostname") String hostname, HttpServletRequest request) {
+		String cleanHostName = hostname.replace("=", "");
 		PackageResponse packageResponse = new PackageResponse();
 		String packageId = universalIdGenerator.generateUniversalId();
 		packageResponse.setPackageId(packageId);
-		packageService.sendStateChangeEvent(packageId, uploadStartedState, null);
+		packageService.sendStateChangeEvent(packageId, uploadStartedState, cleanHostName);
 		JSONObject packageInfo;
 		try {
 			packageInfo = new JSONObject(packageInfoString);
@@ -81,10 +88,11 @@ public class PackageController {
 			if (largeFilesChecked) {
 				packageResponse.setGlobusURL(globusService.createDirectory(packageId));
 			}
-			packageService.sendStateChangeEvent(packageId, metadataReceivedState, packageResponse.getGlobusURL());
+			packageService.sendStateChangeEvent(packageId, metadataReceivedState, packageResponse.getGlobusURL(),
+					cleanHostName);
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-			packageService.sendStateChangeEvent(packageId, uploadFailedState, e.getMessage());
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, e.getMessage(), cleanHostName);
 		}
 		return packageResponse;
 	}
@@ -92,8 +100,8 @@ public class PackageController {
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.POST, consumes = {
 			"multipart/form-data" })
 	public @ResponseBody FileUploadResponse postFilesToPackage(@PathVariable("packageId") String packageId,
-			@RequestParam("qqfile") MultipartFile file, @RequestParam("qqfilename") String filename,
-			@RequestParam("qqtotalfilesize") long fileSize,
+			@RequestParam("hostname") String hostname, @RequestParam("qqfile") MultipartFile file,
+			@RequestParam("qqfilename") String filename, @RequestParam("qqtotalfilesize") long fileSize,
 			@RequestParam(name = "qqtotalparts", defaultValue = "1") int chunks,
 			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk, HttpServletRequest request) {
 
@@ -104,7 +112,8 @@ public class PackageController {
 			packageService.saveFile(file, packageId, filename, shouldAppend(chunk));
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-			packageService.sendStateChangeEvent(packageId, uploadFailedState, e.getMessage());
+			String cleanHostName = hostname.replace("=", "");
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, e.getMessage(), cleanHostName);
 			return new FileUploadResponse(false);
 		}
 
@@ -134,27 +143,27 @@ public class PackageController {
 	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId,
 			@RequestBody String hostname, HttpServletRequest request) {
 
-		packageService.sendStateChangeEvent(packageId, filesReceivedState, null);
+		String cleanHostName = hostname.replace("=", "");
+		packageService.sendStateChangeEvent(packageId, filesReceivedState, cleanHostName);
 		FileUploadResponse fileUploadResponse;
 		String message = finish.format(new Object[] { "Finishing file upload with packageId: ", packageId });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
 		if (packageService.validatePackageForZipping(packageId, shibUserService.getUser(request))) {
 			try {
-				String removeErrantEqualSign = hostname.replace("=", "");
-				packageService.createZipFile(packageId, removeErrantEqualSign, shibUserService.getUser(request));
+				packageService.createZipFile(packageId, cleanHostName, shibUserService.getUser(request));
 				fileUploadResponse = new FileUploadResponse(true);
 			} catch (Exception e) {
 				String errorMessage = finish
 						.format(new Object[] { "error getting metadata for package id: ", packageId });
 				logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
 				fileUploadResponse = new FileUploadResponse(false);
-				packageService.sendStateChangeEvent(packageId, uploadFailedState, errorMessage);
+				packageService.sendStateChangeEvent(packageId, uploadFailedState, errorMessage, cleanHostName);
 			}
 		} else {
 			String errorMessage = finish.format(new Object[] { "Unable to zip package with package id: ", packageId });
 			logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
 			fileUploadResponse = new FileUploadResponse(false);
-			packageService.sendStateChangeEvent(packageId, uploadFailedState, errorMessage);
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, errorMessage, cleanHostName);
 		}
 		return fileUploadResponse;
 	}

@@ -1,5 +1,23 @@
 package org.kpmp.packages;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
@@ -18,17 +36,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 public class PackageControllerTest {
 
@@ -84,11 +91,11 @@ public class PackageControllerTest {
 		User user = mock(User.class);
 		when(shibUserService.getUser(request)).thenReturn(user);
 
-		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
+		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
 
 		assertEquals(null, response.getGlobusURL());
 		verify(logger).logErrorMessage(PackageController.class, "universalId", "FAIL", request);
-		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", "FAIL");
+		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", "FAIL", "hostname");
 	}
 
 	@Test
@@ -100,11 +107,11 @@ public class PackageControllerTest {
 		when(shibUserService.getUser(request)).thenReturn(user);
 		when(globusService.createDirectory("universalId")).thenThrow(new IOException("NO DICE"));
 
-		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
+		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
 
 		assertEquals(null, response.getGlobusURL());
 		verify(logger).logErrorMessage(PackageController.class, "universalId", "NO DICE", request);
-		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", "NO DICE");
+		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", "NO DICE", "hostname");
 	}
 
 	@Test
@@ -115,7 +122,7 @@ public class PackageControllerTest {
 		User user = mock(User.class);
 		when(shibUserService.getUser(request)).thenReturn(user);
 
-		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
+		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
 
 		assertEquals("universalId", response.getPackageId());
 		assertEquals(null, response.getGlobusURL());
@@ -129,8 +136,8 @@ public class PackageControllerTest {
 		assertEquals("universalId", packageIdCaptor.getValue());
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
 				"Posting package info: {\"packageType\":\"blah\"}", request);
-		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null);
-		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", null);
+		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", "hostname");
+		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", null, "hostname");
 	}
 
 	@Test
@@ -143,7 +150,7 @@ public class PackageControllerTest {
 		when(shibUserService.getUser(request)).thenReturn(user);
 		when(globusService.createDirectory("universalId")).thenReturn("theWholeURL");
 
-		PackageResponse response = controller.postPackageInformation(packageInfoString, request);
+		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
 
 		assertEquals("universalId", response.getPackageId());
 		assertEquals("theWholeURL", response.getGlobusURL());
@@ -159,8 +166,8 @@ public class PackageControllerTest {
 		assertEquals("universalId", packageIdCaptor.getValue());
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
 				"Posting package info: {\"largeFilesChecked\":true,\"packageType\":\"blah\"}", request);
-		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null);
-		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "theWholeURL");
+		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", "hostname");
+		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "theWholeURL", "hostname");
 	}
 
 	@Test
@@ -168,7 +175,7 @@ public class PackageControllerTest {
 		MultipartFile file = mock(MultipartFile.class);
 		HttpServletRequest request = mock(HttpServletRequest.class);
 
-		controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 2, request);
+		controller.postFilesToPackage("packageId", "hostname", file, "filename", 1234, 3, 2, request);
 
 		verify(packageService).saveFile(file, "packageId", "filename", true);
 		verify(logger).logInfoMessage(PackageController.class, "packageId",
@@ -181,7 +188,8 @@ public class PackageControllerTest {
 		MultipartFile file = mock(MultipartFile.class);
 		HttpServletRequest request = mock(HttpServletRequest.class);
 
-		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
+		FileUploadResponse response = controller.postFilesToPackage("packageId", "hostname", file, "filename", 1234, 3,
+				0, request);
 
 		assertEquals(true, response.isSuccess());
 		verify(packageService).saveFile(file, "packageId", "filename", false);
@@ -196,11 +204,12 @@ public class PackageControllerTest {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		doThrow(new Exception("NOPE")).when(packageService).saveFile(file, "packageId", "filename", false);
 
-		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
+		FileUploadResponse response = controller.postFilesToPackage("packageId", "hostname", file, "filename", 1234, 3,
+				0, request);
 
 		assertEquals(false, response.isSuccess());
 		verify(logger).logErrorMessage(PackageController.class, "packageId", "NOPE", request);
-		verify(packageService).sendStateChangeEvent("packageId", "UPLOAD_FAILED", "NOPE");
+		verify(packageService).sendStateChangeEvent("packageId", "UPLOAD_FAILED", "NOPE", "hostname");
 	}
 
 	@Test
@@ -217,7 +226,7 @@ public class PackageControllerTest {
 		assertEquals(true, result.isSuccess());
 		verify(logger).logInfoMessage(PackageController.class, "3545", "Finishing file upload with packageId:  3545",
 				request);
-		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null);
+		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", "origin");
 	}
 
 	@Test
@@ -235,9 +244,9 @@ public class PackageControllerTest {
 		assertEquals(false, result.isSuccess());
 		verify(logger).logErrorMessage(PackageController.class, "3545", "error getting metadata for package id:  3545",
 				request);
-		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null);
+		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", "origin");
 		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED",
-				"error getting metadata for package id:  3545");
+				"error getting metadata for package id:  3545", "origin");
 	}
 
 	@Test
@@ -254,9 +263,9 @@ public class PackageControllerTest {
 		assertEquals(false, result.isSuccess());
 		verify(logger).logErrorMessage(PackageController.class, "3545", "Unable to zip package with package id:  3545",
 				request);
-		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null);
+		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", "origin");
 		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED",
-				"Unable to zip package with package id:  3545");
+				"Unable to zip package with package id:  3545", "origin");
 	}
 
 	@Test
