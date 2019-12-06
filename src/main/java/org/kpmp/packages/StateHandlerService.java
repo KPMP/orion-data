@@ -52,11 +52,11 @@ public class StateHandlerService {
 	}
 
 	public void sendStateChange(String packageId, String stateString) {
-		sendStateChange(packageId, stateString, null);
+		sendStateChange(packageId, stateString, false, null);
 	}
 
-	public void sendStateChange(String packageId, String stateString, String codicil) {
-		State state = new State(packageId, stateString, codicil);
+	public void sendStateChange(String packageId, String stateString, Boolean largeUploadChecked, String codicil) {
+		State state = new State(packageId, stateString, largeUploadChecked, codicil);
 		String stateId = restTemplate.postForObject(stateServiceHost + stateServiceEndpoint, state, String.class);
 
 		if (stateId == null) {

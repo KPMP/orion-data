@@ -145,12 +145,12 @@ public class PackageService {
 					} else {
 						logger.logErrorMessage(PackageService.class, user, packageId,
 								PackageService.class.getSimpleName(), "Unable to zip package");
-						sendStateChangeEvent(packageId, uploadFailedState, "Unable to zip package");
+						sendStateChangeEvent(packageId, uploadFailedState, false, "Unable to zip package");
 					}
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
-					sendStateChangeEvent(packageId, uploadFailedState, e.getMessage());
+					sendStateChangeEvent(packageId, uploadFailedState, false, e.getMessage());
 				}
 			}
 
@@ -193,8 +193,8 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
-	public void sendStateChangeEvent(String packageId, String stateString, String codicil) {
-		stateHandler.sendStateChange(packageId, stateString, codicil);
+	public void sendStateChangeEvent(String packageId, String stateString, Boolean largeUploadChecked, String codicil) {
+		stateHandler.sendStateChange(packageId, stateString, largeUploadChecked, codicil);
 	}
 
 	protected boolean validateFileLengthsMatch(List<Attachment> filesInPackage, String packagePath, String packageId,
