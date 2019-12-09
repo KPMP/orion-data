@@ -36,8 +36,6 @@ public class StateHandlerServiceTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		service = new StateHandlerService(restTemplate, logger);
-		ReflectionTestUtils.setField(service, "notificationServiceHost", "hostname");
-		ReflectionTestUtils.setField(service, "notificationEndpoint", "/uri/to/endpoint");
 		ReflectionTestUtils.setField(service, "stateServiceHost", "state.hostname");
 		ReflectionTestUtils.setField(service, "stateServiceEndpoint", "/uri/to/state/endpoint");
 	}

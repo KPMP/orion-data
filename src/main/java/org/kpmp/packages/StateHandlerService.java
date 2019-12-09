@@ -16,10 +16,6 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class StateHandlerService {
 
-	@Value("${notification.service.host}")
-	private String notificationServiceHost;
-	@Value("${notification.endpoint}")
-	private String notificationEndpoint;
 	@Value("${state.service.host}")
 	private String stateServiceHost;
 	@Value("${state.service.endpoint}")
