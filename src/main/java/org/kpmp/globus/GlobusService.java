@@ -9,6 +9,7 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpTransport;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,11 +22,10 @@ import java.io.IOException;
     @Value("${globus.endpoint.ID}")
     private String endpointID;
 
-    @Value("${globus.top.directory}")
-    private String topDirectory;
-
     @Value("${globus.file.manager.url}")
     private String fileManagerUrl;
+
+    private Environment env;
 
         private class GlobusTransferRequest {
             private String path;
@@ -50,16 +50,18 @@ import java.io.IOException;
             }
         }
 
-        public GlobusService(HttpTransport httpTransport, GlobusAuthService globusAuthService) throws Exception {
+        public GlobusService(HttpTransport httpTransport, GlobusAuthService globusAuthService, Environment env) throws Exception {
             Credential credential = globusAuthService.authorize(httpTransport);
             requestFactory = httpTransport.createRequestFactory(credential);
+            this.env = env;
         }
 
         public String createDirectory(String dirName) throws IOException {
+            String topDirectory = env.getProperty("GLOBUS_DIR");
             ObjectMapper mapper = new ObjectMapper();
             String apiUrl = "https://transfer.api.globusonline.org/v0.10";
             GenericUrl url = new GenericUrl(apiUrl + "/operation/endpoint/" + endpointID + "/mkdir");
-            String fullDirName = topDirectory + dirName;
+            String fullDirName = topDirectory + "/" + dirName;
             GlobusTransferRequest globusTransferRequest = new GlobusTransferRequest();
             globusTransferRequest.setPath(fullDirName);
             globusTransferRequest.setDataType("mkdir");
