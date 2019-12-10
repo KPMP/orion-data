@@ -77,22 +77,23 @@ public class PackageController {
 		PackageResponse packageResponse = new PackageResponse();
 		String packageId = universalIdGenerator.generateUniversalId();
 		packageResponse.setPackageId(packageId);
-		packageService.sendStateChangeEvent(packageId, uploadStartedState, cleanHostName);
+		Boolean largeFilesChecked = false;
+		packageService.sendStateChangeEvent(packageId, uploadStartedState, largeFilesChecked, cleanHostName);
 		JSONObject packageInfo;
 		try {
 			packageInfo = new JSONObject(packageInfoString);
 			logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
 			User user = shibUserService.getUser(request);
 			packageService.savePackageInformation(packageInfo, user, packageId);
-			Boolean largeFilesChecked = (Boolean) packageInfo.optBoolean("largeFilesChecked");
+			largeFilesChecked = packageInfo.optBoolean("largeFilesChecked");
 			if (largeFilesChecked) {
 				packageResponse.setGlobusURL(globusService.createDirectory(packageId));
 			}
-			packageService.sendStateChangeEvent(packageId, metadataReceivedState, packageResponse.getGlobusURL(),
+			packageService.sendStateChangeEvent(packageId, metadataReceivedState, largeFilesChecked, packageResponse.getGlobusURL(),
 					cleanHostName);
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-			packageService.sendStateChangeEvent(packageId, uploadFailedState, e.getMessage(), cleanHostName);
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, largeFilesChecked, e.getMessage(), cleanHostName);
 		}
 		return packageResponse;
 	}
@@ -114,7 +115,7 @@ public class PackageController {
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
 			String cleanHostName = hostname.replace("=", "");
-			packageService.sendStateChangeEvent(packageId, uploadFailedState, e.getMessage(), cleanHostName);
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, false, e.getMessage(), cleanHostName);
 			return new FileUploadResponse(false);
 		}
 
@@ -145,7 +146,7 @@ public class PackageController {
 			@RequestBody String hostname, HttpServletRequest request) {
 
 		String cleanHostName = hostname.replace("=", "");
-		packageService.sendStateChangeEvent(packageId, filesReceivedState, cleanHostName);
+		packageService.sendStateChangeEvent(packageId, filesReceivedState, false, cleanHostName);
 		FileUploadResponse fileUploadResponse;
 		String message = finish.format(new Object[] { "Finishing file upload with packageId: ", packageId });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
@@ -158,13 +159,13 @@ public class PackageController {
 						.format(new Object[] { "error getting metadata for package id: ", packageId });
 				logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
 				fileUploadResponse = new FileUploadResponse(false);
-				packageService.sendStateChangeEvent(packageId, uploadFailedState, errorMessage, cleanHostName);
+				packageService.sendStateChangeEvent(packageId, uploadFailedState, false, errorMessage, cleanHostName);
 			}
 		} else {
 			String errorMessage = finish.format(new Object[] { "Unable to zip package with package id: ", packageId });
 			logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
 			fileUploadResponse = new FileUploadResponse(false);
-			packageService.sendStateChangeEvent(packageId, uploadFailedState, errorMessage, cleanHostName);
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, false, errorMessage, cleanHostName);
 		}
 		return fileUploadResponse;
 	}
