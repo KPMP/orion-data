@@ -137,17 +137,17 @@ public class PackageService {
 								zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
 										packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
 
-						stateHandler.sendStateChange(packageId, uploadSucceededState, null, origin);
+						stateHandler.sendStateChange(packageId, uploadSucceededState, false, null, origin);
 
 					} else {
 						logger.logErrorMessage(PackageService.class, user, packageId,
 								PackageService.class.getSimpleName(), "Unable to zip package");
-						sendStateChangeEvent(packageId, uploadFailedState, "Unable to zip package", origin);
+						sendStateChangeEvent(packageId, uploadFailedState, false, "Unable to zip package", origin);
 					}
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
-					sendStateChangeEvent(packageId, uploadFailedState, e.getMessage(), origin);
+					sendStateChangeEvent(packageId, uploadFailedState, false, e.getMessage(), origin);
 				}
 			}
 
@@ -190,12 +190,12 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
-	public void sendStateChangeEvent(String packageId, String stateString, String origin) {
-		stateHandler.sendStateChange(packageId, stateString, null, origin);
+	public void sendStateChangeEvent(String packageId, String stateString, Boolean largeFilesChecked, String origin) {
+		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, null, origin);
 	}
 
-	public void sendStateChangeEvent(String packageId, String stateString, String codicil, String origin) {
-		stateHandler.sendStateChange(packageId, stateString, codicil, origin);
+	public void sendStateChangeEvent(String packageId, String stateString, Boolean largeFilesChecked, String codicil, String origin) {
+		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, codicil, origin);
 	}
 
 	protected boolean validateFileLengthsMatch(List<Attachment> filesInPackage, String packagePath, String packageId,

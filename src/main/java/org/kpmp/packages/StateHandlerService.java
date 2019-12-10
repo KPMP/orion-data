@@ -46,10 +46,11 @@ public class StateHandlerService {
 		return stateMap;
 	}
 
-	public void sendStateChange(String packageId, String stateString, String codicil, String origin) {
-		State state = new State(packageId, stateString, codicil);
-		String stateId = restTemplate.postForObject(stateServiceHost + stateServiceEndpoint + "/host/" + origin, state,
-				String.class);
+	public void sendStateChange(String packageId, String stateString, Boolean largeUploadChecked, String codicil,
+								String origin) {
+		State state = new State(packageId, stateString, largeUploadChecked, codicil);
+		String stateId = restTemplate.postForObject(stateServiceHost + stateServiceEndpoint + "/host/" + origin,
+				state, String.class);
 
 		if (stateId == null) {
 			logger.logErrorMessage(this.getClass(), null, packageId,
@@ -57,5 +58,4 @@ public class StateHandlerService {
 					"Error saving state change for package id: " + packageId + " and state: " + stateString);
 		}
 	}
-
 }

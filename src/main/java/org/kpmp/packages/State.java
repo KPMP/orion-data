@@ -7,14 +7,16 @@ public class State {
 	private String packageId;
 	private String state;
 	private String codicil;
+	private Boolean largeUploadChecked;
 	private Date stateChangeDate;
 
 	public State() {
 	}
 
-	public State(String packageId, String state, String codicil) {
+	public State(String packageId, String state, Boolean largeUploadChecked, String codicil) {
 		this.packageId = packageId;
 		this.state = state;
+		this.largeUploadChecked = largeUploadChecked;
 		this.codicil = codicil;
 	}
 
@@ -41,6 +43,10 @@ public class State {
 	public void setCodicil(String codicil) {
 		this.codicil = codicil;
 	}
+
+	public Boolean getLargeUploadChecked() { return largeUploadChecked; }
+
+	public void setLargeUploadChecked(Boolean largeUploadChecked) { this.largeUploadChecked = largeUploadChecked; }
 
 	public Date getStateChangeDate() {
 		return stateChangeDate;

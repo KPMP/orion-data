@@ -15,7 +15,7 @@ public class StateTest {
 
 	@Before
 	public void setUp() throws Exception {
-		state = new State("packageId", "state", "codicil");
+		state = new State("packageId", "state", false, "codicil");
 	}
 
 	@After
@@ -43,7 +43,7 @@ public class StateTest {
 
 	@Test
 	public void testConstructor() throws Exception {
-		State constructorTest = new State("a package id", "a state", "reasons");
+		State constructorTest = new State("a package id", "a state", false, "reasons");
 		assertEquals("a package id", constructorTest.getPackageId());
 		assertEquals("a state", constructorTest.getState());
 		assertEquals("reasons", constructorTest.getCodicil());
