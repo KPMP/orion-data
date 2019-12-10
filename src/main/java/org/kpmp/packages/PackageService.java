@@ -137,20 +137,17 @@ public class PackageService {
 								zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
 										packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
 
-						stateHandler.sendStateChange(packageId, uploadSucceededState);
+						stateHandler.sendStateChange(packageId, uploadSucceededState, null, origin);
 
-						stateHandler.sendNotification(packageId, packageInfo.getPackageType(),
-								packageInfo.getCreatedAt(), packageInfo.getSubmitter().getFirstName(),
-								packageInfo.getSubmitter().getLastName(), packageInfo.getSubjectId(), origin);
 					} else {
 						logger.logErrorMessage(PackageService.class, user, packageId,
 								PackageService.class.getSimpleName(), "Unable to zip package");
-						sendStateChangeEvent(packageId, uploadFailedState, "Unable to zip package");
+						sendStateChangeEvent(packageId, uploadFailedState, "Unable to zip package", origin);
 					}
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
-					sendStateChangeEvent(packageId, uploadFailedState, e.getMessage());
+					sendStateChangeEvent(packageId, uploadFailedState, e.getMessage(), origin);
 				}
 			}
 
@@ -193,8 +190,12 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
-	public void sendStateChangeEvent(String packageId, String stateString, String codicil) {
-		stateHandler.sendStateChange(packageId, stateString, codicil);
+	public void sendStateChangeEvent(String packageId, String stateString, String origin) {
+		stateHandler.sendStateChange(packageId, stateString, null, origin);
+	}
+
+	public void sendStateChangeEvent(String packageId, String stateString, String codicil, String origin) {
+		stateHandler.sendStateChange(packageId, stateString, codicil, origin);
 	}
 
 	protected boolean validateFileLengthsMatch(List<Attachment> filesInPackage, String packagePath, String packageId,

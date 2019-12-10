@@ -1,5 +1,11 @@
 package org.kpmp.globus;
 
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.auth.oauth2.Credential;
@@ -8,11 +14,6 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpTransport;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 @Service
     public class GlobusService  {
@@ -74,3 +75,4 @@ import java.io.IOException;
             return fileManagerUrl + "?origin_id=" + endpointID + "&origin_path=" + fullDirName;
         }
     }
+}
