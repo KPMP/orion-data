@@ -16,6 +16,7 @@ public class State {
 	public State(String packageId, String state, Boolean largeUploadChecked, String codicil) {
 		this.packageId = packageId;
 		this.state = state;
+		this.largeUploadChecked = largeUploadChecked;
 		this.codicil = codicil;
 	}
 
