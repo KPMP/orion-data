@@ -174,8 +174,9 @@ public class PackageControllerTest {
 	public void testPostFilesToPackage_whenNotInitialChunk() throws Exception {
 		MultipartFile file = mock(MultipartFile.class);
 		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(request.getHeader("Host")).thenReturn("hostname");
 
-		controller.postFilesToPackage("packageId", "hostname", file, "filename", 1234, 3, 2, request);
+		controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 2, request);
 
 		verify(packageService).saveFile(file, "packageId", "filename", true);
 		verify(logger).logInfoMessage(PackageController.class, "packageId",
@@ -187,9 +188,9 @@ public class PackageControllerTest {
 	public void testPostFilesToPackage_whenInitialChunk() throws Exception {
 		MultipartFile file = mock(MultipartFile.class);
 		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(request.getHeader("Host")).thenReturn("hostname");
 
-		FileUploadResponse response = controller.postFilesToPackage("packageId", "hostname", file, "filename", 1234, 3,
-				0, request);
+		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
 
 		assertEquals(true, response.isSuccess());
 		verify(packageService).saveFile(file, "packageId", "filename", false);
@@ -203,9 +204,9 @@ public class PackageControllerTest {
 		MultipartFile file = mock(MultipartFile.class);
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		doThrow(new Exception("NOPE")).when(packageService).saveFile(file, "packageId", "filename", false);
+		when(request.getHeader("Host")).thenReturn("hostname");
 
-		FileUploadResponse response = controller.postFilesToPackage("packageId", "hostname", file, "filename", 1234, 3,
-				0, request);
+		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
 
 		assertEquals(false, response.isSuccess());
 		verify(logger).logErrorMessage(PackageController.class, "packageId", "NOPE", request);
