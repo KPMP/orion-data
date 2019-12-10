@@ -166,7 +166,7 @@ public class PackageControllerTest {
 		assertEquals("universalId", packageIdCaptor.getValue());
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
 				"Posting package info: {\"largeFilesChecked\":true,\"packageType\":\"blah\"}", request);
-		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", true, "hostname");
+		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", false, "hostname");
 		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", true, "theWholeURL", "hostname");
 	}
 
