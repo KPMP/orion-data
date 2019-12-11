@@ -67,13 +67,13 @@ public class StateHandlerServiceTest {
 	public void testSendStateChange_whenSuccess() throws Exception {
 		when(restTemplate.postForObject(any(String.class), any(State.class), any(Class.class))).thenReturn("newId");
 
-		service.sendStateChange("packageId", "stateString", false,"codicil", "hostname");
+		service.sendStateChange("packageId", "stateString", false,"codicil", "host.name");
 
 		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
 		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
 		verify(restTemplate).postForObject(uriCaptor.capture(), stateCaptor.capture(), classCaptor.capture());
-		assertEquals("state.hostname/uri/to/state/endpoint/host/hostname", uriCaptor.getValue());
+		assertEquals("state.hostname/uri/to/state/endpoint/host/host_name", uriCaptor.getValue());
 		assertEquals(String.class, classCaptor.getValue());
 		State expectedState = stateCaptor.getValue();
 		assertEquals("packageId", expectedState.getPackageId());
@@ -86,13 +86,13 @@ public class StateHandlerServiceTest {
 	public void testSendStateChange_whenFailure() throws Exception {
 		when(restTemplate.postForObject(any(String.class), any(State.class), any(Class.class))).thenReturn(null);
 
-		service.sendStateChange("packageId", "stateString", false,"codicil", "hostname");
+		service.sendStateChange("packageId", "stateString", false,"codicil", "host.name.namey");
 
 		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
 		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
 		verify(restTemplate).postForObject(uriCaptor.capture(), stateCaptor.capture(), classCaptor.capture());
-		assertEquals("state.hostname/uri/to/state/endpoint/host/hostname", uriCaptor.getValue());
+		assertEquals("state.hostname/uri/to/state/endpoint/host/host_name_namey", uriCaptor.getValue());
 		assertEquals(String.class, classCaptor.getValue());
 		State expectedState = stateCaptor.getValue();
 		assertEquals("packageId", expectedState.getPackageId());

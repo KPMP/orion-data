@@ -49,7 +49,7 @@ public class StateHandlerService {
 	public void sendStateChange(String packageId, String stateString, Boolean largeUploadChecked, String codicil,
 								String origin) {
 		State state = new State(packageId, stateString, largeUploadChecked, codicil);
-		String stateId = restTemplate.postForObject(stateServiceHost + stateServiceEndpoint + "/host/" + origin,
+		String stateId = restTemplate.postForObject(stateServiceHost + stateServiceEndpoint + "/host/" + origin.replace(".", "_"),
 				state, String.class);
 
 		if (stateId == null) {
