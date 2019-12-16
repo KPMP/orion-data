@@ -21,7 +21,6 @@ import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.kpmp.users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;

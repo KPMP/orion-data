@@ -85,7 +85,7 @@ public class PackageController {
 			User user = shibUserService.getUser(request);
 			packageService.savePackageInformation(packageInfo, user, packageId);
 			String largeFilesChecked = packageInfo.optBoolean("largeFilesChecked") ? "true" : "false";
-			if (largeFilesChecked.equals("true")) {
+			if ("true".equals(largeFilesChecked)) {
 				packageResponse.setGlobusURL(globusService.createDirectory(packageId));
 			}
 			packageService.sendStateChangeEvent(packageId, metadataReceivedState, largeFilesChecked, packageResponse.getGlobusURL(),
