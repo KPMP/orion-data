@@ -46,7 +46,7 @@ public class StateHandlerService {
 		return stateMap;
 	}
 
-	public void sendStateChange(String packageId, String stateString, Boolean largeUploadChecked, String codicil,
+	public void sendStateChange(String packageId, String stateString, String largeUploadChecked, String codicil,
 								String origin) {
 		State state = new State(packageId, stateString, largeUploadChecked, codicil);
 		String stateId = restTemplate.postForObject(stateServiceHost + stateServiceEndpoint + "/host/" + origin.replace(".", "_"),

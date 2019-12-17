@@ -67,7 +67,7 @@ public class StateHandlerServiceTest {
 	public void testSendStateChange_whenSuccess() throws Exception {
 		when(restTemplate.postForObject(any(String.class), any(State.class), any(Class.class))).thenReturn("newId");
 
-		service.sendStateChange("packageId", "stateString", false,"codicil", "host.name");
+		service.sendStateChange("packageId", "stateString", null,"codicil", "host.name");
 
 		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
@@ -86,7 +86,7 @@ public class StateHandlerServiceTest {
 	public void testSendStateChange_whenFailure() throws Exception {
 		when(restTemplate.postForObject(any(String.class), any(State.class), any(Class.class))).thenReturn(null);
 
-		service.sendStateChange("packageId", "stateString", false,"codicil", "host.name.namey");
+		service.sendStateChange("packageId", "stateString", null,"codicil", "host.name.namey");
 
 		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);

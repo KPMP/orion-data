@@ -137,17 +137,17 @@ public class PackageService {
 								zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
 										packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
 
-						stateHandler.sendStateChange(packageId, uploadSucceededState, false, null, origin);
+						stateHandler.sendStateChange(packageId, uploadSucceededState, null, null, origin);
 
 					} else {
 						logger.logErrorMessage(PackageService.class, user, packageId,
 								PackageService.class.getSimpleName(), "Unable to zip package");
-						sendStateChangeEvent(packageId, uploadFailedState, false, "Unable to zip package", origin);
+						sendStateChangeEvent(packageId, uploadFailedState, null, "Unable to zip package", origin);
 					}
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
-					sendStateChangeEvent(packageId, uploadFailedState, false, e.getMessage(), origin);
+					sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), origin);
 				}
 			}
 
@@ -190,11 +190,11 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
-	public void sendStateChangeEvent(String packageId, String stateString, Boolean largeFilesChecked, String origin) {
+	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String origin) {
 		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, null, origin);
 	}
 
-	public void sendStateChangeEvent(String packageId, String stateString, Boolean largeFilesChecked, String codicil, String origin) {
+	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String codicil, String origin) {
 		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, codicil, origin);
 	}
 

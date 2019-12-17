@@ -3,17 +3,16 @@ package org.kpmp.packages;
 import java.util.Date;
 
 public class State {
-
 	private String packageId;
 	private String state;
 	private String codicil;
-	private Boolean largeUploadChecked;
+	private String largeUploadChecked;
 	private Date stateChangeDate;
 
 	public State() {
 	}
 
-	public State(String packageId, String state, Boolean largeUploadChecked, String codicil) {
+	public State(String packageId, String state, String largeUploadChecked, String codicil) {
 		this.packageId = packageId;
 		this.state = state;
 		this.largeUploadChecked = largeUploadChecked;
@@ -44,9 +43,9 @@ public class State {
 		this.codicil = codicil;
 	}
 
-	public Boolean getLargeUploadChecked() { return largeUploadChecked; }
+	public String getLargeUploadChecked() { return largeUploadChecked; }
 
-	public void setLargeUploadChecked(Boolean largeUploadChecked) { this.largeUploadChecked = largeUploadChecked; }
+	public void setLargeUploadChecked(String largeUploadChecked) { this.largeUploadChecked = largeUploadChecked; }
 
 	public Date getStateChangeDate() {
 		return stateChangeDate;
