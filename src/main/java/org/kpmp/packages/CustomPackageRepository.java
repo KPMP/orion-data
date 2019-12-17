@@ -21,6 +21,8 @@ import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.kpmp.users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -62,6 +64,7 @@ public class CustomPackageRepository {
 		this.logger = logger;
 	}
 
+	@CacheEvict(value="CustomPackageRepository.findAll")
 	public String saveDynamicForm(JSONObject packageMetadata, User userFromHeader, String packageId)
 			throws JSONException {
 		Date startTime = new Date();
@@ -122,7 +125,7 @@ public class CustomPackageRepository {
 		mongoTemplate.updateFirst(updateQuery, fieldUpdate, PACKAGES_COLLECTION);
 	}
 
-//	@Cacheable(value="packages")
+	@Cacheable(value="CustomPackageRepository.findAll")
 	public List<JSONObject> findAll() throws JSONException, JsonProcessingException {
 		Query query = new Query();
 		query = query.with(new Sort(Sort.Direction.DESC, PackageKeys.CREATED_AT.getKey()));
