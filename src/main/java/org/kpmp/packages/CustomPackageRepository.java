@@ -64,7 +64,7 @@ public class CustomPackageRepository {
 		this.logger = logger;
 	}
 
-	@CacheEvict(value="CustomPackageRepository.findAll")
+	@CacheEvict(cacheNames={"CustomPackageRepository.findAll"})
 	public String saveDynamicForm(JSONObject packageMetadata, User userFromHeader, String packageId)
 			throws JSONException {
 		Date startTime = new Date();
@@ -114,7 +114,7 @@ public class CustomPackageRepository {
 		return user;
 	}
 
-	@CacheEvict(value="CustomPackageRepository.findAll")
+	@CacheEvict(cacheNames={"CustomPackageRepository.findAll"})
 	public Package save(Package packageInfo) {
 		return repo.save(packageInfo);
 	}
@@ -126,7 +126,7 @@ public class CustomPackageRepository {
 		mongoTemplate.updateFirst(updateQuery, fieldUpdate, PACKAGES_COLLECTION);
 	}
 
-	@Cacheable(value="CustomPackageRepository.findAll")
+	@Cacheable(cacheNames={"CustomPackageRepository.findAll"})
 	public List<JSONObject> findAll() throws JSONException, JsonProcessingException {
 		Query query = new Query();
 		query = query.with(new Sort(Sort.Direction.DESC, PackageKeys.CREATED_AT.getKey()));
