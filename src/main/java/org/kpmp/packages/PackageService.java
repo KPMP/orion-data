@@ -104,6 +104,7 @@ public class PackageService {
 		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 	}
 
+	@CacheEvict(value = "packages", allEntries = true)
 	public void createZipFile(String packageId, String origin, User user) throws Exception {
 
 		Package packageInfo = packageRepository.findByPackageId(packageId);
