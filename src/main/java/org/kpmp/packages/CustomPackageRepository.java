@@ -114,6 +114,7 @@ public class CustomPackageRepository {
 		return user;
 	}
 
+	@CacheEvict(value="CustomPackageRepository.findAll")
 	public Package save(Package packageInfo) {
 		return repo.save(packageInfo);
 	}
