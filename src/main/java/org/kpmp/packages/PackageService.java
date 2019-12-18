@@ -64,7 +64,7 @@ public class PackageService {
 		this.logger = logger;
 	}
 
-	@Cacheable("packages")
+	@Cacheable(value = "packages")
 	public List<PackageView> findAllPackages() throws JSONException, IOException {
 		List<JSONObject> jsons = packageRepository.findAll();
 		List<PackageView> packageViews = new ArrayList<>();
@@ -193,12 +193,12 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
-	@CacheEvict("packages")
+	@CacheEvict(value = "packages", allEntries = true)
 	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String origin) {
 		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, null, origin);
 	}
 
-	@Cacheable("packages")
+	@CacheEvict(value = "packages", allEntries = true)
 	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String codicil, String origin) {
 		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, codicil, origin);
 	}
