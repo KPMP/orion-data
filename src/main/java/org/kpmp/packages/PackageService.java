@@ -24,6 +24,8 @@ import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,6 +64,7 @@ public class PackageService {
 		this.logger = logger;
 	}
 
+	@Cacheable("packages")
 	public List<PackageView> findAllPackages() throws JSONException, IOException {
 		List<JSONObject> jsons = packageRepository.findAll();
 		List<PackageView> packageViews = new ArrayList<>();
@@ -190,10 +193,12 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
+	@CacheEvict("packages")
 	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String origin) {
 		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, null, origin);
 	}
 
+	@Cacheable("packages")
 	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String codicil, String origin) {
 		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, codicil, origin);
 	}
