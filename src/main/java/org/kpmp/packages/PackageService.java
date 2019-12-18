@@ -104,6 +104,7 @@ public class PackageService {
 		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 	}
 
+	@CacheEvict(value = "packages", allEntries = true)
 	public void createZipFile(String packageId, String origin, User user) throws Exception {
 
 		Package packageInfo = packageRepository.findByPackageId(packageId);
@@ -141,19 +142,16 @@ public class PackageService {
 										packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
 
 						stateHandler.sendStateChange(packageId, uploadSucceededState, null, null, origin);
-						evictCache();
 
 					} else {
 						logger.logErrorMessage(PackageService.class, user, packageId,
 								PackageService.class.getSimpleName(), "Unable to zip package");
 						sendStateChangeEvent(packageId, uploadFailedState, null, "Unable to zip package", origin);
-						evictCache();
 					}
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
 					sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), origin);
-					evictCache();
 				}
 			}
 
@@ -196,19 +194,14 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
+	@CacheEvict(value = "packages", allEntries = true)
 	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String origin) {
 		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, null, origin);
-		evictCache();
-	}
-
-	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String codicil, String origin) {
-		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, codicil, origin);
-		evictCache();
 	}
 
 	@CacheEvict(value = "packages", allEntries = true)
-	public void evictCache() {
-
+	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String codicil, String origin) {
+		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, codicil, origin);
 	}
 
 	protected boolean validateFileLengthsMatch(List<Attachment> filesInPackage, String packagePath, String packageId,
