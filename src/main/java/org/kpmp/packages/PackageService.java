@@ -64,7 +64,6 @@ public class PackageService {
 		this.logger = logger;
 	}
 
-	@Cacheable(value = "packages")
 	public List<PackageView> findAllPackages() throws JSONException, IOException {
 		List<JSONObject> jsons = packageRepository.findAll();
 		List<PackageView> packageViews = new ArrayList<>();
