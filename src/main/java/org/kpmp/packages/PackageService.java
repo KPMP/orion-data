@@ -24,6 +24,7 @@ import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -101,6 +102,7 @@ public class PackageService {
 		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 	}
 
+	@CacheEvict(value = "packages", allEntries = true)
 	public void createZipFile(String packageId, String origin, User user) throws Exception {
 
 		Package packageInfo = packageRepository.findByPackageId(packageId);
@@ -118,6 +120,7 @@ public class PackageService {
 								displaySize, duration + " seconds", rateFormat.format(uploadRate) + " MB/sec" }));
 
 		new Thread() {
+			@CacheEvict(value = "packages", allEntries = true)
 			public void run() {
 				try {
 					String packageMetadata = packageRepository.getJSONByPackageId(packageId);
@@ -190,10 +193,12 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
+	@CacheEvict(value = "packages", allEntries = true)
 	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String origin) {
 		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, null, origin);
 	}
 
+	@CacheEvict(value = "packages", allEntries = true)
 	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String codicil, String origin) {
 		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, codicil, origin);
 	}
