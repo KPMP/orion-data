@@ -122,6 +122,7 @@ public class PackageService {
 								displaySize, duration + " seconds", rateFormat.format(uploadRate) + " MB/sec" }));
 
 		new Thread() {
+			@CacheEvict(value = "packages", allEntries = true)
 			public void run() {
 				try {
 					String packageMetadata = packageRepository.getJSONByPackageId(packageId);
