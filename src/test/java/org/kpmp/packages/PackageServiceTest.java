@@ -71,9 +71,9 @@ public class PackageServiceTest {
 
 	@Test
 	public void testSendStateChangeEvent() throws Exception {
-		service.sendStateChangeEvent("packageId", "stateString", "codicil");
+		service.sendStateChangeEvent("packageId1", "stateString", null,"codicil", "hostname");
 
-		verify(stateHandlerService).sendStateChange("packageId", "stateString", "codicil");
+		verify(stateHandlerService).sendStateChange("packageId1", "stateString", null,"codicil", "hostname");
 	}
 
 	@Test

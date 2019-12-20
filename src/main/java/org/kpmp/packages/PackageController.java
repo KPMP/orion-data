@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.kpmp.googleDrive.GoogleDriveService;
+import org.kpmp.globus.GlobusService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
@@ -50,17 +50,17 @@ public class PackageController {
 	private PackageService packageService;
 	private ShibbolethUserService shibUserService;
 	private UniversalIdGenerator universalIdGenerator;
-	private GoogleDriveService driveService;
+	private GlobusService globusService;
 
 	@Autowired
 	public PackageController(PackageService packageService, LoggingService logger,
 			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator,
-			GoogleDriveService driveService) {
+			GlobusService globusService) {
 		this.packageService = packageService;
 		this.logger = logger;
 		this.shibUserService = shibUserService;
 		this.universalIdGenerator = universalIdGenerator;
-		this.driveService = driveService;
+		this.globusService = globusService;
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
@@ -72,25 +72,27 @@ public class PackageController {
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)
 	public @ResponseBody PackageResponse postPackageInformation(@RequestBody String packageInfoString,
-			HttpServletRequest request) {
+			@RequestParam("hostname") String hostname, HttpServletRequest request) {
+		String cleanHostName = hostname.replace("=", "");
 		PackageResponse packageResponse = new PackageResponse();
 		String packageId = universalIdGenerator.generateUniversalId();
 		packageResponse.setPackageId(packageId);
-		packageService.sendStateChangeEvent(packageId, uploadStartedState, null);
+		packageService.sendStateChangeEvent(packageId, uploadStartedState, null, cleanHostName);
 		JSONObject packageInfo;
 		try {
 			packageInfo = new JSONObject(packageInfoString);
 			logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
 			User user = shibUserService.getUser(request);
 			packageService.savePackageInformation(packageInfo, user, packageId);
-			Boolean largeFilesChecked = (Boolean) packageInfo.optBoolean("largeFilesChecked");
-			if (largeFilesChecked) {
-				packageResponse.setGdriveId(driveService.createFolder(packageId));
+			String largeFilesChecked = packageInfo.optBoolean("largeFilesChecked") ? "true" : "false";
+			if ("true".equals(largeFilesChecked)) {
+				packageResponse.setGlobusURL(globusService.createDirectory(packageId));
 			}
-			packageService.sendStateChangeEvent(packageId, metadataReceivedState, packageResponse.getGdriveId());
+			packageService.sendStateChangeEvent(packageId, metadataReceivedState, largeFilesChecked, packageResponse.getGlobusURL(),
+					cleanHostName);
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-			packageService.sendStateChangeEvent(packageId, uploadFailedState, e.getMessage());
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), cleanHostName);
 		}
 		return packageResponse;
 	}
@@ -103,6 +105,7 @@ public class PackageController {
 			@RequestParam(name = "qqtotalparts", defaultValue = "1") int chunks,
 			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk, HttpServletRequest request) {
 
+		String hostname = request.getHeader("Host");
 		String message = fileUploadRequest.format(new Object[] { filename, packageId, fileSize, chunk, chunks });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
 
@@ -110,7 +113,8 @@ public class PackageController {
 			packageService.saveFile(file, packageId, filename, shouldAppend(chunk));
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-			packageService.sendStateChangeEvent(packageId, uploadFailedState, e.getMessage());
+			String cleanHostName = hostname.replace("=", "");
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), cleanHostName);
 			return new FileUploadResponse(false);
 		}
 
@@ -140,27 +144,27 @@ public class PackageController {
 	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId,
 			@RequestBody String hostname, HttpServletRequest request) {
 
-		packageService.sendStateChangeEvent(packageId, filesReceivedState, null);
+		String cleanHostName = hostname.replace("=", "");
+		packageService.sendStateChangeEvent(packageId, filesReceivedState, null, cleanHostName);
 		FileUploadResponse fileUploadResponse;
 		String message = finish.format(new Object[] { "Finishing file upload with packageId: ", packageId });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
 		if (packageService.validatePackageForZipping(packageId, shibUserService.getUser(request))) {
 			try {
-				String removeErrantEqualSign = hostname.replace("=", "");
-				packageService.createZipFile(packageId, removeErrantEqualSign, shibUserService.getUser(request));
+				packageService.createZipFile(packageId, cleanHostName, shibUserService.getUser(request));
 				fileUploadResponse = new FileUploadResponse(true);
 			} catch (Exception e) {
 				String errorMessage = finish
 						.format(new Object[] { "error getting metadata for package id: ", packageId });
 				logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
 				fileUploadResponse = new FileUploadResponse(false);
-				packageService.sendStateChangeEvent(packageId, uploadFailedState, errorMessage);
+				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
 			}
 		} else {
 			String errorMessage = finish.format(new Object[] { "Unable to zip package with package id: ", packageId });
 			logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
 			fileUploadResponse = new FileUploadResponse(false);
-			packageService.sendStateChangeEvent(packageId, uploadFailedState, errorMessage);
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
 		}
 		return fileUploadResponse;
 	}

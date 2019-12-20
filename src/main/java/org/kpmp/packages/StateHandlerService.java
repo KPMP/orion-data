@@ -1,6 +1,5 @@
 package org.kpmp.packages;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +16,6 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class StateHandlerService {
 
-	@Value("${notification.service.host}")
-	private String notificationServiceHost;
-	@Value("${notification.endpoint}")
-	private String notificationEndpoint;
 	@Value("${state.service.host}")
 	private String stateServiceHost;
 	@Value("${state.service.endpoint}")
@@ -51,13 +46,11 @@ public class StateHandlerService {
 		return stateMap;
 	}
 
-	public void sendStateChange(String packageId, String stateString) {
-		sendStateChange(packageId, stateString, null);
-	}
-
-	public void sendStateChange(String packageId, String stateString, String codicil) {
-		State state = new State(packageId, stateString, codicil);
-		String stateId = restTemplate.postForObject(stateServiceHost + stateServiceEndpoint, state, String.class);
+	public void sendStateChange(String packageId, String stateString, String largeUploadChecked, String codicil,
+								String origin) {
+		State state = new State(packageId, stateString, largeUploadChecked, codicil);
+		String stateId = restTemplate.postForObject(stateServiceHost + stateServiceEndpoint + "/host/" + origin.replace(".", "_"),
+				state, String.class);
 
 		if (stateId == null) {
 			logger.logErrorMessage(this.getClass(), null, packageId,
@@ -65,21 +58,4 @@ public class StateHandlerService {
 					"Error saving state change for package id: " + packageId + " and state: " + stateString);
 		}
 	}
-
-	public void sendNotification(String packageId, String packageType, Date datePackageSubmitted,
-			String submitterFirstName, String submitterLastName, String specimenId, String origin) {
-
-		String submitterName = submitterFirstName + " " + submitterLastName;
-		PackageNotificationInfo packageNotification = new PackageNotificationInfo(packageId, packageType,
-				datePackageSubmitted, submitterName, specimenId, origin);
-
-		Boolean response = restTemplate.postForObject(notificationServiceHost + notificationEndpoint,
-				packageNotification, Boolean.class);
-
-		if (!response) {
-			logger.logErrorMessage(this.getClass(), null, packageId,
-					this.getClass().getSimpleName() + ".sendNotification", "Notification message failed to send.");
-		}
-	}
-
 }

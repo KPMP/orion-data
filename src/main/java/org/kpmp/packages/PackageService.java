@@ -24,6 +24,7 @@ import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -101,6 +102,7 @@ public class PackageService {
 		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 	}
 
+	@CacheEvict(value = "packages", allEntries = true)
 	public void createZipFile(String packageId, String origin, User user) throws Exception {
 
 		Package packageInfo = packageRepository.findByPackageId(packageId);
@@ -118,6 +120,7 @@ public class PackageService {
 								displaySize, duration + " seconds", rateFormat.format(uploadRate) + " MB/sec" }));
 
 		new Thread() {
+			@CacheEvict(value = "packages", allEntries = true)
 			public void run() {
 				try {
 					String packageMetadata = packageRepository.getJSONByPackageId(packageId);
@@ -137,20 +140,17 @@ public class PackageService {
 								zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
 										packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
 
-						stateHandler.sendStateChange(packageId, uploadSucceededState);
+						stateHandler.sendStateChange(packageId, uploadSucceededState, null, null, origin);
 
-						stateHandler.sendNotification(packageId, packageInfo.getPackageType(),
-								packageInfo.getCreatedAt(), packageInfo.getSubmitter().getFirstName(),
-								packageInfo.getSubmitter().getLastName(), packageInfo.getSubjectId(), origin);
 					} else {
 						logger.logErrorMessage(PackageService.class, user, packageId,
 								PackageService.class.getSimpleName(), "Unable to zip package");
-						sendStateChangeEvent(packageId, uploadFailedState, "Unable to zip package");
+						sendStateChangeEvent(packageId, uploadFailedState, null, "Unable to zip package", origin);
 					}
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
-					sendStateChangeEvent(packageId, uploadFailedState, e.getMessage());
+					sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), origin);
 				}
 			}
 
@@ -193,8 +193,14 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
-	public void sendStateChangeEvent(String packageId, String stateString, String codicil) {
-		stateHandler.sendStateChange(packageId, stateString, codicil);
+	@CacheEvict(value = "packages", allEntries = true)
+	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String origin) {
+		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, null, origin);
+	}
+
+	@CacheEvict(value = "packages", allEntries = true)
+	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String codicil, String origin) {
+		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, codicil, origin);
 	}
 
 	protected boolean validateFileLengthsMatch(List<Attachment> filesInPackage, String packagePath, String packageId,

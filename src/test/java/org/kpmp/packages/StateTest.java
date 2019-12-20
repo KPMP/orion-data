@@ -15,7 +15,7 @@ public class StateTest {
 
 	@Before
 	public void setUp() throws Exception {
-		state = new State("packageId", "state", "codicil");
+		state = new State("packageId", "state", null, "codicil");
 	}
 
 	@After
@@ -42,8 +42,14 @@ public class StateTest {
 	}
 
 	@Test
+	public void testLargeUploadChecked() {
+		state.setLargeUploadChecked("true");
+		assertEquals("true", state.getLargeUploadChecked());
+	}
+
+	@Test
 	public void testConstructor() throws Exception {
-		State constructorTest = new State("a package id", "a state", "reasons");
+		State constructorTest = new State("a package id", "a state", null, "reasons");
 		assertEquals("a package id", constructorTest.getPackageId());
 		assertEquals("a state", constructorTest.getState());
 		assertEquals("reasons", constructorTest.getCodicil());
