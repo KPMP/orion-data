@@ -15,7 +15,7 @@ apply plugin: 'io.spring.dependency-management'
 
 jar {
     baseName='orion-data'
-    version= '2.6'
+    version= '2.7'
 }
 
 repositories {
@@ -26,9 +26,9 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    compile 'org.springframework.boot:spring-boot-starter-web' 
+	compile 'org.springframework.boot:spring-boot-starter-web' 
 	compile 'commons-io:commons-io:2.6' 
-    compile 'mysql:mysql-connector-java:6.0.5'
+	compile 'mysql:mysql-connector-java:6.0.5'
 	compile 'org.springframework:spring-test:5.0.5.RELEASE'
 	compile 'org.springframework.data:spring-data-mongodb:2.0.8.RELEASE'
 	compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
@@ -39,7 +39,7 @@ dependencies {
 	compile 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
 	compile 'org.springframework.boot:spring-boot-starter-test'
 	testCompile 'org.mockito:mockito-core'
-    testCompile 'org.springframework.boot:spring-boot-starter-test:2.2.0.RELEASE'
+	testCompile 'org.springframework.boot:spring-boot-starter-test:2.2.0.RELEASE'
 }
 
 springBoot {
