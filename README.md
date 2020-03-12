@@ -4,6 +4,9 @@
 # orion-data
   **Description**: Repo for the KPMP upload tool back-end
 
+## Documentation
+Visit [kpmp.github.io/dlu](http://kpmp.io.github.io/dlu)
+
 ## RegenerateZipFiles
 To regenerate zip files:
  1. Connect to mongo
