@@ -23,6 +23,12 @@ then
 	exit
 fi
 
-node $currentDir/updateMongo.js $packageId
+cd $currentDir
+
+node updateMongo.js $packageId
+
+echo "done"
+
+java -cp /home/pathadmin/apps/orion-data/build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher
 
 exit

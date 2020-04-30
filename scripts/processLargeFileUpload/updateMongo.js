@@ -10,7 +10,7 @@ const dbName = 'dataLake';
 const updatePackage = function(packageId, files, db, callback) {
 	
 	var packages = db.collection("packages");
-        packages.findOneAndUpdate({ "_id": packageId }, {$set: { files: files }}, {new: true}, function(err, doc) {
+        packages.findOneAndUpdate({ "_id": packageId }, {$set: { files: files, regenerateZip: true }}, {new: true}, function(err, doc) {
 		if(err) {
 			console.log("Hit err: " + err);
 		} else {
