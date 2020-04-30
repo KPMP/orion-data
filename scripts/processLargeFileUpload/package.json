@@ -1,6 +1,7 @@
 {
 	"dependencies": {
 		"assert": "2.0.0",
-		"mongodb": "3.5.7"
+		"mongodb": "3.5.7",
+		"uuid": "^8.0.0"
 	}
 }
