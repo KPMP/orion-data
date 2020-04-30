@@ -10,7 +10,12 @@ MongoClient.connect(url, { useUnifiedTopology: true, 'forceServerObjectId' : tru
 
 	const db = client.db(dbName);
 
-	process.argv.forEach((val, index) => {
-  		console.log(`${index}: ${val}`)
-	})
+	const args = process.argv.slice(2)
+	const packageId = args[0]
+	
+	var packages = db.collection("packages");
+	packages.findOne({ "_id": packageId }, function(err, document) {
+		assert.equal(null, err);
+		console.log(document);
+	}); 
 });
