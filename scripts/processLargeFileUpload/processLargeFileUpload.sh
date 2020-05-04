@@ -1,6 +1,9 @@
 #!/bin/bash
 
 currentDir=$(pwd)
+
+source ${currentDir}/.env
+echo ${GLOBUS_DROPBOX_ENDPOINT}
 echo "**** It would be wise to start me in Screen ***"
 echo "Package ID:"
 read packageId
@@ -11,7 +14,7 @@ mkdir "${packageDir}"
 
 cd ~/globusconnectpersonal-3.0.4/
 globus login
-taskId=$(globus transfer --format unix --jmespath 'task_id' 936381c8-1653-11ea-b94a-0e16720bb42f:/PROD_INBOX/"${packageId}" 86f02d04-8a2c-11ea-b3bb-0ae144191ee3:"${packageDir}" --recursive)
+taskId=$(globus transfer --format unix --jmespath 'task_id' ${GLOBUS_DROPBOX_ENDPOINT}:${GLOBUS_DROPBOX_PATH}${packageId} ${LOCAL_ENDPOINT}:"${packageDir}" --recursive)
 
 while [[ "$transferStatus" != "SUCCEEDED" && "$transferStatus" != "FAILED" ]]
 do
