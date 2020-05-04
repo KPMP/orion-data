@@ -10,31 +10,35 @@ const dbName = "dataLake";
 const updatePackage = function(packageId, files, db, callback) {
 	
 	var packages = db.collection("packages");
-        packages.findOneAndUpdate({ "_id": packageId }, {$set: { files: files, regenerateZip: true }}, {new: true}, function(err, doc) {
+        let updatedDoc = packages.findOneAndUpdate({ "_id": packageId }, {$set: { files, regenerateZip: true }}, {new: true}, function(err, doc) {
 		if(err) {
-			console.log("Hit err: " + err);
+			throw err;
 		} else {
+			// eslint-disable-next-line no-console
 			console.log("Successfully updated");
 		}
 		callback();
 	});
-}
+	console.log(updatedDoc);
+	if (updatedDoc === undefined) {
+		throw "Unable to find package with id: $packageId";
+	}
+};
 
 
-MongoClient.connect(url, { useUnifiedTopology: true, 'forceServerObjectId' : true }, function(err, client) {
+MongoClient.connect(url, { useUnifiedTopology: true, "forceServerObjectId" : true }, function(err, client) {
 	assert.equal(null, err);
-	console.log("Successfully connected to mongo");
 
 	const db = client.db(dbName);
 
-	const args = process.argv.slice(2)
-	const packageId = args[0]
+	const args = process.argv.slice(2);
+	const packageId = args[0];
 	
-	const packageDir = "package_" + packageId
+	const packageDir = "package_" + packageId;
 	const directory = path.join("/data/dataLake", packageDir);
 	var files = filesystem.readdirSync(directory);
 	let fileInfos = [];
- 	files.forEach(file => {
+	files.forEach(file => {
 		const filePath = path.join(directory, file);
 		let stats = filesystem.statSync(filePath);
 		let fileInfo = {};
