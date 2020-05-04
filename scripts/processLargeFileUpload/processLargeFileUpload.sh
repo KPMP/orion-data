@@ -2,8 +2,7 @@
 
 currentDir=$(pwd)
 
-source ${currentDir}/.env
-echo ${GLOBUS_DROPBOX_ENDPOINT}
+source "${currentDir}"/.env
 echo "**** It would be wise to start me in Screen ***"
 echo "Package ID:"
 read packageId
@@ -14,7 +13,7 @@ mkdir "${packageDir}"
 
 cd ~/globusconnectpersonal-3.0.4/
 globus login
-taskId=$(globus transfer --format unix --jmespath 'task_id' ${GLOBUS_DROPBOX_ENDPOINT}:${GLOBUS_DROPBOX_PATH}${packageId} ${LOCAL_ENDPOINT}:"${packageDir}" --recursive)
+taskId=$(globus transfer --format unix --jmespath 'task_id' "${GLOBUS_DROPBOX_ENDPOINT}":"${GLOBUS_DROPBOX_PATH}${packageId}" "${LOCAL_ENDPOINT}":"${packageDir}" --recursive)
 
 while [[ "$transferStatus" != "SUCCEEDED" && "$transferStatus" != "FAILED" ]]
 do
@@ -40,7 +39,7 @@ if [ $result == 0 ]; then
 		data='{"packageId":"'
 		data+=$packageId
 		data+='", "state":"UPLOAD_SUCCEEDED", "largeUploadChecked":true}'
-		url="http://localhost:3060/v1/state/host/upload_kpmp_org"
+		url="http://localhost:3060/v1/state/host/${DLU_INSTANCE}"
 		curl --header "Content-Type: application/json" --request POST --data "${data}" "${url}"
 	else
 		echo "Zip failed...exiting"
