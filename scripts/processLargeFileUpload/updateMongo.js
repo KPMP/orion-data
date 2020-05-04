@@ -10,19 +10,17 @@ const dbName = "dataLake";
 const updatePackage = function(packageId, files, db, callback) {
 	
 	var packages = db.collection("packages");
-        let updatedDoc = packages.findOneAndUpdate({ "_id": packageId }, {$set: { files, regenerateZip: true }}, {new: true}, function(err, doc) {
+        packages.findOneAndUpdate({ "_id": packageId }, {$set: { files, regenerateZip: true }}, {returnOriginal: true}, function(err, doc) {
 		if(err) {
 			throw err;
+		} else if (typeof doc === "undefined") {
+			throw "Unable to find package with id ${packageId}";
 		} else {
 			// eslint-disable-next-line no-console
 			console.log("Successfully updated");
 		}
 		callback();
 	});
-	console.log(updatedDoc);
-	if (updatedDoc === undefined) {
-		throw "Unable to find package with id: $packageId";
-	}
 };
 
 
@@ -38,7 +36,7 @@ MongoClient.connect(url, { useUnifiedTopology: true, "forceServerObjectId" : tru
 	const directory = path.join("/data/dataLake", packageDir);
 	var files = filesystem.readdirSync(directory);
 	let fileInfos = [];
-	files.forEach(file => {
+	files.forEach(function(file) {
 		const filePath = path.join(directory, file);
 		let stats = filesystem.statSync(filePath);
 		let fileInfo = {};
