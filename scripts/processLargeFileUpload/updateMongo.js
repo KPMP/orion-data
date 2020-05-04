@@ -1,11 +1,11 @@
-const MongoClient = require('mongodb').MongoClient;
-const assert = require('assert');
-const filesystem = require('fs');
-const path = require('path');
-const { v4: uuidGenerator } = require('uuid');
+const MongoClient = require("mongodb").MongoClient;
+const assert = require("assert");
+const filesystem = require("fs");
+const path = require("path");
+const { v4: uuidGenerator } = require("uuid");
 
-const url = 'mongodb://localhost:27017';
-const dbName = 'dataLake';
+const url = "mongodb://localhost:27017";
+const dbName = "dataLake";
 
 const updatePackage = function(packageId, files, db, callback) {
 	
