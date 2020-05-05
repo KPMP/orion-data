@@ -11,19 +11,41 @@ import java.util.List;
 import org.json.JSONObject;
 import org.kpmp.externalProcess.CommandBuilder;
 import org.kpmp.externalProcess.ProcessExecutor;
+import org.kpmp.filters.AuthorizationFilter;
+import org.kpmp.globus.GlobusAuthorizationCodeInstalledApp;
+import org.kpmp.globus.GlobusService;
 import org.kpmp.packages.CustomPackageRepository;
 import org.kpmp.packages.FilePathHelper;
+import org.kpmp.packages.PackageController;
 import org.kpmp.packages.PackageFileHandler;
 import org.kpmp.packages.PackageKeys;
+import org.kpmp.packages.PackageRepository;
+import org.kpmp.packages.PackageService;
+import org.kpmp.packages.StateHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 
-@ComponentScan(basePackages = { "org.kpmp" })
+@Configuration
+@EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class,
+		DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
+@ComponentScan(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+		PackageRepository.class, FilePathHelper.class, CommandBuilder.class, ProcessExecutor.class,
+		CustomPackageRepository.class,
+		PackageFileHandler.class }), excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+				PackageController.class, WebConfig.class, Application.class, AuthorizationFilter.class,
+				GlobusAuthorizationCodeInstalledApp.class, GlobusService.class, StateHandlerService.class,
+				PackageService.class }))
 public class RegenerateZipFiles implements CommandLineRunner {
 
 	private CustomPackageRepository packageRepository;
@@ -63,7 +85,8 @@ public class RegenerateZipFiles implements CommandLineRunner {
 				try {
 					File existingZipFile = new File(zipFileName);
 					existingZipFile.delete();
-					String[] zipCommand = commandBuilder.buildZipCommand(packageId);
+					String[] zipCommand = commandBuilder.buildZipCommand(packageId,
+							"/home/pathadmin/apps/zipWorker/build/libs/zipWorker.jar");
 
 					boolean success = processExecutor.executeProcess(zipCommand);
 					metadataFile.delete();
@@ -85,3 +108,4 @@ public class RegenerateZipFiles implements CommandLineRunner {
 	}
 
 }
+
