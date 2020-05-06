@@ -27,7 +27,6 @@ while [[ "$transferStatus" != "SUCCEEDED" && "$transferStatus" != "FAILED" && "$
 do
   transferStatus=$(globus task show --format unix --jmespath 'status' "${taskId}")
   additionalStatus=$(globus task show --format unix --jmespath 'nice_status' "${taskId}")
-  echo $transferStatus
 done
 
 if [[ "$transferStatus" == "FAILED" || "$additionalStatus" == "ENDPOINT_ERROR" ]]
