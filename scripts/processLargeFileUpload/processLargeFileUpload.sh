@@ -3,7 +3,11 @@
 currentDir=$(pwd)
 
 source "${currentDir}"/.env
+
 echo "**** It would be wise to start me in Screen ***"
+endpoint=$(globus endpoint show --format=json --jq=display_name "${GLOBUS_DROPBOX_ENDPOINT}")
+
+echo "Getting data from: ${endpoint}"
 echo "Package ID:"
 read packageId
 
@@ -13,14 +17,19 @@ mkdir "${packageDir}"
 
 cd ~/globusconnectpersonal-3.0.4/
 globus login
+
+echo "Transferring following files"
+echo $(globus ls "${GLOBUS_DROPBOX_ENDPOINT}":"${GLOBUS_DROPBOX_PATH}${packageId}")
+
 taskId=$(globus transfer --format unix --jmespath 'task_id' "${GLOBUS_DROPBOX_ENDPOINT}":"${GLOBUS_DROPBOX_PATH}${packageId}" "${LOCAL_ENDPOINT}":"${packageDir}" --recursive)
 
-while [[ "$transferStatus" != "SUCCEEDED" && "$transferStatus" != "FAILED" ]]
+while [[ "$transferStatus" != "SUCCEEDED" && "$transferStatus" != "FAILED" && "$additionalStatus" != "ENDPOINT_ERROR" ]]
 do
   transferStatus=$(globus task show --format unix --jmespath 'status' "${taskId}")
+  additionalStatus=$(globus task show --format unix --jmespath 'nice_status' "${taskId}")
 done
 
-if [ "$transferStatus" == "FAILED" ]
+if [[ "$transferStatus" == "FAILED" || "$additionalStatus" == "ENDPOINT_ERROR" ]]
 then
 	echo "Transfer Failed. Globus task id was: $taskId"
 	exit
