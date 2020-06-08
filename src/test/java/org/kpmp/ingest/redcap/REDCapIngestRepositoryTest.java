@@ -47,6 +47,7 @@ public class REDCapIngestRepositoryTest {
 		verify(mongoCollection).insertOne(documentCaptor.capture());
 		Document actualDocument = documentCaptor.getValue();
 		assertEquals("value1", actualDocument.get("field1"));
+		assertEquals(true, actualDocument.containsKey("created_at"));
 	}
 
 }

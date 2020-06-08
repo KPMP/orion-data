@@ -31,11 +31,13 @@ public class REDCapIngestServiceTest {
 
 	@Test
 	public void testSaveDataDump() throws JSONException {
-		service.saveDataDump("{}");
+		service.saveDataDump("{'stuff': 'value'}");
 
 		ArgumentCaptor<JSONObject> jsonCaptor = ArgumentCaptor.forClass(JSONObject.class);
 		verify(repository).saveDump(jsonCaptor.capture());
-		assertEquals(true, jsonCaptor.getValue().has("created_at"));
+		JSONObject json = jsonCaptor.getValue();
+		assertEquals(1, json.length());
+		assertEquals("value", json.get("stuff"));
 	}
 
 }
