@@ -55,7 +55,7 @@ public class AuthorizationFilter implements Filter {
 	private List<String> allowedGroups;
 	@Value("${user.auth.kpmp.group}")
 	private String kpmpGroup;
-	@Value("@{user.auth.allow.endpoints}")
+	@Value("#{'${user.auth.allow.endpoints}'.split(',')}")
 	private List<String> allowedEndpoints;
 	private Environment env;
 
@@ -84,7 +84,6 @@ public class AuthorizationFilter implements Filter {
 		Cookie[] cookies = request.getCookies();
 		User user = shibUserService.getUser(request);
 		String shibId = user.getShibId();
-
 		if (hasExistingSession(shibId, cookies, request) || allowedEndpoints.contains(request.getRequestURI())) {
 			chain.doFilter(request, response);
 		} else {

@@ -1,5 +1,7 @@
 package org.kpmp.ingest.redcap;
 
+import java.util.Date;
+
 import org.bson.Document;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ public class REDCapIngestRepository {
 
 	public void saveDump(JSONObject jsonDump) {
 		Document document = Document.parse(jsonDump.toString());
+		document.put("created_at", new Date());
 		MongoCollection<Document> collection = mongoTemplate.getCollection(REDCAP_COLLECTION);
 		collection.insertOne(document);
 	}

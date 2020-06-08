@@ -1,7 +1,5 @@
 package org.kpmp.ingest.redcap;
 
-import java.util.Date;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,6 @@ public class REDCapIngestService {
 
 	public void saveDataDump(String dataDumpString) throws JSONException {
 		JSONObject dataDump = new JSONObject(dataDumpString);
-		dataDump.put("created_at", new Date());
 
 		repository.saveDump(dataDump);
 	}
