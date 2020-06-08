@@ -50,7 +50,8 @@
   "apps": {
     "dlu": {
       "text": "DVC QC Pending",
-      "alertType": "primary"
+      "alertType": "warning",
+      "showDownload": true
     }
   }
 },{
@@ -61,7 +62,8 @@
   "apps": {
     "dlu": {
       "text": "DVC QC Pending",
-      "alertType": "primary"
+      "alertType": "warning",
+      "showDownload": true
     }
   }
 },{
@@ -72,7 +74,8 @@
   "apps": {
     "dlu": {
       "text": "DVC QC Pending",
-      "alertType": "primary"
+      "alertType": "warning",
+      "showDownload": true
     }
   }
 },{
@@ -83,7 +86,8 @@
   "apps": {
     "dlu": {
       "text": "DVC QC Rejected",
-      "alertType": "danger"
+      "alertType": "danger",
+      "showDownload": true
     }
   }
 },{
@@ -94,7 +98,8 @@
   "apps": {
     "dlu": {
       "text": "DVC QC Pending",
-      "alertType": "primary"
+      "alertType": "warning",
+      "showDownload": true
     }
   }
 },{
@@ -105,7 +110,8 @@
   "apps": {
     "dlu": {
       "text": "DVC QC Rejected",
-      "alertType": "danger"
+      "alertType": "danger",
+      "showDownload": true
     }
   }
 },{
@@ -116,7 +122,8 @@
   "apps": {
     "dlu": {
       "text": "DVC QC Approved",
-      "alertType": "primary"
+      "alertType": "success",
+      "showDownload": true
     }
   }
 }]
