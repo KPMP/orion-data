@@ -18,11 +18,11 @@ public class CommandBuilder {
 		this.filePathHelper = filePathHelper;
 	}
 
-	public String[] buildZipCommand(String packageId) {
+	public String[] buildZipCommand(String packageId, String zipWorkerPath) {
 		List<String> commandArgs = new ArrayList<>();
 		commandArgs.add("java");
 		commandArgs.add("-jar");
-		commandArgs.add("/home/gradle/zipWorker/zipWorker.jar");
+		commandArgs.add(zipWorkerPath);
 
 		String packagePath = filePathHelper.getPackagePath(packageId);
 		List<String> fileNames = filePathHelper.getFilenames(packagePath);
@@ -35,4 +35,9 @@ public class CommandBuilder {
 
 		return commandArgs.toArray(new String[0]);
 	}
+
+	public String[] buildZipCommand(String packageId) {
+		return buildZipCommand(packageId, "/home/gradle/zipWorker/zipWorker.jar");
+	}
 }
+

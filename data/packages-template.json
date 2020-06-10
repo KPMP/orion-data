@@ -1,0 +1,37 @@
+{
+    "_id": "c207526f-e02d-42c9-ad75-13a412fa41ec",
+    "packageType": "Multiplex ISH",
+    "protocol": "Other",
+    "createdAt": {
+        "$date": {
+            "$numberLong": "1582133806448"
+        }
+    },
+    "subjectId": "Smoke Testing on FF",
+    "description": "Smoke Testing on FF",
+    "submitter": {
+        "$id": {
+            "$oid": "5c49b80acb5e71004965b0f9"
+        }
+    },
+    "version": {
+        "$numberInt": "1"
+    },
+    "tisName": "UCSD/WashU",
+    "largeFilesChecked": false,
+    "tisInternalExperimentID": "Smoke Testing on FF",
+    "dataGenerators": "Smoke Testing on FF",
+    "files": [{
+        "fileName": "Data Map v3.png",
+        "size": {
+            "$numberInt": "307790"
+        },
+        "_id": "090d6835-3d96-4781-ab8c-1d6dd85aef36"
+    }, {
+        "fileName": "MiKTMC-Template.pptx",
+        "size": {
+            "$numberInt": "131571"
+        },
+        "_id": "247238c0-2ad9-42b6-957c-74cbd9dac553"
+    }],
+}

@@ -53,6 +53,7 @@ public class AuthorizationFilterTest {
 		ReflectionTestUtils.setField(filter, "userAuthEndpoint", "endpoint");
 		ReflectionTestUtils.setField(filter, "allowedGroups", Arrays.asList("group1", "group2"));
 		ReflectionTestUtils.setField(filter, "kpmpGroup", "imaKpmpUser");
+		ReflectionTestUtils.setField(filter, "allowedEndpoints", Arrays.asList("uri1"));
 	}
 
 	@After
@@ -71,7 +72,7 @@ public class AuthorizationFilterTest {
 	}
 
 	@Test
-	public void testDoFilter_userHasValidCookie() throws Exception {
+	public void testDoFilter_userHasValidCookie() throws Exception { // eslint-disable-line no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		FilterChain chain = mock(FilterChain.class);
@@ -92,9 +93,28 @@ public class AuthorizationFilterTest {
 		verify(chain).doFilter(incomingRequest, incomingResponse);
 	}
 
+	@Test
+	public void testDoFilter_skippableURI() throws Exception { // eslint-disable-line no-eval
+		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
+		when(incomingRequest.getRequestURI()).thenReturn("uri1");
+		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
+		FilterChain chain = mock(FilterChain.class);
+		User user = mock(User.class);
+		when(user.getShibId()).thenReturn("shibboleth id");
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
+		HttpSession session = mock(HttpSession.class);
+		when(incomingRequest.getSession(false)).thenReturn(session);
+		when(incomingRequest.getCookies()).thenReturn(new Cookie[] {});
+
+		filter.doFilter(incomingRequest, incomingResponse, chain);
+
+		verify(chain).doFilter(incomingRequest, incomingResponse);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testDoFilter_userHasSomeoneElsesCookieAndGotEmptyResponse() throws Exception {
+	public void testDoFilter_userHasSomeoneElsesCookieAndGotEmptyResponse() throws Exception { // eslint-disable-line
+																								// no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		FilterChain chain = mock(FilterChain.class);
@@ -125,7 +145,7 @@ public class AuthorizationFilterTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testDoFilter_whenNoSessionAndEmptyResponse() throws Exception {
+	public void testDoFilter_whenNoSessionAndEmptyResponse() throws Exception { // eslint-disable-line no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		FilterChain chain = mock(FilterChain.class);
@@ -148,7 +168,7 @@ public class AuthorizationFilterTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testDoFilter_noSessionHasAllowedGroup() throws Exception {
+	public void testDoFilter_noSessionHasAllowedGroup() throws Exception { // eslint-disable-line no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		HttpSession session = mock(HttpSession.class);
@@ -174,7 +194,8 @@ public class AuthorizationFilterTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testDoFilter_noSessionDoesNotHaveAllowedGroupHasKpmpGroup() throws Exception {
+	public void testDoFilter_noSessionDoesNotHaveAllowedGroupHasKpmpGroup() throws Exception { // eslint-disable-line
+																								// no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		HttpSession session = mock(HttpSession.class);
@@ -198,7 +219,8 @@ public class AuthorizationFilterTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testDoFilter_noSessionDoesNotHaveAllowedGroupNoKpmpGroup() throws Exception {
+	public void testDoFilter_noSessionDoesNotHaveAllowedGroupNoKpmpGroup() throws Exception { // eslint-disable-line
+																								// no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		HttpSession session = mock(HttpSession.class);
@@ -222,7 +244,7 @@ public class AuthorizationFilterTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testDoFilter_userAuthReturned404() throws Exception {
+	public void testDoFilter_userAuthReturned404() throws Exception { // eslint-disable-line no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		HttpSession session = mock(HttpSession.class);
@@ -245,7 +267,7 @@ public class AuthorizationFilterTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testDoFilter_userAuthReturnedAnotherErrorCode() throws Exception {
+	public void testDoFilter_userAuthReturnedAnotherErrorCode() throws Exception { // eslint-disable-line no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		HttpSession session = mock(HttpSession.class);

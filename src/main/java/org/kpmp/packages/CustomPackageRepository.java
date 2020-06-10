@@ -174,6 +174,7 @@ public class CustomPackageRepository {
 			User user = userOptional.get();
 			String submitterJsonString = user.generateJSONForApp();
 			JSONObject submitterJson = new JSONObject(submitterJsonString);
+			submitterJson.remove(PackageKeys.SHIBID.getKey());
 			jsonObject.put(PackageKeys.SUBMITTER.getKey(), submitterJson);
 		}
 		return jsonObject;
