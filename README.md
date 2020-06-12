@@ -4,18 +4,17 @@
 # orion-data
   **Description**: Repo for the KPMP upload tool back-end
 
+## Documentation
+Visit [kpmp.github.io/dlu](http://kpmp.io.github.io/dlu)
+
 ## RegenerateZipFiles
 To regenerate zip files:
  1. Connect to mongo
  2. Set `regenerateZip` to true for any packages you want to regenerate zip files for
  3. Connect to server you need to regenerate zips for
- 4. Navigate to heavens-docker/orion
- 5. Bash into the spring container
- `docker exec -it spring bash`
- 6. Rebuild the orion-data jar
- `./gradlew build -x test`
+ 4. Navigate to orion-data/scripts/processLargeFileUpload
  7. Run the zip generator
- `java -cp build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher`
+ `java -cp ../../build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher`
 
 ## Getting and storing the credentials for Google Drive
  1. Get the credentials.json file from kpmp-secure/orion-data and put it in the `src/main/resources` directory.

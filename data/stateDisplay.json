@@ -1,0 +1,129 @@
+[{
+  "_id": {
+    "$oid": "5eb2d66880412d1b368962a4"
+  },
+  "state": "FILES_RECEIVED",
+  "apps": {
+    "dlu": {
+      "text": "Finishing upload",
+      "alertType": "success"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "5eb2d79c80412d1b368962a5"
+  },
+  "state": "METADATA_RECEIVED",
+  "apps": {
+    "dlu": {
+      "text": "Waiting for files...",
+      "alertType": "primary"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "5eb2d7f380412d1b368962a6"
+  },
+  "state": "UPLOAD_FAILED",
+  "apps": {
+    "dlu": {
+      "text": "Upload failed",
+      "alertType": "danger"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "5ecd77052e72d5a73904dce2"
+  },
+  "state": "INITIAL_METADATA_RECEIVED",
+  "apps": {
+    "dlu": {
+      "text": "Waiting for files...",
+      "alertType": "primary"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "5ecd77622e72d5a73904dce3"
+  },
+  "state": "UPLOAD_SUCCEEDED",
+  "apps": {
+    "dlu": {
+      "text": "DVC QC Pending",
+      "alertType": "warning",
+      "showDownload": true
+    }
+  }
+},{
+  "_id": {
+    "$oid": "5ecd777c2e72d5a73904dce4"
+  },
+  "state": "PACKAGE_LEVEL_REVIEW_STARTED",
+  "apps": {
+    "dlu": {
+      "text": "DVC QC Pending",
+      "alertType": "warning",
+      "showDownload": true
+    }
+  }
+},{
+  "_id": {
+    "$oid": "5ecd778f2e72d5a73904dce5"
+  },
+  "state": "PACKAGE_LEVEL_REVIEW_SUCCEEDED",
+  "apps": {
+    "dlu": {
+      "text": "DVC QC Pending",
+      "alertType": "warning",
+      "showDownload": true
+    }
+  }
+},{
+  "_id": {
+    "$oid": "5ecd77a42e72d5a73904dce6"
+  },
+  "state": "PACKAGE_LEVEL_REVIEW_FAILED",
+  "apps": {
+    "dlu": {
+      "text": "DVC QC Rejected",
+      "alertType": "danger",
+      "showDownload": true
+    }
+  }
+},{
+  "_id": {
+    "$oid": "5ecd78882e72d5a73904dce7"
+  },
+  "state": "PROPERTY_LEVEL_REVIEW_STARTED",
+  "apps": {
+    "dlu": {
+      "text": "DVC QC Pending",
+      "alertType": "warning",
+      "showDownload": true
+    }
+  }
+},{
+  "_id": {
+    "$oid": "5ecd78ab2e72d5a73904dce8"
+  },
+  "state": "PROPERTY_LEVEL_REVIEW_FAILED",
+  "apps": {
+    "dlu": {
+      "text": "DVC QC Rejected",
+      "alertType": "danger",
+      "showDownload": true
+    }
+  }
+},{
+  "_id": {
+    "$oid": "5ecd78c32e72d5a73904dce9"
+  },
+  "state": "PROPERTY_LEVEL_REVIEW_SUCCEEDED",
+  "apps": {
+    "dlu": {
+      "text": "DVC QC Approved",
+      "alertType": "success",
+      "showDownload": true
+    }
+  }
+}]

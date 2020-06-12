@@ -1,0 +1,6 @@
+{"_id":{"$oid":"5c99063ed5928f3d4502a9b3"},"iconType":"Metabolomics","packageTypes":["Spatial Metabolomics"]}
+{"_id":{"$oid":"5c99063ed5928f3d4502a9b4"},"iconType":"Imaging","packageTypes":["3-D Tissue Imaging","Multiplex ISH","CODEX","Whole Slide Images"]}
+{"_id":{"$oid":"5c99063ed5928f3d4502a9b5"},"iconType":"Proteomics","packageTypes":["Bulk Proteomics","Sub-segmental Proteomics","Near-single-cell Proteomics"]}
+{"_id":{"$oid":"5c99063ed5928f3d4502a9b6"},"iconType":"Transcriptomics","packageTypes":["Bulk total/mRNA","Bulk microRNA","Segmental miRNA","Sub-segmental RNA-Seq","Single-cell RNA-Seq","Single-nucleus RNA-Seq"]}
+{"_id":{"$oid":"5c99063ed5928f3d4502a9b7"},"iconType":"Pilot 3","packageTypes":["Pilot 3 Receipt Picture"]}
+{"_id":{"$oid":"5c99063ed5928f3d4502a9b8"},"iconType":"Other","packageTypes":["DNA Methylation","Other"]}

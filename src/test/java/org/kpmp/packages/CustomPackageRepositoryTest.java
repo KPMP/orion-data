@@ -205,13 +205,13 @@ public class CustomPackageRepositoryTest {
 				"{ \"_id\": \"123\", \"key\": \"value with /\", \"submitter\": { $id: { $oid: '123' }, \"shibId\": \"555\"}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
 		when(result.first()).thenReturn(document);
 		User user = mock(User.class);
-		when(user.generateJSONForApp()).thenReturn("{user: information, exists: here}");
+		when(user.generateJSONForApp()).thenReturn("{ $id: { $oid: '123' }, 'shibId': '555', 'firstName': 'John'}");
 		when(userRepo.findById("123")).thenReturn(Optional.of(user));
 
 		String packageJson = repo.getJSONByPackageId("123");
 
 		assertEquals(
-				"{\"createdAt\":{\"$date\":123567},\"submitter\":{\"exists\":\"here\",\"user\":\"information\"},\"_id\":\"123\",\"key\":\"value with /\"}",
+				"{\"createdAt\":{\"$date\":123567},\"submitter\":{\"firstName\":\"John\",\"$id\":{\"$oid\":\"123\"}},\"_id\":\"123\",\"key\":\"value with /\"}",
 				packageJson);
 		ArgumentCaptor<BasicDBObject> queryCaptor = ArgumentCaptor.forClass(BasicDBObject.class);
 		verify(mongoCollection).find(queryCaptor.capture());
@@ -229,7 +229,7 @@ public class CustomPackageRepositoryTest {
 		List<Document> results = Arrays.asList(firstResult);
 		when(mongoTemplate.find(any(Query.class), any(Class.class), any(String.class))).thenReturn(results);
 		when(firstResult.toJson(any(JsonWriterSettings.class), any(DocumentCodec.class))).thenReturn(
-				"{ \"_id\": \"123\", \"key\": \"value\", \"submitter\": { $id: { $oid: '123' }}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
+				"{ \"_id\": \"123\", \"key\": \"value\", \"submitter\": { $id: { $oid: '123' } }, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
 		JsonWriterSettings jsonWriterSettingsReturn = mock(JsonWriterSettings.class);
 		when(jsonWriterSettings.getSettings()).thenReturn(jsonWriterSettingsReturn);
 
