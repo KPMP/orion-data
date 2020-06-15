@@ -8,6 +8,7 @@ echo "Package ID:"
 read packageId
 
 packageDir="/data/dataLake/package_$packageId"
+
 rm "$packageDir/metadata.json"
 
 cp /globus/PROD_INBOX/"${packageId}"/* "${packageDir}"
@@ -15,6 +16,7 @@ cp /globus/PROD_INBOX/"${packageId}"/* "${packageDir}"
 node updateMongo.js "${packageId}"
 
 result=$?
+
 
 if [ $result == 0 ]; then
 	java -cp /home/pathadmin/apps/orion-data/build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher
