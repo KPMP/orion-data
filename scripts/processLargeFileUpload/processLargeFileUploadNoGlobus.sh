@@ -8,7 +8,7 @@ echo "Package ID:"
 read packageId
 
 packageDir="/data/dataLake/package_$packageId"
-rm $packageDir/metadata.json
+rm "$packageDir/metadata.json"
 
 cp /globus/PROD_INBOX/"${packageId}"/* "${packageDir}"
 
