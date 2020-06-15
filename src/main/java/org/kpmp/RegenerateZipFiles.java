@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.json.JSONObject;
+import org.kpmp.cache.CacheController;
 import org.kpmp.externalProcess.CommandBuilder;
 import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.filters.AuthorizationFilter;
@@ -45,7 +46,7 @@ import org.springframework.context.annotation.FilterType;
 		PackageFileHandler.class }), excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
 				PackageController.class, WebConfig.class, Application.class, AuthorizationFilter.class,
 				GlobusAuthorizationCodeInstalledApp.class, GlobusService.class, StateHandlerService.class,
-				PackageService.class }))
+				PackageService.class, CacheController.class }))
 public class RegenerateZipFiles implements CommandLineRunner {
 
 	private CustomPackageRepository packageRepository;
@@ -108,4 +109,3 @@ public class RegenerateZipFiles implements CommandLineRunner {
 	}
 
 }
-
