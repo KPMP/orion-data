@@ -15,7 +15,7 @@ apply plugin: 'io.spring.dependency-management'
 
 jar {
     baseName='orion-data'
-    version= '2.9'
+    version= '2.8.1'
 }
 
 repositories {
