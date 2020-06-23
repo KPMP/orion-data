@@ -1,6 +1,8 @@
 package org.kpmp.globus;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -15,10 +17,15 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.JsonObjectParser;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.common.reflect.TypeToken;
 
 @Service
 public class GlobusService {
 
+	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 	private static final String API_URL = "https://transfer.api.globusonline.org/v0.10";
 
 	private HttpRequestFactory requestFactory;
@@ -56,14 +63,20 @@ public class GlobusService {
 		return fileManagerUrl + "?origin_id=" + endpointID + "&origin_path=" + fullDirName;
 	}
 
-	public String getFilesAtEndpoint(String packageId) throws JsonProcessingException, IOException {
+	@SuppressWarnings("serial")
+	public List<GlobusFileListing> getFilesAtEndpoint(String packageId) throws JsonProcessingException, IOException {
 		String topDirectory = env.getProperty("GLOBUS_DIR");
 		String fullDirName = topDirectory + "/" + packageId;
 
 		GenericUrl url = new GenericUrl(API_URL + "/operation/endpoint/" + endpointID + "/ls?path=" + fullDirName);
 		HttpRequest request = requestFactory.buildGetRequest(url);
-		HttpResponse response = request.execute();
+		request.setParser(new JsonObjectParser(JSON_FACTORY));
 
-		return response.parseAsString();
+		Type type = new TypeToken<GlobusListingResponse>() {
+		}.getType();
+		HttpResponse response = request.execute();
+		GlobusListingResponse globusListing = (GlobusListingResponse) response.parseAs(type);
+
+		return globusListing.getData();
 	}
 }
