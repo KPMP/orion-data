@@ -65,6 +65,7 @@ public class GlobusService {
 
 	@SuppressWarnings("serial")
 	public List<GlobusFileListing> getFilesAtEndpoint(String packageId) throws JsonProcessingException, IOException {
+		System.err.println(packageId);
 		String topDirectory = env.getProperty("GLOBUS_DIR");
 		String fullDirName = topDirectory + "/" + packageId;
 

@@ -23,8 +23,13 @@ public class PackageFilesValidationService {
 
 	public PackageValidationResponse matchFiles(PackageFilesRequest request)
 			throws JsonProcessingException, IOException {
+		List<GlobusFileListing> filesInGlobus = globus.getFilesAtEndpoint(request.getPackageId());
+		if (containsOnlyDirectory(filesInGlobus)) {
+			filesInGlobus = globus.getFilesAtEndpoint(request.getPackageId() + "/" + filesInGlobus.get(0).getName());
+		}
+
 		PackageValidationResponse response = new PackageValidationResponse();
-		List<String> globusFiles = getGlobusFileNames(request);
+		List<String> globusFiles = getGlobusFileNames(filesInGlobus);
 		List<String> filesFromMetadata = processIncomingFilenames(request);
 		response.setFilesFromMetadata(filesFromMetadata);
 		response.setFilesInGlobus(globusFiles);
@@ -44,6 +49,13 @@ public class PackageFilesValidationService {
 		return response;
 	}
 
+	private boolean containsOnlyDirectory(List<GlobusFileListing> filesInGlobus) {
+		if (filesInGlobus.size() == 1 && filesInGlobus.get(0).getType().equals("dir")) {
+			return true;
+		}
+		return false;
+	}
+
 	private List<String> processIncomingFilenames(PackageFilesRequest request) {
 		List<String> incomingFiles = new ArrayList<>();
 		String filenameString = request.getFilenames();
@@ -57,10 +69,10 @@ public class PackageFilesValidationService {
 		return incomingFiles;
 	}
 
-	private List<String> getGlobusFileNames(PackageFilesRequest request) throws JsonProcessingException, IOException {
-		List<GlobusFileListing> filesAtEndpoint = globus.getFilesAtEndpoint(request.getPackageId());
+	private List<String> getGlobusFileNames(List<GlobusFileListing> globusFiles)
+			throws JsonProcessingException, IOException {
 		List<String> deliveredFiles = new ArrayList<String>();
-		for (GlobusFileListing globusListingResponse : filesAtEndpoint) {
+		for (GlobusFileListing globusListingResponse : globusFiles) {
 			deliveredFiles.add(globusListingResponse.getName());
 		}
 		return deliveredFiles;
