@@ -1,6 +1,9 @@
 package org.kpmp.packages.validation;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -51,6 +54,27 @@ public class PackageFilesValidationServiceTest {
 		assertEquals("323", result.getPackageId());
 		assertEquals(Arrays.asList("file1", "file2.xls"), result.getFilesFromMetadata());
 		assertEquals(Arrays.asList("file2.xls", "file1"), result.getFilesInGlobus());
+	}
+
+	@Test
+	public void testMatchFilesWhenUserUploadsToSubdir() throws JsonProcessingException, IOException {
+		PackageFilesRequest request = new PackageFilesRequest();
+		request.setPackageId("323");
+		request.setFilenames("file1, file2.xls");
+		GlobusFileListing globusFile1 = new GlobusFileListing();
+		globusFile1.setName("directory");
+		globusFile1.setType("dir");
+		when(globus.getFilesAtEndpoint("323")).thenReturn(Arrays.asList(globusFile1));
+		when(globus.getFilesAtEndpoint("323/dir")).thenReturn(Arrays.asList(globusFile1));
+
+		PackageValidationResponse result = service.matchFiles(request);
+
+		verify(globus, times(2)).getFilesAtEndpoint(any(String.class));
+		assertEquals(null, result.getGlobusFilesNotFoundInMetadata());
+		assertEquals(Arrays.asList("file1", "file2.xls"), result.getMetadataFilesNotFoundInGlobus());
+		assertEquals("323", result.getPackageId());
+		assertEquals(Arrays.asList("file1", "file2.xls"), result.getFilesFromMetadata());
+		assertEquals(Arrays.asList(), result.getFilesInGlobus());
 	}
 
 	@Test
