@@ -48,4 +48,21 @@ public class PackageValidationResponseTest {
 		assertEquals("packageid", response.getPackageId());
 	}
 
+	@Test
+	public void testSetFilesFromMetadata() throws Exception {
+		List<String> metadataFiles = Arrays.asList("file1");
+
+		response.setFilesFromMetadata(metadataFiles);
+
+		assertEquals(metadataFiles, response.getFilesFromMetadata());
+	}
+
+	@Test
+	public void testSetFilesInGlobus() throws Exception {
+		List<String> globusFiles = Arrays.asList("globus1");
+
+		response.setFilesInGlobus(globusFiles);
+
+		assertEquals(globusFiles, response.getFilesInGlobus());
+	}
 }
