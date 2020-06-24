@@ -8,13 +8,25 @@ echo "Package ID:"
 read packageId
 
 packageDir="/home/pathadmin/package_$packageId"
+globusDir="/globus/DEV_INBOX/${packageId}"
 
 rm "$packageDir/metadata.json"
 
-cp /globus/DEV_INBOX/"${packageId}"/* "${packageDir}"
+gFiles=("${globusDir}"/*)
 
-gFiles=(/globus/DEV_INBOX/"${packageId}"/*)
+for file in "${gFiles[@]}"; do
+   if [ -d "$file" ]; then
+      globusDir=$file
+      echo "Setting Globus path to subirectory: $file"
+      break
+   fi
+done
+
+cp "${globusDir}"/* "${packageDir}"
+
+gFiles=("${globusDir}"/*)
 dlFiles=("${packageDir}"/*)
+
 mismatchedFiles=($(echo ${gFiles[@]##*/} ${dlFiles[@]##*/} | tr ' ' '\n' | sort | uniq -u ))
 
 if [ "${#mismatchedFiles[@]}" -gt 0 ]; then
@@ -32,7 +44,6 @@ done
 node updateMongo.js "${packageId}"
 
 result=$?
-
 
 if [ $result == 0 ]; then
 	java -cp /home/pathadmin/apps/orion-data/build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher
@@ -52,6 +63,5 @@ else
 	echo "Mongo update failed...exiting."
 	exit -1
 fi
-
 
 exit
