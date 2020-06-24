@@ -14,17 +14,35 @@ rm "$packageDir/metadata.json"
 
 gFiles=("${globusDir}"/*)
 
+directoryAlreadyFound=false
 for file in "${gFiles[@]}"; do
    if [ -d "$file" ]; then
+      if [ "$directoryAlreadyFound" = true ]; then
+         echo "ERROR -- Too many subdirectories"
+         exit -1
+      fi
       globusDir=$file
-      echo "Setting Globus path to subirectory: $file"
-      break
+      echo "Setting Globus path to subdirectory: $file"
+      directoryAlreadyFound=true
    fi
 done
 
+gFiles=("${globusDir}"/*)
+
+for file in "${gFiles[@]}"; do
+   if [ -d "$file" ]; then
+      echo "ERROR -- Too many nested subdirectories"
+      exit -1
+   fi
+done
+
+if [ "${#gFiles[@]}" -eq 0 ]; then
+   echo "ERROR -- No files found in ${globusDir}"
+   exit -1
+fi
+
 cp "${globusDir}"/* "${packageDir}"
 
-gFiles=("${globusDir}"/*)
 dlFiles=("${packageDir}"/*)
 
 mismatchedFiles=($(echo ${gFiles[@]##*/} ${dlFiles[@]##*/} | tr ' ' '\n' | sort | uniq -u ))
