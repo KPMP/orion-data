@@ -7,11 +7,27 @@ echo "**** It would be wise to start me in Screen ***"
 echo "Package ID:"
 read packageId
 
-packageDir="/data/dataLake/package_$packageId"
+packageDir="/home/pathadmin/package_$packageId"
 
 rm "$packageDir/metadata.json"
 
-cp /globus/PROD_INBOX/"${packageId}"/* "${packageDir}"
+cp /globus/DEV_INBOX/"${packageId}"/* "${packageDir}"
+
+gFiles=(/globus/DEV_INBOX/"${packageId}"/*)
+dlFiles=("${packageDir}"/*)
+mismatchedFiles=($(echo ${gFiles[@]##*/} ${dlFiles[@]##*/} | tr ' ' '\n' | sort | uniq -u ))
+
+if [ "${#mismatchedFiles[@]}" -gt 0 ]; then
+   echo "ERROR -- The following filenames don't match: ${mismatchedFiles[*]}"
+   exit -1
+fi
+
+for file in "${gFiles[@]}"; do
+   if [ $(stat -c%s "$file") -ne $(stat -c%s $packageDir/${file##*/}) ]; then
+      echo "ERROR -- File size mismatch for $file"
+      exit -1
+   fi
+done
 
 node updateMongo.js "${packageId}"
 
