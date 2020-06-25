@@ -7,8 +7,17 @@ echo "**** It would be wise to start me in Screen ***"
 echo "Package ID:"
 read packageId
 
-packageDir="/home/pathadmin/package_$packageId"
-globusDir="/globus/DEV_INBOX/${packageId}"
+packageDir="/data/dataLake/package_$packageId"
+globusDir="/globus/PROD_INBOX/${packageId}"
+
+function checkEmptyDir {
+   if [ -z "$(ls -A $1)" ]; then
+      echo "ERROR -- No files found in ${globusDir}"
+      exit -1
+   fi
+}
+
+checkEmptyDir $globusDir
 
 rm "$packageDir/metadata.json"
 
@@ -26,6 +35,8 @@ for file in "${gFiles[@]}"; do
       directoryAlreadyFound=true
    fi
 done
+
+checkEmptyDir $globusDir
 
 gFiles=("${globusDir}"/*)
 
