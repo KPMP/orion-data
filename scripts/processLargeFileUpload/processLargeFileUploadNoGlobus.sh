@@ -4,8 +4,13 @@ source "${currentDir}"/.env
 
 echo "**** It would be wise to start me in Screen ***"
 
-echo "Package ID:"
-read packageId
+if [ -z "$1" ]
+  then
+    echo "ERROR -- Missing parameter. Usage: ./processLargeFileUploadNoGlobus.sh [packageID]"
+    exit -1
+fi
+
+packageId=$1
 
 packageDir="/data/dataLake/package_$packageId"
 globusDir="/globus/PROD_INBOX/${packageId}"
