@@ -8,15 +8,71 @@ echo "Package ID:"
 read packageId
 
 packageDir="/data/dataLake/package_$packageId"
+globusDir="/globus/PROD_INBOX/${packageId}"
+
+function checkEmptyDir {
+   if [ -z "$(ls -A $1)" ]; then
+      echo "ERROR -- No files found in ${globusDir}"
+      exit -1
+   fi
+}
+
+checkEmptyDir $globusDir
 
 rm "$packageDir/metadata.json"
 
-cp /globus/PROD_INBOX/"${packageId}"/* "${packageDir}"
+gFiles=("${globusDir}"/*)
+
+directoryAlreadyFound=false
+for file in "${gFiles[@]}"; do
+   if [ -d "$file" ]; then
+      if [ "$directoryAlreadyFound" = true ]; then
+         echo "ERROR -- Too many subdirectories"
+         exit -1
+      fi
+      globusDir=$file
+      echo "Setting Globus path to subdirectory: $file"
+      directoryAlreadyFound=true
+   fi
+done
+
+checkEmptyDir $globusDir
+
+gFiles=("${globusDir}"/*)
+
+for file in "${gFiles[@]}"; do
+   if [ -d "$file" ]; then
+      echo "ERROR -- Too many nested subdirectories"
+      exit -1
+   fi
+done
+
+if [ "${#gFiles[@]}" -eq 0 ]; then
+   echo "ERROR -- No files found in ${globusDir}"
+   exit -1
+fi
+
+cp "${globusDir}"/* "${packageDir}"
+
+dlFiles=("${packageDir}"/*)
+
+mismatchedFiles=($(echo ${gFiles[@]##*/} ${dlFiles[@]##*/} | tr ' ' '\n' | sort | uniq -u ))
+
+if [ "${#mismatchedFiles[@]}" -gt 0 ]; then
+   echo "ERROR -- The following filenames don't match: ${mismatchedFiles[*]}"
+   exit -1
+fi
+
+for file in "${gFiles[@]}"; do
+   if [ $(stat -c%s "$file") -ne $(stat -c%s $packageDir/${file##*/}) ]; then
+      echo "ERROR -- File size mismatch for $file"
+      exit -1
+   fi
+done
 
 node updateMongo.js "${packageId}"
 
 result=$?
-
 
 if [ $result == 0 ]; then
 	java -cp /home/pathadmin/apps/orion-data/build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher
@@ -36,6 +92,5 @@ else
 	echo "Mongo update failed...exiting."
 	exit -1
 fi
-
 
 exit
