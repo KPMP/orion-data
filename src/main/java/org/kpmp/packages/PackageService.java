@@ -229,6 +229,12 @@ public class PackageService {
 		return sameFiles;
 	}
 
+	protected boolean movePackageFiles(String packageId) throws IOException, InterruptedException {
+		String[] zipCommand = commandBuilder.buildZipCommand(packageId,
+				"scripts/processLargFileUpload/testProcess.sh");
+		return processExecutor.executeProcess(zipCommand);
+	}
+
 	private List<String> getAttachmentFilenames(Package packageInformation) {
 		ArrayList<String> filenames = new ArrayList<>();
 		List<Attachment> attachments = packageInformation.getAttachments();

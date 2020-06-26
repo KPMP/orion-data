@@ -140,6 +140,17 @@ public class PackageController {
 				.body(resource);
 	}
 
+    @RequestMapping(value = "/v1/packages/{packageId}/files/move", method = RequestMethod.POST)
+    public @ResponseBody ResponseEntity<String> movePackageFiles(@PathVariable String packageId,
+                                                                  HttpServletRequest request) {
+        try {
+            packageService.movePackageFiles(packageId);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok().body("Moving files for package " + packageId);
+    }
+
 	@RequestMapping(value = "/v1/packages/{packageId}/files/finish", method = RequestMethod.POST)
 	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId,
 			@RequestBody String hostname, HttpServletRequest request) {
