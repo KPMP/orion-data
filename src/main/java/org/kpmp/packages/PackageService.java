@@ -230,9 +230,8 @@ public class PackageService {
 	}
 
 	protected boolean movePackageFiles(String packageId) throws IOException, InterruptedException {
-		String[] zipCommand = commandBuilder.buildZipCommand(packageId,
-				"scripts/processLargFileUpload/testProcess.sh");
-		return processExecutor.executeProcess(zipCommand);
+		String[] command = {"scripts/processLargFileUpload/testProcess.sh", packageId};
+		return processExecutor.executeProcess(command);
 	}
 
 	private List<String> getAttachmentFilenames(Package packageInformation) {
