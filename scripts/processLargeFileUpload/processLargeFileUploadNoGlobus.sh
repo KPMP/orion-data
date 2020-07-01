@@ -75,18 +75,18 @@ for file in "${gFiles[@]}"; do
    fi
 done
 
-node updateMongo.js "${packageId}"
+node scripts/processLargeFileUpload/updateMongo.js "${packageId}"
 
 result=$?
 
 if [ $result == 0 ]; then
-	java -cp /home/pathadmin/apps/orion-data/build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher
+	java -cp build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher
 	zipResult=$?
 	if [ $zipResult == 0 ]; then
 		data='{"packageId":"'
 		data+=$packageId
 		data+='", "state":"UPLOAD_SUCCEEDED", "largeUploadChecked":true}'
-		url="http://localhost:3060/v1/state/host/${DLU_INSTANCE}"
+		url="http://state-spring:3060/v1/state/host/${DLU_INSTANCE}"
 		curl --header "Content-Type: application/json" --request POST --data "${data}" "${url}"
                 curl "http://localhost:3030/v1/clearCache"
 	else

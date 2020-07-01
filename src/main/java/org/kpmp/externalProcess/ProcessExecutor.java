@@ -1,6 +1,8 @@
 package org.kpmp.externalProcess;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import org.springframework.stereotype.Component;
 
@@ -17,8 +19,10 @@ public class ProcessExecutor {
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
 		boolean processSuccessful = false;
 		processBuilder.command(command);
-
 		Process process = processBuilder.start();
+		BufferedReader br=new BufferedReader(new InputStreamReader(process.getInputStream()));
+		String line;
+		while((line=br.readLine())!=null) System.out.println(line);
 		int exitVal = process.waitFor();
 		if (exitVal == 0) {
 			processSuccessful = true;
@@ -26,6 +30,19 @@ public class ProcessExecutor {
 			processSuccessful = false;
 		}
 		return processSuccessful;
+	}
+
+	public String executeProcessWithOutput(String[] command) throws IOException, InterruptedException {
+		ProcessBuilder processBuilder = new ProcessBuilder(command);
+		boolean processSuccessful = false;
+		processBuilder.command(command);
+		Process process = processBuilder.start();
+		BufferedReader br=new BufferedReader(new InputStreamReader(process.getInputStream()));
+		String line;
+		StringBuilder sb = new StringBuilder();
+		while((line=br.readLine())!=null) sb.append(line);
+		int exitVal = process.waitFor();
+		return sb.toString();
 	}
 
 }

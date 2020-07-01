@@ -4,7 +4,7 @@ const filesystem = require("fs");
 const path = require("path");
 const { v4: uuidGenerator } = require("uuid");
 
-const url = "mongodb://localhost:27017";
+const url = "mongodb://mongodb:27017";
 const dbName = "dataLake";
 
 const updatePackage = function(packageId, files, db, callback) {

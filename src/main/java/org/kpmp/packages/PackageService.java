@@ -22,11 +22,15 @@ import org.kpmp.externalProcess.CommandBuilder;
 import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class PackageService {
@@ -229,9 +233,12 @@ public class PackageService {
 		return sameFiles;
 	}
 
-	protected boolean movePackageFiles(String packageId) throws IOException, InterruptedException {
-		String[] command = {"scripts/processLargFileUpload/testProcess.sh", packageId};
-		return processExecutor.executeProcess(command);
+	protected Boolean movePackageFiles(String packageId) throws IOException, InterruptedException {
+		String[] command = {"scripts/processLargeFileUpload/processLargeFileUploadNoGlobus.sh", packageId};
+		String output = processExecutor.executeProcessWithOutput(command);
+		Logger log = LoggerFactory.getLogger(this.getClass());
+		log.info(output);
+		return true;
 	}
 
 	private List<String> getAttachmentFilenames(Package packageInformation) {
