@@ -20,9 +20,6 @@ public class ProcessExecutor {
 		boolean processSuccessful = false;
 		processBuilder.command(command);
 		Process process = processBuilder.start();
-		BufferedReader br=new BufferedReader(new InputStreamReader(process.getInputStream()));
-		String line;
-		while((line=br.readLine())!=null) System.out.println(line);
 		int exitVal = process.waitFor();
 		if (exitVal == 0) {
 			processSuccessful = true;
