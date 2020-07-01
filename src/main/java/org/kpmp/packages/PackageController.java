@@ -147,15 +147,12 @@ public class PackageController {
 	ResponseEntity movePackageFiles(@PathVariable String packageId,
 									HttpServletRequest request) {
         ResponseEntity responseEntity;
-		try {
-            if (packageService.movePackageFiles(packageId)) {
-				responseEntity = ResponseEntity.ok().body("Moving files for package " + packageId);
-			} else {
-				responseEntity =  ResponseEntity.status(INTERNAL_SERVER_ERROR).body("There was a problem moving the files.");
-			}
+        try {
+        	packageService.movePackageFiles(packageId);
+        	responseEntity = ResponseEntity.ok().body("Moving files for package " + packageId);
         } catch (IOException | InterruptedException e) {
-			responseEntity =  ResponseEntity.status(INTERNAL_SERVER_ERROR).body("There was a problem executing hte move script.");
-			e.printStackTrace();
+			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
+        	responseEntity =  ResponseEntity.status(INTERNAL_SERVER_ERROR).body("There was a problem moving the files.");
         }
 		return responseEntity;
     }

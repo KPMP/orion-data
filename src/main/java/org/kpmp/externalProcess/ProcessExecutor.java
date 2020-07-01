@@ -32,17 +32,23 @@ public class ProcessExecutor {
 		return processSuccessful;
 	}
 
-	public String executeProcessWithOutput(String[] command) throws IOException, InterruptedException {
+	public CommandResult executeProcessWithOutput(String[] command) throws IOException, InterruptedException {
+		CommandResult commandResult = new CommandResult();
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
 		boolean processSuccessful = false;
 		processBuilder.command(command);
 		Process process = processBuilder.start();
 		BufferedReader br=new BufferedReader(new InputStreamReader(process.getInputStream()));
-		String line;
+		String output = "";
 		StringBuilder sb = new StringBuilder();
-		while((line=br.readLine())!=null) sb.append(line);
+		while((output = br.readLine()) != null ) {
+			sb.append(output);
+		}
 		int exitVal = process.waitFor();
-		return sb.toString();
+		processSuccessful = exitVal == 0;
+		commandResult.setResult(processSuccessful);
+		commandResult.setOutput(output);
+		return commandResult;
 	}
 
 }

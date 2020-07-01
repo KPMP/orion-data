@@ -19,6 +19,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.kpmp.externalProcess.CommandBuilder;
+import org.kpmp.externalProcess.CommandResult;
 import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
@@ -233,12 +234,27 @@ public class PackageService {
 		return sameFiles;
 	}
 
-	protected Boolean movePackageFiles(String packageId) throws IOException, InterruptedException {
+	protected void movePackageFiles(String packageId) throws IOException, InterruptedException {
 		String[] command = {"scripts/processLargeFileUpload/processLargeFileUploadNoGlobus.sh", packageId};
-		String output = processExecutor.executeProcessWithOutput(command);
-		Logger log = LoggerFactory.getLogger(this.getClass());
-		log.info(output);
-		return true;
+		new Thread(() -> {
+			CommandResult commandResult = null;
+			try {
+				commandResult = processExecutor.executeProcessWithOutput(command);
+			} catch (Exception e) {
+				logger.logErrorMessage(PackageService.class, null, packageId,
+						PackageService.class.getSimpleName() + ".movePackageFiles",
+						"There was a problem executing the move file command: " + e.getMessage());
+			}
+			if (commandResult.isResult()) {
+				logger.logInfoMessage(PackageService.class, null, packageId,
+						PackageService.class.getSimpleName() + ".movePackageFiles",
+						zipPackage.format(new Object[] { "Files moved for package: ", packageId }));
+			} else {
+				logger.logErrorMessage(PackageService.class, null, packageId,
+						PackageService.class.getSimpleName() + ".movePackageFiles",
+						"There was a problem moving the files: " + commandResult.getOutput());
+			}
+		});
 	}
 
 	private List<String> getAttachmentFilenames(Package packageInformation) {

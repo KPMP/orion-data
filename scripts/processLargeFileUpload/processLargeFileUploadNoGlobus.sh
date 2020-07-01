@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source "${currentDir}"/.env
-
 echo "**** It would be wise to start me in Screen ***"
 
 if [ -z "$1" ]
@@ -69,7 +67,7 @@ if [ "${#mismatchedFiles[@]}" -gt 0 ]; then
 fi
 
 for file in "${gFiles[@]}"; do
-   if [ $(stat -c%s "$file") -ne $(stat -c%s $packageDir/${file##*/}) ]; then
+   if [ $(stat -c%s "$file") -ne $(stat -c%s "$packageDir/${file##*/}") ]; then
       echo "ERROR -- File size mismatch for $file"
       exit -1
    fi
@@ -86,7 +84,7 @@ if [ $result == 0 ]; then
 		data='{"packageId":"'
 		data+=$packageId
 		data+='", "state":"UPLOAD_SUCCEEDED", "largeUploadChecked":true}'
-		url="http://state-spring:3060/v1/state/host/${DLU_INSTANCE}"
+		url="http://state-spring:3060/v1/state/host/upload_kpmp_org"
 		curl --header "Content-Type: application/json" --request POST --data "${data}" "${url}"
                 curl "http://localhost:3030/v1/clearCache"
 	else
