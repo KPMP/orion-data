@@ -64,7 +64,7 @@ if [ "${#mismatchedFiles[@]}" -gt 0 ]; then
 fi
 
 for file in "${gFiles[@]}"; do
-   if [ $(stat -c%s "$file") -ne $(stat -c%s $packageDir/${file##*/}) ]; then
+   if [ $(stat -c%s "$file") -ne $(stat -c%s "$packageDir/${file##*/}") ]; then
       echo "ERROR -- File size mismatch for $file"
       exit -1
    fi
