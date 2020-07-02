@@ -232,7 +232,9 @@ public class PackageService {
 
 	protected void movePackageFiles(String packageId) throws IOException, InterruptedException {
 		String[] command = {"scripts/processLargeFileUpload/processLargeFileUploadNoGlobus.sh", packageId};
-		new Thread(() -> {
+		new Thread() {
+			@CacheEvict(value = "packages", allEntries = true)
+			public void run() {
 			CommandResult commandResult = null;
 			try {
 				commandResult = processExecutor.executeProcessWithOutput(command);
@@ -250,7 +252,9 @@ public class PackageService {
 						PackageService.class.getSimpleName() + ".movePackageFiles",
 						"There was a problem moving the files: " + commandResult.getOutput());
 			}
-		});
+			}
+
+		}.start();
 	}
 
 	private List<String> getAttachmentFilenames(Package packageInformation) {
