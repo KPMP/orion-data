@@ -1,8 +1,8 @@
 package org.kpmp.externalProcess;
 
 public class CommandResult {
-    boolean result;
-    String output;
+    private boolean result;
+    private String output;
 
     public boolean isResult() {
         return result;

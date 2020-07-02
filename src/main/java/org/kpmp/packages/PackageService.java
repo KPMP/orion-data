@@ -23,15 +23,11 @@ import org.kpmp.externalProcess.CommandResult;
 import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class PackageService {
