@@ -303,4 +303,13 @@ public class PackageControllerTest {
 		}
 	}
 
+	@Test
+	public void testMovePackageFiles() throws Exception {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		ResponseEntity responseEntity = controller.movePackageFiles("3545", request);
+		verify(packageService).movePackageFiles("3545");
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+		assertEquals("Moving files for package 3545", responseEntity.getBody());
+	}
+
 }

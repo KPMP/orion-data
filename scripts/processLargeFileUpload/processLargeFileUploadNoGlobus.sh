@@ -1,11 +1,14 @@
 #!/bin/bash
 
-source "${currentDir}"/.env
-
 echo "**** It would be wise to start me in Screen ***"
 
-echo "Package ID:"
-read packageId
+if [ -z "$1" ]
+  then
+    echo "ERROR -- Missing parameter. Usage: ./processLargeFileUploadNoGlobus.sh [packageID]"
+    exit -1
+fi
+
+packageId=$1
 
 packageDir="/data/dataLake/package_$packageId"
 globusDir="/globus/PROD_INBOX/${packageId}"
@@ -70,18 +73,18 @@ for file in "${gFiles[@]}"; do
    fi
 done
 
-node updateMongo.js "${packageId}"
+node scripts/processLargeFileUpload/updateMongo.js "${packageId}"
 
 result=$?
 
 if [ $result == 0 ]; then
-	java -cp /home/pathadmin/apps/orion-data/build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher
+	java -cp build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher
 	zipResult=$?
 	if [ $zipResult == 0 ]; then
 		data='{"packageId":"'
 		data+=$packageId
 		data+='", "state":"UPLOAD_SUCCEEDED", "largeUploadChecked":true}'
-		url="http://localhost:3060/v1/state/host/${DLU_INSTANCE}"
+		url="http://state-spring:3060/v1/state/host/upload_kpmp_org"
 		curl --header "Content-Type: application/json" --request POST --data "${data}" "${url}"
                 curl "http://localhost:3030/v1/clearCache"
 	else
