@@ -9,7 +9,7 @@ import static org.junit.Assert.assertFalse;
 
 public class CommandResultTest {
 
-    CommandResult commandResult;
+    private CommandResult commandResult;
 
     @Before
     public void setUp() throws Exception {
