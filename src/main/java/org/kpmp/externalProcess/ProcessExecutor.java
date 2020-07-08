@@ -36,15 +36,15 @@ public class ProcessExecutor {
 		processBuilder.command(command);
 		Process process = processBuilder.start();
 		BufferedReader br=new BufferedReader(new InputStreamReader(process.getInputStream()));
-		String output = "";
+		String commandOutput = null;
 		StringBuilder sb = new StringBuilder();
-		while((output = br.readLine()) != null ) {
-			sb.append(output);
+		while((commandOutput = br.readLine()) != null) {
+			sb.append(commandOutput);
 		}
 		int exitVal = process.waitFor();
 		processSuccessful = exitVal == 0;
 		commandResult.setResult(processSuccessful);
-		commandResult.setOutput(output);
+		commandResult.setOutput(sb.toString());
 		return commandResult;
 	}
 
