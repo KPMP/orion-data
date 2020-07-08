@@ -2,8 +2,6 @@
 
 echo "**** It would be wise to start me in Screen ***"
 
-source "${currentDir}"/.env
-
 if [ -z "$1" ]
   then
     echo "ERROR -- Missing parameter. Usage: ./processLargeFileUploadNoGlobus.sh [packageID]"
@@ -13,7 +11,7 @@ fi
 packageId=$1
 
 packageDir="/data/dataLake/package_$packageId"
-globusDir="${GLOBUS_DROPBOX_PATH}/${packageId}"
+globusDir="/globus${GLOBUS_DIR}/${packageId}"
 
 function checkEmptyDir {
    if [ -z "$(ls -A $1)" ]; then
@@ -86,7 +84,7 @@ if [ $result == 0 ]; then
 		data='{"packageId":"'
 		data+=$packageId
 		data+='", "state":"UPLOAD_SUCCEEDED", "largeUploadChecked":true}'
-		url="http://state-spring:3060/v1/state/host/${DLU_INSTANCE}"
+		url="http://state-spring:3060/v1/state/host/upload_kpmp_org"
 		curl --header "Content-Type: application/json" --request POST --data "${data}" "${url}"
                 curl "http://localhost:3030/v1/clearCache"
 	else
