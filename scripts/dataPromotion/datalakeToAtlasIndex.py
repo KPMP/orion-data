@@ -100,7 +100,7 @@ else:
 
     query = { "_id": package_id }
     result = packages.find_one({ "_id": package_id }, {"files":1})
-    if result.count() > 0:
+    if not result is None:
         if result['files'] > 0:
             found_a_file = False
             for file in result['files']:
