@@ -17,34 +17,26 @@ public class ProcessExecutor {
 	 */
 	public boolean executeProcess(String[] command) throws IOException, InterruptedException {
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
-		boolean processSuccessful = false;
 		processBuilder.command(command);
 		Process process = processBuilder.start();
 		int exitVal = process.waitFor();
-		if (exitVal == 0) {
-			processSuccessful = true;
-		} else {
-			processSuccessful = false;
-		}
-		return processSuccessful;
+		return (exitVal == 0);
 	}
 
 	public CommandResult executeProcessWithOutput(String[] command) throws IOException, InterruptedException {
 		CommandResult commandResult = new CommandResult();
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
-		boolean processSuccessful = false;
 		processBuilder.command(command);
 		Process process = processBuilder.start();
 		BufferedReader br=new BufferedReader(new InputStreamReader(process.getInputStream()));
-		String output = "";
+		String commandOutput = null;
 		StringBuilder sb = new StringBuilder();
-		while((output = br.readLine()) != null ) {
-			sb.append(output);
+		while((commandOutput = br.readLine()) != null) {
+			sb.append(commandOutput);
 		}
 		int exitVal = process.waitFor();
-		processSuccessful = exitVal == 0;
-		commandResult.setResult(processSuccessful);
-		commandResult.setOutput(output);
+		commandResult.setResult(exitVal == 0);
+		commandResult.setOutput(sb.toString());
 		return commandResult;
 	}
 

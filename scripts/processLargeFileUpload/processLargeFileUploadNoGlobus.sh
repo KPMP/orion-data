@@ -11,7 +11,7 @@ fi
 packageId=$1
 
 packageDir="/data/dataLake/package_$packageId"
-globusDir="/globus/PROD_INBOX/${packageId}"
+globusDir="/globus/${GLOBUS_DIR}/${packageId}"
 
 function checkEmptyDir {
    if [ -z "$(ls -A $1)" ]; then
