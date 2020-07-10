@@ -54,6 +54,7 @@ m5_dt_single_nuc_rna = copy.copy(m2_dt_single_nuc_rna)
 m5_dt_single_nuc_rna.data_format = "tsv"
 m5_dt_single_nuc_rna.access = "open"
 m5_dt_single_nuc_rna.platform = "snDrop-seq"
+m5_dt_single_nuc_rna.file_name_match_string = ".tsv"
 
 m0_dt_metadata = copy.copy(m2_dt_single_nuc_rna)
 m0_dt_metadata.data_format = "xlsx"
@@ -64,9 +65,9 @@ m0_dt_metadata.file_name_match_string = ".xlsx"
 metadata_types = OrderedDict()
 metadata_types["0"] = m0_dt_metadata
 metadata_types["1"] = m1_dt_wsi
-metadata_types["3"] = m2_dt_single_nuc_rna
-metadata_types["4"] = m3_dt_single_nuc_rna
-metadata_types["5"] = m4_dt_single_nuc_rna
+metadata_types["2"] = m2_dt_single_nuc_rna
+metadata_types["3"] = m3_dt_single_nuc_rna
+metadata_types["4"] = m4_dt_single_nuc_rna
 metadata_types["5"] = m5_dt_single_nuc_rna
 metadata_types["9"] = m9_dt_sub_seg_trans
 
