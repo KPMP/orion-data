@@ -1,3 +1,1 @@
 package_id,filename
-1930e56a-abfc-4a68-9250-4e830b5bb3a1,K1800017_3RNA_S9_L004_R2_001.fastq.gz
-2fef44b2-c781-4e33-b3c7-3994144c766d,16Channel.sdm

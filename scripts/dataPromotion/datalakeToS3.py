@@ -1,8 +1,7 @@
 #!/usr/bin/env python2
 import pymongo
 from minio import Minio
-from minio.error import (ResponseError, BucketAlreadyOwnedByYou, BucketAlreadyExists)
-from datetime import datetime
+from minio.error import (ResponseError)
 from dotenv import load_dotenv
 import os
 import csv
@@ -13,12 +12,13 @@ minio_access_key = os.environ.get('minio_access_key')
 minio_secret_key = os.environ.get('minio_secret_key')
 destination_bucket = os.environ.get('destination_bucket')
 datalake_dir = os.environ.get('datalake_dir')
+minio_host = os.environ.get('minio_host')
 
 mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
 database = mongo_client["dataLake"]
 packages = database["packages"]
 
-minio_client = Minio('localhost:9000', access_key='AKIATCLUH4TBFJYTJ3O6', secret_key='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', secure=False)
+minio_client = Minio(minio_host, access_key=minio_access_key, secret_key=minio_secret_key, secure=False)
 
 with open('./files_to_s3.txt') as csv_file:
     csv_reader = csv.DictReader(csv_file)
