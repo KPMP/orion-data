@@ -27,19 +27,18 @@ with open('./files_to_s3.txt') as csv_file:
         no_rows = False
         datalake_package_dir = datalake_dir + "/package_" + row['package_id'] + "/"
         file_path = datalake_package_dir + row['filename']
-        file_id = None
+        filename = None
         if row['filename'].endswith('expression_matrix.zip'):
             matrix_file_answer = raw_input("Found an expression matrix file: " + row['package_id'] + "," + "row['filename']" + ". Was this created manually?")
             if matrix_file_answer in ('Y', 'yes', 'Yes', 'y'):
-                file_id = row['package_id']
+                filename = row['package_id'] + "_" + "expression_matrix.zip"
         else:
             result = packages.find_one({ "_id": row['package_id'], "files.fileName": row['filename']}, {"_id": 0, "files.$": 1})
             if not result is None:
-                file_id = result['files'][0]['_id']
+                filename = result['files'][0]['_id'] + "_" + row['filename']
             else:
                 print("No files found for " + row['package_id'] + "," + row['filename'])
-        if file_id:
-            filename = file_id + "_" + row['filename']
+        if filename:
             object_name = row['package_id'] + "/" + filename
             print("Moving " + object_name)
             try:
