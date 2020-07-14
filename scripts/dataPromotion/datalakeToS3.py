@@ -25,11 +25,20 @@ with open('./files_to_s3.txt') as csv_file:
     no_rows = True
     for row in csv_reader:
         no_rows = False
-        result = packages.find_one({ "_id": row['package_id'], "files.fileName": row['filename']}, {"_id": 0, "files.$": 1})
-        if not result is None:
-            datalake_package_dir = datalake_dir + "/package_" + row['package_id'] + "/"
-            file_path = datalake_package_dir + row['filename']
-            file_id = result['files'][0]['_id']
+        datalake_package_dir = datalake_dir + "/package_" + row['package_id'] + "/"
+        file_path = datalake_package_dir + row['filename']
+        file_id = None
+        if row['filename'].endswith('expression_matrix.zip'):
+            matrix_file_answer = raw_input("Found an expression matrix file: " + row['package_id'] + "," + "row['filename']" + ". Was this created manually?")
+            if matrix_file_answer in ('Y', 'yes', 'Yes', 'y'):
+                file_id = row['package_id']
+        else:
+            result = packages.find_one({ "_id": row['package_id'], "files.fileName": row['filename']}, {"_id": 0, "files.$": 1})
+            if not result is None:
+                file_id = result['files'][0]['_id']
+            else:
+                print("No files found for " + row['package_id'] + "," + row['filename'])
+        if file_id:
             filename = file_id + "_" + row['filename']
             object_name = row['package_id'] + "/" + filename
             print("Moving " + object_name)
@@ -38,7 +47,8 @@ with open('./files_to_s3.txt') as csv_file:
             except ResponseError as err:
                 print(err)
         else:
-            print("No files found for " + row['package_id'] + "," + row['filename'])
+            print("Skipping " + row['package_id'] + "," + row['filename'])
+
 if no_rows:
     print('Please add some entries to "files_to_s3.txt"')
 
