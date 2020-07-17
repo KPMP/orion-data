@@ -22,6 +22,7 @@ function checkEmptyDir {
 
 checkEmptyDir $globusDir
 
+mkdir -p "$packageDir"
 rm "$packageDir/metadata.json"
 
 gFiles=("${globusDir}"/*)
