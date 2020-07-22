@@ -14,7 +14,7 @@ packageDir="/data/dataLake/package_$packageId"
 globusDir="/globus/${GLOBUS_DIR}/${packageId}"
 
 function checkEmptyDir {
-   if [ -z "$(ls -A $1)" ]; then
+   if [ $(ls -A "$1" | wc -l) -ne 0 ]; then
       echo "ERROR -- No files found in ${globusDir}"
       exit -1
    fi
