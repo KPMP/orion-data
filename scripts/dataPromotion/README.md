@@ -8,6 +8,6 @@
 2. Follow prompts
 
 ## Option 2:
-1: Create a comma-delimited file with the same headers as package_to_atlas_index.csv
-2: Execute 'python datalakeToAtlasIndex.py -f my_package_to_atlas_index.csv'
-3: Redirect output to file or copy/paste into your favorite POST client. 
+1. Create a comma-delimited file with the same headers as package_to_atlas_index.csv
+2. Execute 'python datalakeToAtlasIndex.py -f my_package_to_atlas_index.csv'
+3. Redirect output to file or copy/paste into your favorite POST client. 
