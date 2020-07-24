@@ -5,6 +5,7 @@ import json
 import copy
 import csv
 import sys
+import uuid
 
 class MetadataType:
     def __init__(self, experimental_strategy, data_type, data_category, data_format, platform, access, file_name_match_string):
@@ -60,6 +61,7 @@ input_file_name = './package_to_atlas_index.csv'
 m1_dt_wsi = MetadataType("", "Whole Slide Images", "Pathology", "svs", "", "open", ".svs")
 m2_dt_single_nuc_rna = MetadataType("Single-nucleus RNA-Seq", "Transcriptomics", "Molecular", "bam", "10x Genomics", "controlled", ".bam")
 m9_dt_sub_seg_trans = MetadataType("Sub-segmental Transcriptomics", "Transcriptomics", "Molecular", "bam", "LMD Transcriptomics", "controlled", ".bam")
+m10_dt_clinical_data = MetadataType("", "Clinical Study Data", "Clinical", "csv", "", "open", ".csv")
 
 m3_dt_single_nuc_rna = copy.copy(m2_dt_single_nuc_rna)
 m3_dt_single_nuc_rna.data_format = "fastq"
@@ -81,6 +83,7 @@ m0_dt_metadata.platform = ""
 m0_dt_metadata.access = "open"
 m0_dt_metadata.file_name_match_string = ".xlsx"
 
+
 metadata_types = OrderedDict()
 metadata_types["0"] = m0_dt_metadata
 metadata_types["1"] = m1_dt_wsi
@@ -89,6 +92,7 @@ metadata_types["3"] = m3_dt_single_nuc_rna
 metadata_types["4"] = m4_dt_single_nuc_rna
 metadata_types["5"] = m5_dt_single_nuc_rna
 metadata_types["9"] = m9_dt_sub_seg_trans
+metadata_types["10"] = m10_dt_clinical_data
 
 data_type_select = ""
 for metadata_num, metadata_type in metadata_types.items():
@@ -102,7 +106,7 @@ if len(sys.argv) > 1 and sys.argv[1] == '-f':
 else:
     using_file_answer = raw_input('Are you using the "package_to_atlas_index.csv" file?')
 
-def process_update_row(row):
+def process_update_row(row, row_num):
     selected_metadata_type = metadata_types[row['metadata_type_num']]
     cases_doc = CasesIndexDoc([row['tissue_source']], {"sample_id":[row['participant_id']], "tissue_type":[row['tissue_type']], "sample_type":[row['sample_type']]},{"sex":[row['sex']], "age":[row['age']]})
 
@@ -111,6 +115,13 @@ def process_update_row(row):
         index_doc = IndexDoc(selected_metadata_type, row['package_id'], file_name, row['file_size_exp_matrix_only'], row['protocol'], row['participant_id'], row['package_id'], cases_doc)
         print_index_update_json(row['package_id'])
         print_index_doc_json(index_doc)
+    elif selected_metadata_type.data_type == "Clinical Study Data":
+        if row_num == 2:
+            file_id = uuid.uuid1();
+            index_doc = IndexDoc(selected_metadata_type, file_id, row['file_name'], row['file_size_exp_matrix_only'], row['protocol'], row['participant_id'], row['package_id'], cases_doc)
+            cases_doc = CasesIndexDoc([row['tissue_source']], {"sample_id":[row['participant_id']], "tissue_type":[row['tissue_type']], "sample_type":[row['sample_type']]},{"sex":[row['sex']], "age":[row['age']]})
+        else:
+            # append to cases doc
     else:
         mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
         database = mongo_client["dataLake"]
@@ -150,6 +161,6 @@ else:
         no_rows = True
         for row in csv_reader:
             no_rows = False
-            process_update_row(row)
+            process_update_row(row, csv_reader.line_num)
 
 print("\n")
