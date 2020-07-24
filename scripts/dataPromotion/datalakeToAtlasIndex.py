@@ -104,11 +104,11 @@ else:
 
 def process_update_row(row):
     selected_metadata_type = metadata_types[row['metadata_type_num']]
-    cases_doc = CasesIndexDoc([row['project']], {"sample_id":[row['participant_id']], "tissue_type":[row['tissue_type']], "sample_type":[row['sample_type']]},{"sex":[row['sex']], "age":[row['age']]})
+    cases_doc = CasesIndexDoc([row['tissue_source']], {"sample_id":[row['participant_id']], "tissue_type":[row['tissue_type']], "sample_type":[row['sample_type']]},{"sex":[row['sex']], "age":[row['age']]})
 
     if selected_metadata_type.data_format == "tsv mtx":
         file_name = row['package_id'] + "_" + "expression_matrix.zip"
-        index_doc = IndexDoc(selected_metadata_type, row['package_id'], file_name, row['file_size_exp_matrix_only'], row['project'], row['participant_id'], row['package_id'], cases_doc)
+        index_doc = IndexDoc(selected_metadata_type, row['package_id'], file_name, row['file_size_exp_matrix_only'], row['protocol'], row['participant_id'], row['package_id'], cases_doc)
         print_index_update_json(row['package_id'])
         print_index_doc_json(index_doc)
     else:
@@ -125,7 +125,7 @@ def process_update_row(row):
                         found_a_file = True
                         file_name = file["_id"] + "_" + file["fileName"]
                         print_index_update_json(file["_id"])
-                        index_doc = IndexDoc(selected_metadata_type, file["_id"], file_name, file["size"], row['project'], row['participant_id'], row['package_id'], cases_doc)
+                        index_doc = IndexDoc(selected_metadata_type, file["_id"], file_name, file["size"], row['protocol'], row['participant_id'], row['package_id'], cases_doc)
                         print_index_doc_json(index_doc)
                 if not found_a_file:
                     print("No files found in package matching " + selected_metadata_type.file_name_match_string + " extension")
@@ -135,7 +135,7 @@ def process_update_row(row):
             print("Could not find any packages for ID " + package_id)
 
 if using_file_answer not in ('Y', 'yes', 'Yes', 'y'):
-    project = get_selector("Select project: ", ["Pilot1", "KPMP"])
+    project = get_selector("Select Tissue Source: ", ["Pilot1", "KPMP Recruitment Site"])
     package_id = raw_input("Enter the package ID: ")
     participant_id = raw_input("Enter the participant ID: ")
     metadata_type_num = raw_input("Select a metadata scheme number: \n" + data_type_select)
