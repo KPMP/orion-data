@@ -8,7 +8,7 @@ import sys
 import uuid
 
 class MetadataType:
-    def __init__(self, experimental_strategy, data_type, data_category, data_format, platform, access, file_name_match_string):
+    def __init__(self, experimental_strategy, data_type, data_category, data_format, platform, access, file_name_match_string, workflow_type):
         self.experimental_strategy = experimental_strategy
         self.data_type = data_type
         self.data_category = data_category
@@ -16,6 +16,7 @@ class MetadataType:
         self.platform = platform
         self.access = access
         self.file_name_match_string = file_name_match_string
+        self.workflow_type = workflow_type
 
 class IndexDoc:
     def __init__(self, metadata_type, file_id, file_name, file_size, project, sample_id, package_id, cases):
@@ -23,6 +24,7 @@ class IndexDoc:
         self.platform = metadata_type.platform
         self.experimental_strategy = metadata_type.experimental_strategy
         self.data_category = metadata_type.data_category
+        self.workflow_type = metadata_type.workflow_type
         self.file_id = file_id
         self.file_name = file_name
         self.data_format = metadata_type.data_format
@@ -58,10 +60,10 @@ def print_index_doc_json(index_doc):
 
 input_file_name = './package_to_atlas_index.csv'
 
-m1_dt_wsi = MetadataType("", "Whole Slide Images", "Pathology", "svs", "", "open", ".svs")
-m2_dt_single_nuc_rna = MetadataType("Single-nucleus RNA-Seq", "Transcriptomics", "Molecular", "bam", "10x Genomics", "controlled", ".bam")
-m9_dt_sub_seg_trans = MetadataType("Sub-segmental Transcriptomics", "Transcriptomics", "Molecular", "bam", "LMD Transcriptomics", "controlled", ".bam")
-m10_dt_clinical_data = MetadataType("", "Clinical Study Data", "Clinical", "csv", "", "open", ".csv")
+m1_dt_wsi = MetadataType("", "Whole Slide Images", "Pathology", "svs", "", "open", ".svs", "")
+m2_dt_single_nuc_rna = MetadataType("Single-nucleus RNA-Seq", "Transcriptomics", "Molecular", "bam", "10x Genomics", "controlled", ".bam", "")
+m9_dt_sub_seg_trans = MetadataType("Sub-segmental Transcriptomics", "Transcriptomics", "Molecular", "bam", "LMD Transcriptomics", "controlled", ".bam", "")
+m10_dt_clinical_data = MetadataType("", "Clinical Study Data", "Clinical", "csv", "", "open", ".csv", "")
 
 m3_dt_single_nuc_rna = copy.copy(m2_dt_single_nuc_rna)
 m3_dt_single_nuc_rna.data_format = "fastq"
@@ -70,22 +72,23 @@ m3_dt_single_nuc_rna.file_name_match_string = ".fastq.gz"
 m4_dt_single_nuc_rna = copy.copy(m2_dt_single_nuc_rna)
 m4_dt_single_nuc_rna.data_format = "tsv mtx"
 m4_dt_single_nuc_rna.access = "open"
+m4_dt_single_nuc_rna.workflow_type = "Expression Matrix"
 
 m5_dt_single_nuc_rna = copy.copy(m2_dt_single_nuc_rna)
 m5_dt_single_nuc_rna.data_format = "tsv"
 m5_dt_single_nuc_rna.access = "open"
 m5_dt_single_nuc_rna.platform = "snDrop-seq"
 m5_dt_single_nuc_rna.file_name_match_string = ".tsv"
+m5_dt_single_nuc_rna.workflow_type = "Expression Matrix"
 
-m0_dt_metadata = copy.copy(m2_dt_single_nuc_rna)
-m0_dt_metadata.data_format = "xlsx"
-m0_dt_metadata.platform = ""
-m0_dt_metadata.access = "open"
-m0_dt_metadata.file_name_match_string = ".xlsx"
-
+m11_dt_snr_metadata = copy.copy(m2_dt_single_nuc_rna)
+m11_dt_snr_metadata.data_format = "xlsx"
+m11_dt_snr_metadata.platform = "10x Genomics"
+m11_dt_snr_metadata.access = "open"
+m11_dt_snr_metadata.file_name_match_string = ".xlsx"
+m11_dt_snr_metadata.workflow_type = "Experimental Metadata"
 
 metadata_types = OrderedDict()
-metadata_types["0"] = m0_dt_metadata
 metadata_types["1"] = m1_dt_wsi
 metadata_types["2"] = m2_dt_single_nuc_rna
 metadata_types["3"] = m3_dt_single_nuc_rna
@@ -93,6 +96,7 @@ metadata_types["4"] = m4_dt_single_nuc_rna
 metadata_types["5"] = m5_dt_single_nuc_rna
 metadata_types["9"] = m9_dt_sub_seg_trans
 metadata_types["10"] = m10_dt_clinical_data
+metadata_types["11"] = m11_dt_snr_metadata
 
 data_type_select = ""
 for metadata_num, metadata_type in metadata_types.items():
