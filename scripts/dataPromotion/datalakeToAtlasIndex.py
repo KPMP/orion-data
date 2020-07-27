@@ -50,11 +50,11 @@ def get_selector(text, array):
     return array[array_index]
 
 def print_index_update_json(id):
-    print('{"update":{"_index":"file_cases","_id":"' + id + '"}}')
+    return '{"update":{"_index":"file_cases","_id":"' + id + '"}}'
 
 def print_index_doc_json(index_doc):
     index_doc.cases = index_doc.cases.__dict__
-    print('{"doc":' + json.dumps(index_doc.__dict__) + ',"doc_as_upsert":true}')
+    return '{"doc":' + json.dumps(index_doc.__dict__) + ',"doc_as_upsert":true}'
 
 input_file_name = './package_to_atlas_index.csv'
 
@@ -106,22 +106,14 @@ if len(sys.argv) > 1 and sys.argv[1] == '-f':
 else:
     using_file_answer = raw_input('Are you using the "package_to_atlas_index.csv" file?')
 
-def process_update_row(row, row_num):
+def process_update_row(row):
     selected_metadata_type = metadata_types[row['metadata_type_num']]
     cases_doc = CasesIndexDoc([row['tissue_source']], {"sample_id":[row['participant_id']], "tissue_type":[row['tissue_type']], "sample_type":[row['sample_type']]},{"sex":[row['sex']], "age":[row['age']]})
-
+    docs = []
     if selected_metadata_type.data_format == "tsv mtx":
         file_name = row['package_id'] + "_" + "expression_matrix.zip"
         index_doc = IndexDoc(selected_metadata_type, row['package_id'], file_name, row['file_size_exp_matrix_only'], row['protocol'], row['participant_id'], row['package_id'], cases_doc)
-        print_index_update_json(row['package_id'])
-        print_index_doc_json(index_doc)
-    elif selected_metadata_type.data_type == "Clinical Study Data":
-        if row_num == 2:
-            file_id = uuid.uuid1();
-            index_doc = IndexDoc(selected_metadata_type, file_id, row['file_name'], row['file_size_exp_matrix_only'], row['protocol'], row['participant_id'], row['package_id'], cases_doc)
-            cases_doc = CasesIndexDoc([row['tissue_source']], {"sample_id":[row['participant_id']], "tissue_type":[row['tissue_type']], "sample_type":[row['sample_type']]},{"sex":[row['sex']], "age":[row['age']]})
-        else:
-            # append to cases doc
+        docs.append(print_index_update_json(row['package_id']) + "\n" + print_index_doc_json(index_doc))
     else:
         mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
         database = mongo_client["dataLake"]
@@ -135,16 +127,33 @@ def process_update_row(row, row_num):
                     if file["fileName"].endswith(selected_metadata_type.file_name_match_string):
                         found_a_file = True
                         file_name = file["_id"] + "_" + file["fileName"]
-                        print_index_update_json(file["_id"])
                         index_doc = IndexDoc(selected_metadata_type, file["_id"], file_name, file["size"], row['protocol'], row['participant_id'], row['package_id'], cases_doc)
-                        print_index_doc_json(index_doc)
+                        docs.append(print_index_update_json(file["_id"]) + "\n" + print_index_doc_json(index_doc))
                 if not found_a_file:
                     print("No files found in package matching " + selected_metadata_type.file_name_match_string + " extension")
             else:
                 print("No files found in package " + package_id)
         else:
             print("Could not find any packages for ID " + package_id)
+    return docs
 
+def process_clinical_row(row, index_doc, row_num):
+    if row_num == 2:
+        file_id = str(uuid.uuid1())
+        file_name = file_id + "_" + row['file_name']
+        cases_doc = CasesIndexDoc([row['tissue_source']], {"sample_id":[row['participant_id']], "tissue_type":[row['tissue_type']], "sample_type":[row['sample_type']]},{"sex":[row['sex']], "age":[row['age']]})
+        index_doc = IndexDoc(selected_metadata_type, file_id, file_name, row['file_size_exp_matrix_only'], row['protocol'], row['participant_id'], file_id, cases_doc)
+    else:
+        index_doc.cases.provider.append(row['tissue_source'])
+        index_doc.cases.samples["sample_id"].append(row['participant_id'])
+        index_doc.cases.samples["sample_type"].append(row['sample_type'])
+        index_doc.cases.samples["tissue_type"].append(row['tissue_type'])
+        index_doc.cases.demographics["age"].append(row['age'])
+        index_doc.cases.demographics["sex"].append(row['sex'])
+
+    return index_doc
+
+output = []
 if using_file_answer not in ('Y', 'yes', 'Yes', 'y'):
     project = get_selector("Select Tissue Source: ", ["Pilot1", "KPMP Recruitment Site"])
     package_id = raw_input("Enter the package ID: ")
@@ -154,13 +163,21 @@ if using_file_answer not in ('Y', 'yes', 'Yes', 'y'):
     tissue_type = ""
     sex = ""
     age = ""
-    process_update_row({"project":project,"package_id":package_id,"participant_id":participant_id,"tissue_type":tissue_type,"sample_type":sample_type,"sex":sex,"age":age,"metadata_type_num":metadata_type_num})
+    output += process_update_row({"project":project,"package_id":package_id,"participant_id":participant_id,"tissue_type":tissue_type,"sample_type":sample_type,"sex":sex,"age":age,"metadata_type_num":metadata_type_num})
 else:
     with open(input_file_name) as csv_file:
+        output = []
         csv_reader = csv.DictReader(csv_file)
         no_rows = True
+        index_doc = {}
         for row in csv_reader:
             no_rows = False
-            process_update_row(row, csv_reader.line_num)
+            selected_metadata_type = metadata_types[row['metadata_type_num']]
+            if selected_metadata_type.data_type == "Clinical Study Data":
+                index_doc = process_clinical_row(row, index_doc, csv_reader.line_num)
+            else:
+                output += process_update_row(row)
 
-print("\n")
+if selected_metadata_type.data_type == "Clinical Study Data":
+    output.append(print_index_update_json(index_doc.file_id) + "\n" + print_index_doc_json(index_doc))
+print("\n".join(output))
