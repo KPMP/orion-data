@@ -19,7 +19,7 @@ class MetadataType:
         self.workflow_type = workflow_type
 
 class IndexDoc:
-    def __init__(self, metadata_type, file_id, file_name, file_size, project, sample_id, package_id, cases):
+    def __init__(self, metadata_type, file_id, file_name, file_size, protocol, participant_id, package_id, cases):
         self.access = metadata_type.access
         self.platform = metadata_type.platform
         self.experimental_strategy = metadata_type.experimental_strategy
@@ -30,14 +30,14 @@ class IndexDoc:
         self.data_format = metadata_type.data_format
         self.file_size = file_size
         self.data_type = metadata_type.data_type
-        self.project = project
-        self.sample_id = sample_id
+        self.protocol = protocol
+        self.participant_id = participant_id
         self.package_id = package_id
         self.cases = cases
 
 class CasesIndexDoc:
-    def __init__(self, provider, samples, demographics):
-        self.provider = provider
+    def __init__(self, tissue_source, samples, demographics):
+        self.tissue_source = tissue_source
         self.samples = samples
         self.demographics = demographics
 
@@ -112,7 +112,7 @@ else:
 
 def process_update_row(row):
     selected_metadata_type = metadata_types[row['metadata_type_num']]
-    cases_doc = CasesIndexDoc([row['tissue_source']], {"sample_id":[row['participant_id']], "tissue_type":[row['tissue_type']], "sample_type":[row['sample_type']]},{"sex":[row['sex']], "age":[row['age']]})
+    cases_doc = CasesIndexDoc([row['tissue_source']], {"participant_id":[row['participant_id']], "tissue_type":[row['tissue_type']], "sample_type":[row['sample_type']]},{"sex":[row['sex']], "age":[row['age']]})
     docs = []
     if selected_metadata_type.data_format == "tsv mtx":
         file_name = row['package_id'] + "_" + "expression_matrix.zip"
@@ -145,11 +145,11 @@ def process_clinical_row(row, index_doc, row_num):
     if row_num == 2:
         file_id = str(uuid.uuid1())
         file_name = file_id + "_" + row['file_name']
-        cases_doc = CasesIndexDoc([row['tissue_source']], {"sample_id":[row['participant_id']], "tissue_type":[row['tissue_type']], "sample_type":[row['sample_type']]},{"sex":[row['sex']], "age":[row['age']]})
+        cases_doc = CasesIndexDoc([row['tissue_source']], {"participant_id":[row['participant_id']], "tissue_type":[row['tissue_type']], "sample_type":[row['sample_type']]},{"sex":[row['sex']], "age":[row['age']]})
         index_doc = IndexDoc(selected_metadata_type, file_id, file_name, row['file_size_exp_matrix_only'], row['protocol'], row['participant_id'], file_id, cases_doc)
     else:
-        index_doc.cases.provider.append(row['tissue_source'])
-        index_doc.cases.samples["sample_id"].append(row['participant_id'])
+        index_doc.cases.tissue_source.append(row['tissue_source'])
+        index_doc.cases.samples["participant_id"].append(row['participant_id'])
         index_doc.cases.samples["sample_type"].append(row['sample_type'])
         index_doc.cases.samples["tissue_type"].append(row['tissue_type'])
         index_doc.cases.demographics["age"].append(row['age'])
@@ -159,7 +159,7 @@ def process_clinical_row(row, index_doc, row_num):
 
 output = []
 if using_file_answer not in ('Y', 'yes', 'Yes', 'y'):
-    project = get_selector("Select Tissue Source: ", ["Pilot1", "KPMP Recruitment Site"])
+    protocol = get_selector("Select protocol: ", ["Pilot1", "KPMP Recruitment Site"])
     package_id = raw_input("Enter the package ID: ")
     participant_id = raw_input("Enter the participant ID: ")
     metadata_type_num = raw_input("Select a metadata scheme number: \n" + data_type_select)
@@ -167,7 +167,7 @@ if using_file_answer not in ('Y', 'yes', 'Yes', 'y'):
     tissue_type = ""
     sex = ""
     age = ""
-    output += process_update_row({"project":project,"package_id":package_id,"participant_id":participant_id,"tissue_type":tissue_type,"sample_type":sample_type,"sex":sex,"age":age,"metadata_type_num":metadata_type_num})
+    output += process_update_row({"protocol":protocol,"package_id":package_id,"participant_id":participant_id,"tissue_type":tissue_type,"sample_type":sample_type,"sex":sex,"age":age,"metadata_type_num":metadata_type_num})
 else:
     with open(input_file_name) as csv_file:
         output = []
