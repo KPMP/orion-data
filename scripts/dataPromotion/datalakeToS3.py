@@ -5,6 +5,7 @@ from minio.error import (ResponseError)
 from dotenv import load_dotenv
 import os
 import csv
+import sys
 
 load_dotenv()
 
@@ -20,7 +21,15 @@ packages = database["packages"]
 
 minio_client = Minio(minio_host, access_key=minio_access_key, secret_key=minio_secret_key, secure=False)
 
-with open('./files_to_s3.txt') as csv_file:
+if len(sys.argv) == 3 and sys.argv[1] == '-f':
+    using_file_answer = 'Y'
+    if sys.argv[2]:
+        input_file_name = sys.argv[2]
+else:
+    print ("Usage: datalakeToS3.py -f [csv_file.csv]")
+    sys.exit()
+
+with open(input_file_name) as csv_file:
     csv_reader = csv.DictReader(csv_file)
     no_rows = True
     for row in csv_reader:
