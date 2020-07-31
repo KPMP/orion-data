@@ -1,3 +1,6 @@
+# Install Python modules
+pip install -r requirements.txt
+
 # Moving files from DL to S3
 1. Add packageIDs,filenames to files_to_s3.txt one per line
 2. Execute 'python datalakeToS3.py'
