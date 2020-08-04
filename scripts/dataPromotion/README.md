@@ -19,9 +19,9 @@ pip install -r requirements.txt
 ### Generate using the Knowledge Environment database. 
 Requirements: Make sure the knowledge_environment MYSQL database is available on 3306.
 ### All Records
-1. Execute python datalakeDatabaseToAtlasIndex.py' without arguments 
+1. Execute python keDatabaseToAtlasIndex.py' without arguments 
 ### By release version
-1. Execute python datalakeDatabaseToAtlasIndex.py -v <release_ver>'
+1. Execute python keDatabaseToAtlasIndex.py -v <release_ver>'
 ### Per file
-1. Execute python datalakeDatabaseToAtlasIndex.py -f <file_>'
+1. Execute python keDatabaseToAtlasIndex.py -f <file_>'
 
