@@ -5,7 +5,10 @@ pip install -r requirements.txt
 1. Add packageIDs,filenames to files_to_s3.txt one per line
 2. Execute 'python datalakeToS3.py'
 
-# Creating / Updating Index Records for Atlas portal
+# Utility scripts for moving data into Knowledge Environment Database
+1. Uncomment what you need in indexToKE.py and execute. 
+
+# Creating / Updating index records for Atlas portal
 ## Option 1: 
 1. Execute 'python datalakeToAtlasIndex.py'
 2. Follow prompts
@@ -18,7 +21,7 @@ pip install -r requirements.txt
 ## Option 3:
 ### Generate using the Knowledge Environment database. 
 Requirements: Make sure the knowledge_environment MYSQL database is available on 3306.
-### All Records
+### All records
 1. Execute python keDatabaseToAtlasIndex.py' without arguments 
 ### By release version
 1. Execute python keDatabaseToAtlasIndex.py -v <release_ver>'
