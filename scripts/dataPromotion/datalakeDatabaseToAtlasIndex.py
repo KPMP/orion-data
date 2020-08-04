@@ -8,6 +8,7 @@ import mysql.connector
 import pprint
 from dotenv import load_dotenv
 import os
+from argparse import ArgumentParser
 
 load_dotenv()
 
@@ -52,27 +53,36 @@ def get_index_doc_json(index_doc):
     return '{"doc":' + json.dumps(index_doc.__dict__) + ',"doc_as_upsert":true}'
 
 input_file_id = ""
+release_ver = ""
 where_clause = ""
 
-if len(sys.argv) > 1 and sys.argv[1] != "":
-    input_file_id = sys.argv[1]
-else:
-    print("Please include a file_id")
-    sys.exit()
+parser = ArgumentParser(description="Generate ES index updates. No arguments will create updates for all records.")
+parser.add_argument("-f", "--file_id", dest="file_id",
+                    help="file ID")
+parser.add_argument("-v", "--release_ver",
+                    dest="release_ver",
+                    help="target release version")
 
-if input_file_id:
-    where_clause = " WHERE f.file_id = '" + input_file_id + "' "
+args = parser.parse_args()
+
+if args.file_id:
+    where_clause = " WHERE f.file_id = '" + args.file_id + "' "
+elif args.release_ver:
+    where_clause = " WHERE f.release_ver = " + args.release_ver + " "
 
 query = ("SELECT f.*, fp.*, p.*, m.* FROM file f "  
           "JOIN file_participant fp on f.file_id = fp.file_id "
           "JOIN participant p on fp.participant_id = p.participant_id "
           "JOIN metadata_type m on f.metadata_type_id = m.metadata_type_id" + where_clause)
 
-print(query)
 mycursor.execute(query)
 row_num = 1
+last_file_id = -1
 for row in mycursor:
-    if row_num == 1:
+    if row["file_id"] != last_file_id:
+        if row_num != 1:
+            print(get_index_update_json(index_doc.file_id) + "\n" +
+                  get_index_doc_json(index_doc))
         cases_doc = CasesIndexDoc([row['tissue_source']], {"participant_id":[row['participant_id']], "tissue_type":[row['tissue_type']], "sample_type":[row['sample_type']]},{"sex":[row['sex']], "age":[row['age_binned']]})
         index_doc = IndexDoc(row["access"], row["platform"], row["experimental_strategy"], row["data_category"], row["workflow_type"], row["data_format"], row["data_type"], row["file_id"], row["file_name"], row["file_size"], row["protocol"], row["package_id"], cases_doc)
     else:
@@ -83,6 +93,7 @@ for row in mycursor:
         index_doc.cases.demographics["age"].append(row['age_binned'])
         index_doc.cases.demographics["sex"].append(row['sex'])
     row_num += 1
+    last_file_id = row["file_id"]
 
 print(get_index_update_json(index_doc.file_id) + "\n" +
       get_index_doc_json(index_doc))
