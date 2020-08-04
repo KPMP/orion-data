@@ -14,3 +14,14 @@ pip install -r requirements.txt
 1. Create a comma-delimited file with the same headers as package_to_atlas_index.csv
 2. Execute 'python datalakeToAtlasIndex.py -f my_package_to_atlas_index.csv'
 3. Redirect output to file or copy/paste into your favorite POST client. 
+
+## Option 3:
+### Generate using the Knowledge Environment database. 
+Requirements: Make sure the knowledge_environment MYSQL database is available on 3306.
+### All Records
+1. Execute python datalakeDatabaseToAtlasIndex.py' without arguments 
+### By release version
+1. Execute python datalakeDatabaseToAtlasIndex.py -v <release_ver>'
+### Per file
+1. Execute python datalakeDatabaseToAtlasIndex.py -f <file_>'
+
