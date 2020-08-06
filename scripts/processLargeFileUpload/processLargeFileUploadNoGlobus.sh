@@ -2,7 +2,7 @@
 
 if [ -z "$1" ]
   then
-    echo "ERROR -- Missing parameter. Usage: ./processLargeFileUploadNoGlobus.sh [packageID]"
+    echo "ERROR -- Missing parameter. Usage: ./processLargeFileUploadNoGlobus.sh [packageID]. "
     exit -1
 fi
 
@@ -13,7 +13,7 @@ globusDir="/globus/${GLOBUS_DIR}/${packageId}"
 
 function checkEmptyDir {
    if [ $(ls -A "$1" | wc -l) -ne 0 ]; then
-      echo "ERROR -- No files found in ${globusDir}"
+      echo "ERROR -- No files found in ${globusDir}. "
       exit -1
    fi
 }
@@ -29,11 +29,11 @@ directoryAlreadyFound=false
 for file in "${gFiles[@]}"; do
    if [ -d "$file" ]; then
       if [ "$directoryAlreadyFound" = true ]; then
-         echo "ERROR -- Too many subdirectories"
+         echo "ERROR -- Too many subdirectories. "
          exit -1
       fi
       globusDir=$file
-      echo "Setting Globus path to subdirectory: $file"
+      echo "Setting Globus path to subdirectory: $file . "
       directoryAlreadyFound=true
    fi
 done
@@ -44,13 +44,13 @@ gFiles=("${globusDir}"/*)
 
 for file in "${gFiles[@]}"; do
    if [ -d "$file" ]; then
-      echo "ERROR -- Too many nested subdirectories"
+      echo "ERROR -- Too many nested subdirectories. "
       exit -1
    fi
 done
 
 if [ "${#gFiles[@]}" -eq 0 ]; then
-   echo "ERROR -- No files found in ${globusDir}"
+   echo "ERROR -- No files found in ${globusDir}. "
    exit -1
 fi
 
@@ -61,13 +61,13 @@ dlFiles=("${packageDir}"/*)
 mismatchedFiles=($(echo ${gFiles[@]##*/} ${dlFiles[@]##*/} | tr ' ' '\n' | sort | uniq -u ))
 
 if [ "${#mismatchedFiles[@]}" -gt 0 ]; then
-   echo "ERROR -- The following filenames don't match: ${mismatchedFiles[*]}"
+   echo "ERROR -- The following filenames don't match: ${mismatchedFiles[*]}. "
    exit -1
 fi
 
 for file in "${gFiles[@]}"; do
    if [ $(stat -c%s "$file") -ne $(stat -c%s "$packageDir/${file##*/}") ]; then
-      echo "ERROR -- File size mismatch for $file"
+      echo "ERROR -- File size mismatch for $file. "
       exit -1
    fi
 done
@@ -87,11 +87,11 @@ if [ $result == 0 ]; then
 		curl --header "Content-Type: application/json" --request POST --data "${data}" "${url}"
                 curl "http://localhost:3030/v1/clearCache"
 	else
-		echo "Zip failed...exiting"
+		echo "Zip failed...exiting. "
 		exit -1
 	fi
 else
-	echo "Mongo update failed...exiting."
+	echo "Mongo update failed...exiting. "
 	exit -1
 fi
 
