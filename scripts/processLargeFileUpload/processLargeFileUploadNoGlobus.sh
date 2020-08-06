@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "**** It would be wise to start me in Screen ***"
-
 if [ -z "$1" ]
   then
     echo "ERROR -- Missing parameter. Usage: ./processLargeFileUploadNoGlobus.sh [packageID]"
