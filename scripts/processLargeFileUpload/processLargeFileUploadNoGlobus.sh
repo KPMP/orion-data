@@ -12,7 +12,7 @@ packageDir="/data/dataLake/package_$packageId"
 globusDir="/globus/${GLOBUS_DIR}/${packageId}"
 
 function checkEmptyDir {
-   if [ $(ls -A "$1" | wc -l) -ne 0 ]; then
+   if [ $(ls -A "$1" | wc -l) -eq 0 ]; then
       echo "ERROR -- No files found in ${globusDir}. "
       exit -1
    fi
@@ -48,11 +48,6 @@ for file in "${gFiles[@]}"; do
       exit -1
    fi
 done
-
-if [ "${#gFiles[@]}" -eq 0 ]; then
-   echo "ERROR -- No files found in ${globusDir}. "
-   exit -1
-fi
 
 cp "${globusDir}"/* "${packageDir}"
 
