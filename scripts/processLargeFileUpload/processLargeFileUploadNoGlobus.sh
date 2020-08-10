@@ -18,7 +18,7 @@ function checkEmptyDir {
    fi
 }
 
-checkEmptyDir $globusDir
+checkEmptyDir "$globusDir"
 
 mkdir -p "$packageDir"
 rm "$packageDir/metadata.json"
@@ -38,7 +38,7 @@ for file in "${gFiles[@]}"; do
    fi
 done
 
-checkEmptyDir $globusDir
+checkEmptyDir "$globusDir"
 
 gFiles=("${globusDir}"/*)
 
