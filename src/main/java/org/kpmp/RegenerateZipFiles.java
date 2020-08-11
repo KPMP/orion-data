@@ -22,6 +22,8 @@ import org.kpmp.packages.PackageFileHandler;
 import org.kpmp.packages.PackageKeys;
 import org.kpmp.packages.PackageRepository;
 import org.kpmp.packages.PackageService;
+import org.kpmp.packages.validation.PackageFilesValidationService;
+import org.kpmp.packages.validation.PackageFilesValidationController;
 import org.kpmp.packages.StateHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +48,7 @@ import org.springframework.context.annotation.FilterType;
 		PackageFileHandler.class }), excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
 				PackageController.class, WebConfig.class, Application.class, AuthorizationFilter.class,
 				GlobusAuthorizationCodeInstalledApp.class, GlobusService.class, StateHandlerService.class,
-				PackageService.class, CacheController.class }))
+				PackageService.class, CacheController.class, PackageFilesValidationService.class, PackageFilesValidationController.class }))
 public class RegenerateZipFiles implements CommandLineRunner {
 
 	private CustomPackageRepository packageRepository;
@@ -87,7 +89,7 @@ public class RegenerateZipFiles implements CommandLineRunner {
 					File existingZipFile = new File(zipFileName);
 					existingZipFile.delete();
 					String[] zipCommand = commandBuilder.buildZipCommand(packageId,
-							"/home/pathadmin/apps/zipWorker/build/libs/zipWorker.jar");
+							"/home/gradle/zipWorker/zipWorker.jar");
 
 					boolean success = processExecutor.executeProcess(zipCommand);
 					metadataFile.delete();
