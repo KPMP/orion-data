@@ -103,7 +103,7 @@ for metadata_num, metadata_type in metadata_types.items():
     metadata_type_name = metadata_type.data_type + ", " + metadata_type.experimental_strategy + ", " + metadata_type.data_format + ", " + metadata_type.access
     data_type_select += metadata_num + " : " + metadata_type_name + "\n"
 
-if len(sys.argv) > 1 and sys.argv[1] == '-f':
+if len(sys.argv) == 3 and sys.argv[1] == '-f':
     using_file_answer = 'Y'
     if sys.argv[2]:
         input_file_name = sys.argv[2]
