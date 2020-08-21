@@ -6,15 +6,16 @@ from dotenv import load_dotenv
 import os
 import csv
 import sys
+from os import path
 
 load_dotenv()
 
 minio_access_key = os.environ.get('minio_access_key')
 minio_secret_key = os.environ.get('minio_secret_key')
 destination_bucket = os.environ.get('destination_bucket')
+source_bucket = os.environ.get('source_bucket')
 datalake_dir = os.environ.get('datalake_dir')
 minio_host = os.environ.get('minio_host')
-
 mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
 database = mongo_client["dataLake"]
 packages = database["packages"]
@@ -49,11 +50,21 @@ with open(input_file_name) as csv_file:
                 print("No files found for " + row['package_id'] + "," + row['filename'])
         if filename:
             object_name = row['package_id'] + "/" + filename
-            print("Moving " + object_name)
-            try:
-                minio_client.fput_object(destination_bucket, object_name, file_path)
-            except ResponseError as err:
-                print(err)
+            if not path.exists(file_path):
+                source_object = source_bucket + "/package_" + row['package_id'] + "/" + row['filename']
+                print("File not found locally. Trying S3: " + source_object)
+                try:
+                    minio_client.copy_object(destination_bucket, object_name, source_object)
+                except ResponseError as err:
+                    print(err)
+                    pass
+            else:
+                print("Moving " + object_name)
+                try:
+                    minio_client.fput_object(destination_bucket, object_name, file_path)
+                except ResponseError as err:
+                    print(err)
+                    pass
         else:
             print("Skipping " + row['package_id'] + "," + row['filename'])
 

@@ -88,6 +88,9 @@ m11_dt_snr_metadata.access = "open"
 m11_dt_snr_metadata.file_name_match_string = ".xlsx"
 m11_dt_snr_metadata.workflow_type = "Experimental Metadata"
 
+m12_dt_scr_metadata = copy.copy(m11_dt_snr_metadata)
+m12_dt_scr_metadata.experimental_strategy = "Single-cell RNA-Seq"
+
 metadata_types = OrderedDict()
 metadata_types["1"] = m1_dt_wsi
 metadata_types["2"] = m2_dt_single_nuc_rna
@@ -97,6 +100,7 @@ metadata_types["5"] = m5_dt_single_nuc_rna
 metadata_types["9"] = m9_dt_sub_seg_trans
 metadata_types["10"] = m10_dt_clinical_data
 metadata_types["11"] = m11_dt_snr_metadata
+metadata_types["12"] = m12_dt_scr_metadata
 
 data_type_select = ""
 for metadata_num, metadata_type in metadata_types.items():
