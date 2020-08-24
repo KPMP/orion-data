@@ -7,6 +7,7 @@ import os
 import csv
 import sys
 from os import path
+from collections import OrderedDict
 
 load_dotenv()
 
@@ -19,6 +20,8 @@ minio_host = os.environ.get('minio_host')
 mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
 database = mongo_client["dataLake"]
 packages = database["packages"]
+
+file_sizes = OrderedDict()
 
 minio_client = Minio(minio_host, access_key=minio_access_key, secret_key=minio_secret_key, secure=False)
 
@@ -39,9 +42,8 @@ with open(input_file_name) as csv_file:
         file_path = datalake_package_dir + row['filename']
         filename = None
         if row['filename'].endswith('expression_matrix.zip'):
-            matrix_file_answer = raw_input("Found an expression matrix file: " + row['package_id'] + "," + "row['filename']" + ". Was this created manually?")
-            if matrix_file_answer in ('Y', 'yes', 'Yes', 'y'):
-                filename = row['package_id'] + "_" + "expression_matrix.zip"
+            filename = row['package_id'] + "_" + "expression_matrix.zip"
+            file_sizes[row['package_id']] = os.path.getsize(file_path)
         else:
             result = packages.find_one({ "_id": row['package_id'], "files.fileName": row['filename']}, {"_id": 0, "files.$": 1})
             if not result is None:
@@ -54,7 +56,9 @@ with open(input_file_name) as csv_file:
                 source_object = source_bucket + "/package_" + row['package_id'] + "/" + row['filename']
                 print("File not found locally. Trying S3: " + source_object)
                 try:
-                    minio_client.copy_object(destination_bucket, object_name, source_object)
+                    command_string = "aws s3 cp s3://" + source_object + " s3://" + destination_bucket + "/" + object_name
+                    os.system(command_string)
+                    #minio_client.copy_object(destination_bucket, object_name, source_object)
                 except ResponseError as err:
                     print(err)
                     pass
@@ -70,4 +74,7 @@ with open(input_file_name) as csv_file:
 
 if no_rows:
     print('Please add some entries to "files_to_s3.txt"')
+
+for key, value in file_sizes.items():
+    print(key + "," + str(value))
 

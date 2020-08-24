@@ -61,7 +61,7 @@ def print_index_doc_json(index_doc):
 input_file_name = './package_to_atlas_index.csv'
 
 m1_dt_wsi = MetadataType("", "Whole Slide Images", "Pathology", "svs", "", "open", ".svs", "")
-m2_dt_single_nuc_rna = MetadataType("Single-nucleus RNA-Seq", "Transcriptomics", "Molecular", "bam", "10x Genomics", "controlled", ".bam", "")
+m2_dt_single_nuc_rna = MetadataType("Single-nucleus RNA-Seq", "Transcriptomics", "Molecular", "bam", "10x Genomics", "controlled", (".bam", ".bam.gz"), "")
 m9_dt_sub_seg_trans = MetadataType("Sub-segmental Transcriptomics", "Transcriptomics", "Molecular", "bam", "LMD Transcriptomics", "controlled", ".bam", "")
 m10_dt_clinical_data = MetadataType("", "Clinical Study Data", "Clinical", "csv", "", "open", ".csv", "")
 
@@ -73,6 +73,12 @@ m4_dt_single_nuc_rna = copy.copy(m2_dt_single_nuc_rna)
 m4_dt_single_nuc_rna.data_format = "tsv mtx"
 m4_dt_single_nuc_rna.access = "open"
 m4_dt_single_nuc_rna.workflow_type = "Expression Matrix"
+
+m7_dt_single_cell_rna = copy.copy(m4_dt_single_nuc_rna)
+m7_dt_single_cell_rna.experimental_strategy = "Single-cell RNA-Seq"
+
+m8_dt_single_cell_rna_bam = copy.copy(m2_dt_single_nuc_rna)
+m8_dt_single_cell_rna_bam.experimental_strategy = "Single-cell RNA-Seq"
 
 m5_dt_single_nuc_rna = copy.copy(m2_dt_single_nuc_rna)
 m5_dt_single_nuc_rna.data_format = "tsv"
@@ -91,16 +97,22 @@ m11_dt_snr_metadata.workflow_type = "Experimental Metadata"
 m12_dt_scr_metadata = copy.copy(m11_dt_snr_metadata)
 m12_dt_scr_metadata.experimental_strategy = "Single-cell RNA-Seq"
 
+m13_dt_scr_fastq = copy.copy(m3_dt_single_nuc_rna)
+m13_dt_scr_fastq.experimental_strategy = "Single-cell RNA-Seq"
+
 metadata_types = OrderedDict()
 metadata_types["1"] = m1_dt_wsi
 metadata_types["2"] = m2_dt_single_nuc_rna
 metadata_types["3"] = m3_dt_single_nuc_rna
 metadata_types["4"] = m4_dt_single_nuc_rna
 metadata_types["5"] = m5_dt_single_nuc_rna
+metadata_types["7"] = m7_dt_single_cell_rna
+metadata_types["8"] = m8_dt_single_cell_rna_bam
 metadata_types["9"] = m9_dt_sub_seg_trans
 metadata_types["10"] = m10_dt_clinical_data
 metadata_types["11"] = m11_dt_snr_metadata
 metadata_types["12"] = m12_dt_scr_metadata
+metadata_types["13"] = m13_dt_scr_fastq
 
 data_type_select = ""
 for metadata_num, metadata_type in metadata_types.items():
@@ -121,6 +133,8 @@ def process_update_row(row):
     if selected_metadata_type.data_format == "tsv mtx":
         file_name = row['package_id'] + "_" + "expression_matrix.zip"
         index_doc = IndexDoc(selected_metadata_type, row['package_id'], file_name, row['file_size_exp_matrix_only'], row['protocol'], row['participant_id'], row['package_id'], cases_doc)
+        if index_doc.access == "controlled":
+            index_doc.package_id = ''
         docs.append(print_index_update_json(row['package_id']) + "\n" + print_index_doc_json(index_doc))
     else:
         mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -136,6 +150,8 @@ def process_update_row(row):
                         found_a_file = True
                         file_name = file["_id"] + "_" + file["fileName"]
                         index_doc = IndexDoc(selected_metadata_type, file["_id"], file_name, file["size"], row['protocol'], row['participant_id'], row['package_id'], cases_doc)
+                        if index_doc.access == "controlled":
+                            index_doc.package_id = ''
                         docs.append(print_index_update_json(file["_id"]) + "\n" + print_index_doc_json(index_doc))
                 if not found_a_file:
                     print("No files found in package matching " + selected_metadata_type.file_name_match_string + " extension")
