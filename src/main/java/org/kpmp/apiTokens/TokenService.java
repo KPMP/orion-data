@@ -11,8 +11,8 @@ import java.util.Optional;
 @Service
 public class TokenService {
 
-    TokenRepository tokenRepository;
-    ShibbolethUserService userService;
+    private TokenRepository tokenRepository;
+    private ShibbolethUserService userService;
 
     public TokenService(TokenRepository tokenRepository, ShibbolethUserService userService) {
         this.tokenRepository = tokenRepository;
@@ -35,7 +35,6 @@ public class TokenService {
         token.setShibId(shibId);
         token.setActive(true);
         Calendar cal = Calendar.getInstance();
-        Date today = cal.getTime();
         cal.add(Calendar.YEAR, 1);
         Date nextYear = cal.getTime();
         token.setExpiration(nextYear);
