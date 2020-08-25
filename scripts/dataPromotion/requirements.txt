@@ -1,3 +1,4 @@
 minio
 python-dotenv
 mysql-connector-python
+zipfile
