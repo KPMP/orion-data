@@ -3,6 +3,7 @@ package org.kpmp.ingest.redcap;
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
+import org.kpmp.apiTokens.Token;
 import org.kpmp.apiTokens.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,20 +35,22 @@ public class REDCapIngestController {
 	}
 
 	@RequestMapping(value = "/v1/redcap", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity ingestREDCapData(@RequestBody String dataDump, @RequestParam("token") String token, HttpServletRequest request)
+	public @ResponseBody ResponseEntity ingestREDCapData(@RequestBody String dataDump, @RequestParam("token") String tokenString, HttpServletRequest request)
 			throws JSONException {
 		log.info(LOG_MESSAGE_FORMAT, request.getRequestURI(), "Receiving new REDCap data dump");
 		ResponseEntity responseEntity;
-		if (tokenService.checkAndValidate(token)) {
+		if (tokenService.checkAndValidate(tokenString)) {
+			Token token = tokenService.getTokenByTokenString(tokenString);
+
 			try {
 				service.saveDataDump(dataDump);
-				responseEntity = ResponseEntity.ok().body("Successfully ingested REDCap data.");
+				responseEntity = ResponseEntity.ok().body("Successfully ingested REDCap data from shibId " + token.getShibId() + " using token " + token.getTokenString());
 			} catch (JSONException error) {
 				log.error(LOG_MESSAGE_FORMAT, request.getRequestURI(), error.getMessage());
 				throw error;
 			}
 		} else {
-			log.error(LOG_MESSAGE_FORMAT, request.getRequestURI(), "Invalid token provided: " + token);
+			log.error(LOG_MESSAGE_FORMAT, request.getRequestURI(), "Invalid token provided: " + tokenString);
 			responseEntity =  ResponseEntity.status(UNAUTHORIZED).body("Invalid token.");
 		}
 		return responseEntity;

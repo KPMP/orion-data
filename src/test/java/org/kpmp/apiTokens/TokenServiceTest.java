@@ -111,4 +111,11 @@ public class TokenServiceTest {
         assertEquals("shibId", tokenService.getOrSetToken("shibId").getShibId());
     }
 
+    @Test
+    public void testGetTokenByTokenString() {
+        Token token = new Token();
+        when(tokenRepository.findByTokenString("ABCD")).thenReturn(token);
+        assertEquals(token, tokenService.getTokenByTokenString("ABCD"));
+    }
+
 }

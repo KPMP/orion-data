@@ -56,6 +56,10 @@ public class TokenService {
         return !checkExpired(token) && token.getActive();
     }
 
+    public Token getTokenByTokenString(String tokenString) {
+        return tokenRepository.findByTokenString(tokenString);
+    }
+
     public Boolean checkAndValidate(String tokenString) {
         Token token = tokenRepository.findByTokenString(tokenString);
         if (token != null) {
