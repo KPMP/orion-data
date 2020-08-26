@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.apiTokens.Token;
 import org.kpmp.apiTokens.TokenService;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -42,9 +43,13 @@ public class REDCapIngestControllerTest {
 	@Test
 	public void testIngestREDCapDataGoodToken() throws JSONException {
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		String token = "ABCD";
+		String tokenString = "ABCD";
+		Token token = new Token();
+		token.setTokenString(tokenString);
+		token.setShibId("shibId");
 		when(tokenService.checkAndValidate("ABCD")).thenReturn(true);
-		controller.ingestREDCapData("json dump", token, request);
+		when(tokenService.getTokenByTokenString("ABCD")).thenReturn(token);
+		controller.ingestREDCapData("json dump", tokenString, request);
 		ArgumentCaptor<String> dumpCaptor = ArgumentCaptor.forClass(String.class);
 		verify(service).saveDataDump(dumpCaptor.capture());
 		assertEquals("json dump", dumpCaptor.getValue());
