@@ -41,7 +41,6 @@ public class REDCapIngestController {
 		ResponseEntity responseEntity;
 		if (tokenService.checkAndValidate(tokenString)) {
 			Token token = tokenService.getTokenByTokenString(tokenString);
-
 			try {
 				service.saveDataDump(dataDump);
 				responseEntity = ResponseEntity.ok().body("Successfully ingested REDCap data from shibId " + token.getShibId() + " using token " + token.getTokenString());
