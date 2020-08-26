@@ -44,7 +44,7 @@ public class REDCapIngestController {
 			try {
 				service.saveDataDump(dataDump);
 				log.info(LOG_MESSAGE_FORMAT, request.getRequestURI(), "Received new REDCap data dump from shibId " + token.getShibId() + " using token " + token.getTokenString());
-				responseEntity = ResponseEntity.ok().body("Successfully ingested REDCap data );
+				responseEntity = ResponseEntity.ok().body("Successfully ingested REDCap data");
 			} catch (JSONException error) {
 				log.error(LOG_MESSAGE_FORMAT, request.getRequestURI(), error.getMessage());
 				throw error;
