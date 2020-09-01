@@ -92,7 +92,6 @@ public class RegenerateZipFiles implements CommandLineRunner {
 							"/home/gradle/zipWorker/zipWorker.jar");
 
 					boolean success = processExecutor.executeProcess(zipCommand);
-					metadataFile.delete();
 					if (success) {
 						LocalDateTime start = LocalDateTime.ofInstant(startRezipTime.toInstant(),
 								ZoneId.systemDefault());
