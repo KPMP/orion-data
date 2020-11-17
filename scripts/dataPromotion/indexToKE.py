@@ -28,13 +28,13 @@ packages = database["packages"]
 #
 # for file in ke_files.find():
 #     sql = "INSERT INTO file (file_id, file_name, package_id, access, file_size, protocol) VALUES (%s, %s, %s, %s, %s, %s)"
-#     val = (file["file_id"], file["file_name"],file["package_id"], file["access"], file["file_size"],file["protocol"])
+#     val = (file["_source"]["file_id"], file["_source"]["file_name"],file["_source"]["package_id"], file["_source"]["access"], file["_source"]["file_size"],file["_source"]["protocol"])
 #     print(sql % val)
 #     mycursor.execute(sql, val)
 #     mydb.commit()
-#     for participant_id in file["cases"]["samples"]["participant_id"]:
+#     for participant_id in file["_source"]["cases"]["samples"]["participant_id"]:
 #         sql2 = "INSERT INTO file_participant (file_id, participant_id) VALUES (%s, %s)"
-#         val2 = (file["file_id"], participant_id)
+#         val2 = (file["_source"]["file_id"], participant_id)
 #         mycursor.execute(sql2, val2)
 #         mydb.commit()
 
@@ -51,8 +51,8 @@ packages = database["packages"]
 #     mydb.commit()
 
 # Update KE file table with metadata type from spreadsheet
-#
-# with open('./atlas_files.csv') as csv_file:
+# IMPORTANT: Make sure to run dos2unix if saving from an Excel file in Windows
+# with open('./atlas_files_20201111.csv') as csv_file:
 #     csv_reader = csv.DictReader(csv_file)
 #     for row in csv_reader:
 #         query = "SELECT file_id FROM file WHERE package_id = %s AND LOCATE(%s, file_name) > 0"
@@ -70,7 +70,7 @@ packages = database["packages"]
 #             mydb.commit()
 
 # Adds the metadata types from a file
-#
+# IMPORTANT: Make sure to run dos2unix if saving from an Excel file in Windows
 # with open('./metadata_types.csv') as csv_file:
 #     csv_reader = csv.DictReader(csv_file)
 #     for row in csv_reader:
