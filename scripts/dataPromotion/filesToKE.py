@@ -4,20 +4,13 @@ from dotenv import load_dotenv
 import os
 import csv
 import json
-from argparse import ArgumentParser
 
 load_dotenv()
 
 mysql_user = os.environ.get('mysql_user')
 mysql_pwd = os.environ.get('mysql_pwd')
-
-parser = ArgumentParser(description="Add files from a .csv to the KE file table. " +
-                                    "The .csv should have the following fields and header: file_name, package_id, access, protocol, metadata_type_id")
-
-
-parser.add_argument("-f", "--file", dest="input_file",
-                    help="input file", required=True)
-args = parser.parse_args()
+EXPRESSION_MATRIX_METADATA_TYPE = 4
+cursor = None
 
 try:
     mydb = mysql.connector.connect(
@@ -26,32 +19,38 @@ try:
         password=mysql_pwd,
         database="knowledge_environment"
     )
-    mycursor = mydb.cursor(buffered=True)
-    mycursor2 = mydb.cursor(buffered=True)
+    cursor = mydb.cursor(buffered=True)
 except:
     print("Can't connect to MySQL")
     print("Make sure you have tunnel open to the KE database, e.g.")
     print("ssh ubuntu@qa-atlas.kpmp.org -i ~/.ssh/um-kpmp.pem -L 3306:localhost:3306")
+    os.sys.exit()
 
 try:
-    mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
+    mongo_client = pymongo.MongoClient("mongodb://localhost:27017/", serverSelectionTimeoutMS=5000)
     database = mongo_client["dataLake"]
     packages = database["packages"]
 except:
     print("Can't connect to Mongo")
+    os.sys.exit()
 
-try:
-    with open(args.input_file) as csv_file:
-        csv_reader = csv.DictReader(csv_file)
-        sql = "INSERT INTO file (file_id, file_name, package_id, access, file_size, protocol, metadata_type_id) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        for row in csv_reader:
-            result = packages.find_one({ "_id": row["package_id"], "files.fileName": row["file_name"]})
-            val = ()
-            print(sql % val)
-            mycursor.execute(sql, val)
-            mydb.commit()
-except:
-    print("Cannot open csv file: " + args.input_file)
+query = ("SELECT * FROM file_pending")
+cursor.execute(query)
+update_count = 0
+for (package_id, file_name, protocol, metadata_type_id, participant_id) in cursor:
+    insert_sql = "INSERT INTO file (file_id, file_name, package_id, file_size, protocol, metadata_type_id) VALUES (%s, %s, %s, %s, %s, %s)"
+    if metadata_type_id == EXPRESSION_MATRIX_METADATA_TYPE:
+        val = (package_id, package_id + "_expression_matrix.zip", package_id, 0, protocol, metadata_type_id)
+    else:
+        result = packages.find_one({ "_id": package_id, "files.fileName": file_name}, {"files.$":1})
+        new_file_name = result["files"][0]["_id"] + "_" + file_name
+        val = (result["files"][0]["_id"], new_file_name, package_id, result["files"][0]["size"], protocol, metadata_type_id)
+
+    update_count = update_count + 1
+    print(insert_sql % val)
+    # cursor.execute(insert_sql, val)
+    # mydb.commit()
+print(str(update_count) + " rows inserted")
 
 
 
