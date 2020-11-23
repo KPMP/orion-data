@@ -19,7 +19,9 @@ try:
         password=mysql_pwd,
         database="knowledge_environment"
     )
-    cursor = mydb.cursor(buffered=True)
+    mydb.get_warnings = True
+    cursor1 = mydb.cursor(buffered=True)
+    cursor2 = mydb.cursor(buffered=True)
 except:
     print("Can't connect to MySQL")
     print("Make sure you have tunnel open to the KE database, e.g.")
@@ -35,21 +37,32 @@ except:
     os.sys.exit()
 
 query = ("SELECT * FROM file_pending")
-cursor.execute(query)
+cursor1.execute(query)
 update_count = 0
-for (package_id, file_name, protocol, metadata_type_id, participant_id) in cursor:
-    insert_sql = "INSERT INTO file (file_id, file_name, package_id, file_size, protocol, metadata_type_id) VALUES (%s, %s, %s, %s, %s, %s)"
+for (package_id, file_name, protocol, metadata_type_id, participant_id, release_ver) in cursor1:
+    insert_sql = "INSERT IGNORE INTO file (file_id, file_name, package_id, file_size, protocol, metadata_type_id, release_ver) VALUES (%s, %s, %s, %s, %s, %s, %s)"
     if metadata_type_id == EXPRESSION_MATRIX_METADATA_TYPE:
-        val = (package_id, package_id + "_expression_matrix.zip", package_id, 0, protocol, metadata_type_id)
+        new_file_name = package_id + "_expression_matrix.zip"
+        file_id = package_id
+        file_size = 0
     else:
         result = packages.find_one({ "_id": package_id, "files.fileName": file_name}, {"files.$":1})
         new_file_name = result["files"][0]["_id"] + "_" + file_name
-        val = (result["files"][0]["_id"], new_file_name, package_id, result["files"][0]["size"], protocol, metadata_type_id)
+        file_size = result["files"][0]["size"]
+        file_id = result["files"][0]["_id"]
 
+    val = (file_id, new_file_name, package_id, file_size, protocol, metadata_type_id, release_ver)
     update_count = update_count + 1
     print(insert_sql % val)
-    # cursor.execute(insert_sql, val)
-    # mydb.commit()
+    cursor2.execute(insert_sql, val)
+    print(cursor2.fetchwarnings())
+
+    sql2 = "INSERT IGNORE INTO file_participant (file_id, participant_id) VALUES (%s, %s)"
+    val2 = (result["files"][0]["_id"], participant_id)
+    print(sql2 % val2)
+    cursor2.execute(sql2, val2)
+    print(cursor2.fetchwarnings())
+    mydb.commit()
 print(str(update_count) + " rows inserted")
 
 
