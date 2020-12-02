@@ -83,7 +83,7 @@ packages = database["packages"]
 
 # Adds the clinical data from file
 # non_clinical_rows = ["Participant ID", "Age (Years) (Binned)", "Sex", "Tissue Source", "Protocol", "Sample Type", "Tissue Type"]
-# with open('./d801f97e-d032-11ea-a504-a4c3f0f6c2ae_20200721_OpenAccessMainProtocolClinicalData.csv') as csv_file:
+# with open('./97ef583a-d033-11ea-bac7-a4c3f0f6c2ae_20200701_OpenAccessPilot1ProtocolClinicalData.csv') as csv_file:
 #     csv_reader = csv.DictReader(csv_file)
 #     for row in csv_reader:
 #         clinical_json = {}
