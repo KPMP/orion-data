@@ -51,7 +51,7 @@ update_count = 0
 
 for (file_id, package_id, file_name) in cursor:
     datalake_package_dir = datalake_dir + "/package_" + package_id + "/"
-    original_file_name = file_name[0:37]
+    original_file_name = file_name[37:]
     file_path = datalake_package_dir + original_file_name
     if file_name:
         object_name = package_id + "/" + file_name
