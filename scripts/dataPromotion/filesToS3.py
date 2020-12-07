@@ -49,39 +49,49 @@ query = ("SELECT file_id, package_id, file_name FROM file WHERE release_ver = " 
 cursor.execute(query)
 update_count = 0
 
-for (file_id, package_id, file_name) in cursor:
+for (file_id, package_id, file_name, metadata_type_id) in cursor:
     datalake_package_dir = datalake_dir + "/package_" + package_id + "/"
     original_file_name = file_name[37:]
     file_path = datalake_package_dir + original_file_name
+    expression_file_names = "barcodes.tsv.gz features.tsv.gz matrix.mtx.gz"
     if file_name:
         object_name = package_id + "/" + file_name
         print("Looking for: " + file_path)
         if file_name.endswith('expression_matrix.zip'):
-            print("Creating expression matrix zip file for: " + file_name)
-            command_string = "cd " + datalake_package_dir + " && zip " + file_name + " barcodes.tsv.gz features.tsv.gz matrix.mtx.gz"
-            print(command_string)
-            os.system(command_string)
-            file_size = os.path.getsize(file_path)
-            values = (file_size, file_id)
-            update_sql = "UPDATE file SET file_size = %s WHERE file_id = %s"
-            print(update_sql % values)
-            #cursor2.execute(update_sql, values)
+            if metadata_type_id == 21:
+                query2 = "SELECT file_name FROM file_pending WHERE package_id = %s AND metadata_type_id = %s"
+                cursor2.execute(query2, (package_id, metadata_type_id))
+                expression_file_names = cursor2["file_name"].replace(";", "")
+            print("Creating expression matrix zip file for: " + expression_file_names)
+            # command_string = "cd " + datalake_package_dir + " && zip " + file_name + " barcodes.tsv.gz features.tsv.gz matrix.mtx.gz"
+            # print(command_string)
+            # #os.system(command_string)
+            # file_size = os.path.getsize(file_path)
+            # values = (file_size, file_id)
+            # update_sql = "UPDATE file SET file_size = %s WHERE file_id = %s"
+            # print(update_sql % values)
+            # cursor2.execute(update_sql, values)
         if not os.path.exists(file_path):
-            source_object = source_bucket + "/package_" + package_id + "/" + file_name
+            source_object = source_bucket + "/package_" + package_id + "/" + original_file_name
             print("File not found locally. Trying S3: " + source_object)
             try:
                 command_string = "aws s3 cp s3://" + source_object + " s3://" + destination_bucket + "/" + object_name
                 print(command_string)
                 #os.system(command_string)
+                update_count = update_count + 1
             except ResponseError as err:
                 print(err)
                 pass
         else:
             try:
                 print("Moving " + object_name)
-                #minio_client.fput_object(destination_bucket, object_name, file_path)
+                # minio_client.fput_object(destination_bucket, object_name, file_path)
+                update_count = update_count + 1
             except ResponseError as err:
                 print(err)
                 pass
+
     else:
-        print("Skipping " + package_id + "," + file_name)
+        print("No file name in record.")
+
+print(update_count + " files moved")

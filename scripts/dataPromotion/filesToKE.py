@@ -9,7 +9,7 @@ load_dotenv()
 
 mysql_user = os.environ.get('mysql_user')
 mysql_pwd = os.environ.get('mysql_pwd')
-EXPRESSION_MATRIX_METADATA_TYPE = 4
+EXPRESSION_MATRIX_METADATA_TYPES = [4,21]
 cursor = None
 
 try:
@@ -41,7 +41,7 @@ cursor1.execute(query)
 update_count = 0
 for (package_id, file_name, protocol, metadata_type_id, participant_id, release_ver) in cursor1:
     insert_sql = "INSERT IGNORE INTO file (file_id, file_name, package_id, file_size, protocol, metadata_type_id, release_ver) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    if metadata_type_id == EXPRESSION_MATRIX_METADATA_TYPE:
+    if metadata_type_id in EXPRESSION_MATRIX_METADATA_TYPES:
         new_file_name = package_id + "_expression_matrix.zip"
         file_id = package_id
         file_size = 0
@@ -61,7 +61,9 @@ for (package_id, file_name, protocol, metadata_type_id, participant_id, release_
     val2 = (result["files"][0]["_id"], participant_id)
     print(sql2 % val2)
     cursor2.execute(sql2, val2)
-    print(cursor2.fetchwarnings())
+    warning = cursor2.fetchwarnings()
+    if warning is not None:
+        print(warning)
     mydb.commit()
 print(str(update_count) + " rows inserted")
 
