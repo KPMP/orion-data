@@ -102,4 +102,4 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
         print("No file name in record.")
     print("\n")
 
-print(update_count + " files moved")
+print(str(update_count) + " files moved")
