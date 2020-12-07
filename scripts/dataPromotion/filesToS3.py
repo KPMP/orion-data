@@ -70,10 +70,10 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
                     command_string = "aws s3 cp s3://" + source_object + " " + datalake_package_dir + expression_file_name
                     print(command_string)
                     #os.system(command_string)
-            # command_string = "cd " + datalake_package_dir + " && zip " + file_name + " barcodes.tsv.gz features.tsv.gz matrix.mtx.gz"
-            # print(command_string)
+            command_string = "cd " + datalake_package_dir + " && zip " + expression_file_names
+            print(command_string)
             # #os.system(command_string)
-            # file_size = os.path.getsize(file_path)
+            file_size = os.path.getsize(file_path)
             # values = (file_size, file_id)
             # update_sql = "UPDATE file SET file_size = %s WHERE file_id = %s"
             # print(update_sql % values)
@@ -100,5 +100,6 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
 
     else:
         print("No file name in record.")
+    print("\n")
 
 print(update_count + " files moved")
