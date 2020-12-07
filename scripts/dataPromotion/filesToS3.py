@@ -45,7 +45,7 @@ except:
     print("ssh ubuntu@qa-atlas.kpmp.org -i ~/.ssh/um-kpmp.pem -L 3306:localhost:3306")
     os.sys.exit()
 
-query = ("SELECT file_id, package_id, file_name FROM file WHERE release_ver = " + args.release_ver)
+query = ("SELECT file_id, package_id, file_name, metadata_type_id FROM file WHERE release_ver = " + args.release_ver)
 cursor.execute(query)
 update_count = 0
 
