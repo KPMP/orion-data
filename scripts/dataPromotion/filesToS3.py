@@ -69,22 +69,22 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
                     source_object = source_bucket + "/package_" + package_id + "/" + expression_file_name
                     command_string = "aws s3 cp s3://" + source_object + " " + datalake_package_dir + expression_file_name
                     print(command_string)
-                    #os.system(command_string)
+                    os.system(command_string)
             command_string = "cd " + datalake_package_dir + " && zip expression_matrix.zip " + expression_file_names
             print(command_string)
-            # #os.system(command_string)
-            #file_size = os.path.getsize(file_path)
-            # values = (file_size, file_id)
-            # update_sql = "UPDATE file SET file_size = %s WHERE file_id = %s"
-            # print(update_sql % values)
-            # cursor2.execute(update_sql, values)
+            os.system(command_string)
+            file_size = os.path.getsize(file_path)
+            values = (file_size, file_id)
+            update_sql = "UPDATE file SET file_size = %s WHERE file_id = %s"
+            print(update_sql % values)
+            cursor2.execute(update_sql, values)
         if not os.path.exists(file_path):
             source_object = source_bucket + "/package_" + package_id + "/" + original_file_name
             print("File not found locally. Trying S3: " + source_object)
             try:
                 command_string = "aws s3 cp s3://" + source_object + " s3://" + destination_bucket + "/" + object_name
                 print(command_string)
-                #os.system(command_string)
+                os.system(command_string)
                 update_count = update_count + 1
             except ResponseError as err:
                 print(err)
@@ -92,7 +92,7 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
         else:
             try:
                 print("Moving " + object_name)
-                # minio_client.fput_object(destination_bucket, object_name, file_path)
+                minio_client.fput_object(destination_bucket, object_name, file_path)
                 update_count = update_count + 1
             except ResponseError as err:
                 print(err)
