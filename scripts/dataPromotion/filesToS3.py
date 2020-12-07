@@ -61,7 +61,7 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
             if metadata_type_id == 21:
                 query2 = "SELECT file_name FROM file_pending WHERE package_id = %s AND metadata_type_id = %s"
                 cursor2.execute(query2, (package_id, metadata_type_id))
-                expression_file_names = cursor2.fetchone()["file_name"].replace(";", "")
+                expression_file_names = cursor2.fetchone()[0].replace(";", "")
             print("Creating expression matrix zip file for: " + expression_file_names)
             expression_file_names_arr = expression_file_names.split()
             if not os.path.exists(expression_file_names_arr[0]):
