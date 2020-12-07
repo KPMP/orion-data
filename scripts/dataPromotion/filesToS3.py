@@ -70,7 +70,7 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
                     command_string = "aws s3 cp s3://" + source_object + " " + datalake_package_dir + expression_file_name
                     print(command_string)
                     #os.system(command_string)
-            command_string = "cd " + datalake_package_dir + " && zip " + expression_file_names
+            command_string = "cd " + datalake_package_dir + " && zip expression_matrix.zip " + expression_file_names
             print(command_string)
             # #os.system(command_string)
             #file_size = os.path.getsize(file_path)
