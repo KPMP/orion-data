@@ -61,8 +61,15 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
             if metadata_type_id == 21:
                 query2 = "SELECT file_name FROM file_pending WHERE package_id = %s AND metadata_type_id = %s"
                 cursor2.execute(query2, (package_id, metadata_type_id))
-                expression_file_names = cursor2["file_name"].replace(";", "")
+                expression_file_names = cursor2.fetchone()["file_name"].replace(";", "")
             print("Creating expression matrix zip file for: " + expression_file_names)
+            expression_file_names_arr = expression_file_names.split()
+            if not os.path.exists(expression_file_names_arr[0]):
+                for expression_file_name in expression_file_names_arr:
+                    source_object = source_bucket + "/package_" + package_id + "/" + expression_file_name
+                    command_string = "aws s3 cp s3://" + source_object + " " + datalake_package_dir + expression_file_name
+                    print(command_string)
+                    #os.system(command_string)
             # command_string = "cd " + datalake_package_dir + " && zip " + file_name + " barcodes.tsv.gz features.tsv.gz matrix.mtx.gz"
             # print(command_string)
             # #os.system(command_string)
