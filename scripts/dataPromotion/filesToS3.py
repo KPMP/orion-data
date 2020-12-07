@@ -64,7 +64,7 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
                 expression_file_names = cursor2.fetchone()[0].replace(";", "")
             print("Creating expression matrix zip file for: " + expression_file_names)
             expression_file_names_arr = expression_file_names.split()
-            if not os.path.exists(expression_file_names_arr[0]):
+            if not os.path.exists(datalake_package_dir + expression_file_names_arr[0]):
                 for expression_file_name in expression_file_names_arr:
                     source_object = source_bucket + "/package_" + package_id + "/" + expression_file_name
                     command_string = "aws s3 cp s3://" + source_object + " " + datalake_package_dir + expression_file_name
@@ -73,7 +73,7 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
             command_string = "cd " + datalake_package_dir + " && zip " + expression_file_names
             print(command_string)
             # #os.system(command_string)
-            file_size = os.path.getsize(file_path)
+            #file_size = os.path.getsize(file_path)
             # values = (file_size, file_id)
             # update_sql = "UPDATE file SET file_size = %s WHERE file_id = %s"
             # print(update_sql % values)
