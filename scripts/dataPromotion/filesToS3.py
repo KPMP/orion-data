@@ -45,7 +45,7 @@ except:
     print("ssh ubuntu@qa-atlas.kpmp.org -i ~/.ssh/um-kpmp.pem -L 3306:localhost:3306")
     os.sys.exit()
 
-query = ("SELECT file_id, package_id, file_name, metadata_type_id FROM file WHERE release_ver = " + args.release_ver)
+query = ("SELECT file_id, package_id, file_name, metadata_type_id FROM file WHERE release_ver = " + args.release_ver + "AND file_name NOT IN (SELECT file_name FROM moved_files)")
 cursor.execute(query)
 update_count = 0
 
@@ -94,6 +94,8 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
                 print("Moving " + object_name)
                 minio_client.fput_object(destination_bucket, object_name, file_path)
                 update_count = update_count + 1
+                insert_sql = "INSERT INTO moved_files (file_name) VALUES (%s)"
+                cursor2.execute(insert_sql, file_name)
             except ResponseError as err:
                 print(err)
                 pass
