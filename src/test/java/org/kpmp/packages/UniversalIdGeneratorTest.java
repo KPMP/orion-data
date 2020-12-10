@@ -8,7 +8,6 @@ import java.util.UUID;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.packages.UniversalIdGenerator;
 
 public class UniversalIdGeneratorTest {
 
@@ -28,6 +27,7 @@ public class UniversalIdGeneratorTest {
 	public void testGenerateUniversalId() throws Exception {
 		String uuid = generator.generateUniversalId();
 
+		System.err.println(uuid);
 		assertNotNull(uuid);
 		assertEquals(4, UUID.fromString(uuid).version());
 	}
