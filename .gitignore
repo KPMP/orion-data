@@ -1,3 +1,4 @@
+.env
 *.iml
 Callback*
 .*_history
