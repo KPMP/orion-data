@@ -9,9 +9,6 @@ load_dotenv()
 mysql_user = os.environ.get('mysql_user')
 mysql_pwd = os.environ.get('mysql_pwd')
 
-print (mysql_pwd)
-print (mysql_user)
-
 mydb = mysql.connector.connect(
     host="localhost",
     user=mysql_user,
