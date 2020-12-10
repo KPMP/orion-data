@@ -25,7 +25,7 @@ file_size = os.path.getsize('./' + clinical_file_name)
 
 query = "INSERT INTO file (dl_file_id, file_name, package_id, file_size, protocol, release_ver) " + \
     "VALUES (%s, %s, %s, %s, %s, %s)";
-values = (file_uuid, new_file_name, file_uuid, file_size, "KPMP Main Protocol", relase_ver);
+values = (file_uuid, new_file_name, file_uuid, file_size, "KPMP Pilot 1 Protocol", relase_ver);
 
 mycursor.execute(query, values);
 mydb.commit();
