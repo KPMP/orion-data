@@ -1,13 +1,11 @@
 #!/usr/bin/env python2
-import pymongo
 from minio import Minio
 from minio.error import (ResponseError)
 from dotenv import load_dotenv
 import os
-import csv
-import sys
-from os import path
 from collections import OrderedDict
+import mysql.connector
+from argparse import ArgumentParser
 
 load_dotenv()
 
@@ -17,64 +15,93 @@ destination_bucket = os.environ.get('destination_bucket')
 source_bucket = os.environ.get('source_bucket')
 datalake_dir = os.environ.get('datalake_dir')
 minio_host = os.environ.get('minio_host')
-mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
-database = mongo_client["dataLake"]
-packages = database["packages"]
-
-file_sizes = OrderedDict()
 
 minio_client = Minio(minio_host, access_key=minio_access_key, secret_key=minio_secret_key, secure=False)
 
-if len(sys.argv) == 3 and sys.argv[1] == '-f':
-    using_file_answer = 'Y'
-    if sys.argv[2]:
-        input_file_name = sys.argv[2]
-else:
-    print ("Usage: datalakeToS3.py -f [csv_file.csv]")
-    sys.exit()
+mysql_user = os.environ.get('mysql_user')
+mysql_pwd = os.environ.get('mysql_pwd')
 
-with open(input_file_name) as csv_file:
-    csv_reader = csv.DictReader(csv_file)
-    no_rows = True
-    for row in csv_reader:
-        no_rows = False
-        datalake_package_dir = datalake_dir + "/package_" + row['package_id'] + "/"
-        file_path = datalake_package_dir + row['filename']
-        filename = None
-        if row['filename'].endswith('expression_matrix.zip'):
-            filename = row['package_id'] + "_" + "expression_matrix.zip"
-            file_sizes[row['package_id']] = os.path.getsize(file_path)
-        else:
-            result = packages.find_one({ "_id": row['package_id'], "files.fileName": row['filename']}, {"_id": 0, "files.$": 1})
-            if not result is None:
-                filename = result['files'][0]['_id'] + "_" + row['filename']
-            else:
-                print("No files found for " + row['package_id'] + "," + row['filename'])
-        if filename:
-            object_name = row['package_id'] + "/" + filename
-            if not path.exists(file_path):
-                source_object = source_bucket + "/package_" + row['package_id'] + "/" + row['filename']
-                print("File not found locally. Trying S3: " + source_object)
-                try:
-                    command_string = "aws s3 cp s3://" + source_object + " s3://" + destination_bucket + "/" + object_name
+parser = ArgumentParser(description="Move files to S3")
+parser.add_argument("-v", "--release_ver",
+                    dest="release_ver",
+                    help="target release version",
+                    required=True)
+
+args = parser.parse_args()
+
+try:
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user=mysql_user,
+        password=mysql_pwd,
+        database="knowledge_environment"
+    )
+    mydb.get_warnings = True
+    cursor = mydb.cursor(buffered=True)
+    cursor2 = mydb.cursor(buffered=True)
+except:
+    print("Can't connect to MySQL")
+    print("Make sure you have tunnel open to the KE database, e.g.")
+    print("ssh ubuntu@qa-atlas.kpmp.org -i ~/.ssh/um-kpmp.pem -L 3306:localhost:3306")
+    os.sys.exit()
+
+query = ("SELECT file_id, package_id, file_name, metadata_type_id FROM file WHERE release_ver = " + args.release_ver + "AND file_name NOT IN (SELECT file_name FROM moved_files)")
+cursor.execute(query)
+update_count = 0
+
+for (file_id, package_id, file_name, metadata_type_id) in cursor:
+    datalake_package_dir = datalake_dir + "/package_" + package_id + "/"
+    original_file_name = file_name[37:]
+    file_path = datalake_package_dir + original_file_name
+    expression_file_names = "barcodes.tsv.gz features.tsv.gz matrix.mtx.gz"
+    if file_name:
+        object_name = package_id + "/" + file_name
+        print("Looking for: " + file_path)
+        if file_name.endswith('expression_matrix.zip'):
+            if metadata_type_id == 21:
+                query2 = "SELECT file_name FROM file_pending WHERE package_id = %s AND metadata_type_id = %s"
+                cursor2.execute(query2, (package_id, metadata_type_id))
+                expression_file_names = cursor2.fetchone()[0].replace(";", "")
+            print("Creating expression matrix zip file for: " + expression_file_names)
+            expression_file_names_arr = expression_file_names.split()
+            if not os.path.exists(datalake_package_dir + expression_file_names_arr[0]):
+                for expression_file_name in expression_file_names_arr:
+                    source_object = source_bucket + "/package_" + package_id + "/" + expression_file_name
+                    command_string = "aws s3 cp s3://" + source_object + " " + datalake_package_dir + expression_file_name
+                    print(command_string)
                     os.system(command_string)
-                    #minio_client.copy_object(destination_bucket, object_name, source_object)
-                except ResponseError as err:
-                    print(err)
-                    pass
-            else:
-                print("Moving " + object_name)
-                try:
-                    minio_client.fput_object(destination_bucket, object_name, file_path)
-                except ResponseError as err:
-                    print(err)
-                    pass
+            command_string = "cd " + datalake_package_dir + " && zip expression_matrix.zip " + expression_file_names
+            print(command_string)
+            os.system(command_string)
+            file_size = os.path.getsize(file_path)
+            values = (file_size, file_id)
+            update_sql = "UPDATE file SET file_size = %s WHERE file_id = %s"
+            print(update_sql % values)
+            cursor2.execute(update_sql, values)
+        if not os.path.exists(file_path):
+            source_object = source_bucket + "/package_" + package_id + "/" + original_file_name
+            print("File not found locally. Trying S3: " + source_object)
+            try:
+                command_string = "aws s3 cp s3://" + source_object + " s3://" + destination_bucket + "/" + object_name
+                print(command_string)
+                os.system(command_string)
+                update_count = update_count + 1
+            except ResponseError as err:
+                print(err)
+                pass
         else:
-            print("Skipping " + row['package_id'] + "," + row['filename'])
+            try:
+                print("Moving " + object_name)
+                minio_client.fput_object(destination_bucket, object_name, file_path)
+                update_count = update_count + 1
+                insert_sql = "INSERT INTO moved_files (file_name) VALUES (%s)"
+                cursor2.execute(insert_sql, (file_name))
+            except ResponseError as err:
+                print(err)
+                pass
 
-if no_rows:
-    print('Please add some entries to "files_to_s3.txt"')
+    else:
+        print("No file name in record.")
+    print("\n")
 
-for key, value in file_sizes.items():
-    print(key + "," + str(value))
-
+print(str(update_count) + " files moved")
