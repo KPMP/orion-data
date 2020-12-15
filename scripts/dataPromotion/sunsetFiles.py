@@ -48,7 +48,7 @@ for (file_id, package_id, file_name) in cursor:
         try:
             command_string = "aws s3 mv s3://" + source_object + " s3://" + destination_bucket + "/" + object_name
             print(command_string)
-            #os.system(command_string)
+            os.system(command_string)
             update_count = update_count + 1
         except ResponseError as err:
             print(err)
