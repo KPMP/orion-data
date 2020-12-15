@@ -1,4 +1,3 @@
-import pymongo
 import mysql.connector
 from dotenv import load_dotenv
 import os
@@ -17,7 +16,8 @@ try:
         host="localhost",
         user=mysql_user,
         password=mysql_pwd,
-        database="knowledge_environment"
+        database="knowledge_environment",
+        autocommit=True
     )
     mydb.get_warnings = True
     cursor1 = mydb.cursor(buffered=True)
@@ -40,7 +40,7 @@ for (file_id, file_name, package_id) in cursor1:
     values = (file_size, file_id)
     update_sql = "UPDATE file SET file_size = %s WHERE file_id = %s"
     print(update_sql % values)
-    #cursor2.execute(update_sql, values)
+    cursor2.execute(update_sql, values)
 
 
 
