@@ -32,6 +32,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class AuthorizationFilter implements Filter {
 
+	private static final String FILE_PART_INDEX = "qqpartindex";
 	private static final String USER_NOT_PART_OF_KPMP = "User is not part of KPMP: ";
 	private static final String USER_NO_DLU_ACCESS = "User does not have access to DLU: ";
 	private static final String GROUPS_KEY = "groups";
@@ -42,6 +43,7 @@ public class AuthorizationFilter implements Filter {
 	private static final int MINUTES_IN_HOUR = 60;
 	private static final int SESSION_TIMEOUT_HOURS = 8;
 	private static final int SESSION_TIMEOUT_SECONDS = SECONDS_IN_MINUTE * MINUTES_IN_HOUR * SESSION_TIMEOUT_HOURS;
+	private static final String FILE_PART_UPLOAD_URI_MATCHER = "/v1/packages/(.*)/files";
 
 	private LoggingService logger;
 	private ShibbolethUserService shibUserService;
@@ -84,7 +86,8 @@ public class AuthorizationFilter implements Filter {
 		Cookie[] cookies = request.getCookies();
 		User user = shibUserService.getUser(request);
 		String shibId = user.getShibId();
-		if (hasExistingSession(shibId, cookies, request) || allowedEndpoints.contains(request.getRequestURI())) {
+		if (hasExistingSession(shibId, cookies, request) || allowedEndpoints.contains(request.getRequestURI())
+				|| !isFirstFilePartUpload(request)) {
 			chain.doFilter(request, response);
 		} else {
 			String clientId = env.getProperty(CLIENT_ID_PROPERTY);
@@ -126,6 +129,17 @@ public class AuthorizationFilter implements Filter {
 			}
 		}
 
+	}
+
+	private boolean isFirstFilePartUpload(HttpServletRequest request) {
+		if (request.getRequestURI().matches(FILE_PART_UPLOAD_URI_MATCHER)
+				&& Integer.parseInt(request.getParameter(FILE_PART_INDEX)) > 0) {
+			logger.logInfoMessage(this.getClass(), null, null,
+					this.getClass().getSimpleName() + ".isFirstFilePartUpload",
+					"file upload: not first part, skipping user auth check");
+			return false;
+		}
+		return true;
 	}
 
 	private boolean isAllowed(JSONArray userGroups) throws JSONException {
