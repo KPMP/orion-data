@@ -113,6 +113,32 @@ public class AuthorizationFilterTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	public void testDoFilter_nonChunkedFileUpload() throws Exception {
+		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
+		when(incomingRequest.getRequestURI()).thenReturn("/v1/packages/123-3435-kljlkj/files");
+		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
+		FilterChain chain = mock(FilterChain.class);
+		User user = mock(User.class);
+		when(user.getShibId()).thenReturn("shibboleth id");
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
+		HttpSession session = mock(HttpSession.class);
+		when(incomingRequest.getSession(true)).thenReturn(session);
+		when(incomingRequest.getCookies()).thenReturn(new Cookie[] {});
+		ResponseEntity<String> response = mock(ResponseEntity.class);
+		when(response.getBody()).thenReturn("{groups: [ 'group1', 'another group'], active: true}");
+		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
+
+		filter.doFilter(incomingRequest, incomingResponse, chain);
+
+		verify(incomingRequest, times(1)).getSession(true);
+		ArgumentCaptor<Cookie> cookieJar = ArgumentCaptor.forClass(Cookie.class);
+		verify(incomingResponse).addCookie(cookieJar.capture());
+		assertEquals(cookieJar.getValue().getName(), "shibid");
+		assertEquals(cookieJar.getValue().getValue(), "shibboleth id");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
 	public void testDoFilter_firstChunkFileUpload() throws Exception {
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
 		when(incomingRequest.getRequestURI()).thenReturn("/v1/packages/123-3435-kljlkj/files");

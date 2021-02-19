@@ -132,8 +132,9 @@ public class AuthorizationFilter implements Filter {
 	}
 
 	private boolean isFirstFilePartUpload(HttpServletRequest request) {
-		if (request.getRequestURI().matches(FILE_PART_UPLOAD_URI_MATCHER)
-				&& Integer.parseInt(request.getParameter(FILE_PART_INDEX)) > 0) {
+		String filePartIndex = request.getParameter(FILE_PART_INDEX);
+		if (filePartIndex != null && request.getRequestURI().matches(FILE_PART_UPLOAD_URI_MATCHER)
+				&& Integer.parseInt(filePartIndex) > 0) {
 			logger.logInfoMessage(this.getClass(), null, null,
 					this.getClass().getSimpleName() + ".isFirstFilePartUpload",
 					"file upload: not first part, skipping user auth check");
