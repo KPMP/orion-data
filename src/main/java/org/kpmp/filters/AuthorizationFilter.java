@@ -86,8 +86,9 @@ public class AuthorizationFilter implements Filter {
 		Cookie[] cookies = request.getCookies();
 		User user = shibUserService.getUser(request);
 		String shibId = user.getShibId();
-		if (hasExistingSession(shibId, cookies, request) || allowedEndpoints.contains(request.getRequestURI())
+		if (hasExistingSession(user, shibId, cookies, request) || allowedEndpoints.contains(request.getRequestURI())
 				|| !isFirstFilePartUpload(request)) {
+
 			chain.doFilter(request, response);
 		} else {
 			String clientId = env.getProperty(CLIENT_ID_PROPERTY);
@@ -104,6 +105,7 @@ public class AuthorizationFilter implements Filter {
 						session.setMaxInactiveInterval(SESSION_TIMEOUT_SECONDS);
 						Cookie message = new Cookie(COOKIE_NAME, shibId);
 						session.setAttribute("roles", userGroups);
+						session.setAttribute("shibid", shibId);
 						response.addCookie(message);
 						chain.doFilter(request, response);
 					} else if (isKPMP(userGroups)) {
@@ -169,23 +171,33 @@ public class AuthorizationFilter implements Filter {
 		response.setStatus(status.value());
 	}
 
-	private boolean hasExistingSession(String shibId, Cookie[] cookies, HttpServletRequest request) {
+	private boolean hasExistingSession(User user, String shibId, Cookie[] cookies, HttpServletRequest request) {
 		HttpSession existingSession = request.getSession(false);
 		if (existingSession != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("shibId")) {
-					if (cookie.getValue().equals(shibId)) {
-						return true;
-					} else {
-						logger.logInfoMessage(this.getClass(), null,
-								"MSG: Invalidating session. Cookie does not match shibId for user", request);
-						existingSession.invalidate();
-						return false;
-					}
-				}
+			logger.logInfoMessage(this.getClass(), user, null, request.getRequestURI(),
+					"checking for existing session");
+			if (existingSession.getAttribute("shibid").equals(user.getShibId())) {
+				logger.logWarnMessage(this.getClass(), user, null, request.getRequestURI(),
+						"skipping filter, active session");
+				return true;
+			} else {
+				return false;
 			}
+//			for (Cookie cookie : cookies) {
+//				if (cookie.getName().equals(COOKIE_NAME)) {
+//					if (cookie.getValue().equals(shibId)) {
+//						return true;
+//					} else {
+//						logger.logInfoMessage(this.getClass(), null,
+//								"MSG: Invalidating session. Cookie does not match shibId for user", request);
+//						existingSession.invalidate();
+//						return false;
+//					}
+//				}
+//			}
 		}
 		return false;
+
 	}
 
 	@Override
