@@ -3,16 +3,14 @@ package org.kpmp.apiTokens;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 public interface TokenRepository extends MongoRepository<Token, String> {
 
-    @SuppressWarnings("unchecked")
-    public Token save(Token token);
+	@SuppressWarnings("unchecked")
+	public Token save(Token token);
 
-    public Token findByShibId(String shibId);
+	public Token findByShibId(String shibId);
 
-    public Token findByTokenString(String tokenString);
+	public Token findByTokenString(String tokenString);
 
 }
