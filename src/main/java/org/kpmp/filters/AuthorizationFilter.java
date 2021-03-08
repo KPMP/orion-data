@@ -176,7 +176,8 @@ public class AuthorizationFilter implements Filter {
 		if (existingSession != null) {
 			logger.logInfoMessage(this.getClass(), user, null, request.getRequestURI(),
 					"checking for existing session");
-			if (existingSession.getAttribute("shibid").equals(user.getShibId())) {
+			if (existingSession.getAttribute("shibid") != null
+					&& existingSession.getAttribute("shibid").equals(user.getShibId())) {
 				logger.logWarnMessage(this.getClass(), user, null, request.getRequestURI(),
 						"skipping filter, active session");
 				return true;

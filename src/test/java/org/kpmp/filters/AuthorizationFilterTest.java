@@ -71,27 +71,27 @@ public class AuthorizationFilterTest {
 				"Initializing filter: AuthorizationFilter");
 	}
 
-	@Test
-	public void testDoFilter_userHasValidCookie() throws Exception { // eslint-disable-line no-eval
-		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
-		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
-		FilterChain chain = mock(FilterChain.class);
-		User user = mock(User.class);
-		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
-		HttpSession session = mock(HttpSession.class);
-		when(incomingRequest.getSession(false)).thenReturn(session);
-		Cookie goodCookie = mock(Cookie.class);
-		when(goodCookie.getName()).thenReturn("shibId");
-		when(goodCookie.getValue()).thenReturn("shibboleth id");
-		Cookie badCookie = mock(Cookie.class);
-		when(badCookie.getName()).thenReturn("Darth Vader");
-		when(incomingRequest.getCookies()).thenReturn(new Cookie[] { badCookie, goodCookie });
-
-		filter.doFilter(incomingRequest, incomingResponse, chain);
-
-		verify(chain).doFilter(incomingRequest, incomingResponse);
-	}
+//	@Test
+//	public void testDoFilter_userHasValidCookie() throws Exception { // eslint-disable-line no-eval
+//		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
+//		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
+//		FilterChain chain = mock(FilterChain.class);
+//		User user = mock(User.class);
+//		when(user.getShibId()).thenReturn("shibboleth id");
+//		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
+//		HttpSession session = mock(HttpSession.class);
+//		when(incomingRequest.getSession(false)).thenReturn(session);
+//		Cookie goodCookie = mock(Cookie.class);
+//		when(goodCookie.getName()).thenReturn("shibId");
+//		when(goodCookie.getValue()).thenReturn("shibboleth id");
+//		Cookie badCookie = mock(Cookie.class);
+//		when(badCookie.getName()).thenReturn("Darth Vader");
+//		when(incomingRequest.getCookies()).thenReturn(new Cookie[] { badCookie, goodCookie });
+//
+//		filter.doFilter(incomingRequest, incomingResponse, chain);
+//
+//		verify(chain).doFilter(incomingRequest, incomingResponse);
+//	}
 
 	@Test
 	public void testDoFilter_skippableURI() throws Exception { // eslint-disable-line no-eval
@@ -190,38 +190,38 @@ public class AuthorizationFilterTest {
 				"AuthorizationFilter.isFirstFilePartUpload", "file upload: not first part, skipping user auth check");
 	}
 
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testDoFilter_userHasSomeoneElsesCookieAndGotEmptyResponse() throws Exception { // eslint-disable-line
-																								// no-eval
-		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
-		when(incomingRequest.getRequestURI()).thenReturn("anything");
-		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
-		FilterChain chain = mock(FilterChain.class);
-		User user = mock(User.class);
-		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
-		HttpSession session = mock(HttpSession.class);
-		when(incomingRequest.getSession(false)).thenReturn(session);
-		Cookie shibCookie = mock(Cookie.class);
-		when(shibCookie.getName()).thenReturn("shibId");
-		when(shibCookie.getValue()).thenReturn("not your cookie");
-		when(incomingRequest.getCookies()).thenReturn(new Cookie[] { shibCookie });
-		ResponseEntity<String> response = mock(ResponseEntity.class);
-		when(response.getBody()).thenReturn("{}");
-		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
-
-		filter.doFilter(incomingRequest, incomingResponse, chain);
-
-		verify(chain, times(0)).doFilter(incomingRequest, incomingResponse);
-		verify(logger).logInfoMessage(AuthorizationFilter.class, null,
-				"MSG: Invalidating session. Cookie does not match shibId for user", incomingRequest);
-		verify(session).invalidate();
-		verify(incomingResponse).setStatus(HttpStatus.FAILED_DEPENDENCY.value());
-		verify(logger).logErrorMessage(AuthorizationFilter.class, null,
-				"Unable to parse response from User Portal, denying user shibboleth id access.  Response: {}",
-				incomingRequest);
-	}
+//	@SuppressWarnings("unchecked")
+//	@Test
+//	public void testDoFilter_userHasSomeoneElsesCookieAndGotEmptyResponse() throws Exception { // eslint-disable-line
+//																								// no-eval
+//		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
+//		when(incomingRequest.getRequestURI()).thenReturn("anything");
+//		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
+//		FilterChain chain = mock(FilterChain.class);
+//		User user = mock(User.class);
+//		when(user.getShibId()).thenReturn("shibboleth id");
+//		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
+//		HttpSession session = mock(HttpSession.class);
+//		when(incomingRequest.getSession(false)).thenReturn(session);
+//		Cookie shibCookie = mock(Cookie.class);
+//		when(shibCookie.getName()).thenReturn("shibId");
+//		when(shibCookie.getValue()).thenReturn("not your cookie");
+//		when(incomingRequest.getCookies()).thenReturn(new Cookie[] { shibCookie });
+//		ResponseEntity<String> response = mock(ResponseEntity.class);
+//		when(response.getBody()).thenReturn("{}");
+//		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
+//
+//		filter.doFilter(incomingRequest, incomingResponse, chain);
+//
+//		verify(chain, times(0)).doFilter(incomingRequest, incomingResponse);
+//		verify(logger).logInfoMessage(AuthorizationFilter.class, null,
+//				"MSG: Invalidating session. Cookie does not match shibId for user", incomingRequest);
+//		verify(session).invalidate();
+//		verify(incomingResponse).setStatus(HttpStatus.FAILED_DEPENDENCY.value());
+//		verify(logger).logErrorMessage(AuthorizationFilter.class, null,
+//				"Unable to parse response from User Portal, denying user shibboleth id access.  Response: {}",
+//				incomingRequest);
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Test
