@@ -1,5 +1,7 @@
 package org.kpmp.ingest.redcap;
 
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
@@ -16,9 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-
 @Controller
 public class REDCapIngestController {
 
@@ -34,16 +33,18 @@ public class REDCapIngestController {
 
 	}
 
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/v1/redcap", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity ingestREDCapData(@RequestBody String dataDump, @RequestParam("token") String tokenString, HttpServletRequest request)
-			throws JSONException {
+	public @ResponseBody ResponseEntity ingestREDCapData(@RequestBody String dataDump,
+			@RequestParam("token") String tokenString, HttpServletRequest request) throws JSONException {
 		log.info(LOG_MESSAGE_FORMAT, request.getRequestURI(), "Receiving new REDCap data dump");
 		ResponseEntity responseEntity;
 		if (tokenService.checkAndValidate(tokenString)) {
 			Token token = tokenService.getTokenByTokenString(tokenString);
 			try {
 				service.saveDataDump(dataDump);
-				log.info(LOG_MESSAGE_FORMAT, request.getRequestURI(), "Received new REDCap data dump from shibId " + token.getShibId() + " using token " + token.getTokenString());
+				log.info(LOG_MESSAGE_FORMAT, request.getRequestURI(), "Received new REDCap data dump from shibId "
+						+ token.getShibId() + " using token " + token.getTokenString());
 				responseEntity = ResponseEntity.ok().body("Successfully ingested REDCap data");
 			} catch (JSONException error) {
 				log.error(LOG_MESSAGE_FORMAT, request.getRequestURI(), error.getMessage());
@@ -51,7 +52,7 @@ public class REDCapIngestController {
 			}
 		} else {
 			log.error(LOG_MESSAGE_FORMAT, request.getRequestURI(), "Invalid token provided: " + tokenString);
-			responseEntity =  ResponseEntity.status(UNAUTHORIZED).body("Invalid token.");
+			responseEntity = ResponseEntity.status(UNAUTHORIZED).body("Invalid token.");
 		}
 		return responseEntity;
 	}

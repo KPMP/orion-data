@@ -55,6 +55,7 @@ public class REDCapIngestControllerTest {
 		assertEquals("json dump", dumpCaptor.getValue());
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Test
 	public void testIngestREDCapDataBadToken() throws JSONException {
 		HttpServletRequest request = mock(HttpServletRequest.class);

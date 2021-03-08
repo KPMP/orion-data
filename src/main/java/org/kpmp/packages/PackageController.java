@@ -1,5 +1,7 @@
 package org.kpmp.packages;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
@@ -27,8 +29,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Controller
 public class PackageController {
@@ -90,8 +90,8 @@ public class PackageController {
 			if ("true".equals(largeFilesChecked)) {
 				packageResponse.setGlobusURL(globusService.createDirectory(packageId));
 			}
-			packageService.sendStateChangeEvent(packageId, metadataReceivedState, largeFilesChecked, packageResponse.getGlobusURL(),
-					cleanHostName);
+			packageService.sendStateChangeEvent(packageId, metadataReceivedState, largeFilesChecked,
+					packageResponse.getGlobusURL(), cleanHostName);
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
 			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), cleanHostName);
@@ -142,20 +142,19 @@ public class PackageController {
 				.body(resource);
 	}
 
-    @RequestMapping(value = "/v1/packages/{packageId}/files/move", method = RequestMethod.POST)
-    public @ResponseBody
-	ResponseEntity movePackageFiles(@PathVariable String packageId,
-									HttpServletRequest request) {
-        ResponseEntity responseEntity;
-        try {
-        	packageService.movePackageFiles(packageId);
-        	responseEntity = ResponseEntity.ok().body("Moving files for package " + packageId);
-        } catch (IOException | InterruptedException e) {
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/v1/packages/{packageId}/files/move", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity movePackageFiles(@PathVariable String packageId, HttpServletRequest request) {
+		ResponseEntity responseEntity;
+		try {
+			packageService.movePackageFiles(packageId);
+			responseEntity = ResponseEntity.ok().body("Moving files for package " + packageId);
+		} catch (IOException | InterruptedException e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-        	responseEntity =  ResponseEntity.status(INTERNAL_SERVER_ERROR).body("There was a problem moving the files.");
-        }
+			responseEntity = ResponseEntity.status(INTERNAL_SERVER_ERROR).body("There was a problem moving the files.");
+		}
 		return responseEntity;
-    }
+	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files/finish", method = RequestMethod.POST)
 	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId,
