@@ -137,7 +137,7 @@ public class PackageControllerTest {
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
 				"Posting package info: {\"packageType\":\"blah\"}", request);
 		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null, "hostname");
-		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "false",null, "hostname");
+		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "false", null, "hostname");
 	}
 
 	@Test
@@ -167,7 +167,8 @@ public class PackageControllerTest {
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
 				"Posting package info: {\"largeFilesChecked\":true,\"packageType\":\"blah\"}", request);
 		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null, "hostname");
-		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "true", "theWholeURL", "hostname");
+		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "true", "theWholeURL",
+				"hostname");
 	}
 
 	@Test
@@ -246,8 +247,8 @@ public class PackageControllerTest {
 		verify(logger).logErrorMessage(PackageController.class, "3545", "error getting metadata for package id:  3545",
 				request);
 		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null, "origin");
-		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED",
-				null, "error getting metadata for package id:  3545", "origin");
+		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED", null,
+				"error getting metadata for package id:  3545", "origin");
 	}
 
 	@Test
@@ -265,8 +266,8 @@ public class PackageControllerTest {
 		verify(logger).logErrorMessage(PackageController.class, "3545", "Unable to zip package with package id:  3545",
 				request);
 		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null, "origin");
-		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED",
-				null, "Unable to zip package with package id:  3545", "origin");
+		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED", null,
+				"Unable to zip package with package id:  3545", "origin");
 	}
 
 	@Test
@@ -303,6 +304,7 @@ public class PackageControllerTest {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Test
 	public void testMovePackageFiles() throws Exception {
 		HttpServletRequest request = mock(HttpServletRequest.class);

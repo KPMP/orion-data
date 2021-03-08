@@ -1,6 +1,5 @@
 package org.kpmp.filters;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -12,7 +11,6 @@ import java.util.Arrays;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -23,7 +21,6 @@ import org.junit.Test;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.env.Environment;
@@ -72,28 +69,6 @@ public class AuthorizationFilterTest {
 	}
 
 	@Test
-	public void testDoFilter_userHasValidCookie() throws Exception { // eslint-disable-line no-eval
-		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
-		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
-		FilterChain chain = mock(FilterChain.class);
-		User user = mock(User.class);
-		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
-		HttpSession session = mock(HttpSession.class);
-		when(incomingRequest.getSession(false)).thenReturn(session);
-		Cookie goodCookie = mock(Cookie.class);
-		when(goodCookie.getName()).thenReturn("shibId");
-		when(goodCookie.getValue()).thenReturn("shibboleth id");
-		Cookie badCookie = mock(Cookie.class);
-		when(badCookie.getName()).thenReturn("Darth Vader");
-		when(incomingRequest.getCookies()).thenReturn(new Cookie[] { badCookie, goodCookie });
-
-		filter.doFilter(incomingRequest, incomingResponse, chain);
-
-		verify(chain).doFilter(incomingRequest, incomingResponse);
-	}
-
-	@Test
 	public void testDoFilter_skippableURI() throws Exception { // eslint-disable-line no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
 		when(incomingRequest.getRequestURI()).thenReturn("uri1");
@@ -104,7 +79,6 @@ public class AuthorizationFilterTest {
 		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(false)).thenReturn(session);
-		when(incomingRequest.getCookies()).thenReturn(new Cookie[] {});
 
 		filter.doFilter(incomingRequest, incomingResponse, chain);
 
@@ -113,40 +87,76 @@ public class AuthorizationFilterTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testDoFilter_userHasSomeoneElsesCookieAndGotEmptyResponse() throws Exception { // eslint-disable-line
-																								// no-eval
+	public void testDoFilter_nonChunkedFileUpload() throws Exception {
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
+		when(incomingRequest.getRequestURI()).thenReturn("/v1/packages/123-3435-kljlkj/files");
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		FilterChain chain = mock(FilterChain.class);
 		User user = mock(User.class);
 		when(user.getShibId()).thenReturn("shibboleth id");
 		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		HttpSession session = mock(HttpSession.class);
-		when(incomingRequest.getSession(false)).thenReturn(session);
-		Cookie shibCookie = mock(Cookie.class);
-		when(shibCookie.getName()).thenReturn("shibId");
-		when(shibCookie.getValue()).thenReturn("not your cookie");
-		when(incomingRequest.getCookies()).thenReturn(new Cookie[] { shibCookie });
+		when(incomingRequest.getSession(true)).thenReturn(session);
 		ResponseEntity<String> response = mock(ResponseEntity.class);
-		when(response.getBody()).thenReturn("{}");
+		when(response.getBody()).thenReturn("{groups: [ 'group1', 'another group'], active: true}");
 		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
 
 		filter.doFilter(incomingRequest, incomingResponse, chain);
 
-		verify(chain, times(0)).doFilter(incomingRequest, incomingResponse);
-		verify(logger).logInfoMessage(AuthorizationFilter.class, null,
-				"MSG: Invalidating session. Cookie does not match shibId for user", incomingRequest);
-		verify(session).invalidate();
-		verify(incomingResponse).setStatus(HttpStatus.FAILED_DEPENDENCY.value());
-		verify(logger).logErrorMessage(AuthorizationFilter.class, null,
-				"Unable to parse response from User Portal, denying user shibboleth id access.  Response: {}",
-				incomingRequest);
+		verify(incomingRequest, times(1)).getSession(true);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testDoFilter_firstChunkFileUpload() throws Exception {
+		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
+		when(incomingRequest.getRequestURI()).thenReturn("/v1/packages/123-3435-kljlkj/files");
+		when(incomingRequest.getParameter("qqpartindex")).thenReturn("0");
+		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
+		FilterChain chain = mock(FilterChain.class);
+		User user = mock(User.class);
+		when(user.getShibId()).thenReturn("shibboleth id");
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
+		HttpSession session = mock(HttpSession.class);
+		when(incomingRequest.getSession(true)).thenReturn(session);
+		ResponseEntity<String> response = mock(ResponseEntity.class);
+		when(response.getBody()).thenReturn("{groups: [ 'group1', 'another group'], active: true}");
+		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
+
+		filter.doFilter(incomingRequest, incomingResponse, chain);
+
+		verify(incomingRequest, times(1)).getSession(true);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testDoFilter_notFirstChunkFileUpload() throws Exception {
+		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
+		when(incomingRequest.getRequestURI()).thenReturn("/v1/packages/123-3435-kljlkj/files");
+		when(incomingRequest.getParameter("qqpartindex")).thenReturn("3");
+		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
+		FilterChain chain = mock(FilterChain.class);
+		User user = mock(User.class);
+		when(user.getShibId()).thenReturn("shibboleth id");
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
+		HttpSession session = mock(HttpSession.class);
+		when(incomingRequest.getSession(true)).thenReturn(session);
+		ResponseEntity<String> response = mock(ResponseEntity.class);
+		when(response.getBody()).thenReturn("{groups: [ 'group1', 'another group'], active: true}");
+		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
+
+		filter.doFilter(incomingRequest, incomingResponse, chain);
+
+		verify(incomingRequest, times(0)).getSession(true);
+		verify(logger).logInfoMessage(AuthorizationFilter.class, null, null,
+				"AuthorizationFilter.isFirstFilePartUpload", "file upload: not first part, skipping user auth check");
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testDoFilter_whenNoSessionAndEmptyResponse() throws Exception { // eslint-disable-line no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
+		when(incomingRequest.getRequestURI()).thenReturn("anything");
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		FilterChain chain = mock(FilterChain.class);
 		User user = mock(User.class);
@@ -170,6 +180,7 @@ public class AuthorizationFilterTest {
 	@Test
 	public void testDoFilter_noSessionHasAllowedGroup() throws Exception { // eslint-disable-line no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
+		when(incomingRequest.getRequestURI()).thenReturn("anything");
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(true)).thenReturn(session);
@@ -186,10 +197,6 @@ public class AuthorizationFilterTest {
 
 		verify(chain).doFilter(incomingRequest, incomingResponse);
 		verify(session).setMaxInactiveInterval(8 * 60 * 60);
-		ArgumentCaptor<Cookie> cookieJar = ArgumentCaptor.forClass(Cookie.class);
-		verify(incomingResponse).addCookie(cookieJar.capture());
-		assertEquals(cookieJar.getValue().getName(), "shibid");
-		assertEquals(cookieJar.getValue().getValue(), "shibboleth id");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -197,6 +204,7 @@ public class AuthorizationFilterTest {
 	public void testDoFilter_noSessionDoesNotHaveAllowedGroupHasKpmpGroup() throws Exception { // eslint-disable-line
 																								// no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
+		when(incomingRequest.getRequestURI()).thenReturn("anything");
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(true)).thenReturn(session);
@@ -223,6 +231,7 @@ public class AuthorizationFilterTest {
 																								// no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
+		when(incomingRequest.getRequestURI()).thenReturn("anything");
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(true)).thenReturn(session);
 		FilterChain chain = mock(FilterChain.class);
@@ -247,6 +256,7 @@ public class AuthorizationFilterTest {
 	public void testDoFilter_userAuthReturned404() throws Exception { // eslint-disable-line no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
+		when(incomingRequest.getRequestURI()).thenReturn("anything");
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(true)).thenReturn(session);
 		FilterChain chain = mock(FilterChain.class);
@@ -269,6 +279,7 @@ public class AuthorizationFilterTest {
 	@Test
 	public void testDoFilter_userAuthReturnedAnotherErrorCode() throws Exception { // eslint-disable-line no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
+		when(incomingRequest.getRequestURI()).thenReturn("anything");
 		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(true)).thenReturn(session);
