@@ -1,6 +1,5 @@
 package org.kpmp.filters;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -12,7 +11,6 @@ import java.util.Arrays;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -23,7 +21,6 @@ import org.junit.Test;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.env.Environment;
@@ -82,7 +79,6 @@ public class AuthorizationFilterTest {
 		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(false)).thenReturn(session);
-		when(incomingRequest.getCookies()).thenReturn(new Cookie[] {});
 
 		filter.doFilter(incomingRequest, incomingResponse, chain);
 
@@ -101,7 +97,6 @@ public class AuthorizationFilterTest {
 		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(true)).thenReturn(session);
-		when(incomingRequest.getCookies()).thenReturn(new Cookie[] {});
 		ResponseEntity<String> response = mock(ResponseEntity.class);
 		when(response.getBody()).thenReturn("{groups: [ 'group1', 'another group'], active: true}");
 		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
@@ -109,10 +104,6 @@ public class AuthorizationFilterTest {
 		filter.doFilter(incomingRequest, incomingResponse, chain);
 
 		verify(incomingRequest, times(1)).getSession(true);
-		ArgumentCaptor<Cookie> cookieJar = ArgumentCaptor.forClass(Cookie.class);
-		verify(incomingResponse).addCookie(cookieJar.capture());
-		assertEquals(cookieJar.getValue().getName(), "shibid");
-		assertEquals(cookieJar.getValue().getValue(), "shibboleth id");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -128,7 +119,6 @@ public class AuthorizationFilterTest {
 		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(true)).thenReturn(session);
-		when(incomingRequest.getCookies()).thenReturn(new Cookie[] {});
 		ResponseEntity<String> response = mock(ResponseEntity.class);
 		when(response.getBody()).thenReturn("{groups: [ 'group1', 'another group'], active: true}");
 		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
@@ -136,10 +126,6 @@ public class AuthorizationFilterTest {
 		filter.doFilter(incomingRequest, incomingResponse, chain);
 
 		verify(incomingRequest, times(1)).getSession(true);
-		ArgumentCaptor<Cookie> cookieJar = ArgumentCaptor.forClass(Cookie.class);
-		verify(incomingResponse).addCookie(cookieJar.capture());
-		assertEquals(cookieJar.getValue().getName(), "shibid");
-		assertEquals(cookieJar.getValue().getValue(), "shibboleth id");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -155,7 +141,6 @@ public class AuthorizationFilterTest {
 		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(true)).thenReturn(session);
-		when(incomingRequest.getCookies()).thenReturn(new Cookie[] {});
 		ResponseEntity<String> response = mock(ResponseEntity.class);
 		when(response.getBody()).thenReturn("{groups: [ 'group1', 'another group'], active: true}");
 		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
@@ -163,7 +148,6 @@ public class AuthorizationFilterTest {
 		filter.doFilter(incomingRequest, incomingResponse, chain);
 
 		verify(incomingRequest, times(0)).getSession(true);
-		verify(incomingResponse, times(0)).addCookie(any(Cookie.class));
 		verify(logger).logInfoMessage(AuthorizationFilter.class, null, null,
 				"AuthorizationFilter.isFirstFilePartUpload", "file upload: not first part, skipping user auth check");
 	}
@@ -213,10 +197,6 @@ public class AuthorizationFilterTest {
 
 		verify(chain).doFilter(incomingRequest, incomingResponse);
 		verify(session).setMaxInactiveInterval(8 * 60 * 60);
-		ArgumentCaptor<Cookie> cookieJar = ArgumentCaptor.forClass(Cookie.class);
-		verify(incomingResponse).addCookie(cookieJar.capture());
-		assertEquals(cookieJar.getValue().getName(), "shibid");
-		assertEquals(cookieJar.getValue().getValue(), "shibboleth id");
 	}
 
 	@SuppressWarnings("unchecked")
