@@ -73,7 +73,7 @@ for (package_id, file_name, protocol, metadata_type_id, participant_id, release_
             print(warning)
     mydb.commit()
 
-print(str(update_count) + " rows inserted")
+print(str(update_count) + " files inserted")
 
 
 
