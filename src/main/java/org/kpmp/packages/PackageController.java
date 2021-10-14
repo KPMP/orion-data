@@ -167,6 +167,7 @@ public class PackageController {
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
 		if (packageService.validatePackageForZipping(packageId, shibUserService.getUser(request))) {
 			try {
+				packageService.calculateFileChecksums(packageId);
 				packageService.createZipFile(packageId, cleanHostName, shibUserService.getUser(request));
 				fileUploadResponse = new FileUploadResponse(true);
 			} catch (Exception e) {

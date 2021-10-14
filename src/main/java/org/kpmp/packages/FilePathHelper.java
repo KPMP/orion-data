@@ -17,6 +17,10 @@ public class FilePathHelper {
 		return basePath + File.separator + "package_" + packageId + File.separator;
 	}
 
+	public String getFilePath(String packageId, String fileName) {
+		return getPackagePath(packageId) + fileName;
+	}
+
 	public String getZipFileName(String packageId) {
 		return getPackagePath(packageId) + packageId + ".zip";
 	}
