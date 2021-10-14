@@ -49,7 +49,7 @@ for file in "${gFiles[@]}"; do
    fi
 done
 
-cp "${globusDir}"/* "${packageDir}"
+rsync -acv "${globusDir}"/* "${packageDir}"
 
 dlFiles=("${packageDir}"/*)
 
