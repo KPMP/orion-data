@@ -197,20 +197,24 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
-	public void calculateFileChecksums(String packageId) {
+	public void calculateAndSaveChecksums(String packageId) {
 		Package packageInformation = findPackage(packageId);
-		for (Attachment attachment: packageInformation.getAttachments()) {
-			String filePath = filePathHelper.getFilePath(packageInformation.getPackageId(), attachment.getFileName());
+		calculateChecksums(packageInformation);
+		packageRepository.save(packageInformation);
+	}
+
+	protected void calculateChecksums(Package myPackage) {
+		for (Attachment attachment: myPackage.getAttachments()) {
+			String filePath = filePathHelper.getFilePath(myPackage.getPackageId(), attachment.getFileName());
 			try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
 				String md5 = DigestUtils.md5Hex(is);
 				attachment.setMd5checksum(md5);
 			} catch (IOException e) {
-				logger.logErrorMessage(PackageService.class, null, packageId,
+				logger.logErrorMessage(PackageService.class, null, myPackage.getPackageId(),
 						PackageService.class.getSimpleName() + ".calculateFileChecksums",
 						"There was a problem calculating the checksum for file " + filePath + ": " + e.getMessage());
 			}
 		}
-		packageRepository.save(packageInformation);
 	}
 
 	@CacheEvict(value = "packages", allEntries = true)
