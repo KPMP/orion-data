@@ -292,7 +292,10 @@ public class PackageServiceTest {
 		attachment2.setSize(file2.length());
 		List<Attachment> attachments = Arrays.asList(attachment1, attachment2);
 		Package newPackage = new org.kpmp.packages.Package();
+		newPackage.setPackageId("1234");
 		newPackage.setAttachments(attachments);
+		when(filePathHelper.getFilePath("1234", "file1")).thenReturn(file1Path);
+		when(filePathHelper.getFilePath("1234", "file2")).thenReturn(file2Path);
 		service.calculateChecksums(newPackage);
 		List<Attachment> attachments1 = newPackage.getAttachments();
 		assertNotNull(attachments1.get(0).getMd5checksum());
