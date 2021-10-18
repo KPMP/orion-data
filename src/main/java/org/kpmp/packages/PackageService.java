@@ -2,6 +2,8 @@ package org.kpmp.packages;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -15,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -192,6 +195,26 @@ public class PackageService {
 		Collections.sort(filesInPackage);
 		return checkFilesExist(filesOnDisk, filesInPackage, packageId, user)
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
+	}
+
+	public void calculateAndSaveChecksums(String packageId) {
+		Package packageInformation = findPackage(packageId);
+		calculateChecksums(packageInformation);
+		packageRepository.save(packageInformation);
+	}
+
+	protected void calculateChecksums(Package myPackage) {
+		for (Attachment attachment: myPackage.getAttachments()) {
+			String filePath = filePathHelper.getFilePath(myPackage.getPackageId(), attachment.getFileName());
+			try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
+				String md5 = DigestUtils.md5Hex(is);
+				attachment.setMd5checksum(md5);
+			} catch (IOException e) {
+				logger.logErrorMessage(PackageService.class, null, myPackage.getPackageId(),
+						PackageService.class.getSimpleName() + ".calculateFileChecksums",
+						"There was a problem calculating the checksum for file " + filePath + ": " + e.getMessage());
+			}
+		}
 	}
 
 	@CacheEvict(value = "packages", allEntries = true)

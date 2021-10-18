@@ -15,6 +15,7 @@ public class Attachment {
 	private String id;
 	private long size;
 	private String fileName;
+	private String md5checksum;
 
 	public String getId() {
 		return id;
@@ -40,4 +41,11 @@ public class Attachment {
 		this.fileName = filename;
 	}
 
+	public String getMd5checksum() {
+		return md5checksum;
+	}
+
+	public void setMd5checksum(String md5checksum) {
+		this.md5checksum = md5checksum;
+	}
 }

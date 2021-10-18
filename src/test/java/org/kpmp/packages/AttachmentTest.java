@@ -38,4 +38,10 @@ public class AttachmentTest {
 		assertEquals("filename.txt", attachment.getFileName());
 	}
 
+	@Test
+	public void testSetCheckum() {
+		attachment.setMd5checksum("123978476g8fkjfsd98");
+		assertEquals("123978476g8fkjfsd98", attachment.getMd5checksum());
+	}
+
 }

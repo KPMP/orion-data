@@ -34,6 +34,7 @@ dependencies {
 	compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	compile 'org.apache.commons:commons-compress:1.17'
 	compile 'org.apache.commons:commons-text:1.7'
+	compile 'commons-codec:commons-codec:1.15'
 	compile 'com.google.api-client:google-api-client:1.23.0'
 	compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
 	compile 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
