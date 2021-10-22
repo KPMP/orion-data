@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -210,7 +211,7 @@ public class PackageService {
 				try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
 					String md5 = DigestUtils.md5Hex(is);
 					attachment.setMd5checksum(md5);
-				} catch (IOException e) {
+				} catch (IOException | InvalidPathException e) {
 					logger.logErrorMessage(PackageService.class, null, myPackage.getPackageId(),
 							PackageService.class.getSimpleName() + ".calculateFileChecksums",
 							"There was a problem calculating the checksum for file " + filePath + ": " + e.getMessage());
