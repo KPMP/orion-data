@@ -205,14 +205,20 @@ public class PackageService {
 
 	protected void calculateChecksums(Package myPackage) {
 		for (Attachment attachment: myPackage.getAttachments()) {
-			String filePath = filePathHelper.getFilePath(myPackage.getPackageId(), attachment.getFileName());
-			try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
-				String md5 = DigestUtils.md5Hex(is);
-				attachment.setMd5checksum(md5);
-			} catch (IOException e) {
-				logger.logErrorMessage(PackageService.class, null, myPackage.getPackageId(),
+			if (attachment.getMd5checksum() == null) {
+				String filePath = filePathHelper.getFilePath(myPackage.getPackageId(), attachment.getFileName());
+				try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
+					String md5 = DigestUtils.md5Hex(is);
+					attachment.setMd5checksum(md5);
+				} catch (IOException e) {
+					logger.logErrorMessage(PackageService.class, null, myPackage.getPackageId(),
+							PackageService.class.getSimpleName() + ".calculateFileChecksums",
+							"There was a problem calculating the checksum for file " + filePath + ": " + e.getMessage());
+				}
+			} else {
+				logger.logInfoMessage(PackageService.class, null, myPackage.getPackageId(),
 						PackageService.class.getSimpleName() + ".calculateFileChecksums",
-						"There was a problem calculating the checksum for file " + filePath + ": " + e.getMessage());
+						zipPackage.format(new Object[] { "Checksum already exists for file " + attachment.getFileName(), myPackage.getPackageId() }));
 			}
 		}
 	}
