@@ -208,27 +208,32 @@ public class PackageService {
 	public JSONObject calculateChecksums(JSONObject packageInfo) throws JSONException {
 		JSONArray files = packageInfo.getJSONArray("files");
 		String packageID = packageInfo.getString(PackageKeys.ID.getKey());
-		for (int i = 0; i < files.length(); i++) {
-			JSONObject fileInfo = files.getJSONObject(i);
-			String checkSum = fileInfo.getString("md5checksum");
-			String fileName = fileInfo.getString("fileName");
-			if (checkSum == null) {
-				String filePath = filePathHelper.getFilePath(packageInfo.getString(packageID), fileName);
-				try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
-					String md5 = DigestUtils.md5Hex(is);
-					fileInfo.put("md5checksum", md5);
-				} catch (IOException | InvalidPathException e) {
-					logger.logErrorMessage(PackageService.class, null, packageID,
+		if (files.length() > 0) {
+			for (int i = 0; i < files.length(); i++) {
+				JSONObject fileInfo = files.getJSONObject(i);
+				String fileName = fileInfo.getString("fileName");
+				if (!fileInfo.has("md5checksum")) {
+					String filePath = filePathHelper.getFilePath(packageID, fileName);
+					try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
+						String md5 = DigestUtils.md5Hex(is);
+						fileInfo.put("md5checksum", md5);
+					} catch (IOException | InvalidPathException e) {
+						logger.logErrorMessage(PackageService.class, null, packageID,
+								PackageService.class.getSimpleName() + ".calculateFileChecksums",
+								"There was a problem calculating the checksum for file " + filePath + ": " + e.getMessage());
+					}
+				} else {
+					logger.logInfoMessage(PackageService.class, null, packageID,
 							PackageService.class.getSimpleName() + ".calculateFileChecksums",
-							"There was a problem calculating the checksum for file " + filePath + ": " + e.getMessage());
+							zipPackage.format(new Object[] { "Checksum already exists for file " + fileName, packageID }));
 				}
-			} else {
-				logger.logInfoMessage(PackageService.class, null, packageID,
-						PackageService.class.getSimpleName() + ".calculateFileChecksums",
-						zipPackage.format(new Object[] { "Checksum already exists for file " + fileName, packageID }));
 			}
+			System.out.println(packageInfo.getJSONArray("files").getJSONObject(0).getString("md5checksum"));
+		} else {
+			logger.logInfoMessage(PackageService.class, null, packageID,
+					PackageService.class.getSimpleName() + ".calculateFileChecksums",
+					zipPackage.format(new Object[] { "No files found in this package", packageID }));
 		}
-		System.out.println(packageInfo.getJSONArray("files").getJSONObject(0).getString("md5checksum"));
 		return packageInfo;
 	}
 
