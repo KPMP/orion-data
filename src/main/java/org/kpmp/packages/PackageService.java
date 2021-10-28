@@ -217,6 +217,7 @@ public class PackageService {
 					try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
 						String md5 = DigestUtils.md5Hex(is);
 						fileInfo.put("md5checksum", md5);
+						files.put(i, fileInfo);
 					} catch (IOException | InvalidPathException e) {
 						logger.logErrorMessage(PackageService.class, null, packageID,
 								PackageService.class.getSimpleName() + ".calculateFileChecksums",
@@ -228,6 +229,7 @@ public class PackageService {
 							zipPackage.format(new Object[] { "Checksum already exists for file " + fileName, packageID }));
 				}
 			}
+			packageInfo.put("files", files);
 			System.out.println(packageInfo.getJSONArray("files").getJSONObject(0).getString("md5checksum"));
 		} else {
 			logger.logInfoMessage(PackageService.class, null, packageID,
