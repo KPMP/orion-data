@@ -217,7 +217,7 @@ public class PackageService {
 		if (files.size() > 0) {
 			for (int i = 0; i < files.size(); i++) {
 				JsonObject fileInfo = files.get(i).getAsJsonObject();
-				String fileName = fileInfo.get("filename").toString();
+				String fileName = fileInfo.get("fileName").toString();
 				if (!fileInfo.has("md5checksum")) {
 					String filePath = filePathHelper.getFilePath(packageID, fileName);
 					try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
