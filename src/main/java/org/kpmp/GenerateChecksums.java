@@ -1,5 +1,8 @@
 package org.kpmp;
 
+import com.google.api.client.json.Json;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.json.JSONArray;
@@ -38,8 +41,9 @@ public class GenerateChecksums implements CommandLineRunner {
         List<JSONObject> jsonPackages = customPackageRepository.findAll();
         for (JSONObject packageInfo : jsonPackages) {
             String packageId = packageInfo.getString(PackageKeys.ID.getKey());
-            packageInfo = packageService.calculateChecksums(packageInfo);
-            customPackageRepository.updateField(packageId, "files", packageInfo.getJSONArray("files"));
+            JsonObject gPackageInformation = (JsonObject) JsonParser.parseString(packageInfo.toString());
+            JsonObject gPackageInfo = packageService.calculateChecksums(gPackageInformation);
+            customPackageRepository.updateField(packageId, "files", gPackageInfo.get("files").getAsJsonArray());
         }
     }
 }

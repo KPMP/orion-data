@@ -18,6 +18,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -201,23 +205,26 @@ public class PackageService {
 
 	public void calculateAndSaveChecksums(String packageId) throws JSONException {
 		JSONObject packageInformation = packageRepository.findOne(packageId);
-		calculateChecksums(packageInformation);
-		packageRepository.updateField(packageId, "files", packageInformation.getJSONArray("files"));
+		JsonObject gPackageInformation = (JsonObject) JsonParser.parseString(packageInformation.toString());
+		gPackageInformation = calculateChecksums(gPackageInformation);
+		packageRepository.updateField(packageId, "files", gPackageInformation.get("files").getAsJsonArray());
 	}
 
-	public JSONObject calculateChecksums(JSONObject packageInfo) throws JSONException {
-		JSONArray files = packageInfo.getJSONArray("files");
-		String packageID = packageInfo.getString(PackageKeys.ID.getKey());
-		if (files.length() > 0) {
-			for (int i = 0; i < files.length(); i++) {
-				JSONObject fileInfo = files.getJSONObject(i);
-				String fileName = fileInfo.getString("fileName");
+	public JsonObject calculateChecksums(JsonObject packageInfo) throws JSONException {
+		JsonArray files = packageInfo.getAsJsonArray("files");
+		//JSONArray files = packageInfo.getJSONArray("files");
+		String packageID = packageInfo.get(PackageKeys.ID.getKey()).toString();
+		if (files.size() > 0) {
+			for (int i = 0; i < files.size(); i++) {
+				JsonObject fileInfo = files.get(i).getAsJsonObject();
+				String fileName = fileInfo.get("filename").toString();
 				if (!fileInfo.has("md5checksum")) {
 					String filePath = filePathHelper.getFilePath(packageID, fileName);
 					try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
 						String md5 = DigestUtils.md5Hex(is);
-						fileInfo.put("md5checksum", md5);
-						files.put(i, fileInfo);
+						fileInfo.addProperty("md5checksum", md5);
+						files.remove(i);
+						files.add(fileInfo);
 					} catch (IOException | InvalidPathException e) {
 						logger.logErrorMessage(PackageService.class, null, packageID,
 								PackageService.class.getSimpleName() + ".calculateFileChecksums",
@@ -229,7 +236,8 @@ public class PackageService {
 							zipPackage.format(new Object[] { "Checksum already exists for file " + fileName, packageID }));
 				}
 			}
-			packageInfo.put("files", files);
+			packageInfo.remove("files");
+			packageInfo.add("files", files);
 		} else {
 			logger.logInfoMessage(PackageService.class, null, packageID,
 					PackageService.class.getSimpleName() + ".calculateFileChecksums",
