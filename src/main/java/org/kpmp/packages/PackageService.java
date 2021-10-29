@@ -207,7 +207,7 @@ public class PackageService {
 		JSONObject packageInformation = packageRepository.findOne(packageId);
 		JsonObject gPackageInformation = (JsonObject) JsonParser.parseString(packageInformation.toString());
 		gPackageInformation = calculateChecksums(gPackageInformation);
-		packageRepository.updateField(packageId, "files", gPackageInformation.get("files").getAsJsonArray());
+		packageRepository.updateField(packageId, "files", gPackageInformation.get("files").toString());
 	}
 
 	public JsonObject calculateChecksums(JsonObject packageInfo) throws JSONException {
