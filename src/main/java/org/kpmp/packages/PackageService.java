@@ -202,7 +202,7 @@ public class PackageService {
 	public void calculateAndSaveChecksums(String packageId) throws JSONException {
 		JSONObject packageInformation = packageRepository.findOne(packageId);
 		calculateChecksums(packageInformation);
-		packageRepository.updateField(packageId, "files", packageInformation.getJSONArray("files"));
+		packageRepository.updateField(packageId, "files", packageInformation.getJSONArray("files").toString());
 	}
 
 	public JSONObject calculateChecksums(JSONObject packageInfo) throws JSONException {
