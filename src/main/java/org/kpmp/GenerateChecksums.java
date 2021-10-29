@@ -43,7 +43,7 @@ public class GenerateChecksums implements CommandLineRunner {
             String packageId = packageInfo.getString(PackageKeys.ID.getKey());
             JsonObject gPackageInformation = (JsonObject) JsonParser.parseString(packageInfo.toString());
             JsonObject gPackageInfo = packageService.calculateChecksums(gPackageInformation);
-            customPackageRepository.updateField(packageId, "files", gPackageInfo.get("files").getAsJsonArray());
+            customPackageRepository.updateField(packageId, "files", gPackageInfo.get("files").toString());
         }
     }
 }
