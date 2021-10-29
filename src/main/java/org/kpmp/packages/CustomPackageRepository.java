@@ -112,8 +112,6 @@ public class CustomPackageRepository {
 		return user;
 	}
 
-	// This method will not save any fields that aren't in the Package class and should not be used.
-	@Deprecated
 	public Package save(Package packageInfo) {
 		return repo.save(packageInfo);
 	}
