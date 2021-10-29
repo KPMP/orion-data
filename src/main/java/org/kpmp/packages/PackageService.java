@@ -199,11 +199,11 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
-//	public void calculateAndSaveChecksums(String packageId) {
-//		Package packageInformation = findPackage(packageId);
-//		calculateChecksums(packageInformation);
-//		packageRepository.save(packageInformation);
-//	}
+	public void calculateAndSaveChecksums(String packageId) throws JSONException {
+		JSONObject packageInformation = packageRepository.findOne(packageId);
+		calculateChecksums(packageInformation);
+		packageRepository.updateField(packageId, "files", packageInformation.getJSONArray("files"));
+	}
 
 	public JSONObject calculateChecksums(JSONObject packageInfo) throws JSONException {
 		JSONArray files = packageInfo.getJSONArray("files");
@@ -230,7 +230,6 @@ public class PackageService {
 				}
 			}
 			packageInfo.put("files", files);
-			System.out.println(packageInfo.getJSONArray("files").getJSONObject(0).getString("md5checksum"));
 		} else {
 			logger.logInfoMessage(PackageService.class, null, packageID,
 					PackageService.class.getSimpleName() + ".calculateFileChecksums",
