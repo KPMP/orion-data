@@ -41,7 +41,6 @@ dependencies {
 	compile 'org.springframework.boot:spring-boot-starter-test'
 	testCompile 'org.mockito:mockito-core'
 	testCompile 'org.springframework.boot:spring-boot-starter-test:2.2.0.RELEASE'
-	implementation 'com.google.code.gson:gson:2.8.8'
 }
 
 springBoot {

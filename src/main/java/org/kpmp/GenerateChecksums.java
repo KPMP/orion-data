@@ -1,16 +1,8 @@
 package org.kpmp;
 
-import com.google.api.client.json.Json;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mongodb.client.MongoCollection;
-import org.bson.Document;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.kpmp.packages.Attachment;
 import org.kpmp.packages.CustomPackageRepository;
 import org.kpmp.packages.Package;
-import org.kpmp.packages.PackageKeys;
 import org.kpmp.packages.PackageRepository;
 import org.kpmp.packages.PackageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +30,7 @@ public class GenerateChecksums implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         List<Package> packages = packageRepository.findAll();
         for (Package myPackage: packages) {
             List<Attachment> files = packageService.calculateChecksums(myPackage);

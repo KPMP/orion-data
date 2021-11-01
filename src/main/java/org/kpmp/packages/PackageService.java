@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.kpmp.externalProcess.CommandBuilder;
@@ -199,13 +198,13 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
-	public void calculateAndSaveChecksums(String packageId) throws JSONException {
+	public void calculateAndSaveChecksums(String packageId) {
 		Package myPackage = packageRepository.findByPackageId(packageId);
 		List<Attachment> updatedFiles = calculateChecksums(myPackage);
 		packageRepository.updateField(packageId, "files", updatedFiles);
 	}
 
-	public List<Attachment> calculateChecksums(Package myPackage) throws JSONException {
+	public List<Attachment> calculateChecksums(Package myPackage) {
 		List<Attachment> files = myPackage.getAttachments();
 		String packageID = myPackage.getPackageId();
 		if (files.size() > 0) {
