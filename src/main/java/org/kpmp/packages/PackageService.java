@@ -203,6 +203,7 @@ public class PackageService {
 		JSONObject packageInformation = packageRepository.findOne(packageId);
 		packageInformation = calculateChecksums(packageInformation);
 		//packageRepository.updateField(packageId, "files", packageInformation.getJSONArray("files"));
+		System.out.println(packageInformation.getJSONArray("files").toString());
 		packageRepository.save(packageId, packageInformation);
 	}
 

@@ -118,11 +118,11 @@ public class CustomPackageRepository {
 	}
 
 	public void save(String packageID, JSONObject jsonObject) {
-		Query updateQuery = new Query(Criteria.where(PackageKeys.ID.getKey()).is(packageID));
 		String packageString = jsonObject.toString();
+		Document query = Document.parse("{_id: \"" + packageID + "\"}");
 		Document document = Document.parse(packageString);
 		MongoCollection<Document> collection = mongoTemplate.getCollection(PACKAGES_COLLECTION);
-		collection.insertOne(document);
+		collection.updateOne(query, document);
 	}
 
 	public void updateField(String id, String fieldName, Object value) {
