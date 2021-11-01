@@ -204,8 +204,9 @@ public class PackageService {
 		packageInformation = calculateChecksums(packageInformation);
 		//packageRepository.updateField(packageId, "files", packageInformation.getJSONArray("files"));
 		System.out.println(packageInformation.getJSONArray("files").toString());
-		packageRepository.delete(packageId);
-		packageRepository.save(packageId, packageInformation);
+//		packageRepository.delete(packageId);
+//		packageRepository.save(packageId, packageInformation);
+		packageRepository.updateFiles(packageInformation.getJSONArray("files"), packageId);
 	}
 
 	public JSONObject calculateChecksums(JSONObject packageInfo) throws JSONException {

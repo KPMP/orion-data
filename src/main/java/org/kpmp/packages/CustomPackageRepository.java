@@ -138,6 +138,13 @@ public class CustomPackageRepository {
 		mongoTemplate.updateFirst(updateQuery, fieldUpdate, PACKAGES_COLLECTION);
 	}
 
+	public void updateFiles(JSONArray fieldValue, String packageID) {
+		Query updateQuery = new Query(Criteria.where(PackageKeys.ID.getKey()).is(packageID));
+		Update fieldUpdate = new Update();
+		fieldUpdate.push("files", fieldValue);
+		mongoTemplate.updateFirst(updateQuery, fieldUpdate, PACKAGES_COLLECTION);
+	}
+
 	@Cacheable(value = "packages")
 	public List<JSONObject> findAll() throws JSONException, JsonProcessingException {
 		Query query = new Query();
