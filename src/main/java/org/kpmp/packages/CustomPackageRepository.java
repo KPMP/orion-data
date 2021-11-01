@@ -112,8 +112,17 @@ public class CustomPackageRepository {
 		return user;
 	}
 
+	@Deprecated
 	public Package save(Package packageInfo) {
 		return repo.save(packageInfo);
+	}
+
+	public void save(String packageID, JSONObject jsonObject) {
+		Query updateQuery = new Query(Criteria.where(PackageKeys.ID.getKey()).is(packageID));
+		String packageString = jsonObject.toString();
+		Document document = Document.parse(packageString);
+		MongoCollection<Document> collection = mongoTemplate.getCollection(PACKAGES_COLLECTION);
+		collection.insertOne(document);
 	}
 
 	public void updateField(String id, String fieldName, Object value) {
