@@ -213,7 +213,7 @@ public class PackageService {
 		String packageID = myPackage.getPackageId();
 		if (files.size() > 0) {
 			for (Attachment file : files) {
-				if (file.getMd5checksum() != null) {
+				if (file.getMd5checksum() == null) {
 					String filePath = filePathHelper.getFilePath(packageID, file.getFileName());
 					try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
 						String md5 = DigestUtils.md5Hex(is);
