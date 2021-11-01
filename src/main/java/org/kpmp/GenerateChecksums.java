@@ -41,9 +41,9 @@ public class GenerateChecksums implements CommandLineRunner {
         List<JSONObject> jsonPackages = customPackageRepository.findAll();
         for (JSONObject packageInfo : jsonPackages) {
             String packageId = packageInfo.getString(PackageKeys.ID.getKey());
-            packageInfo = packageService.calculateChecksums(packageInfo);
-            customPackageRepository.delete(packageId);
-            customPackageRepository.save(packageId, packageInfo);
+//            //packageInfo = packageService.calculateChecksums(packageInfo);
+//            //customPackageRepository.delete(packageId);
+//            customPackageRepository.save(packageId, packageInfo);
         }
     }
 }
