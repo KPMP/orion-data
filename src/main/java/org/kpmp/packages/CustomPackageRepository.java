@@ -125,6 +125,12 @@ public class CustomPackageRepository {
 		collection.updateOne(query, document);
 	}
 
+	public void delete(String packageID) {
+		Document query = Document.parse("{_id: \"" + packageID + "\"}");
+		MongoCollection<Document> collection = mongoTemplate.getCollection(PACKAGES_COLLECTION);
+		collection.deleteOne(query);
+	}
+
 	public void updateField(String id, String fieldName, Object value) {
 		Query updateQuery = new Query(Criteria.where(PackageKeys.ID.getKey()).is(id));
 		Update fieldUpdate = new Update();
