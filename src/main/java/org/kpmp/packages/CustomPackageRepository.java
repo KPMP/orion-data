@@ -116,35 +116,11 @@ public class CustomPackageRepository {
 	public Package save(Package packageInfo) {
 		return repo.save(packageInfo);
 	}
-
-	public void save(String packageID, JSONObject jsonObject) {
-		String packageString = jsonObject.toString();
-		Document query = Document.parse("{_id: \"" + packageID + "\"}");
-		Document document = Document.parse(packageString);
-		MongoCollection<Document> collection = mongoTemplate.getCollection(PACKAGES_COLLECTION);
-		collection.updateOne(query, document);
-	}
-
-	public void delete(String packageID) {
-		Document query = Document.parse("{_id: \"" + packageID + "\"}");
-		MongoCollection<Document> collection = mongoTemplate.getCollection(PACKAGES_COLLECTION);
-		collection.deleteOne(query);
-	}
-
+	
 	public void updateField(String id, String fieldName, Object value) {
 		Query updateQuery = new Query(Criteria.where(PackageKeys.ID.getKey()).is(id));
 		Update fieldUpdate = new Update();
 		fieldUpdate.set(fieldName, value);
-		mongoTemplate.updateFirst(updateQuery, fieldUpdate, PACKAGES_COLLECTION);
-	}
-
-	public void updateFiles(JSONArray fieldValue, String packageID) {
-		List files = new ArrayList();
-		files.add("blah");
-		files.add("blah2");
-		Query updateQuery = new Query(Criteria.where(PackageKeys.ID.getKey()).is(packageID));
-		Update fieldUpdate = new Update();
-		fieldUpdate.push("files", files);
 		mongoTemplate.updateFirst(updateQuery, fieldUpdate, PACKAGES_COLLECTION);
 	}
 
