@@ -198,27 +198,22 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
-	public void calculateAndSaveChecksums(String packageId) {
+	public void calculateAndSaveChecksums(String packageId) throws IOException {
 		Package myPackage = packageRepository.findByPackageId(packageId);
 		List<Attachment> updatedFiles = calculateChecksums(myPackage);
 		packageRepository.updateField(packageId, "files", updatedFiles);
 	}
 
-	public List<Attachment> calculateChecksums(Package myPackage) {
+	public List<Attachment> calculateChecksums(Package myPackage) throws IOException {
 		List<Attachment> files = myPackage.getAttachments();
 		String packageID = myPackage.getPackageId();
 		if (files.size() > 0) {
 			for (Attachment file : files) {
 				if (file.getMd5checksum() == null) {
 					String filePath = filePathHelper.getFilePath(packageID, file.getFileName());
-					try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
-						String md5 = DigestUtils.md5Hex(is);
-						file.setMd5checksum(md5);
-					} catch (IOException | InvalidPathException e) {
-						logger.logErrorMessage(PackageService.class, null, packageID,
-								PackageService.class.getSimpleName() + ".calculateFileChecksums",
-								"There was a problem calculating the checksum for file " + filePath + ": " + e.getMessage());
-					}
+					InputStream is = Files.newInputStream(Paths.get(filePath)))
+					String md5 = DigestUtils.md5Hex(is);
+					file.setMd5checksum(md5);
 				} else {
 					logger.logInfoMessage(PackageService.class, null, packageID,
 							PackageService.class.getSimpleName() + ".calculateFileChecksums",
