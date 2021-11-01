@@ -211,7 +211,7 @@ public class PackageService {
 			for (Attachment file : files) {
 				if (file.getMd5checksum() == null) {
 					String filePath = filePathHelper.getFilePath(packageID, file.getFileName());
-					InputStream is = Files.newInputStream(Paths.get(filePath)))
+					InputStream is = Files.newInputStream(Paths.get(filePath));
 					String md5 = DigestUtils.md5Hex(is);
 					file.setMd5checksum(md5);
 				} else {
