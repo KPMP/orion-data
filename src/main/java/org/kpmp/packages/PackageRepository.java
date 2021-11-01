@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PackageRepository extends MongoRepository<Package, String> {
 
+	@Deprecated
 	@SuppressWarnings("unchecked")
 	public Package save(Package packageInfo);
 
