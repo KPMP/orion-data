@@ -7,6 +7,7 @@ import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.kpmp.packages.Attachment;
 import org.kpmp.packages.CustomPackageRepository;
 import org.kpmp.packages.Package;
 import org.kpmp.packages.PackageKeys;
@@ -38,12 +39,10 @@ public class GenerateChecksums implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        List<JSONObject> jsonPackages = customPackageRepository.findAll();
-        for (JSONObject packageInfo : jsonPackages) {
-            String packageId = packageInfo.getString(PackageKeys.ID.getKey());
-//            //packageInfo = packageService.calculateChecksums(packageInfo);
-//            //customPackageRepository.delete(packageId);
-//            customPackageRepository.save(packageId, packageInfo);
+        List<Package> packages = packageRepository.findAll();
+        for (Package myPackage: packages) {
+            List<Attachment> files = packageService.calculateChecksums(myPackage);
+            customPackageRepository.updateField(myPackage.getPackageId(), "files", files);
         }
     }
 }
