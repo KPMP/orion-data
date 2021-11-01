@@ -139,9 +139,12 @@ public class CustomPackageRepository {
 	}
 
 	public void updateFiles(JSONArray fieldValue, String packageID) {
+		List files = new ArrayList();
+		files.add("blah");
+		files.add("blah2");
 		Query updateQuery = new Query(Criteria.where(PackageKeys.ID.getKey()).is(packageID));
 		Update fieldUpdate = new Update();
-		fieldUpdate.push("files", fieldValue);
+		fieldUpdate.push("files", files);
 		mongoTemplate.updateFirst(updateQuery, fieldUpdate, PACKAGES_COLLECTION);
 	}
 
