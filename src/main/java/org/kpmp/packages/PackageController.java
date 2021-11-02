@@ -168,13 +168,22 @@ public class PackageController {
 		if (packageService.validatePackageForZipping(packageId, shibUserService.getUser(request))) {
 			try {
 				packageService.calculateAndSaveChecksums(packageId);
-				packageService.createZipFile(packageId, cleanHostName, shibUserService.getUser(request));
 				fileUploadResponse = new FileUploadResponse(true);
+			} catch (Exception e) {
+				String errorMessage = finish
+						.format(new Object[] { "There was a problem calculating the checksum for package ", packageId });
+				logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
+				fileUploadResponse = new FileUploadResponse(false);
+				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
+			}
+			try {
+				packageService.createZipFile(packageId, cleanHostName, shibUserService.getUser(request));
+				fileUploadResponse.setSuccess(true);
 			} catch (Exception e) {
 				String errorMessage = finish
 						.format(new Object[] { "error getting metadata for package id: ", packageId });
 				logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
-				fileUploadResponse = new FileUploadResponse(false);
+				fileUploadResponse.setSuccess(false);
 				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
 			}
 		} else {

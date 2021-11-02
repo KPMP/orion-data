@@ -112,6 +112,7 @@ public class CustomPackageRepository {
 		return user;
 	}
 
+	@Deprecated
 	public Package save(Package packageInfo) {
 		return repo.save(packageInfo);
 	}
