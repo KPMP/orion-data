@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -17,8 +18,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.kpmp.externalProcess.CommandBuilder;
@@ -197,25 +203,50 @@ public class PackageService {
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
-	public void calculateAndSaveChecksums(String packageId) {
-		Package packageInformation = findPackage(packageId);
-		calculateChecksums(packageInformation);
-		packageRepository.save(packageInformation);
+	public void calculateAndSaveChecksums(String packageId) throws JSONException {
+		JSONObject packageInformation = packageRepository.findOne(packageId);
+		JsonObject gPackageInformation = (JsonObject) JsonParser.parseString(packageInformation.toString());
+		gPackageInformation = calculateChecksums(gPackageInformation);
+		packageRepository.updateField(packageId, "files", gPackageInformation.get("files").toString());
 	}
 
-	protected void calculateChecksums(Package myPackage) {
-		for (Attachment attachment: myPackage.getAttachments()) {
-			String filePath = filePathHelper.getFilePath(myPackage.getPackageId(), attachment.getFileName());
-			try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
-				String md5 = DigestUtils.md5Hex(is);
-				attachment.setMd5checksum(md5);
-			} catch (IOException e) {
-				logger.logErrorMessage(PackageService.class, null, myPackage.getPackageId(),
-						PackageService.class.getSimpleName() + ".calculateFileChecksums",
-						"There was a problem calculating the checksum for file " + filePath + ": " + e.getMessage());
+	public JsonObject calculateChecksums(JsonObject packageInfo) throws JSONException {
+		JsonArray files = packageInfo.getAsJsonArray("files");
+		//JSONArray files = packageInfo.getJSONArray("files");
+		String packageID = packageInfo.get(PackageKeys.ID.getKey()).toString();
+		if (files.size() > 0) {
+			for (int i = 0; i < files.size(); i++) {
+				JsonObject fileInfo = files.get(i).getAsJsonObject();
+				String fileName = fileInfo.get("fileName").toString();
+				if (!fileInfo.has("md5checksum")) {
+					String filePath = filePathHelper.getFilePath(packageID, fileName);
+					try (InputStream is = Files.newInputStream(Paths.get(filePath))) {
+						String md5 = DigestUtils.md5Hex(is);
+						fileInfo.addProperty("md5checksum", md5);
+						files.remove(i);
+						files.add(fileInfo);
+					} catch (IOException | InvalidPathException e) {
+						logger.logErrorMessage(PackageService.class, null, packageID,
+								PackageService.class.getSimpleName() + ".calculateFileChecksums",
+								"There was a problem calculating the checksum for file " + filePath + ": " + e.getMessage());
+					}
+				} else {
+					logger.logInfoMessage(PackageService.class, null, packageID,
+							PackageService.class.getSimpleName() + ".calculateFileChecksums",
+							zipPackage.format(new Object[] { "Checksum already exists for file " + fileName, packageID }));
+				}
 			}
+			packageInfo.remove("files");
+			packageInfo.add("files", files);
+		} else {
+			logger.logInfoMessage(PackageService.class, null, packageID,
+					PackageService.class.getSimpleName() + ".calculateFileChecksums",
+					zipPackage.format(new Object[] { "No files found in this package", packageID }));
 		}
+		return packageInfo;
 	}
+
+
 
 	@CacheEvict(value = "packages", allEntries = true)
 	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String origin) {

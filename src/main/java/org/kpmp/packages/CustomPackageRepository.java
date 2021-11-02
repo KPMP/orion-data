@@ -143,6 +143,23 @@ public class CustomPackageRepository {
 		return jsons;
 	}
 
+	public JSONObject findOne(String packageId) throws JSONException {
+		BasicDBObject query = new BasicDBObject();
+		query.put(PackageKeys.ID.getKey(), packageId);
+
+		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
+		DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
+
+		MongoDatabase db = mongoTemplate.getDb();
+		MongoCollection<Document> collection = db.getCollection(PACKAGES_COLLECTION);
+
+		Document document = collection.find(query).first();
+		JsonWriterSettings settings = jsonSettings.getSettings();
+		String json = document.toJson(settings, codec);
+		JSONObject jsonObject = new JSONObject(json);
+		return jsonObject;
+	}
+
 	public String getJSONByPackageId(String packageId) throws JSONException, JsonProcessingException {
 
 		BasicDBObject query = new BasicDBObject();
