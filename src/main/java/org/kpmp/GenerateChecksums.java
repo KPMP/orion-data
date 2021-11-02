@@ -44,7 +44,6 @@ public class GenerateChecksums implements CommandLineRunner {
                 logger.logErrorMessage(PackageService.class, null, packageID,
                         PackageService.class.getSimpleName() + ".calculateFileChecksums", "There was a problem calculating the checksum for package " + packageID + ": " + e.getMessage());
             }
-
         }
     }
 }
