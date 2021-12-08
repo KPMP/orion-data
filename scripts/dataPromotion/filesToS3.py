@@ -95,7 +95,8 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
                 minio_client.fput_object(destination_bucket, object_name, file_path)
                 update_count = update_count + 1
                 insert_sql = "INSERT INTO moved_files (file_name) VALUES (%s)"
-                cursor2.execute(insert_sql, (file_name))
+                cursor2.execute(insert_sql, (file_name,))
+
             except ResponseError as err:
                 print(err)
                 pass
@@ -103,5 +104,6 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
     else:
         print("No file name in record.")
     print("\n")
-
+mydb.commit()
+mydb.close()
 print(str(update_count) + " files moved")
