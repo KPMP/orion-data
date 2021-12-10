@@ -2,6 +2,7 @@ import pymongo
 import mysql.connector
 from dotenv import load_dotenv
 import os
+import sys
 import csv
 import json
 
@@ -9,7 +10,7 @@ load_dotenv()
 
 mysql_user = os.environ.get('mysql_user')
 mysql_pwd = os.environ.get('mysql_pwd')
-EXPRESSION_MATRIX_METADATA_TYPES = [4,21]
+EXPRESSION_MATRIX_METADATA_TYPES = [4,21,7]
 cursor = None
 
 try:
@@ -23,6 +24,7 @@ try:
     cursor1 = mydb.cursor(buffered=True)
     cursor2 = mydb.cursor(buffered=True)
     cursor3 = mydb.cursor(buffered=True)
+    cursor4 = mydb.cursor(buffered=True)
 except:
     print("Can't connect to MySQL")
     print("Make sure you have tunnel open to the KE database, e.g.")
@@ -33,6 +35,7 @@ try:
     mongo_client = pymongo.MongoClient("mongodb://localhost:27017/", serverSelectionTimeoutMS=5000)
     database = mongo_client["dataLake"]
     packages = database["packages"]
+    files = database["files"]
 except:
     print("Can't connect to Mongo")
     os.sys.exit()
@@ -49,29 +52,42 @@ for (package_id, file_name, protocol, metadata_type_id, participant_id, release_
         file_size = 0
     else:
         result = packages.find_one({ "_id": package_id, "files.fileName": file_name}, {"files.$":1})
-        new_file_name = result["files"][0]["_id"] + "_" + file_name
-        file_size = result["files"][0]["size"]
-        file_id = result["files"][0]["_id"]
+        if result.count() == 0:
+            print("File not found in packages collection. Looking in files collection . . . ")
+            result = files.find_one({ "packageId": package_id, "fileName": file_name})
+        if result.count > 0:
+            new_file_name = result["files"][0]["_id"] + "_" + file_name
+            file_size = result["files"][0]["size"]
+            file_id = result["files"][0]["_id"]
+        else:
+            print("File " + file_name  + " in package " + + " was not found. Exiting.")
+            sys.exit()
 
-    val = (file_id, new_file_name, package_id, file_size, protocol, metadata_type_id, release_ver)
-    update_count = update_count + 1
-    print(insert_sql % val)
-    cursor2.execute(insert_sql, val)
-    new_file_id = cursor2.lastrowid
-    print(cursor2.fetchwarnings())
+    file_exists_sql = "SELECT file_id FROM files WHERE dl_file_id = %s"
+    cursor4.execute(file_exists_sql, (file_id,))
 
-    for (p_id) in participant_array:
-        find_p_sql = "SELECT participant_id FROM participant WHERE redcap_id = %s"
-        cursor3.execute(find_p_sql, (p_id,))
-        (p_internal_id,) = cursor3.fetchone()
-        sql2 = "INSERT IGNORE INTO file_participant (file_id, participant_id) VALUES (%s, %s)"
-        val2 = (new_file_id, p_internal_id)
-        print(sql2 % val2)
-        cursor2.execute(sql2, val2)
-        warning = cursor2.fetchwarnings()
-        if warning is not None:
-            print(warning)
-    mydb.commit()
+    if cursor4.rowcount == 0:
+        val = (file_id, new_file_name, package_id, file_size, protocol, metadata_type_id, release_ver)
+        update_count = update_count + 1
+        print(insert_sql % val)
+        cursor2.execute(insert_sql, val)
+        new_file_id = cursor2.lastrowid
+        print(cursor2.fetchwarnings())
+
+        for (p_id) in participant_array:
+            find_p_sql = "SELECT participant_id FROM participant WHERE redcap_id = %s"
+            cursor3.execute(find_p_sql, (p_id,))
+            (p_internal_id,) = cursor3.fetchone()
+            sql2 = "INSERT IGNORE INTO file_participant (file_id, participant_id) VALUES (%s, %s)"
+            val2 = (new_file_id, p_internal_id)
+            print(sql2 % val2)
+            cursor2.execute(sql2, val2)
+            warning = cursor2.fetchwarnings()
+            if warning is not None:
+                print(warning)
+        mydb.commit()
+    else:
+        print("File " + new_file_name + " already exists. Skipping")
 
 print(str(update_count) + " files inserted")
 
