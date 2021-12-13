@@ -52,9 +52,9 @@ for (package_id, file_name, protocol, metadata_type_id, participant_id, release_
         file_size = 0
     else:
         result = packages.find_one({ "_id": package_id, "files.fileName": file_name}, {"files.$":1})
+        resultFile = files.find_one({ "packageId": package_id, "fileName": file_name})
         if result is None:
             print("File " + file_name + " in package " + package_id + "not found in packages collection. Looking in files collection . . . ")
-            resultFile = files.find_one({ "packageId": package_id, "fileName": file_name})
         else:
             new_file_name = result["files"][0]["_id"] + "_" + file_name
             file_size = result["files"][0]["size"]
