@@ -62,9 +62,9 @@ for (package_id, file_name, protocol, metadata_type_id, participant_id, release_
             file_id = result["files"][0]["_id"]
         if resultFile is not None:
             new_file_name = resultFile["_id"] + "_" + file_name
-            file_size = resultFile["size"]
+            file_size = resultFile["fileSize"]
             file_id = resultFile["_id"]
-        else:
+        if new_file_name is None:
             print("File " + file_name  + " in package " + package_id + " was not found. Exiting.")
             sys.exit()
 
@@ -80,6 +80,7 @@ for (package_id, file_name, protocol, metadata_type_id, participant_id, release_
         print(cursor2.fetchwarnings())
 
         for (p_id) in participant_array:
+            p_id = p_id.strip()
             find_p_sql = "SELECT participant_id FROM participant WHERE redcap_id = %s"
             cursor3.execute(find_p_sql, (p_id,))
             (p_internal_id,) = cursor3.fetchone()
