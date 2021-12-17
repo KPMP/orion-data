@@ -96,7 +96,7 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
                 update_count = update_count + 1
                 insert_sql = "INSERT INTO moved_files (file_name) VALUES (%s)"
                 cursor2.execute(insert_sql, (file_name,))
-
+                mydb.commit()
             except ResponseError as err:
                 print(err)
                 pass
