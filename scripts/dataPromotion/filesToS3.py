@@ -76,7 +76,7 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
             source_object = source_bucket + "/package_" + package_id + "/" + original_file_name
             print("File not found locally. Trying S3: " + source_object)
             try:
-                command_string = "aws s3 cp s3://" + source_object + " s3://" + destination_bucket + "/" + object_name
+                command_string = 'aws s3 cp "s3://' + source_object + '" "s3://' + destination_bucket + '/' + object_name + '"'
                 os.system(command_string)
                 update_count = update_count + 1
             except:
@@ -85,7 +85,7 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
         else:
             try:
                 print("Moving " + object_name)
-                command_string = "aws s3 cp " + file_path + " s3://" + destination_bucket + "/" + object_name
+                command_string = 'aws s3 cp "' + file_path + '" s3://' + destination_bucket + '/' + object_name + '"'
                 response = os.system(command_string)
                 if(response != 0):
                     raise Exception("Failed to upload file " + file_path + " onto s3 bucket " + destination_bucket + "/" + object_name)
