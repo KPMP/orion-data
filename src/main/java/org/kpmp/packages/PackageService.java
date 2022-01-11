@@ -2,6 +2,8 @@ package org.kpmp.packages;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -15,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -193,6 +196,38 @@ public class PackageService {
 		return checkFilesExist(filesOnDisk, filesInPackage, packageId, user)
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
+
+	public void calculateAndSaveChecksums(String packageId) throws IOException {
+		Package myPackage = packageRepository.findByPackageId(packageId);
+		List<Attachment> updatedFiles = calculateChecksums(myPackage);
+		packageRepository.updateField(packageId, "files", updatedFiles);
+	}
+
+	public List<Attachment> calculateChecksums(Package myPackage) throws IOException {
+		List<Attachment> files = myPackage.getAttachments();
+		String packageID = myPackage.getPackageId();
+		if (files.size() > 0) {
+			for (Attachment file : files) {
+				if (file.getMd5checksum() == null) {
+					String filePath = filePathHelper.getFilePath(packageID, file.getFileName());
+					InputStream is = Files.newInputStream(Paths.get(filePath));
+					String md5 = DigestUtils.md5Hex(is);
+					file.setMd5checksum(md5);
+				} else {
+					logger.logInfoMessage(PackageService.class, null, packageID,
+							PackageService.class.getSimpleName() + ".calculateFileChecksums",
+							zipPackage.format(new Object[] { "Checksum already exists for file " + file.getFileName(), packageID }));
+				}
+			}
+		} else {
+			logger.logInfoMessage(PackageService.class, null, packageID,
+					PackageService.class.getSimpleName() + ".calculateFileChecksums",
+					zipPackage.format(new Object[] { "No files found in this package", packageID }));
+		}
+		return files;
+	}
+
+
 
 	@CacheEvict(value = "packages", allEntries = true)
 	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String origin) {

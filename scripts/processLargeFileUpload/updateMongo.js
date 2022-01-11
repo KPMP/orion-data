@@ -1,4 +1,5 @@
 const MongoClient = require("mongodb").MongoClient;
+const md5File = require('md5-file');
 const assert = require("assert");
 const filesystem = require("fs");
 const path = require("path");
@@ -43,6 +44,7 @@ MongoClient.connect(url, { useUnifiedTopology: true, "forceServerObjectId" : tru
 		fileInfo.fileName= file;
 		fileInfo.size=stats["size"];
 		fileInfo._id = uuidGenerator();
+		fileInfo.md5checksum = md5File.sync(filePath);
 		fileInfos.push(fileInfo);
 	});
 	
