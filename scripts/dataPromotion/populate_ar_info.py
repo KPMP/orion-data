@@ -2,7 +2,6 @@ import mysql.connector
 from dotenv import load_dotenv
 import os
 
-
 load_dotenv()
 
 mysql_user = os.environ.get('mysql_user')
@@ -31,9 +30,8 @@ cursor1.execute(query)
 
 for (file_id, release_ver, release_sunset) in cursor1:
     print(file_id, release_ver, release_sunset)
-    insert_sql = "INSERT INTO ar_file_info (file_id, release_version, release_sunset_version) VALUES (%s)"
-    cursor2.execute(insert_sql, (file_id, release_ver, release_sunset))
+    insert_sql = "INSERT INTO ar_file_info (file_id, release_version, release_sunset_version) VALUES (%s, %s, %s)"
+    cursor2.execute(insert_sql, (file_id, release_ver, release_sunset,))
 
 mydb.commit()
 mydb.close()
-
