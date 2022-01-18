@@ -56,7 +56,7 @@ cursor1.execute(query)
 update_count = 0
 for (package_id, file_name, protocol, metadata_type_id, participant_id, release_ver, use_spatial_viewer, config_type) in cursor1:
     participant_array = participant_id.split(",")
-    insert_sql = "INSERT IGNORE INTO file (dl_file_id, file_name, package_id, file_size, protocol, metadata_type_id, release_ver, use_spatial_viewer, config_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    insert_sql = "INSERT IGNORE INTO file (dl_file_id, file_name, package_id, file_size, protocol, metadata_type_id, release_ver) VALUES (%s, %s, %s, %s, %s, %s, %s)"
     if metadata_type_id in EXPRESSION_MATRIX_METADATA_TYPES:
         new_file_name = package_id + "_expression_matrix.zip"
         file_id = package_id
@@ -83,7 +83,7 @@ for (package_id, file_name, protocol, metadata_type_id, participant_id, release_
     cursor4.execute(file_exists_sql, (file_id,))
 
     if cursor4.rowcount == 0:
-        val = (file_id, new_file_name, package_id, file_size, protocol, metadata_type_id, release_ver, use_spatial_viewer, config_type)
+        val = (file_id, new_file_name, package_id, int(file_size), protocol, metadata_type_id, release_ver)
         update_count = update_count + 1
         print(insert_sql % val)
         cursor2.execute(insert_sql, val)
@@ -107,7 +107,7 @@ for (package_id, file_name, protocol, metadata_type_id, participant_id, release_
 
         mydb.commit()
     else:
-        print("File " + new_file_name + " already exists. Skipping")
+        print("File " + new_file_name + " for package " + package_id + " already exists. Skipping")
 
 print(str(update_count) + " files inserted")
 
