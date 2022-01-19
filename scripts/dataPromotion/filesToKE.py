@@ -68,11 +68,17 @@ for (package_id, file_name, protocol, metadata_type_id, participant_id, release_
             print("File " + file_name + " in package " + package_id + "not found in packages collection. Looking in files collection . . . ")
             resultFile = files.find_one({ "packageId": package_id, "fileName": file_name})
         else:
-            new_file_name = result["files"][0]["_id"] + "_" + file_name
+            if(use_spatial_viewer):
+                new_file_name = file_name.replace('.tif (RGB).tif', '_RGB-ome.tif')
+            else:
+                new_file_name = result["files"][0]["_id"] + "_" + file_name
             file_size = result["files"][0]["size"]
             file_id = result["files"][0]["_id"]
         if resultFile is not None:
-            new_file_name = resultFile["_id"] + "_" + file_name
+            if(use_spatial_viewer):
+                new_file_name = file_name.replace('.tif (RGB).tif', '_RGB-ome.tif')
+            else:
+                new_file_name = resultFile["_id"] + "_" + file_name
             file_size = resultFile["fileSize"]
             file_id = resultFile["_id"]
         if new_file_name is None:
