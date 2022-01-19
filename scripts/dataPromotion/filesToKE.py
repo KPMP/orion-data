@@ -16,6 +16,15 @@ def insertIntoSpatialViewerInfo(spatialViewerInfoInsertCursor, use_spatial_viewe
     else:
         pass
 
+def getSpatialViewerFilename(fileName):
+    newFileName = fileName
+    if('.tif (RGB).tif' in fileName):
+        newFileName = file_name.replace('.tif (RGB).tif', '_RGB-ome.tif')
+    else:
+        newFileName = file_name.replace('.tif', '-ome.tif')
+    return newFileName
+
+
 load_dotenv()
 
 mysql_user = os.environ.get('mysql_user')
@@ -69,14 +78,14 @@ for (package_id, file_name, protocol, metadata_type_id, participant_id, release_
             resultFile = files.find_one({ "packageId": package_id, "fileName": file_name})
         else:
             if(use_spatial_viewer):
-                new_file_name = file_name.replace('.tif (RGB).tif', '_RGB-ome.tif')
+                new_file_name = getSpatialViewerFilename(file_name)
             else:
                 new_file_name = result["files"][0]["_id"] + "_" + file_name
             file_size = result["files"][0]["size"]
             file_id = result["files"][0]["_id"]
         if resultFile is not None:
             if(use_spatial_viewer):
-                new_file_name = file_name.replace('.tif (RGB).tif', '_RGB-ome.tif')
+                new_file_name = getSpatialViewerFilename(file_name)
             else:
                 new_file_name = resultFile["_id"] + "_" + file_name
             file_size = resultFile["fileSize"]
