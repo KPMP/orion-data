@@ -25,6 +25,31 @@ def getSpatialViewerFilename(fileName):
     return newFileName
 
 
+def insertIntoSample(sampleCursor, participant_id, spectrack_id, parent_sample_id):
+    insert_sample_sql = "INSERT IGNORE INTO sample (participant_id, spectrack_id, parent_sample_id) VALUES (%s,%s,%s)"
+    sampleCursor.execute(insert_sample_sql, (participant_id, spectrack_id, parent_sample_id,))
+
+def getSampleId(sampleCursor, participant_id, spectrack_id, parent_sample_id):
+    get_sample_sql = "SELECT sample_id FROM sample WHERE participant_id=%s and spectrack_id=%s and parent_sample_id=%s"
+    sampleCursor.execute(get_sample_sql, (participant_id, spectrack_id, parent_sample_id))
+
+def insertIntoFileSample(fileSampleCursor, file_id, sample_id):
+    sample_file_sql = "INSERT IGNORE INTO sample_file (file_id, sample_id) VALUES (%s,%s)"
+    fileSampleCursor.execute(sample_file_sql, (file_id,sample_id,))
+
+
+def insertSampleMetadata(metadataCursor, sample_id, sample_metadata_property_name, sample_metadata_value):
+    metadata_property_sql = "INSERT IGNORE INTO sample_metadata_property (sample_metadata_value) VALUES (%s)"
+    metadataCursor.execute(metadata_property_sql, (sample_metadata_property_name,))
+
+    sample_metadata_property_id = ''
+    metadata_value_sql = "INSERT IGNORE INTO sample_metadata_value (sample_metadata_property_id, sample_id, sample_metadata_value) VALUES (%s, %s,%s)"
+    metadataCursor.execute(metadata_value_sql, (sample_metadata_property_id, sample_id, sample_metadata_value,))
+
+
+
+
+
 load_dotenv()
 
 mysql_user = os.environ.get('mysql_user')
@@ -45,6 +70,9 @@ try:
     cursor3 = mydb.cursor(buffered=True)
     cursor4 = mydb.cursor(buffered=True)
     cursor5 = mydb.cursor(buffered=True)
+    cursor6 = mydb.cursor(buffered=True)
+    cursor7 = mydb.cursor(buffered=True)
+    cursor8 = mydb.cursor(buffered=True)
 except:
     print("Can't connect to MySQL")
     print("Make sure you have tunnel open to the KE database, e.g.")
@@ -63,7 +91,7 @@ except:
 query = ("SELECT * FROM file_pending")
 cursor1.execute(query)
 update_count = 0
-for (package_id, file_name, protocol, metadata_type_id, participant_id, release_ver, use_spatial_viewer, config_type) in cursor1:
+for (package_id, file_name, protocol, metadata_type_id, participant_id, release_ver, use_atlas_repository, use_spatial_viewer, config_type) in cursor1:
     participant_array = participant_id.split(",")
     insert_sql = "INSERT IGNORE INTO file (dl_file_id, file_name, package_id, file_size, protocol, metadata_type_id, release_ver) VALUES (%s, %s, %s, %s, %s, %s, %s)"
     if metadata_type_id in EXPRESSION_MATRIX_METADATA_TYPES:
@@ -119,7 +147,12 @@ for (package_id, file_name, protocol, metadata_type_id, participant_id, release_
                 print(warning)
 
         insertIntoSpatialViewerInfo(cursor5, use_spatial_viewer, config_type, new_file_id, metadata_type_id)
-
+        insertIntoSample(cursor6, participant_id, None, None) # todo, need to get spectrack_id and parent_sample_id from somewhere
+        sample_id = getSampleId(cursor6, participant_id, None, None) # todo, need to get spectrack_id and parent_sample_id from somewhere
+        
+        insertIntoFileSample(cursor7, file_id, sample_id)
+        # todo, need to get metadata from somewhere
+        # insertSampleMetadata(cursor8, sample_id, sample_metadata_property_name, sample_metadata_value)
         mydb.commit()
     else:
         print("File " + new_file_name + " for package " + package_id + " already exists. Skipping")
