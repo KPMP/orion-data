@@ -1,11 +1,14 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 from minio import Minio
 from minio.error import (ResponseError)
 from dotenv import load_dotenv
 import os
-from collections import OrderedDict
 import mysql.connector
 from argparse import ArgumentParser
+try:  # py3
+    from shlex import quote
+except ImportError:  # py2
+    from pipes import quote
 
 load_dotenv()
 
@@ -84,7 +87,7 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
             try:
                 command_string = "aws s3 cp s3://" + source_object + " s3://" + destination_bucket + "/" + object_name
                 print(command_string)
-                os.system(command_string)
+                os.system(quote(command_string))
                 update_count = update_count + 1
             except ResponseError as err:
                 print(err)
