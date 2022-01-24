@@ -24,7 +24,6 @@ def getSpatialViewerFilename(fileName):
         newFileName = file_name.replace('.tif', '-ome.tif')
     return newFileName
 
-
 def insertIntoSample(sampleCursor, participant_id, spectrack_id, parent_sample_id):
     insert_sample_sql = "INSERT IGNORE INTO sample (participant_id, spectrack_id, parent_sample_id) VALUES (%s,%s,%s)"
     sampleCursor.execute(insert_sample_sql, (participant_id, spectrack_id, parent_sample_id,))
@@ -36,19 +35,6 @@ def getSampleId(sampleCursor, participant_id, spectrack_id, parent_sample_id):
 def insertIntoFileSample(fileSampleCursor, file_id, sample_id):
     sample_file_sql = "INSERT IGNORE INTO sample_file (file_id, sample_id) VALUES (%s,%s)"
     fileSampleCursor.execute(sample_file_sql, (file_id,sample_id,))
-
-
-def insertSampleMetadata(metadataCursor, sample_id, sample_metadata_property_name, sample_metadata_value):
-    metadata_property_sql = "INSERT IGNORE INTO sample_metadata_property (sample_metadata_value) VALUES (%s)"
-    metadataCursor.execute(metadata_property_sql, (sample_metadata_property_name,))
-
-    sample_metadata_property_id = ''
-    metadata_value_sql = "INSERT IGNORE INTO sample_metadata_value (sample_metadata_property_id, sample_id, sample_metadata_value) VALUES (%s, %s,%s)"
-    metadataCursor.execute(metadata_value_sql, (sample_metadata_property_id, sample_id, sample_metadata_value,))
-
-
-
-
 
 load_dotenv()
 
@@ -151,14 +137,9 @@ for (package_id, file_name, protocol, metadata_type_id, participant_id, release_
         sample_id = getSampleId(cursor6, participant_id, None, None) # todo, need to get spectrack_id and parent_sample_id from somewhere
         
         insertIntoFileSample(cursor7, file_id, sample_id)
-        # todo, need to get metadata from somewhere
-        # insertSampleMetadata(cursor8, sample_id, sample_metadata_property_name, sample_metadata_value)
+
         mydb.commit()
     else:
         print("File " + new_file_name + " for package " + package_id + " already exists. Skipping")
 
 print(str(update_count) + " files inserted")
-
-
-
-
