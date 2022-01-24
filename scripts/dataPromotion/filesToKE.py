@@ -24,9 +24,9 @@ def getSpatialViewerFilename(fileName):
         newFileName = file_name.replace('.tif', '-ome.tif')
     return newFileName
 
-def insertIntoSample(sampleCursor, participant_id, spectrack_id, parent_sample_id):
-    insert_sample_sql = "INSERT IGNORE INTO sample (participant_id, spectrack_id, parent_sample_id) VALUES (%s,%s,%s)"
-    sampleCursor.execute(insert_sample_sql, (participant_id, spectrack_id, parent_sample_id,))
+def insertIntoSample(sampleCursor, participant_id, spectrack_sample_id, parent_spectrack_sample_id):
+    insert_sample_sql = "INSERT IGNORE INTO sample (participant_id, spectrack_sample_id, parent_spectrack_sample_id) VALUES (%s,%s,%s)"
+    sampleCursor.execute(insert_sample_sql, (participant_id, spectrack_sample_id, parent_spectrack_sample_id,))
 
 def getSampleId(sampleCursor, participant_id, spectrack_id, parent_sample_id):
     get_sample_sql = "SELECT sample_id FROM sample WHERE participant_id=%s and spectrack_id=%s and parent_sample_id=%s"
