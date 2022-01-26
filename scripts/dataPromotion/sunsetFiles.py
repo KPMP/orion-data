@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 from dotenv import load_dotenv
 import os
-from collections import OrderedDict
 import mysql.connector
 from argparse import ArgumentParser
 
