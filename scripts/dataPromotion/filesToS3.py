@@ -1,5 +1,3 @@
-from minio import Minio
-from minio.error import (ResponseError)
 from dotenv import load_dotenv
 import os
 import mysql.connector
@@ -7,14 +5,9 @@ from argparse import ArgumentParser
 
 load_dotenv()
 
-minio_access_key = os.environ.get('minio_access_key')
-minio_secret_key = os.environ.get('minio_secret_key')
 destination_bucket = os.environ.get('destination_bucket')
 source_bucket = os.environ.get('source_bucket')
 datalake_dir = os.environ.get('datalake_dir')
-minio_host = os.environ.get('minio_host')
-
-minio_client = Minio(minio_host, access_key=minio_access_key, secret_key=minio_secret_key, secure=False)
 
 mysql_user = os.environ.get('mysql_user')
 mysql_pwd = os.environ.get('mysql_pwd')
@@ -80,22 +73,24 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
             source_object = source_bucket + "/package_" + package_id + "/" + original_file_name
             print("File not found locally. Trying S3: " + source_object)
             try:
-                command_string = "aws s3 cp s3://" + source_object + " s3://" + destination_bucket + "/" + object_name
-                print(command_string)
+                command_string = 'aws s3 cp "s3://' + source_object + '" "s3://' + destination_bucket + '/' + object_name + '"'
                 os.system(command_string)
                 update_count = update_count + 1
-            except ResponseError as err:
+            except:
                 print(err)
                 pass
         else:
             try:
                 print("Moving " + object_name)
-                minio_client.fput_object(destination_bucket, object_name, file_path)
+                command_string = 'aws s3 cp "' + file_path + '" s3://' + destination_bucket + '/' + object_name + '"'
+                response = os.system(command_string)
+                if(response != 0):
+                    raise Exception("Failed to upload file " + file_path + " onto s3 bucket " + destination_bucket + "/" + object_name)
                 update_count = update_count + 1
                 insert_sql = "INSERT INTO moved_files (file_name) VALUES (%s)"
                 cursor2.execute(insert_sql, (file_name,))
                 mydb.commit()
-            except ResponseError as err:
+            except Exception as err:
                 print(err)
                 pass
 
