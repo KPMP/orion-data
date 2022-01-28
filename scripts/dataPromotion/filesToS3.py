@@ -1,8 +1,5 @@
-#!/usr/bin/env python2
-from configparser import Error
 from dotenv import load_dotenv
 import os
-from collections import OrderedDict
 import mysql.connector
 from argparse import ArgumentParser
 
