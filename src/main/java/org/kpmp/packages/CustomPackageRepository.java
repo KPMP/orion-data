@@ -126,7 +126,7 @@ public class CustomPackageRepository {
 
 	@Cacheable(value = "packages")
 	public List<JSONObject> findAll() throws JSONException, JsonProcessingException {
-		Query query = new Query();
+		Query query = new Query(Criteria.where(PackageKeys.CREATED_AT.getKey()).gt(new Date(2021, 1, 28)));
 		query = query.with(new Sort(Sort.Direction.DESC, PackageKeys.CREATED_AT.getKey()));
 
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
