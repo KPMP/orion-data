@@ -1,8 +1,6 @@
 package org.kpmp.packages;
 
 import java.text.MessageFormat;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -128,7 +126,7 @@ public class CustomPackageRepository {
 
 	@Cacheable(value = "packages")
 	public List<JSONObject> findAll() throws JSONException, JsonProcessingException {
-		Query query = new Query(Criteria.where(PackageKeys.CREATED_AT.getKey()).gt(Date.from( Instant.now().minus( Duration.ofDays( 365 ) ) )));
+		Query query = new Query();
 		query = query.with(new Sort(Sort.Direction.DESC, PackageKeys.CREATED_AT.getKey()));
 
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
