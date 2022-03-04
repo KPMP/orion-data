@@ -79,7 +79,7 @@
   "iconType": "Epigenetics",
   "packageTypes": [
     "CUT & RUN",
-    "ATAC-seq",
+    "10X Multiome",
     "Segmental microRNA-seq",
     "DNA Methyl-seq",
     "Bulk microRNA-seq"
