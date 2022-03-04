@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.1.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.6.3")
     }
 }
 
@@ -26,23 +26,23 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-	compile 'org.springframework.boot:spring-boot-starter-web' 
-	compile 'commons-io:commons-io:2.6' 
-	compile 'mysql:mysql-connector-java:6.0.5'
-	compile 'org.springframework:spring-test:5.0.5.RELEASE'
-	compile 'org.springframework.data:spring-data-mongodb:2.0.8.RELEASE'
-	compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
-	compile 'org.apache.commons:commons-compress:1.17'
-	compile 'org.apache.commons:commons-text:1.7'
-	compile 'commons-codec:commons-codec:1.15'
-	compile 'com.google.api-client:google-api-client:1.23.0'
-	compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
-	compile 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
-	compile 'org.springframework.boot:spring-boot-starter-test'
-	testCompile 'org.mockito:mockito-core'
-	testCompile 'org.springframework.boot:spring-boot-starter-test:2.2.0.RELEASE'
+	implementation 'org.springframework.boot:spring-boot-starter-web' 
+	implementation 'commons-io:commons-io:2.6' 
+	implementation 'mysql:mysql-connector-java:6.0.5'
+	implementation 'org.springframework:spring-test:5.0.5.RELEASE'
+	implementation 'org.springframework.data:spring-data-mongodb:2.0.8.RELEASE'
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	implementation 'org.apache.commons:commons-compress:1.17'
+	implementation 'org.apache.commons:commons-text:1.7'
+	implementation 'commons-codec:commons-codec:1.15'
+	implementation 'com.google.api-client:google-api-client:1.23.0'
+	implementation 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
+	implementation 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
+	implementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.mockito:mockito-core'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.2.0.RELEASE'
 }
 
 springBoot {
-    mainClassName = "org.kpmp.Application"
+    mainClass = "org.kpmp.Application"
 }
