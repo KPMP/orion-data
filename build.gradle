@@ -1,11 +1,12 @@
-buildscript {
+plugins {
+	id 'org.springframework.boot' version '2.6.4'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+  	id 'java'
+}
+
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.6.3")
-    }
-}
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
@@ -15,7 +16,7 @@ apply plugin: 'io.spring.dependency-management'
 
 jar {
     baseName='orion-data'
-    version= '2.8.2'
+    version= '2.9'
 }
 
 repositories {
@@ -30,17 +31,18 @@ dependencies {
 	implementation 'commons-io:commons-io:2.6' 
 	implementation 'mysql:mysql-connector-java:6.0.5'
 	implementation 'org.springframework:spring-test:5.0.5.RELEASE'
-	implementation 'org.springframework.data:spring-data-mongodb:2.0.8.RELEASE'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	implementation 'org.mongodb:mongo-java-driver:3.12.10'
 	implementation 'org.apache.commons:commons-compress:1.17'
 	implementation 'org.apache.commons:commons-text:1.7'
 	implementation 'commons-codec:commons-codec:1.15'
 	implementation 'com.google.api-client:google-api-client:1.23.0'
 	implementation 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
 	implementation 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
-	implementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.json:json:20211205'
 	testImplementation 'org.mockito:mockito-core'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.2.0.RELEASE'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'junit:junit:4.12'
 }
 
 springBoot {
