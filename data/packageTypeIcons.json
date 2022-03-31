@@ -1,6 +1,87 @@
-{"_id":{"$oid":"5c99063ed5928f3d4502a9b3"},"iconType":"Metabolomics","packageTypes":["Spatial Metabolomics"]}
-{"_id":{"$oid":"5c99063ed5928f3d4502a9b4"},"iconType":"Imaging","packageTypes":["3-D Tissue Imaging","Multiplex ISH","CODEX","Whole Slide Images"]}
-{"_id":{"$oid":"5c99063ed5928f3d4502a9b5"},"iconType":"Proteomics","packageTypes":["Bulk Proteomics","Sub-segmental Proteomics","Near-single-cell Proteomics"]}
-{"_id":{"$oid":"5c99063ed5928f3d4502a9b6"},"iconType":"Transcriptomics","packageTypes":["Bulk total/mRNA","Bulk microRNA","Segmental miRNA","Sub-segmental RNA-Seq","Single-cell RNA-Seq","Single-nucleus RNA-Seq"]}
-{"_id":{"$oid":"5c99063ed5928f3d4502a9b7"},"iconType":"Pilot 3","packageTypes":["Pilot 3 Receipt Picture"]}
-{"_id":{"$oid":"5c99063ed5928f3d4502a9b8"},"iconType":"Other","packageTypes":["DNA Methylation","Other"]}
+[{
+  "_id": {
+    "$oid": "5c99063ed5928f3d4502a9b3"
+  },
+  "iconType": "Metabolomics",
+  "packageTypes": [
+    "Spatial Metabolomics",
+    "Spatial Lipidomics",
+    "Spatial N-glycomics",
+    "Bulk Metabolomics",
+    "Bulk Lipidomics",
+    "Bulk N-glycomics",
+    "Segmental Metabolomics",
+    "Segmental Lipidomics",
+    "Segmental N-glycomics"
+  ]
+},{
+  "_id": {
+    "$oid": "5c99063ed5928f3d4502a9b4"
+  },
+  "iconType": "Imaging",
+  "packageTypes": [
+    "3D Tissue Imaging and Cytometry",
+    "mIFISH",
+    "CODEX",
+    "Whole Slide Images",
+    "DART-FISH",
+    "Imaging Mass Cytometry",
+    "Interrogation Site Frozen Section Image"
+  ]
+},{
+  "_id": {
+    "$oid": "5c99063ed5928f3d4502a9b5"
+  },
+  "iconType": "Proteomics",
+  "packageTypes": [
+    "Bulk Proteomics",
+    "Regional Proteomics",
+    "Near-single-cell Proteomics",
+    "Spatial Proteomics"
+  ]
+},{
+  "_id": {
+    "$oid": "5c99063ed5928f3d4502a9b6"
+  },
+  "iconType": "Transcriptomics",
+  "packageTypes": [
+    "Bulk total/mRNA",
+    "Bulk microRNA-seq",
+    "Segmental miRNA",
+    "Regional Transcriptomics",
+    "Single-cell RNA-Seq",
+    "Single-nucleus RNA-Seq",
+    "Spatial Transcriptomics",
+    "Slide-seq Spatial Transcriptomics",
+    "Spatial Transcriptomics",
+    "Slide-seq Spatial Transcriptomics"
+  ]
+},{
+  "_id": {
+    "$oid": "5c99063ed5928f3d4502a9b7"
+  },
+  "iconType": "Pilot 3",
+  "packageTypes": [
+    "Pilot 3 Receipt Picture"
+  ]
+},{
+  "_id": {
+    "$oid": "5c99063ed5928f3d4502a9b8"
+  },
+  "iconType": "Other",
+  "packageTypes": [
+    "Other"
+  ]
+},{
+  "_id": {
+    "$oid": "603ea9407658fe0dbcfeff5c"
+  },
+  "iconType": "Epigenetics",
+  "packageTypes": [
+    "CUT & RUN",
+    "10X Multiome",
+    "Segmental microRNA-seq",
+    "DNA Methyl-seq",
+    "Bulk microRNA-seq"
+  ]
+}]
