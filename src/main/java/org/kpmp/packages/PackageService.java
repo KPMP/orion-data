@@ -216,7 +216,8 @@ public class PackageService {
 				} else {
 					logger.logInfoMessage(PackageService.class, null, packageID,
 							PackageService.class.getSimpleName() + ".calculateFileChecksums",
-							zipPackage.format(new Object[] { "Checksum already exists for file " + file.getFileName(), packageID }));
+							zipPackage.format(new Object[] { "Checksum already exists for file " + file.getFileName(),
+									packageID }));
 				}
 			}
 		} else {
@@ -227,15 +228,14 @@ public class PackageService {
 		return files;
 	}
 
-
-
 	@CacheEvict(value = "packages", allEntries = true)
 	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String origin) {
 		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, null, origin);
 	}
 
 	@CacheEvict(value = "packages", allEntries = true)
-	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String codicil, String origin) {
+	public void sendStateChangeEvent(String packageId, String stateString, String largeFilesChecked, String codicil,
+			String origin) {
 		stateHandler.sendStateChange(packageId, stateString, largeFilesChecked, codicil, origin);
 	}
 
@@ -266,27 +266,28 @@ public class PackageService {
 	}
 
 	protected void movePackageFiles(String packageId) throws IOException, InterruptedException {
-		String[] command = {"scripts/processLargeFileUpload/processLargeFileUploadNoGlobus.sh", packageId};
+		String[] command = { "/home/gradle/scripts/processLargeFileUpload/processLargeFileUploadNoGlobus.sh",
+				packageId };
 		new Thread() {
 			@CacheEvict(value = "packages", allEntries = true)
 			public void run() {
-			CommandResult commandResult = null;
-			try {
-				commandResult = processExecutor.executeProcessWithOutput(command);
-			} catch (Exception e) {
-				logger.logErrorMessage(PackageService.class, null, packageId,
-						PackageService.class.getSimpleName() + ".movePackageFiles",
-						"There was a problem executing the move file command: " + e.getMessage());
-			}
-			if (commandResult.isResult()) {
-				logger.logInfoMessage(PackageService.class, null, packageId,
-						PackageService.class.getSimpleName() + ".movePackageFiles",
-						zipPackage.format(new Object[] { "Files moved for package: ", packageId }));
-			} else {
-				logger.logErrorMessage(PackageService.class, null, packageId,
-						PackageService.class.getSimpleName() + ".movePackageFiles",
-						"There was a problem moving the files: " + commandResult.getOutput());
-			}
+				CommandResult commandResult = null;
+				try {
+					commandResult = processExecutor.executeProcessWithOutput(command);
+				} catch (Exception e) {
+					logger.logErrorMessage(PackageService.class, null, packageId,
+							PackageService.class.getSimpleName() + ".movePackageFiles",
+							"There was a problem executing the move file command: " + e.getMessage());
+				}
+				if (commandResult.isResult()) {
+					logger.logInfoMessage(PackageService.class, null, packageId,
+							PackageService.class.getSimpleName() + ".movePackageFiles",
+							zipPackage.format(new Object[] { "Files moved for package: ", packageId }));
+				} else {
+					logger.logErrorMessage(PackageService.class, null, packageId,
+							PackageService.class.getSimpleName() + ".movePackageFiles",
+							"There was a problem moving the files: " + commandResult.getOutput());
+				}
 			}
 
 		}.start();

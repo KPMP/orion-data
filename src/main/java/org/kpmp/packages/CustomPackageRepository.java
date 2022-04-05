@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBRef;
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -112,11 +112,6 @@ public class CustomPackageRepository {
 		return user;
 	}
 
-	@Deprecated
-	public Package save(Package packageInfo) {
-		return repo.save(packageInfo);
-	}
-
 	public void updateField(String id, String fieldName, Object value) {
 		Query updateQuery = new Query(Criteria.where(PackageKeys.ID.getKey()).is(id));
 		Update fieldUpdate = new Update();
@@ -129,7 +124,7 @@ public class CustomPackageRepository {
 		Query query = new Query();
 		query = query.with(Sort.by(Sort.Direction.DESC, PackageKeys.CREATED_AT.getKey()));
 
-		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
+		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry());
 		DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
 
 		List<Document> results = mongoTemplate.find(query, Document.class, PACKAGES_COLLECTION);
@@ -148,7 +143,7 @@ public class CustomPackageRepository {
 		BasicDBObject query = new BasicDBObject();
 		query.put(PackageKeys.ID.getKey(), packageId);
 
-		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
+		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry());
 		DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
 
 		MongoDatabase db = mongoTemplate.getDb();
@@ -166,7 +161,7 @@ public class CustomPackageRepository {
 		BasicDBObject query = new BasicDBObject();
 		query.put(PackageKeys.ID.getKey(), packageId);
 
-		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
+		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry());
 		DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
 		MongoDatabase db = mongoTemplate.getDb();
 		MongoCollection<Document> collection = db.getCollection(PACKAGES_COLLECTION);
