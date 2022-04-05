@@ -72,9 +72,9 @@ public class PackageServiceTest {
 
 	@Test
 	public void testSendStateChangeEvent() throws Exception {
-		service.sendStateChangeEvent("packageId1", "stateString", null,"codicil", "hostname");
+		service.sendStateChangeEvent("packageId1", "stateString", null, "codicil", "hostname");
 
-		verify(stateHandlerService).sendStateChange("packageId1", "stateString", null,"codicil", "hostname");
+		verify(stateHandlerService).sendStateChange("packageId1", "stateString", null, "codicil", "hostname");
 	}
 
 	@Test
@@ -156,7 +156,6 @@ public class PackageServiceTest {
 
 		verify(packageFileHandler).saveMultipartFile(file, "packageId", "filename", shouldAppend);
 		verify(packageRepository, times(0)).findByPackageId("packageId");
-		verify(packageRepository, times(0)).save(packageToUpdate);
 	}
 
 	@Test
