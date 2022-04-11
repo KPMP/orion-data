@@ -25,6 +25,17 @@ To regenerate zip files:
 8. Navigate to clearCache URL to clear the old cache
 - `https://upload.kpmp.org/api/v1/clearCache`
 
+
+## Removing packages
+1. Connect to Mongo by opening ssh session to prod-upload
+- `ssh <username>@172.20.66.165 -L 27017:localhost:27017`
+2. Within mongo, delete package from package and file collection
+3. Delete package off of the DLU
+4. sudo rm /nfs/corenfs/kpmp-data/prod/dataLake/package_<package_id>
+5. Navigate to clearCache URL to clear the old cache
+- `https://upload.kpmp.org/api/v1/clearCache`
+6. Navigate to upload and confirm packages no longer exist
+
 ## Getting and storing the credentials for Google Drive
  1. Get the credentials.json file from kpmp-secure/orion-data and put it in the `src/main/resources` directory.
  2. Get the StoredCredential file from kpmp-secure/orion-data and put it in the `tokens` directory (create if it doesn't  exist).
