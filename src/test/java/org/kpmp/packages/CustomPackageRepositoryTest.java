@@ -177,19 +177,7 @@ public class CustomPackageRepositoryTest {
 		assertEquals(true, messageCaptor.getValue().endsWith("|emailAddress2|123|1 files"));
 	}
 
-	@Test
-	public void testSave() {
-		Package expectedPackage = mock(Package.class);
-		Package packageInfo = expectedPackage;
-		when(packageRepository.save(packageInfo)).thenReturn(expectedPackage);
-
-		Package savedPackage = repo.save(packageInfo);
-
-		verify(packageRepository).save(packageInfo);
-		assertEquals(expectedPackage, savedPackage);
-	}
-
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void testGetJSONByPackageId() throws Exception {
 		MongoDatabase db = mock(MongoDatabase.class);
@@ -200,7 +188,7 @@ public class CustomPackageRepositoryTest {
 		when(mongoCollection.find(any(BasicDBObject.class))).thenReturn(result);
 		Document document = mock(Document.class);
 
-		when(jsonWriterSettings.getSettings()).thenReturn(new JsonWriterSettings());
+		when(jsonWriterSettings.getSettings()).thenReturn(JsonWriterSettings.builder().build());
 		when(document.toJson(any(JsonWriterSettings.class), any(DocumentCodec.class))).thenReturn(
 				"{ \"_id\": \"123\", \"key\": \"value with /\", \"submitter\": { $id: { $oid: '123' }, \"shibId\": \"555\"}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
 		when(result.first()).thenReturn(document);
@@ -225,19 +213,14 @@ public class CustomPackageRepositoryTest {
 		Document firstResult = mock(Document.class);
 		List<Document> results = Arrays.asList(firstResult);
 		when(mongoTemplate.find(any(Query.class), any(Class.class), any(String.class))).thenReturn(results);
+		when(jsonWriterSettings.getSettings()).thenReturn(JsonWriterSettings.builder().build());
 		when(firstResult.toJson(any(JsonWriterSettings.class), any(DocumentCodec.class))).thenReturn(
 				"{ \"_id\": \"123\", \"key\": \"value\", \"submitter\": { $id: { $oid: '123' } }, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
-		JsonWriterSettings jsonWriterSettingsReturn = mock(JsonWriterSettings.class);
-		when(jsonWriterSettings.getSettings()).thenReturn(jsonWriterSettingsReturn);
 
 		List<JSONObject> allJsons = repo.findAll();
 
 		assertEquals(1, allJsons.size());
 
-		ArgumentCaptor<JsonWriterSettings> jsonWriterCaptor = ArgumentCaptor.forClass(JsonWriterSettings.class);
-		ArgumentCaptor<DocumentCodec> codecCaptor = ArgumentCaptor.forClass(DocumentCodec.class);
-		verify(firstResult).toJson(jsonWriterCaptor.capture(), codecCaptor.capture());
-		assertEquals(jsonWriterSettingsReturn, jsonWriterCaptor.getValue());
 		ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
 		ArgumentCaptor<Class> entityCaptor = ArgumentCaptor.forClass(Class.class);
 		ArgumentCaptor<String> collectionCaptor = ArgumentCaptor.forClass(String.class);
