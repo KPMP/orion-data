@@ -89,7 +89,7 @@ public class AuthorizationFilter implements Filter {
 				|| !isFirstFilePartUpload(request)) {
 
 			chain.doFilter(request, response);
-		} else {
+		} else if (shibId != null && !shibId.isEmpty()) {
 			String clientId = env.getProperty(CLIENT_ID_PROPERTY);
 			String uri = userAuthHost + userAuthEndpoint + "/" + clientId + "/" + shibId;
 			try {
@@ -126,6 +126,9 @@ public class AuthorizationFilter implements Filter {
 							HttpStatus.FAILED_DEPENDENCY, request, response);
 				}
 			}
+		} else {
+			response.setStatus(HttpStatus.FORBIDDEN.value());
+			logger.logWarnMessage(this.getClass(), null, "request with no shib id", request);
 		}
 
 	}
