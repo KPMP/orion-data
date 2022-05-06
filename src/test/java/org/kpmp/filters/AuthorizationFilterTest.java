@@ -44,7 +44,7 @@ public class AuthorizationFilterTest {
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		filter = new AuthorizationFilter(logger, shibUserService, restTemplate, env);
 		ReflectionTestUtils.setField(filter, "userAuthHost", "hostname");
 		ReflectionTestUtils.setField(filter, "userAuthEndpoint", "endpoint");
@@ -223,6 +223,30 @@ public class AuthorizationFilterTest {
 		verify(incomingResponse).setStatus(HttpStatus.FORBIDDEN.value());
 		verify(logger).logErrorMessage(AuthorizationFilter.class, null,
 				"User does not have access to DLU: [\"imaKpmpUser\",\"another group\"]", incomingRequest);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testDoFilter_noSessionBlankShibId() throws Exception { // eslint-disable-line
+		// no-eval
+		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
+		when(incomingRequest.getRequestURI()).thenReturn("anything");
+		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
+		HttpSession session = mock(HttpSession.class);
+		when(incomingRequest.getSession(true)).thenReturn(session);
+		FilterChain chain = mock(FilterChain.class);
+		User user = mock(User.class);
+		when(user.getShibId()).thenReturn("");
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
+		when(incomingRequest.getSession(false)).thenReturn(null);
+		ResponseEntity<String> response = mock(ResponseEntity.class);
+		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
+
+		filter.doFilter(incomingRequest, incomingResponse, chain);
+
+		verify(chain, times(0)).doFilter(incomingRequest, incomingResponse);
+		verify(incomingResponse).setStatus(HttpStatus.FORBIDDEN.value());
+		verify(logger).logWarnMessage(AuthorizationFilter.class, null, "request with no shib id", incomingRequest);
 	}
 
 	@SuppressWarnings("unchecked")
