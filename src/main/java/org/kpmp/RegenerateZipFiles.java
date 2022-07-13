@@ -22,9 +22,9 @@ import org.kpmp.packages.PackageFileHandler;
 import org.kpmp.packages.PackageKeys;
 import org.kpmp.packages.PackageRepository;
 import org.kpmp.packages.PackageService;
-import org.kpmp.packages.validation.PackageFilesValidationService;
-import org.kpmp.packages.validation.PackageFilesValidationController;
 import org.kpmp.packages.StateHandlerService;
+import org.kpmp.packages.validation.PackageFilesValidationController;
+import org.kpmp.packages.validation.PackageFilesValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,20 +35,22 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 @ComponentScan(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
 		PackageRepository.class, FilePathHelper.class, CommandBuilder.class, ProcessExecutor.class,
-		CustomPackageRepository.class,
-		PackageFileHandler.class }), excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+		CustomPackageRepository.class, PackageFileHandler.class, PackageService.class,
+		StateHandlerService.class }), excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
 				PackageController.class, WebConfig.class, Application.class, AuthorizationFilter.class,
-				GlobusAuthorizationCodeInstalledApp.class, GlobusService.class, StateHandlerService.class,
-				PackageService.class, CacheController.class, PackageFilesValidationService.class, PackageFilesValidationController.class }))
+				GlobusAuthorizationCodeInstalledApp.class, GlobusService.class, CacheController.class,
+				PackageFilesValidationService.class, PackageFilesValidationController.class }))
 public class RegenerateZipFiles implements CommandLineRunner {
 
 	private CustomPackageRepository packageRepository;
@@ -72,6 +74,11 @@ public class RegenerateZipFiles implements CommandLineRunner {
 		SpringApplication app = new SpringApplication(RegenerateZipFiles.class);
 		app.setWebApplicationType(WebApplicationType.NONE);
 		app.run(args);
+	}
+
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
 	}
 
 	@Override
