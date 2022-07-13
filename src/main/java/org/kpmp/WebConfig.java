@@ -19,8 +19,7 @@ import com.google.api.client.http.HttpTransport;
 
 @Configuration
 @EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class,
-		DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
-		RegenerateZipFiles.class })
+		DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 public class WebConfig implements WebMvcConfigurer {
 
 	@Override
