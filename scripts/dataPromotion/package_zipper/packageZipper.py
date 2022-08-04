@@ -10,14 +10,15 @@ def is_not_excluded_type(filename: str, excludedTypes: list):
             return False
     return True
 
-def zip_package_data(zipName: str, folderToZip: str):
-    with ZipFile(zipName+'.zip', 'w') as zippedPackage:
-        for file in os.walk(folderToZip):
-            for filename in file[2]:
+def zip_package_data(zipName: str, folderToZip: str, packageId: str):
+    with ZipFile(zipName, 'w') as zippedPackage:
+        for root, dir, files in os.walk(folderToZip):
+            for filename in files:
                 if is_not_excluded_type(filename, EXCLUDED_TYPES):
-                    zippedPackage.write(file[0]+'/'+filename)
-                    
-    return zipName
+                    zippedPackage.write(folderToZip+'/'+filename, 'package_'+packageId+'/'+filename)
+
+def zip_package_cleanup(zipName: str):
+    os.remove(zipName)
 
 if __name__ == "__main__":
-    zip_package_data('packageid_lipidomics', 'folder-to-zip/')
+    zip_package_data('packageid_lipidomics.zip', 'folder-to-zip/', 'packageid')
