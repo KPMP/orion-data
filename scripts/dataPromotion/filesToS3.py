@@ -35,7 +35,7 @@ try:
 except:
     print('Can\'t connect to MySQL')
     print('Make sure you have tunnel open to the KE database, e.g.')
-    print('ssh ubuntu@qa-atlas.kpmp.org -i ~/.ssh/um-kpmp.pem -L 3306:localhost:3306')
+    print('ssh atlas-ke -i ~/.ssh/um-kpmp.pem -L 3306:localhost:3306')
     os.sys.exit()
 
 def update_file_size(file_path, file_id):
@@ -92,10 +92,17 @@ def move_files(file_path, object_name, file_name):
             print(err)
             pass
 
-query = ('select ar.file_id, f.package_id, f.file_name, ar.metadata_type_id from ar_file_info as ar INNER JOIN file as f on f.file_id = ar.file_id WHERE ar.release_version = ' + args.release_ver + ' AND f.file_name NOT IN (SELECT file_name FROM moved_files)')
+query = ('SELECT ar.file_id, f.package_id, f.file_name, ar.metadata_type_id ' \
+        'FROM ar_file_info as ar ' \
+        'INNER JOIN file as f ' \
+        'ON f.file_id = ar.file_id ' \
+        'WHERE ar.release_version = {0} ' \
+        'AND f.file_name ' \
+        'NOT IN (SELECT file_name FROM moved_files)').format(args.release_ver)
 cursor.execute(query)
 
 for (file_id, package_id, file_name, metadata_type_id) in cursor:
+
     datalake_package_dir = datalake_dir + '/package_' + package_id + '/'
     original_file_name = file_name[37:]
     file_path = datalake_package_dir + original_file_name
@@ -126,8 +133,8 @@ for (file_id, package_id, file_name, metadata_type_id) in cursor:
         else:
             print('Processing file ' + str(file_id), str(package_id), file_name, str(metadata_type_id))
             omicsType = ''
-            # TODO: updaqte values. The metadata_type_id here is a placeholder, these values will change based on the work Rachel Does
-            if metadata_type_id == 43:
+            # TODO: update values. The metadata_type_id here is a placeholder, these values will change based on the work Rachel Does
+            if metadata_type_id == 41:
                 omicsType = 'spatial_lipidomics'
             elif metadata_type_id == 44:
                 omicsType = 'spatial_metabolomics'
