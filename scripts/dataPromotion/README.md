@@ -33,7 +33,9 @@ Setup and running:
 
       `$ python filesToS3.py --release-version  0`
 
+Issues that may arise:
 
+If you find yourself needing to re-run the script with the same data, you'll need to delete the existing file in the S3 bucket and delete the existing record in the `moved_files` table.
 
 # Move the files from “file_pending” table to the “file” table in the Staging DB
 1. Requires a connection to the DLU Mongo and the Staging DB MySQL (e.g. through tunnels)
