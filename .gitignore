@@ -20,3 +20,6 @@ out
 tokens
 **/node_modules
 globus_tokens
+__pycache__/
+.vscode
+.DS_Store
