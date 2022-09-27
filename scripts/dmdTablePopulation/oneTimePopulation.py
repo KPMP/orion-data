@@ -45,6 +45,7 @@ def get_dmd_connection():
         logging.error(err)
         exit(-1)
 
+
 def get_submitter_name(data_lake, package):
     submitter_collection = data_lake['users']
     submitter = submitter_collection.find_one({'_id': package['submitter'].id})
@@ -77,23 +78,36 @@ def is_error(data_lake, package):
 def insert_packages(data_lake, dmd):
     packages_collection = data_lake['packages']
 
-
     for package in packages_collection.find():
         full_name = get_submitter_name(data_lake, package)
         package_in_error = is_error(data_lake, package)
-        insert_query = "INSERT INTO dlu_package_inventory (dlu_package_id, dlu_created, dlu_tis, dlu_packageType, dlu_subject_id," \
-                       " dlu_lfu, dlu_submitter, dlu_error) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        insert_query = "INSERT INTO dlu_package_inventory (dlu_package_id, dlu_created, dlu_tis, dlu_packageType, " \
+                       "dlu_subject_id, dlu_lfu, dlu_submitter, dlu_error) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
 
         large_file_upload = 0
         if 'largeFilesChecked' in package:
-            if package['largeFilesChecked'] == True:
+            if package['largeFilesChecked']:
                 large_file_upload = 1
 
         cursor = dmd.cursor(buffered=False)
-        cursor.execute(insert_query, (package['_id'], package['createdAt'], package['tisName'], package['packageType'], package['subjectId'],
-                                     large_file_upload, full_name, package_in_error))
+        cursor.execute(insert_query, (
+            package['_id'], package['createdAt'], package['tisName'], package['packageType'], package['subjectId'],
+            large_file_upload, full_name, package_in_error))
+        insert_files(package, dmd)
 
-    # TODO: Get error state and add it to the record
+
+def insert_files(package, dmd):
+    files = package['files']
+    for file in files:
+        insert_query = 'INSERT INTO dlu_file (dlu_fileName, dlu_package_id, dlu_file_id, dlu_filesize, dlu_md5checksum)' \
+                       'VALUES(%s, %s, %s , %s, %s)'
+
+        checksum = None
+        if 'md5checksum' in file:
+            checksum = file['md5checksum']
+
+        cursor = dmd.cursor(buffered=False)
+        cursor.execute(insert_query, (file['fileName'], package['_id'], file['_id'], int(file['size']), checksum))
 
 
 if __name__ == '__main__':
