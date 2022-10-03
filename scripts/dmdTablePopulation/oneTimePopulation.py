@@ -89,11 +89,14 @@ def insert_packages(data_lake, dmd):
             if package['largeFilesChecked']:
                 large_file_upload = 1
 
-        cursor = dmd.cursor(buffered=False)
-        cursor.execute(insert_query, (
-            package['_id'], package['createdAt'], package['tisName'], package['packageType'], package['subjectId'],
-            large_file_upload, full_name, package_in_error))
-        insert_files(package, dmd)
+        try:
+            cursor = dmd.cursor(buffered=False)
+            cursor.execute(insert_query, (
+                package['_id'], package['createdAt'], package['tisName'], package['packageType'], package['subjectId'],
+                large_file_upload, full_name, package_in_error))
+            insert_files(package, dmd)
+        except KeyError as error:
+            logging.error(f'Unable to insert package {package}. Error: {error}')
 
 
 def insert_files(package, dmd):
@@ -106,8 +109,12 @@ def insert_files(package, dmd):
         if 'md5checksum' in file:
             checksum = file['md5checksum']
 
-        cursor = dmd.cursor(buffered=False)
-        cursor.execute(insert_query, (file['fileName'], package['_id'], file['_id'], int(file['size']), checksum))
+        try:
+            cursor = dmd.cursor(buffered=False)
+            cursor.execute(insert_query, (file['fileName'], package['_id'], file['_id'], int(file['size']), checksum))
+        except KeyError as error:
+            logging.error(f'Unable to insert record: {file} for package: {package}. Error: {error}')
+
 
 
 if __name__ == '__main__':
