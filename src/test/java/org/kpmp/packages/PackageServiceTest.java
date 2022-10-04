@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.dmd.DluPackageInventoryService;
 import org.kpmp.externalProcess.CommandBuilder;
 import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.logging.LoggingService;
@@ -48,6 +49,8 @@ public class PackageServiceTest {
 	@Mock
 	private FilePathHelper filePathHelper;
 	private PackageService service;
+
+	private DluPackageInventoryService dluPackageInventoryService;
 	@Mock
 	private LoggingService logger;
 	@Mock
@@ -61,7 +64,7 @@ public class PackageServiceTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService,
-				commandBuilder, processExecutor, logger);
+				commandBuilder, processExecutor, dluPackageInventoryService, logger);
 		ReflectionTestUtils.setField(service, "uploadSucceededState", "UPLOAD_SUCCEEDED");
 	}
 
