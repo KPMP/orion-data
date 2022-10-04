@@ -90,7 +90,6 @@ def insert_packages(data_lake, dmd):
                 large_file_upload = 1
 
         try:
-            print (package['subjectId'])
             cursor = dmd.cursor(buffered=False)
             cursor.execute(insert_query, (
                 package['_id'], package['createdAt'], package['tisName'], package['packageType'], package['subjectId'],
