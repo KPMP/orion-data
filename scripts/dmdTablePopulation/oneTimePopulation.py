@@ -90,13 +90,15 @@ def insert_packages(data_lake, dmd):
                 large_file_upload = 1
 
         try:
+            print (package['subjectId'])
             cursor = dmd.cursor(buffered=False)
             cursor.execute(insert_query, (
                 package['_id'], package['createdAt'], package['tisName'], package['packageType'], package['subjectId'],
                 large_file_upload, full_name, package_in_error))
             insert_files(package, dmd)
-        except KeyError as error:
+        except Exception as error:
             logging.error(f'Unable to insert package {package}. Error: {error}')
+            raise error
 
 
 def insert_files(package, dmd):
@@ -112,8 +114,9 @@ def insert_files(package, dmd):
         try:
             cursor = dmd.cursor(buffered=False)
             cursor.execute(insert_query, (file['fileName'], package['_id'], file['_id'], int(file['size']), checksum))
-        except KeyError as error:
+        except Exception as error:
             logging.error(f'Unable to insert record: {file} for package: {package}. Error: {error}')
+            exit(0)
 
 
 
