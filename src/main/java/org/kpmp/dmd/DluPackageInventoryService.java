@@ -1,7 +1,9 @@
 package org.kpmp.dmd;
 
 import org.kpmp.packages.Package;
+import org.springframework.stereotype.Service;
 
+@Service
 public class DluPackageInventoryService {
 
     private DluPackageInventoryRepository dluPackageInventoryRepository;
