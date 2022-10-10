@@ -1,17 +1,24 @@
 package org.kpmp.dmd;
 
+import org.kpmp.logging.LoggingService;
 import org.kpmp.packages.Package;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class DluPackageInventoryService {
 
-    private DluPackageInventoryRepository dluPackageInventoryRepository;
+    @Value("${data-manager.service.host}")
+    private String dataManagerHost;
+    @Value("${data-manager.service.endpoint}")
+    private String dataManagerEndpoint;
+    private RestTemplate restTemplate;
+    private LoggingService logger;
 
     @Autowired
-    public DluPackageInventoryService(DluPackageInventoryRepository dluPackageInventoryRepository) {
-        this.dluPackageInventoryRepository = dluPackageInventoryRepository;
+    public DluPackageInventoryService() {
     }
 
     public DluPackageInventory getDluPackageInventoryFromPackage(Package myPackage) {
@@ -27,8 +34,10 @@ public class DluPackageInventoryService {
         return dluPackageInventory;
     }
 
-    public void saveFromPackage(Package myPackage) {
+    public void sendNewPackage(Package myPackage) {
         DluPackageInventory dluPackageInventory = this.getDluPackageInventoryFromPackage(myPackage);
-        dluPackageInventoryRepository.save(dluPackageInventory);
+        String dluPackageInventoryId = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/package",
+                dluPackageInventory, String.class);
+
     }
 }
