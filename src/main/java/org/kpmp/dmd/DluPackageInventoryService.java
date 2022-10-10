@@ -38,6 +38,11 @@ public class DluPackageInventoryService {
         DluPackageInventory dluPackageInventory = this.getDluPackageInventoryFromPackage(myPackage);
         String dluPackageInventoryId = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/package",
                 dluPackageInventory, String.class);
+        if (dluPackageInventoryId == null) {
+            logger.logErrorMessage(this.getClass(), null, myPackage.getPackageId(),
+                    this.getClass().getSimpleName() + ".sendNewPackage",
+                    "Error saving package to DMD: " + myPackage.getPackageId());
+        }
         return dluPackageInventoryId;
 
     }
