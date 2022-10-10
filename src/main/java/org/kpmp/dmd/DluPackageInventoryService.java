@@ -34,10 +34,11 @@ public class DluPackageInventoryService {
         return dluPackageInventory;
     }
 
-    public void sendNewPackage(Package myPackage) {
+    public String sendNewPackage(Package myPackage) {
         DluPackageInventory dluPackageInventory = this.getDluPackageInventoryFromPackage(myPackage);
         String dluPackageInventoryId = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/package",
                 dluPackageInventory, String.class);
+        return dluPackageInventoryId;
 
     }
 }

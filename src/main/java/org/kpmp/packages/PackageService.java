@@ -95,8 +95,8 @@ public class PackageService {
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
 		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
 		Package myPackage = packageRepository.findByPackageId(packageId);
-		dluPackageInventoryService.saveFromPackage(myPackage);
-		return packageId;
+		String dluPackageInventoryId = dluPackageInventoryService.sendNewPackage(myPackage);
+		return dluPackageInventoryId;
 	}
 
 	public Package findPackage(String packageId) {
