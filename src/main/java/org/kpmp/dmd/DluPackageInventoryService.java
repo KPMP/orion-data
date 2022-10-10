@@ -18,7 +18,9 @@ public class DluPackageInventoryService {
     private LoggingService logger;
 
     @Autowired
-    public DluPackageInventoryService() {
+    public DluPackageInventoryService(RestTemplate restTemplate, LoggingService logger) {
+        this.restTemplate = restTemplate;
+        this.logger = logger;
     }
 
     public DluPackageInventory getDluPackageInventoryFromPackage(Package myPackage) {
