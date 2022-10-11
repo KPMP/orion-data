@@ -21,6 +21,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.kpmp.dmd.DluPackageInventoryService;
 import org.kpmp.externalProcess.CommandBuilder;
 import org.kpmp.externalProcess.CommandResult;
 import org.kpmp.externalProcess.ProcessExecutor;
@@ -49,6 +50,7 @@ public class PackageService {
 	private PackageFileHandler packageFileHandler;
 	private FilePathHelper filePathHelper;
 	private CustomPackageRepository packageRepository;
+	private DluPackageInventoryService dluPackageInventoryService;
 	private LoggingService logger;
 	private StateHandlerService stateHandler;
 	private CommandBuilder commandBuilder;
@@ -56,14 +58,15 @@ public class PackageService {
 
 	@Autowired
 	public PackageService(PackageFileHandler packageFileHandler, FilePathHelper filePathHelper,
-			CustomPackageRepository packageRepository, StateHandlerService stateHandler, CommandBuilder commandBuilder,
-			ProcessExecutor processExecutor, LoggingService logger) {
+						  CustomPackageRepository packageRepository, StateHandlerService stateHandler, CommandBuilder commandBuilder,
+						  ProcessExecutor processExecutor, DluPackageInventoryService dluPackageInventoryService, LoggingService logger) {
 		this.filePathHelper = filePathHelper;
 		this.packageFileHandler = packageFileHandler;
 		this.packageRepository = packageRepository;
 		this.stateHandler = stateHandler;
 		this.commandBuilder = commandBuilder;
 		this.processExecutor = processExecutor;
+		this.dluPackageInventoryService = dluPackageInventoryService;
 		this.logger = logger;
 	}
 
@@ -91,7 +94,9 @@ public class PackageService {
 
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
 		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
-		return packageId;
+		Package myPackage = packageRepository.findByPackageId(packageId);
+		String dluPackageInventoryId = dluPackageInventoryService.sendNewPackage(myPackage);
+		return dluPackageInventoryId;
 	}
 
 	public Package findPackage(String packageId) {
