@@ -55,8 +55,8 @@ public class DluPackageInventoryService {
     public String setPackageInError(String packageId) {
         HashMap payload = new HashMap<>();
         payload.put("dlu_error", true);
-        String dluPackageInventoryId = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/package/" + packageId",
+        String retPackageId = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/package/" + packageId,
                 payload, String.class);
-
+        return retPackageId;
     }
 }
