@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class DluPackageInventoryService {
 
@@ -46,6 +49,14 @@ public class DluPackageInventoryService {
                     "Error saving package to DMD: " + myPackage.getPackageId());
         }
         return dluPackageInventoryId;
+
+    }
+
+    public String setPackageInError(String packageId) {
+        HashMap payload = new HashMap<>();
+        payload.put("dlu_error", true);
+        String dluPackageInventoryId = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/package/" + packageId",
+                payload, String.class);
 
     }
 }
