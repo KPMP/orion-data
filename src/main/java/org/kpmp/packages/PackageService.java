@@ -96,7 +96,6 @@ public class PackageService {
 		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
 		Package myPackage = packageRepository.findByPackageId(packageId);
 		String dluPackageInventoryId = dmdService.sendNewPackage(myPackage);
-		dmdService.sendPackageFiles(myPackage);
 		return dluPackageInventoryId;
 	}
 
@@ -208,6 +207,8 @@ public class PackageService {
 	public void calculateAndSaveChecksums(String packageId) throws IOException {
 		Package myPackage = packageRepository.findByPackageId(packageId);
 		List<Attachment> updatedFiles = calculateChecksums(myPackage);
+		myPackage.setAttachments(updatedFiles);
+		dmdService.sendPackageFiles(myPackage);
 		packageRepository.updateField(packageId, "files", updatedFiles);
 	}
 
