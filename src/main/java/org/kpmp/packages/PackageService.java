@@ -21,7 +21,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.kpmp.dmd.DluPackageInventoryService;
+import org.kpmp.dmd.DmdService;
 import org.kpmp.externalProcess.CommandBuilder;
 import org.kpmp.externalProcess.CommandResult;
 import org.kpmp.externalProcess.ProcessExecutor;
@@ -50,7 +50,7 @@ public class PackageService {
 	private PackageFileHandler packageFileHandler;
 	private FilePathHelper filePathHelper;
 	private CustomPackageRepository packageRepository;
-	private DluPackageInventoryService dluPackageInventoryService;
+	private DmdService dmdService;
 	private LoggingService logger;
 	private StateHandlerService stateHandler;
 	private CommandBuilder commandBuilder;
@@ -59,14 +59,14 @@ public class PackageService {
 	@Autowired
 	public PackageService(PackageFileHandler packageFileHandler, FilePathHelper filePathHelper,
 						  CustomPackageRepository packageRepository, StateHandlerService stateHandler, CommandBuilder commandBuilder,
-						  ProcessExecutor processExecutor, DluPackageInventoryService dluPackageInventoryService, LoggingService logger) {
+						  ProcessExecutor processExecutor, DmdService dmdService, LoggingService logger) {
 		this.filePathHelper = filePathHelper;
 		this.packageFileHandler = packageFileHandler;
 		this.packageRepository = packageRepository;
 		this.stateHandler = stateHandler;
 		this.commandBuilder = commandBuilder;
 		this.processExecutor = processExecutor;
-		this.dluPackageInventoryService = dluPackageInventoryService;
+		this.dmdService = dmdService;
 		this.logger = logger;
 	}
 
@@ -95,7 +95,8 @@ public class PackageService {
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
 		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
 		Package myPackage = packageRepository.findByPackageId(packageId);
-		String dluPackageInventoryId = dluPackageInventoryService.sendNewPackage(myPackage);
+		String dluPackageInventoryId = dmdService.sendNewPackage(myPackage);
+		dmdService.sendPackageFiles(myPackage);
 		return dluPackageInventoryId;
 	}
 
@@ -155,13 +156,13 @@ public class PackageService {
 						logger.logErrorMessage(PackageService.class, user, packageId,
 								PackageService.class.getSimpleName(), "Unable to zip package");
 						sendStateChangeEvent(packageId, uploadFailedState, null, "Unable to zip package", origin);
-						dluPackageInventoryService.setPackageInError(packageId);
+						dmdService.setPackageInError(packageId);
 					}
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
 					sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), origin);
-					dluPackageInventoryService.setPackageInError(packageId);
+					dmdService.setPackageInError(packageId);
 				}
 			}
 

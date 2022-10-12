@@ -1,17 +1,19 @@
 package org.kpmp.dmd;
 
 import org.kpmp.logging.LoggingService;
+import org.kpmp.packages.Attachment;
 import org.kpmp.packages.Package;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Service
-public class DluPackageInventoryService {
+public class DmdService {
 
     @Value("${data-manager.service.host}")
     private String dataManagerHost;
@@ -21,7 +23,7 @@ public class DluPackageInventoryService {
     private LoggingService logger;
 
     @Autowired
-    public DluPackageInventoryService(RestTemplate restTemplate, LoggingService logger) {
+    public DmdService(RestTemplate restTemplate, LoggingService logger) {
         this.restTemplate = restTemplate;
         this.logger = logger;
     }
@@ -39,6 +41,16 @@ public class DluPackageInventoryService {
         return dluPackageInventory;
     }
 
+    public DluFile getDluFileFromAttachment(Attachment attachment, String packageId) {
+        DluFile file = new DluFile();
+        file.setDluFileName(attachment.getFileName());
+        file.setDluFileId(attachment.getId());
+        file.setDluPackageId(packageId);
+        file.setDluMd5Checksum(attachment.getMd5checksum());
+        file.setDluFileSize(attachment.getSize());
+        return file;
+    }
+
     public String sendNewPackage(Package myPackage) {
         DluPackageInventory dluPackageInventory = this.getDluPackageInventoryFromPackage(myPackage);
         String dluPackageInventoryId = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/package",
@@ -50,6 +62,26 @@ public class DluPackageInventoryService {
         }
         return dluPackageInventoryId;
 
+    }
+
+    public List sendPackageFiles(Package myPackage) {
+        List fileIds = new ArrayList<>();
+        for (Attachment file : myPackage.getAttachments()) {
+            fileIds.add(sendNewFile(file, myPackage.getPackageId()));
+        }
+        return fileIds;
+    }
+
+    public String sendNewFile(Attachment attachment, String packageId) {
+        DluFile file = getDluFileFromAttachment(attachment, packageId);
+        String dluFileId = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/file",
+                file, String.class);
+        if (dluFileId == null) {
+            logger.logErrorMessage(this.getClass(), null, file.getDluFileId(),
+                    this.getClass().getSimpleName() + ".sendNewPackage",
+                    "Error saving file to DMD. Package: " + file.getDluPackageId() + ", File: " +file.getDluFileId());
+        }
+        return dluFileId;
     }
 
     public String setPackageInError(String packageId) {

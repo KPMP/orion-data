@@ -1,25 +1,22 @@
 package org.kpmp.dmd;
 
-import org.apache.tomcat.jni.Time;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.packages.Package;
-import org.kpmp.packages.PackageService;
 import org.kpmp.users.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DluPackageInventoryServiceTest {
+class DmdServiceTest {
 
-    private DluPackageInventoryService dluPackageInventoryService;
+    private DmdService dmdService;
 
     @Mock
     private RestTemplate restTemplate;
@@ -29,12 +26,12 @@ class DluPackageInventoryServiceTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        dluPackageInventoryService = new DluPackageInventoryService(restTemplate, logger);
+        dmdService = new DmdService(restTemplate, logger);
     }
 
     @After
     public void tearDown() throws Exception {
-        dluPackageInventoryService = null;
+        dmdService = null;
     }
 
     @Test
@@ -49,7 +46,7 @@ class DluPackageInventoryServiceTest {
         myPackage.setCreatedAt(now);
         myPackage.setSubmitter(user);
         myPackage.setSubjectId("subjid");
-        DluPackageInventory dluPackageInventory = dluPackageInventoryService.getDluPackageInventoryFromPackage(myPackage);
+        DluPackageInventory dluPackageInventory = dmdService.getDluPackageInventoryFromPackage(myPackage);
         assertEquals("123", dluPackageInventory.getDluPackageId());
         assertEquals("name", dluPackageInventory.getDluSubmitter());
         assertEquals("type", dluPackageInventory.getDluPackageType());
