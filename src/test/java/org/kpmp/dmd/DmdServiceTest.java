@@ -2,8 +2,9 @@ package org.kpmp.dmd;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.kpmp.logging.LoggingService;
+import org.kpmp.packages.Attachment;
 import org.kpmp.packages.Package;
 import org.kpmp.users.User;
 import org.mockito.Mock;
@@ -12,9 +13,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
 
-class DmdServiceTest {
+public class DmdServiceTest {
 
     private DmdService dmdService;
 
@@ -35,7 +36,7 @@ class DmdServiceTest {
     }
 
     @Test
-    void getDluPackageInventoryFromPackage() {
+    public void getDluPackageInventoryFromPackage() {
         Date now = new Date();
         User user = new User();
         user.setDisplayName("name");
@@ -53,5 +54,20 @@ class DmdServiceTest {
         assertEquals("tis", dluPackageInventory.getDluTis());
         assertEquals(user.getDisplayName(), dluPackageInventory.getDluSubmitter());
         assertEquals("subjid", dluPackageInventory.getDluSubjectId());
+    }
+
+    @Test
+    public void getDluFileFromAttachment() {
+        Attachment attachment = new Attachment();
+        attachment.setFileName("filename");
+        attachment.setSize(12345);
+        attachment.setId("123456");
+        attachment.setMd5checksum("checksum");
+        DluFile file = dmdService.getDluFileFromAttachment(attachment, "packageId");
+        assertEquals("filename", file.getDluFileName());
+        assertEquals(12345, file.getDluFileSize());
+        assertEquals("123456", file.getDluFileId());
+        assertEquals("checksum", file.getDluMd5Checksum());
+        assertEquals("packageId", file.getDluPackageId());
     }
 }
