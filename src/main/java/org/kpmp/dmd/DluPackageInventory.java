@@ -1,19 +1,9 @@
 package org.kpmp.dmd;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Date;
 
-@Entity
-@Table(name = "dlu_package_inventory")
 public class DluPackageInventory {
 
-    @Id
-    @Column(name = "dlu_package_id")
     private String dluPackageId;
-
     private Date dluCreated;
     private String dluSubmitter;
     private String dluTis;

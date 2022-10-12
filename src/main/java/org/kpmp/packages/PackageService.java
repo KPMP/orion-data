@@ -155,11 +155,13 @@ public class PackageService {
 						logger.logErrorMessage(PackageService.class, user, packageId,
 								PackageService.class.getSimpleName(), "Unable to zip package");
 						sendStateChangeEvent(packageId, uploadFailedState, null, "Unable to zip package", origin);
+						dluPackageInventoryService.setPackageInError(packageId);
 					}
 				} catch (Exception e) {
 					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
 							e.getMessage());
 					sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), origin);
+					dluPackageInventoryService.setPackageInError(packageId);
 				}
 			}
 
