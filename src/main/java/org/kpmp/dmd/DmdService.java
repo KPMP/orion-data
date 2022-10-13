@@ -51,6 +51,7 @@ public class DmdService {
         for (Attachment attachment : myPackage.getAttachments()) {
             DluFile file = new DluFile(attachment, myPackage.getPackageId());
             fileIds.add(file.getDluFileId());
+            sendNewFile(file);
         }
         return fileIds;
     }
