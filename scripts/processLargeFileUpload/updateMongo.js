@@ -4,8 +4,10 @@ const assert = require("assert");
 const filesystem = require("fs");
 const path = require("path");
 const { v4: uuidGenerator } = require("uuid");
+const axios = require('axios')
 
 const url = "mongodb://mongodb:27017";
+const dmdUrl = "http://data-manager-service:5000/v1/dlu/file";
 const dbName = "dataLake";
 
 const updatePackage = function(packageId, files, db, callback) {
@@ -38,14 +40,27 @@ MongoClient.connect(url, { useUnifiedTopology: true, "forceServerObjectId" : tru
 	var files = filesystem.readdirSync(directory);
 	let fileInfos = [];
 	files.forEach(function(file) {
+		uuid = uuidGenerator();
 		const filePath = path.join(directory, file);
+		md5checksum = md5File.sync(filePath);
 		let stats = filesystem.statSync(filePath);
 		let fileInfo = {};
 		fileInfo.fileName= file;
 		fileInfo.size=stats["size"];
-		fileInfo._id = uuidGenerator();
-		fileInfo.md5checksum = md5File.sync(filePath);
+		fileInfo._id = uuid;
+		fileInfo.md5checksum = md5checksum;
 		fileInfos.push(fileInfo);
+		dmdData = {
+			dluFileName: file,
+			dluPackageId: packageId,
+			dluFileId: uuid,
+			dluFileSize: stats["size"],
+			dluMd5Checksum: md5checksum,
+		}
+		axios.post(dmdUrl, dmdData, {})
+			.then(function (response) {
+				console.log(response);
+			})
 	});
 	
 	updatePackage(packageId, fileInfos , db, function() {
