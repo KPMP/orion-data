@@ -4,11 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +21,7 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.dmd.DluFile;
 import org.kpmp.dmd.DmdService;
 import org.kpmp.externalProcess.CommandBuilder;
 import org.kpmp.externalProcess.ProcessExecutor;
@@ -49,7 +46,7 @@ public class PackageServiceTest {
 	@Mock
 	private FilePathHelper filePathHelper;
 	private PackageService service;
-
+	@Mock
 	private DmdService dmdService;
 	@Mock
 	private LoggingService logger;
@@ -105,10 +102,12 @@ public class PackageServiceTest {
 	public void testSavePackageInformation() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
 		User user = mock(User.class);
-
+		Package myPackage = new Package();
+		myPackage.setPackageId("awesomeNewId");
+		when(packageRepository.findByPackageId("awesomeNewId")).thenReturn(myPackage);
 		String packageId = service.savePackageInformation(packageMetadata, user, "awesomeNewId");
-
 		assertEquals("awesomeNewId", packageId);
+		verify(dmdService).convertAndSendNewPackage(myPackage);
 		verify(packageRepository).saveDynamicForm(packageMetadata, user, "awesomeNewId");
 	}
 

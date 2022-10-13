@@ -1,5 +1,7 @@
 package org.kpmp.dmd;
 
+import org.kpmp.packages.Attachment;
+
 public class DluFile {
 
     private String dluFileName;
@@ -7,6 +9,17 @@ public class DluFile {
     private String dluFileId;
     private long dluFileSize;
     private String dluMd5Checksum;
+
+    public DluFile(Attachment attachment, String packageId) {
+        setDluFileName(attachment.getFileName());
+        setDluFileId(attachment.getId());
+        setDluPackageId(packageId);
+        setDluMd5Checksum(attachment.getMd5checksum());
+        setDluFileSize(attachment.getSize());
+    }
+
+    public DluFile() {
+    }
 
     public String getDluFileName() {
         return dluFileName;

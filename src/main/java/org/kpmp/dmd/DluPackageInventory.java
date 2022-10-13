@@ -1,4 +1,6 @@
 package org.kpmp.dmd;
+import org.kpmp.packages.Package;
+
 import java.util.Date;
 
 public class DluPackageInventory {
@@ -21,6 +23,21 @@ public class DluPackageInventory {
     private String removedFromGlobus;
     private String promotionStatus;
     private String notes;
+
+    public DluPackageInventory(Package myPackage) {
+        setDluPackageId(myPackage.getPackageId());
+        setDluCreated(myPackage.getCreatedAt());
+        setDluSubmitter(myPackage.getSubmitter().getDisplayName());
+        setDluTis(myPackage.getTisName());
+        setDluPackageType(myPackage.getPackageType());
+        setDluSubjectId(myPackage.getSubjectId());
+        setDluError(false);
+        setDluLfu(myPackage.getLargeFilesChecked());
+    }
+
+
+    public DluPackageInventory() {
+    }
 
     public String getDluPackageId() {
         return dluPackageId;

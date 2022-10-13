@@ -21,6 +21,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.kpmp.dmd.DluFile;
 import org.kpmp.dmd.DmdService;
 import org.kpmp.externalProcess.CommandBuilder;
 import org.kpmp.externalProcess.CommandResult;
@@ -95,8 +96,8 @@ public class PackageService {
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
 		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
 		Package myPackage = packageRepository.findByPackageId(packageId);
-		String dluPackageInventoryId = dmdService.sendNewPackage(myPackage);
-		return dluPackageInventoryId;
+		dmdService.convertAndSendNewPackage(myPackage);
+		return packageId;
 	}
 
 	public Package findPackage(String packageId) {

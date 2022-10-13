@@ -28,52 +28,34 @@ public class DmdService {
         this.logger = logger;
     }
 
-    public DluPackageInventory getDluPackageInventoryFromPackage(Package myPackage) {
-        DluPackageInventory dluPackageInventory = new DluPackageInventory();
-        dluPackageInventory.setDluPackageId(myPackage.getPackageId());
-        dluPackageInventory.setDluCreated(myPackage.getCreatedAt());
-        dluPackageInventory.setDluSubmitter(myPackage.getSubmitter().getDisplayName());
-        dluPackageInventory.setDluTis(myPackage.getTisName());
-        dluPackageInventory.setDluPackageType(myPackage.getPackageType());
-        dluPackageInventory.setDluSubjectId(myPackage.getSubjectId());
-        dluPackageInventory.setDluError(false);
-        dluPackageInventory.setDluLfu(myPackage.getLargeFilesChecked());
-        return dluPackageInventory;
+    public String convertAndSendNewPackage(Package myPackage) {
+        DluPackageInventory dluPackageInventory = new DluPackageInventory(myPackage);
+        sendNewPackage(dluPackageInventory);
+        return dluPackageInventory.getDluPackageId();
     }
 
-    public DluFile getDluFileFromAttachment(Attachment attachment, String packageId) {
-        DluFile file = new DluFile();
-        file.setDluFileName(attachment.getFileName());
-        file.setDluFileId(attachment.getId());
-        file.setDluPackageId(packageId);
-        file.setDluMd5Checksum(attachment.getMd5checksum());
-        file.setDluFileSize(attachment.getSize());
-        return file;
-    }
 
-    public String sendNewPackage(Package myPackage) {
-        DluPackageInventory dluPackageInventory = this.getDluPackageInventoryFromPackage(myPackage);
+    public String sendNewPackage(DluPackageInventory dluPackageInventory) {
         String dluPackageInventoryId = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/package",
                 dluPackageInventory, String.class);
         if (dluPackageInventoryId == null) {
-            logger.logErrorMessage(this.getClass(), null, myPackage.getPackageId(),
+            logger.logErrorMessage(this.getClass(), null, dluPackageInventory.getDluPackageId(),
                     this.getClass().getSimpleName() + ".sendNewPackage",
-                    "Error saving package to DMD: " + myPackage.getPackageId());
+                    "Error saving package to DMD: " + dluPackageInventory.getDluPackageId());
         }
         return dluPackageInventoryId;
-
     }
 
     public List sendPackageFiles(Package myPackage) {
         List fileIds = new ArrayList<>();
-        for (Attachment file : myPackage.getAttachments()) {
-            fileIds.add(sendNewFile(file, myPackage.getPackageId()));
+        for (Attachment attachment : myPackage.getAttachments()) {
+            DluFile file = new DluFile(attachment, myPackage.getPackageId());
+            fileIds.add(file.getDluFileId());
         }
         return fileIds;
     }
 
-    public String sendNewFile(Attachment attachment, String packageId) {
-        DluFile file = getDluFileFromAttachment(attachment, packageId);
+    public String sendNewFile(DluFile file) {
         String dluFileId = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/file",
                 file, String.class);
         if (dluFileId == null) {
