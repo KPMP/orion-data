@@ -1,44 +1,32 @@
 package org.kpmp.dmd;
 
-import org.apache.tomcat.jni.Time;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
-import org.kpmp.logging.LoggingService;
+import org.junit.Test;
 import org.kpmp.packages.Package;
-import org.kpmp.packages.PackageService;
 import org.kpmp.users.User;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
 
-class DluPackageInventoryServiceTest {
+public class DluPackageInventoryTest {
 
-    private DluPackageInventoryService dluPackageInventoryService;
-
-    @Mock
-    private RestTemplate restTemplate;
-    @Mock
-    private LoggingService logger;
+    DluPackageInventory dluPackageInventory;
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        dluPackageInventoryService = new DluPackageInventoryService(restTemplate, logger);
+        dluPackageInventory = new DluPackageInventory();
     }
 
     @After
     public void tearDown() throws Exception {
-        dluPackageInventoryService = null;
+        dluPackageInventory = null;
     }
 
     @Test
-    void getDluPackageInventoryFromPackage() {
+    public void testConstructor() {
         Date now = new Date();
         User user = new User();
         user.setDisplayName("name");
@@ -49,7 +37,7 @@ class DluPackageInventoryServiceTest {
         myPackage.setCreatedAt(now);
         myPackage.setSubmitter(user);
         myPackage.setSubjectId("subjid");
-        DluPackageInventory dluPackageInventory = dluPackageInventoryService.getDluPackageInventoryFromPackage(myPackage);
+        DluPackageInventory dluPackageInventory = new DluPackageInventory(myPackage);
         assertEquals("123", dluPackageInventory.getDluPackageId());
         assertEquals("name", dluPackageInventory.getDluSubmitter());
         assertEquals("type", dluPackageInventory.getDluPackageType());
@@ -57,4 +45,5 @@ class DluPackageInventoryServiceTest {
         assertEquals(user.getDisplayName(), dluPackageInventory.getDluSubmitter());
         assertEquals("subjid", dluPackageInventory.getDluSubjectId());
     }
+
 }
