@@ -67,6 +67,9 @@ for file in "${gFiles[@]}"; do
    fi
 done
 
+cd scripts/processLargeFileUpload
+npm install
+cd ../..
 node scripts/processLargeFileUpload/updateMongo.js "${packageId}"
 
 result=$?
