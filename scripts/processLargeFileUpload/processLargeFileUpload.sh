@@ -1,5 +1,5 @@
 #!/bin/bash
-
+command | tee -a "processLargeFileUploadLog.log"
 currentDir=$(pwd)
 
 source "${currentDir}"/.env
