@@ -287,7 +287,10 @@ public class PackageService {
 				} catch (Exception e) {
 					logger.logInfoMessage(PackageService.class, null, packageId,
 							PackageService.class.getSimpleName() + ".movePackageFiles",
-							"There was a problem executing the move file command: " + e.getMessage());
+							zipPackage.format(new Object[] { "Files moved for package: ", packageId }));
+					logger.logErrorMessage(PackageService.class, null, packageId,
+							PackageService.class.getSimpleName() + ".movePackageFiles",
+							e.getMessage() + "There was a problem executing the move file command: ");
 				}
 				if (commandResult.isResult()) {
 					logger.logInfoMessage(PackageService.class, null, packageId,
