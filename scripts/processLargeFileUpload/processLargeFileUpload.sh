@@ -1,64 +1,98 @@
 #!/bin/bash
-
-currentDir=$(pwd)
-
-source "${currentDir}"/.env
-
-echo "**** It would be wise to start me in Screen ***"
-endpoint=$(globus endpoint show --format=json --jq=display_name "${GLOBUS_DROPBOX_ENDPOINT}")
-
-echo "Getting data from: ${endpoint}"
-echo "Package ID:"
-read packageId
-
-packageDir="/data/dataLake/package_$packageId"
-transferStatus="NOT_STARTED"
-mkdir "${packageDir}"
-
-cd ~/globusconnectpersonal-3.0.4/
-globus login
-
-echo "Transferring following files"
-echo $(globus ls "${GLOBUS_DROPBOX_ENDPOINT}":"${GLOBUS_DROPBOX_PATH}${packageId}")
-
-taskId=$(globus transfer --format unix --jmespath 'task_id' "${GLOBUS_DROPBOX_ENDPOINT}":"${GLOBUS_DROPBOX_PATH}${packageId}" "${LOCAL_ENDPOINT}":"${packageDir}" --recursive)
-
-while [[ "$transferStatus" != "SUCCEEDED" && "$transferStatus" != "FAILED" && "$additionalStatus" != "ENDPOINT_ERROR" ]]
-do
-  transferStatus=$(globus task show --format unix --jmespath 'status' "${taskId}")
-  additionalStatus=$(globus task show --format unix --jmespath 'nice_status' "${taskId}")
-done
-
-if [[ "$transferStatus" == "FAILED" || "$additionalStatus" == "ENDPOINT_ERROR" ]]
-then
-	echo "Transfer Failed. Globus task id was: $taskId"
-	exit
+function timestamp() {
+  date +"%Y-%m-%d %H:%M:%S"
+}
+if [ -z "$1" ]
+  then
+    echo $(timestamp) "ERROR -- Missing parameter. Usage: ./processLargeFileUpload.sh [packageID]. " | tee - a log.txt
+    exit -1
 fi
 
-cd "${currentDir}"
+packageId=$1
 
-node updateMongo.js "${packageId}"
+packageDir="/data/dataLake/package_$packageId"
+globusDir="/globus${GLOBUS_DIR}/${packageId}"
+
+function checkEmptyDir {
+   if [ $(ls -A "$1" | wc -l) -eq 0 ]; then
+      echo $(timestamp) "ERROR -- No files found in ${globusDir}. " >. | tee -a log.txt
+      exit -1
+   fi
+}
+
+checkEmptyDir "$globusDir"
+
+mkdir -p "$packageDir"
+rm "$packageDir/metadata.json"
+
+gFiles=("${globusDir}"/*)
+
+directoryAlreadyFound=false
+for file in "${gFiles[@]}"; do
+   if [ -d "$file" ]; then
+      if [ "$directoryAlreadyFound" = true ]; then
+         echo $(timestamp) "ERROR -- Too many subdirectories. " | tee -a log.txt
+         exit -1
+      fi
+      globusDir=$file
+      echo $(timestamp) "Setting Globus path to subdirectory: $file . " | tee -a log.txt
+      directoryAlreadyFound=true
+   fi
+done
+
+checkEmptyDir "$globusDir"
+
+gFiles=("${globusDir}"/*)
+
+for file in "${gFiles[@]}"; do
+   if [ -d "$file" ]; then
+      echo $(timestamp) "ERROR -- Too many nested subdirectories. " | tee -a log.txt
+      exit -1
+   fi
+done
+
+rsync -acv "${globusDir}"/* "${packageDir}"
+
+dlFiles=("${packageDir}"/*)
+
+mismatchedFiles=($(echo ${gFiles[@]##*/} ${dlFiles[@]##*/} | tr ' ' '\n' | sort | uniq -u ))
+
+if [ "${#mismatchedFiles[@]}" -gt 0 ]; then
+   echo $(timestamp) "ERROR -- The following filenames don't match: ${mismatchedFiles[*]}. " | tee -a log.txt
+   exit -1
+fi
+
+for file in "${gFiles[@]}"; do
+   if [ $(stat -c%s "$file") -ne $(stat -c%s "$packageDir/${file##*/}") ]; then
+      echo $(timestamp) "ERROR -- File size mismatch for $file. " | tee -a log.txt
+      exit -1
+   fi
+done
+
+cd scripts/processLargeFileUpload
+npm install
+cd ../..
+node scripts/processLargeFileUpload/updateMongo.js "${packageId}"
 
 result=$?
 
 if [ $result == 0 ]; then
-	java -cp /home/pathadmin/apps/orion-data/build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher
+	java -cp build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher
 	zipResult=$?
 	if [ $zipResult == 0 ]; then
 		data='{"packageId":"'
 		data+=$packageId
 		data+='", "state":"UPLOAD_SUCCEEDED", "largeUploadChecked":true}'
-		url="http://localhost:3060/v1/state/host/${DLU_INSTANCE}"
+		url="http://state-spring:3060/v1/state/host/upload_kpmp_org"
 		curl --header "Content-Type: application/json" --request POST --data "${data}" "${url}"
+                curl "http://localhost:3030/v1/clearCache"
 	else
-		echo "Zip failed...exiting"
+		echo $(timestamp) "Zip failed...exiting. " | tee -a log.txt
 		exit -1
 	fi
 else
-	echo "Mongo update failed...exiting."
+	echo $(timestamp) "Mongo update failed...exiting. " | tee -a log.txt
 	exit -1
 fi
-
-
 
 exit

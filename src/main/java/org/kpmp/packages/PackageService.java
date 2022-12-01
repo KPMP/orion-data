@@ -276,18 +276,24 @@ public class PackageService {
 	}
 
 	protected void movePackageFiles(String packageId) throws IOException, InterruptedException {
-		String[] command = { "/home/gradle/scripts/processLargeFileUpload/processLargeFileUploadNoGlobus.sh",
+		String[] command = { "/home/gradle/scripts/processLargeFileUpload/processLargeFileUpload.sh",
 				packageId };
 		new Thread() {
 			@CacheEvict(value = "packages", allEntries = true)
 			public void run() {
 				CommandResult commandResult = null;
 				try {
+					logger.logInfoMessage(PackageService.class, null, packageId,
+							PackageService.class.getSimpleName() + ".movePackageFiles",
+							zipPackage.format(new Object[] { "Moving files for package ", packageId }));
 					commandResult = processExecutor.executeProcessWithOutput(command);
 				} catch (Exception e) {
+					logger.logInfoMessage(PackageService.class, null, packageId,
+							PackageService.class.getSimpleName() + ".movePackageFiles",
+							zipPackage.format(new Object[] { "Files moved for package: ", packageId }));
 					logger.logErrorMessage(PackageService.class, null, packageId,
 							PackageService.class.getSimpleName() + ".movePackageFiles",
-							"There was a problem executing the move file command: " + e.getMessage());
+							e.getMessage() + "There was a problem executing the move file command: ");
 				}
 				if (commandResult.isResult()) {
 					logger.logInfoMessage(PackageService.class, null, packageId,
@@ -296,7 +302,7 @@ public class PackageService {
 				} else {
 					logger.logErrorMessage(PackageService.class, null, packageId,
 							PackageService.class.getSimpleName() + ".movePackageFiles",
-							"There was a problem moving the files: " + commandResult.getOutput());
+							commandResult.getOutput() + "There was a problem moving the files");
 				}
 			}
 
