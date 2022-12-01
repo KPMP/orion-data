@@ -283,6 +283,9 @@ public class PackageService {
 			public void run() {
 				CommandResult commandResult = null;
 				try {
+					logger.logInfoMessage(PackageService.class, null, packageId,
+							PackageService.class.getSimpleName() + ".movePackageFiles",
+							zipPackage.format(new Object[] { "Moving files for package ", packageId }));
 					commandResult = processExecutor.executeProcessWithOutput(command);
 				} catch (Exception e) {
 					logger.logInfoMessage(PackageService.class, null, packageId,
