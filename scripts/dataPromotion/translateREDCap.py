@@ -4,8 +4,17 @@ allData = []
 with open('/Users/rlreamy/Desktop/redcap/redcap20221024.json') as file:
     for line in file:
         allData.append(json.loads(line))
-
+# Uncomment to get the bp_type file for Rachel
+# print ('redcapid\tbp_type')
 for data in allData:
+
+    # Uncomment to get the bp_type for Rachel
+    # if 'redcap_records' in data:
+    #     transform_questions = data['redcap_records']
+    #     for item in transform_questions:
+    #         if item['field_name'] == 'bp_type':
+    #             print (item['record_id'] + '\t' + item['value'])
+
     if 'redcap_metadata_filtered' in data:
         questions = data['redcap_metadata_filtered']
 
