@@ -4,7 +4,7 @@ function timestamp() {
 }
 if [ -z "$1" ]
   then
-    echo $(timestamp) "ERROR -- Missing parameter. Usage: ./processLargeFileUpload.sh [packageID]. " | tee - a log.txt
+    echo $(timestamp) "ERROR -- Missing parameter. Usage: ./processLargeFileUpload.sh [packageID]. " | tee -a log.txt
     exit -1
 fi
 
