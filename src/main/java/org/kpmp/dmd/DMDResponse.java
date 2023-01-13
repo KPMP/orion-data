@@ -15,11 +15,11 @@ public class DMDResponse {
         this.success = success;
     }
 
-    public List getFiles() {
+    public List getFileList() {
         return fileList;
     }
 
-    public void setFiles(List fileList) {
+    public void setFileList(List fileList) {
         this.fileList = fileList;
     }
 
