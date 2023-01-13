@@ -155,11 +155,10 @@ public class PackageController {
 		try {
 			dmdResponse = dmdService.moveFiles(packageId);
 			if (dmdResponse.isSuccess()) {
-				responseEntity = ResponseEntity.ok().body("The following files were moved successfully: " + String.join(",", dmdResponse.getFileList()));
+				responseEntity = ResponseEntity.ok().body("The following files were moved successfully: " + String.join(",", dmdResponse.getFileNameList()));
 			} else {
 				logger.logErrorMessage(this.getClass(), packageId, dmdResponse.getMessage(), request);
 				responseEntity = ResponseEntity.status(INTERNAL_SERVER_ERROR).body("The following problem occurred while moving the files: " + dmdResponse.getMessage());
-
 			}
 		} catch (IOException e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);

@@ -2,12 +2,44 @@ package org.kpmp.dmd;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DMDResponse {
+
+    public class DMDResponseFile {
+        private String name;
+        private int size;
+        private String checksum;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+        public void setSize(int size) {
+            this.size = size;
+        }
+
+        public String getChecksum() {
+            return checksum;
+        }
+
+        public void setChecksum(String checksum) {
+            this.checksum = checksum;
+        }
+
+    }
     private boolean success;
     @JsonAlias({ "file_list" })
-    private List fileList;
+    private List<DMDResponseFile> fileList;
     private String message;
 
     public boolean isSuccess() {
@@ -18,11 +50,11 @@ public class DMDResponse {
         this.success = success;
     }
 
-    public List getFileList() {
+    public List<DMDResponseFile> getFileList() {
         return fileList;
     }
 
-    public void setFileList(List fileList) {
+    public void setFileList(List<DMDResponseFile> fileList) {
         this.fileList = fileList;
     }
 
@@ -32,5 +64,13 @@ public class DMDResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public List getFileNameList() {
+        ArrayList fileNames = new ArrayList();
+        for (DMDResponseFile file : fileList) {
+            fileNames.add(file.getName());
+        }
+        return fileNames;
     }
 }
