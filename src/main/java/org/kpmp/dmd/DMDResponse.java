@@ -1,9 +1,12 @@
 package org.kpmp.dmd;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 import java.util.List;
 
 public class DMDResponse {
     private boolean success;
+    @JsonAlias({ "file_list" })
     private List fileList;
     private String message;
 
