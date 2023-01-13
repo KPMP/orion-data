@@ -4,7 +4,7 @@ import java.util.List;
 
 public class DMDResponse {
     private boolean success;
-    private List files;
+    private List fileList;
     private String message;
 
     public boolean isSuccess() {
@@ -16,11 +16,11 @@ public class DMDResponse {
     }
 
     public List getFiles() {
-        return files;
+        return fileList;
     }
 
-    public void setFiles(List files) {
-        this.files = files;
+    public void setFiles(List fileList) {
+        this.fileList = fileList;
     }
 
     public String getMessage() {
