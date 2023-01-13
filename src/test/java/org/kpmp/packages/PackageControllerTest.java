@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.dmd.DmdService;
 import org.kpmp.globus.GlobusService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
@@ -51,11 +52,14 @@ public class PackageControllerTest {
 	@Mock
 	private GlobusService globusService;
 
+	@Mock
+	private DmdService dmdService;
+
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator,
-				globusService);
+				globusService, dmdService);
 		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
