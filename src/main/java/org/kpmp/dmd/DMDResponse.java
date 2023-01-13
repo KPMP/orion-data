@@ -7,10 +7,11 @@ import java.util.List;
 
 public class DMDResponse {
 
-    public class DMDResponseFile {
+    public static class DMDResponseFile {
         private String name;
         private int size;
         private String checksum;
+        private String path;
 
         public String getName() {
             return name;
@@ -36,6 +37,13 @@ public class DMDResponse {
             this.checksum = checksum;
         }
 
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
     }
     private boolean success;
     @JsonAlias({ "file_list" })
