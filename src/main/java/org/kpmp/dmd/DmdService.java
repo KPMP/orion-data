@@ -1,5 +1,7 @@
 package org.kpmp.dmd;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.packages.Attachment;
 import org.kpmp.packages.Package;
@@ -74,4 +76,15 @@ public class DmdService {
                 payload, String.class);
         return retPackageId;
     }
+
+    public DMDResponse moveFiles(String packageId) throws JsonProcessingException {
+        HashMap payload = new HashMap<>();
+        String response = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/package/" + packageId + "/move",
+                payload, String.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        DMDResponse dmdResponse = objectMapper.readValue(response, DMDResponse.class);
+        return dmdResponse;
+    }
+
+
 }
