@@ -7,6 +7,12 @@ import java.util.List;
 
 public class DmdResponse {
 
+    private boolean success;
+    @JsonAlias({ "file_list" })
+    private List<DMDResponseFile> fileList;
+    private String message;
+
+
     public static class DMDResponseFile {
         private String name;
         private int size;
@@ -45,11 +51,6 @@ public class DmdResponse {
             this.path = path;
         }
     }
-    private boolean success;
-    @JsonAlias({ "file_list" })
-    private List<DMDResponseFile> fileList;
-    private String message;
-
     public boolean isSuccess() {
         return success;
     }
