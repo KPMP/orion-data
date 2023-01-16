@@ -21,7 +21,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.kpmp.dmd.DluFile;
 import org.kpmp.dmd.DmdService;
 import org.kpmp.externalProcess.CommandBuilder;
 import org.kpmp.externalProcess.CommandResult;
@@ -194,7 +193,7 @@ public class PackageService {
 		return (double) totalSize / megabyteValue;
 	}
 
-	public boolean validatePackageForZipping(String packageId, User user) {
+	public boolean validatePackage(String packageId, User user) {
 		Package packageInformation = findPackage(packageId);
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
