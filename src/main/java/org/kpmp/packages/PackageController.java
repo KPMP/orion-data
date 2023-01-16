@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.kpmp.dmd.DmdResponse;
+import org.kpmp.dmd.DmdService;
 import org.kpmp.globus.GlobusService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
@@ -54,15 +56,18 @@ public class PackageController {
 	private UniversalIdGenerator universalIdGenerator;
 	private GlobusService globusService;
 
+	private DmdService dmdService;
+
 	@Autowired
 	public PackageController(PackageService packageService, LoggingService logger,
 			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator,
-			GlobusService globusService) {
+			GlobusService globusService, DmdService dmdService) {
 		this.packageService = packageService;
 		this.logger = logger;
 		this.shibUserService = shibUserService;
 		this.universalIdGenerator = universalIdGenerator;
 		this.globusService = globusService;
+		this.dmdService = dmdService;
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
@@ -146,12 +151,21 @@ public class PackageController {
 	@RequestMapping(value = "/v1/packages/{packageId}/files/move", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity movePackageFiles(@PathVariable String packageId, HttpServletRequest request) {
 		ResponseEntity responseEntity;
+		DmdResponse dmdResponse;
 		try {
-			packageService.movePackageFiles(packageId);
-			responseEntity = ResponseEntity.ok().body("Moving files for package " + packageId);
-		} catch (IOException | InterruptedException e) {
+			logger.logInfoMessage(this.getClass(), packageId, "Moving files for package " + packageId, request);
+			dmdResponse = dmdService.moveFiles(packageId);
+			if (dmdResponse.isSuccess()) {
+				String successMessage = "The following files were moved successfully: " + String.join(",", dmdResponse.getFileNameList());
+				logger.logInfoMessage(this.getClass(), packageId, successMessage, request);
+				responseEntity = ResponseEntity.ok().body(successMessage);
+			} else {
+				logger.logErrorMessage(this.getClass(), packageId, dmdResponse.getMessage(), request);
+				responseEntity = ResponseEntity.status(INTERNAL_SERVER_ERROR).body("The following problem occurred while moving the files: " + dmdResponse.getMessage());
+			}
+		} catch (IOException e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-			responseEntity = ResponseEntity.status(INTERNAL_SERVER_ERROR).body("There was a problem moving the files.");
+			responseEntity = ResponseEntity.status(INTERNAL_SERVER_ERROR).body("There was a server error while moving the files.");
 		}
 		return responseEntity;
 	}

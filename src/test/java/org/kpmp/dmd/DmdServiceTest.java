@@ -1,5 +1,6 @@
 package org.kpmp.dmd;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,13 +9,17 @@ import org.kpmp.packages.Attachment;
 import org.kpmp.packages.Package;
 import org.kpmp.users.User;
 import org.mockito.Mock;
+
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
+import static org.mockito.Mockito.when;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -86,5 +91,17 @@ public class DmdServiceTest {
         DluPackageInventory dluPackageInventory = new DluPackageInventory();
         dmdService.sendNewPackage(dluPackageInventory);
         verify(restTemplate).postForObject("dmd.hostname" + "/uri/to/dmd/endpoint/package", dluPackageInventory, String.class);
+    }
+
+    @Test
+    public void testMoveFiles() throws JsonProcessingException {
+        HashMap payload = new HashMap<>();
+        when(restTemplate.postForObject("dmd.hostname" + "/uri/to/dmd/endpoint/package/123/move", payload, String.class))
+                .thenReturn("{\"success\": true, \"message\":\"message\", \"file_list\":[{\"name\":\"file name\", \"size\": 123, \"path\":\"file path\", \"checksum\": \"checksum val\"}]}");
+        DmdResponse response = dmdService.moveFiles("123");
+        verify(restTemplate).postForObject("dmd.hostname" + "/uri/to/dmd/endpoint/package/123/move", payload, String.class);
+        assertEquals("message", response.getMessage());
+        assertTrue(response.isSuccess());
+        assertEquals("file name", response.getFileNameList().get(0));
     }
 }
