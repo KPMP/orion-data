@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.kpmp.dmd.DMDResponse;
+import org.kpmp.dmd.DmdResponse;
 import org.kpmp.dmd.DmdService;
 import org.kpmp.globus.GlobusService;
 import org.kpmp.logging.LoggingService;
@@ -151,7 +151,7 @@ public class PackageController {
 	@RequestMapping(value = "/v1/packages/{packageId}/files/move", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity movePackageFiles(@PathVariable String packageId, HttpServletRequest request) {
 		ResponseEntity responseEntity;
-		DMDResponse dmdResponse;
+		DmdResponse dmdResponse;
 		try {
 			dmdResponse = dmdService.moveFiles(packageId);
 			if (dmdResponse.isSuccess()) {

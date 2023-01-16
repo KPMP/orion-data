@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DMDResponse {
+public class DmdResponse {
 
     public static class DMDResponseFile {
         private String name;

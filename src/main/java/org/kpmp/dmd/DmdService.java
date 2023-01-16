@@ -77,12 +77,12 @@ public class DmdService {
         return retPackageId;
     }
 
-    public DMDResponse moveFiles(String packageId) throws JsonProcessingException {
+    public DmdResponse moveFiles(String packageId) throws JsonProcessingException {
         HashMap payload = new HashMap<>();
         String response = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/package/" + packageId + "/move",
                 payload, String.class);
         ObjectMapper objectMapper = new ObjectMapper();
-        DMDResponse dmdResponse = objectMapper.readValue(response, DMDResponse.class);
+        DmdResponse dmdResponse = objectMapper.readValue(response, DmdResponse.class);
         return dmdResponse;
     }
 
