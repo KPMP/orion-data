@@ -9,8 +9,7 @@ import org.springframework.context.annotation.FilterType;
 @Configuration
 @EnableCaching
 @ComponentScan(basePackages = {
-		"org.kpmp" }, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-				RegenerateZipFiles.class }))
+		"org.kpmp" }, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {}))
 public class Application {
 
 	public static void main(String[] args) {
