@@ -179,7 +179,7 @@ public class PackageController {
 		FileUploadResponse fileUploadResponse;
 		String message = finish.format(new Object[] { "Finishing file upload with packageId: ", packageId });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
-		if (packageService.validatePackageForZipping(packageId, shibUserService.getUser(request))) {
+		if (packageService.validatePackage(packageId, shibUserService.getUser(request))) {
 			try {
 				packageService.calculateAndSaveChecksums(packageId);
 				fileUploadResponse = new FileUploadResponse(true);
@@ -190,18 +190,8 @@ public class PackageController {
 				fileUploadResponse = new FileUploadResponse(false);
 				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
 			}
-			try {
-				packageService.createZipFile(packageId, cleanHostName, shibUserService.getUser(request));
-				fileUploadResponse.setSuccess(true);
-			} catch (Exception e) {
-				String errorMessage = finish
-						.format(new Object[] { "error getting metadata for package id: ", packageId });
-				logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
-				fileUploadResponse.setSuccess(false);
-				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
-			}
 		} else {
-			String errorMessage = finish.format(new Object[] { "Unable to zip package with package id: ", packageId });
+			String errorMessage = finish.format(new Object[] { "The files on disk did not match the database: ", packageId });
 			logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
 			fileUploadResponse = new FileUploadResponse(false);
 			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
