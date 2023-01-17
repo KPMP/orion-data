@@ -110,64 +110,6 @@ public class PackageService {
 		}
 		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 	}
-
-	@CacheEvict(value = "packages", allEntries = true)
-	public void createZipFile(String packageId, String origin, User user) throws Exception {
-
-		Package packageInfo = packageRepository.findByPackageId(packageId);
-
-		List<Attachment> attachments = packageInfo.getAttachments();
-		String displaySize = FileUtils.byteCountToDisplaySize(getTotalSizeOfAttachmentsInBytes(attachments));
-		Date finishUploadTime = new Date();
-		long duration = calculateDurationInSeconds(packageInfo.getCreatedAt(), finishUploadTime);
-		double uploadRate = calculateUploadRate(duration, attachments);
-		DecimalFormat rateFormat = new DecimalFormat("###.###");
-
-		logger.logInfoMessage(this.getClass(), user, packageId, this.getClass().getSimpleName() + ".createZipFile",
-				fileUploadFinishTiming
-						.format(new Object[] { finishUploadTime, user.toString(), packageId, attachments.size(),
-								displaySize, duration + " seconds", rateFormat.format(uploadRate) + " MB/sec" }));
-
-		new Thread() {
-			@CacheEvict(value = "packages", allEntries = true)
-			public void run() {
-				try {
-					String packageMetadata = packageRepository.getJSONByPackageId(packageId);
-					File metadataJson = packageFileHandler.saveFile(packageMetadata, packageId, "metadata.json", true);
-
-					String[] zipCommand = commandBuilder.buildZipCommand(packageId);
-					boolean success = processExecutor.executeProcess(zipCommand);
-					metadataJson.delete();
-
-					if (success) {
-						logger.logInfoMessage(PackageService.class, null, packageId,
-								PackageService.class.getSimpleName() + ".createZipFile",
-								zipPackage.format(new Object[] { "Zip file created for package: ", packageId }));
-						long zipDuration = calculateDurationInSeconds(finishUploadTime, new Date());
-						logger.logInfoMessage(PackageService.class, user, packageId,
-								PackageService.class.getSimpleName() + ".createZipFile",
-								zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
-										packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
-
-						stateHandler.sendStateChange(packageId, uploadSucceededState, null, null, origin);
-
-					} else {
-						logger.logErrorMessage(PackageService.class, user, packageId,
-								PackageService.class.getSimpleName(), "Unable to zip package");
-						sendStateChangeEvent(packageId, uploadFailedState, null, "Unable to zip package", origin);
-						dmdService.setPackageInError(packageId);
-					}
-				} catch (Exception e) {
-					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
-							e.getMessage());
-					sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), origin);
-					dmdService.setPackageInError(packageId);
-				}
-			}
-
-		}.start();
-	}
-
 	private double calculateUploadRate(long duration, List<Attachment> attachments) {
 		double fileSizeInMeg = calculateFileSizeInMeg(attachments);
 		return (double) fileSizeInMeg / duration;

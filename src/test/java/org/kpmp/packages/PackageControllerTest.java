@@ -227,7 +227,6 @@ public class PackageControllerTest {
 
 		FileUploadResponse result = controller.finishUpload("3545", "origin", request);
 
-		verify(packageService).createZipFile("3545", "origin", user);
 		verify(packageService).validatePackage("3545", user);
 		assertEquals(true, result.isSuccess());
 		verify(logger).logInfoMessage(PackageController.class, "3545", "Finishing file upload with packageId:  3545",
@@ -241,11 +240,9 @@ public class PackageControllerTest {
 		User user = mock(User.class);
 		when(shibUserService.getUser(request)).thenReturn(user);
 		when(packageService.validatePackage("3545", user)).thenReturn(true);
-		doThrow(new JSONException("OOF")).when(packageService).createZipFile("3545", "origin", user);
 
 		FileUploadResponse result = controller.finishUpload("3545", "origin", request);
 
-		verify(packageService).createZipFile("3545", "origin", user);
 		verify(packageService).validatePackage("3545", user);
 		assertEquals(false, result.isSuccess());
 		verify(logger).logErrorMessage(PackageController.class, "3545", "error getting metadata for package id:  3545",
@@ -264,7 +261,6 @@ public class PackageControllerTest {
 
 		FileUploadResponse result = controller.finishUpload("3545", "origin", request);
 
-		verify(packageService, times(0)).createZipFile("3545", "origin", user);
 		verify(packageService).validatePackage("3545", user);
 		assertEquals(false, result.isSuccess());
 		verify(logger).logErrorMessage(PackageController.class, "3545", "Unable to zip package with package id:  3545",
