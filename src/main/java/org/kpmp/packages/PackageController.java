@@ -44,6 +44,9 @@ public class PackageController {
 	@Value("${package.state.upload.failed}")
 	private String uploadFailedState;
 
+	@Value("${package.state.upload.succeeded}")
+	private String uploadSucceededState;
+
 	private static final MessageFormat finish = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat(
 			"Posting file: {0} to package with id: {1}, filesize: {2}, chunk: {3} out of {4} chunks");
@@ -183,6 +186,7 @@ public class PackageController {
 			try {
 				packageService.calculateAndSaveChecksums(packageId);
 				fileUploadResponse = new FileUploadResponse(true);
+				packageService.sendStateChangeEvent(packageId, uploadSucceededState, null, cleanHostName);
 			} catch (Exception e) {
 				String errorMessage = finish
 						.format(new Object[] { "There was a problem calculating the checksum for package ", packageId });

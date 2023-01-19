@@ -7,25 +7,6 @@
 ## Documentation
 Visit [kpmp.github.io/dlu](http://kpmp.io.github.io/dlu)
 
-### Rezipping files for the DLU (RegenerateZipFiles)
-To regenerate zip files:
-1. Connect to Mongo by opening ssh session to prod-upload
-- `ssh <username>@172.20.66.165 -L 27017:localhost:27017`
-2. Update mongo package with the desired change
-3. Set `regenerateZip` to `true` on the package
-4. login to upload and login to kpmp-appuser
-- `ssh prod-upload`
-- `sudo su - kpmp-appuser`
-5. Open a screen session to prevent issues with long-running zips
-- `screen -S rezipping` (-r to recover)
-6. Login to the orion spring container
-- `docker exec -it orion-spring bash`
-7. Run RegenerateZipFiles script
-- `java -cp build/libs/orion-data.jar -Dloader.main=org.kpmp.RegenerateZipFiles org.springframework.boot.loader.PropertiesLauncher`
-8. Navigate to clearCache URL to clear the old cache
-- `https://upload.kpmp.org/api/v1/clearCache`
-
-
 ## Removing packages
 1. Connect to Mongo by opening ssh session to prod-upload
 - `ssh <username>@172.20.66.165 -L 27017:localhost:27017`
