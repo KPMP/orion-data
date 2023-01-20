@@ -19,6 +19,8 @@ public class DmdResponse {
         private String checksum;
         private String path;
 
+        @JsonAlias({ "file_id" })
+        private String fileId;
         public String getName() {
             return name;
         }
@@ -49,6 +51,14 @@ public class DmdResponse {
 
         public void setPath(String path) {
             this.path = path;
+        }
+
+        public String getFileId() {
+            return fileId;
+        }
+
+        public void setFileId(String fileId) {
+            this.fileId = fileId;
         }
     }
     public boolean isSuccess() {
