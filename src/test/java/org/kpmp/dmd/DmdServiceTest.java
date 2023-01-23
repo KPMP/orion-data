@@ -97,7 +97,7 @@ public class DmdServiceTest {
     public void testMoveFiles() throws JsonProcessingException {
         HashMap payload = new HashMap<>();
         when(restTemplate.postForObject("dmd.hostname" + "/uri/to/dmd/endpoint/package/123/move", payload, String.class))
-                .thenReturn("{\"success\": true, \"message\":\"message\", \"file_list\":[{\"name\":\"file name\", \"size\": 123, \"path\":\"file path\", \"checksum\": \"checksum val\"}]}");
+                .thenReturn("{\"success\": true, \"message\":\"message\", \"file_list\":[{\"name\":\"file name\", \"size\": 123, \"path\":\"file path\", \"checksum\": \"checksum val\", \"file_id\": \"1234\"}]}");
         DmdResponse response = dmdService.moveFiles("123");
         verify(restTemplate).postForObject("dmd.hostname" + "/uri/to/dmd/endpoint/package/123/move", payload, String.class);
         assertEquals("message", response.getMessage());
