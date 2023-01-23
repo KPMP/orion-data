@@ -36,12 +36,6 @@ public class FilePathHelperTest {
 	}
 
 	@Test
-	public void testGetZipFileName() throws Exception {
-		assertEquals(File.separator + "data" + File.separator + "package_223" + File.separator + "223.zip",
-				filePathHelper.getZipFileName("223"));
-	}
-
-	@Test
 	public void testGetFilenames() throws Exception {
 		Path packagePath = Files.createTempDirectory("data");
 		packagePath.toFile().deleteOnExit();

@@ -89,7 +89,6 @@ public class PackageServiceTest {
 		when(uploadedPackage.getString("_id")).thenReturn("packageId");
 		List<JSONObject> expectedResults = Arrays.asList(uploadedPackage);
 		when(packageRepository.findAll()).thenReturn(expectedResults);
-		when(filePathHelper.getZipFileName("packageId")).thenReturn("/data/packageId/packageId.zip");
 
 		List<PackageView> packages = service.findAllPackages();
 
@@ -174,39 +173,6 @@ public class PackageServiceTest {
 		} catch (Exception actual) {
 			assertEquals(expectedException, actual);
 		}
-	}
-
-	@Test
-	public void testGetPackageFile_doesntExist() throws Exception {
-		String packageId = "abc-345";
-		Path packagePath = Files.createTempDirectory("data");
-		packagePath.toFile().deleteOnExit();
-		when(filePathHelper.getZipFileName(packageId))
-				.thenReturn(packagePath.toString() + File.separator + packageId + ".zip");
-
-		try {
-			service.getPackageFile(packageId);
-			fail("expected a RuntimeException");
-		} catch (RuntimeException expectedException) {
-			assertEquals("The file was not found: " + packageId + ".zip", expectedException.getMessage());
-		}
-	}
-
-	@Test
-	public void testGetPackageFile_exists() throws Exception {
-		String packageId = "abc-345";
-		Path packagePath = Files.createTempDirectory("data");
-		packagePath.toFile().deleteOnExit();
-		String expectedFilePathString = Paths.get(packagePath.toString(), packageId + ".zip").toString();
-		File file = new File(expectedFilePathString);
-		file.createNewFile();
-		file.deleteOnExit();
-		when(filePathHelper.getZipFileName(packageId)).thenReturn(expectedFilePathString);
-
-		Path actualFilePath = service.getPackageFile(packageId);
-
-		assertEquals(expectedFilePathString, actualFilePath.toString());
-		assertTrue(actualFilePath.toFile().exists());
 	}
 
 	// It is unfortunate, but this test works well locally, but does not work on

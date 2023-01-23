@@ -83,15 +83,6 @@ public class PackageService {
 		return packageViews;
 	}
 
-	public Path getPackageFile(String packageId) {
-		String zipFileName = filePathHelper.getZipFileName(packageId);
-		Path filePath = Paths.get(zipFileName);
-		if (!filePath.toFile().exists()) {
-			throw new RuntimeException("The file was not found: " + filePath.getFileName().toString());
-		}
-		return filePath;
-	}
-
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
 		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
 		Package myPackage = packageRepository.findByPackageId(packageId);
