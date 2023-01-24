@@ -21,12 +21,10 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.dmd.DluFile;
+import org.kpmp.users.User;import org.kpmp.dmd.DluFile;
 import org.kpmp.dmd.DmdService;
-import org.kpmp.externalProcess.CommandBuilder;
-import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.logging.LoggingService;
-import org.kpmp.users.User;
+
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.LoggerFactory;
@@ -52,16 +50,11 @@ public class PackageServiceTest {
 	private LoggingService logger;
 	@Mock
 	private StateHandlerService stateHandlerService;
-	@Mock
-	private CommandBuilder commandBuilder;
-	@Mock
-	private ProcessExecutor processExecutor;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService,
-				commandBuilder, processExecutor, dmdService, logger);
+		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService, dmdService, logger);
 		ReflectionTestUtils.setField(service, "uploadSucceededState", "UPLOAD_SUCCEEDED");
 	}
 

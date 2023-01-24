@@ -18,13 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.kpmp.dmd.DmdService;
-import org.kpmp.externalProcess.CommandBuilder;
-import org.kpmp.externalProcess.CommandResult;
-import org.kpmp.externalProcess.ProcessExecutor;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,19 +49,14 @@ public class PackageService {
 	private DmdService dmdService;
 	private LoggingService logger;
 	private StateHandlerService stateHandler;
-	private CommandBuilder commandBuilder;
-	private ProcessExecutor processExecutor;
 
 	@Autowired
 	public PackageService(PackageFileHandler packageFileHandler, FilePathHelper filePathHelper,
-						  CustomPackageRepository packageRepository, StateHandlerService stateHandler, CommandBuilder commandBuilder,
-						  ProcessExecutor processExecutor, DmdService dmdService, LoggingService logger) {
+						  CustomPackageRepository packageRepository, StateHandlerService stateHandler, DmdService dmdService, LoggingService logger) {
 		this.filePathHelper = filePathHelper;
 		this.packageFileHandler = packageFileHandler;
 		this.packageRepository = packageRepository;
 		this.stateHandler = stateHandler;
-		this.commandBuilder = commandBuilder;
-		this.processExecutor = processExecutor;
 		this.dmdService = dmdService;
 		this.logger = logger;
 	}
@@ -206,41 +197,6 @@ public class PackageService {
 		}
 		return sameFiles;
 	}
-
-	protected void movePackageFiles(String packageId) throws IOException, InterruptedException {
-		String[] command = { "/home/gradle/scripts/processLargeFileUpload/processLargeFileUpload.sh",
-				packageId };
-		new Thread() {
-			@CacheEvict(value = "packages", allEntries = true)
-			public void run() {
-				CommandResult commandResult = null;
-				try {
-					logger.logInfoMessage(PackageService.class, null, packageId,
-							PackageService.class.getSimpleName() + ".movePackageFiles",
-							zipPackage.format(new Object[] { "Moving files for package ", packageId }));
-					commandResult = processExecutor.executeProcessWithOutput(command);
-				} catch (Exception e) {
-					logger.logInfoMessage(PackageService.class, null, packageId,
-							PackageService.class.getSimpleName() + ".movePackageFiles",
-							zipPackage.format(new Object[] { "Files moved for package: ", packageId }));
-					logger.logErrorMessage(PackageService.class, null, packageId,
-							PackageService.class.getSimpleName() + ".movePackageFiles",
-							e.getMessage() + "There was a problem executing the move file command: ");
-				}
-				if (commandResult.isResult()) {
-					logger.logInfoMessage(PackageService.class, null, packageId,
-							PackageService.class.getSimpleName() + ".movePackageFiles",
-							zipPackage.format(new Object[] { "Files moved for package: ", packageId }));
-				} else {
-					logger.logErrorMessage(PackageService.class, null, packageId,
-							PackageService.class.getSimpleName() + ".movePackageFiles",
-							commandResult.getOutput() + "There was a problem moving the files");
-				}
-			}
-
-		}.start();
-	}
-
 	private List<String> getAttachmentFilenames(Package packageInformation) {
 		ArrayList<String> filenames = new ArrayList<>();
 		List<Attachment> attachments = packageInformation.getAttachments();
