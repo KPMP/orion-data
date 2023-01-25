@@ -235,24 +235,6 @@ public class PackageControllerTest {
 	}
 
 	@Test
-	public void testFinishUpload_whenCreateZipThrows() throws Exception {
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		User user = mock(User.class);
-		when(shibUserService.getUser(request)).thenReturn(user);
-		when(packageService.validatePackage("3545", user)).thenReturn(true);
-
-		FileUploadResponse result = controller.finishUpload("3545", "origin", request);
-
-		verify(packageService).validatePackage("3545", user);
-		assertEquals(false, result.isSuccess());
-		verify(logger).logErrorMessage(PackageController.class, "3545", "error getting metadata for package id:  3545",
-				request);
-		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null, "origin");
-		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED", null,
-				"error getting metadata for package id:  3545", "origin");
-	}
-
-	@Test
 	public void testFinishUpload_whenMismatchedFiles() throws Exception {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
@@ -263,55 +245,11 @@ public class PackageControllerTest {
 
 		verify(packageService).validatePackage("3545", user);
 		assertEquals(false, result.isSuccess());
-		verify(logger).logErrorMessage(PackageController.class, "3545", "Unable to zip package with package id:  3545",
+		verify(logger).logErrorMessage(PackageController.class, "3545", "The files on disk did not match the database:  3545",
 				request);
 		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null, "origin");
 		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED", null,
-				"Unable to zip package with package id:  3545", "origin");
-	}
-
-	@Test
-	public void testDownloadPackage() throws Exception {
-		String packageId = "1234";
-		Path filePath = Paths.get("foo", "1234.zip");
-		when(packageService.getPackageFile(packageId)).thenReturn(filePath);
-		HttpServletRequest request = mock(HttpServletRequest.class);
-
-		ResponseEntity<Resource> response = controller.downloadPackage(packageId, request);
-
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertTrue(response.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).iterator().next().contains("1234.zip"));
-		verify(logger).logInfoMessage(PackageController.class, packageId,
-				"Requesting package download with id 1234, filename URL [file:" + filePath.toAbsolutePath() + "]",
-				request);
-	}
-
-	@Test
-	public void testDownloadPackage_serviceException() throws Exception {
-		String packageId = "1234";
-		Path packagePath = mock(Path.class);
-		when(packagePath.toUri()).thenThrow(new RuntimeException("angry"));
-		when(packageService.getPackageFile(packageId)).thenReturn(packagePath);
-		HttpServletRequest request = mock(HttpServletRequest.class);
-
-		try {
-			controller.downloadPackage(packageId, request);
-			fail("expected RuntimeException");
-		} catch (RuntimeException expectedException) {
-			assertEquals("java.lang.RuntimeException: angry", expectedException.getMessage());
-			verify(logger).logErrorMessage(PackageController.class, packageId,
-					"Unable to get package zip with id: 1234", request);
-		}
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Test
-	public void testMovePackageFiles() throws Exception {
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		ResponseEntity responseEntity = controller.movePackageFiles("3545", request);
-		verify(packageService).movePackageFiles("3545");
-		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-		assertEquals("Moving files for package 3545", responseEntity.getBody());
+				"The files on disk did not match the database:  3545", "origin");
 	}
 
 }

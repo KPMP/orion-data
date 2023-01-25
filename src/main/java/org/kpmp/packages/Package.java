@@ -30,8 +30,6 @@ public class Package {
 	@DBRef(lazy = false)
 	private User submitter;
 	@Nullable
-	private Boolean regenerateZip = false;
-	@Nullable
 	private Boolean largeFilesChecked = false;
 
 	@Field("files")
@@ -127,20 +125,12 @@ public class Package {
 		this.submitter = submitter;
 	}
 
-	public Boolean getRegenerateZip() {
-		return regenerateZip;
-	}
-
-	public void setRegenerateZip(Boolean regenerateZip) {
-		this.regenerateZip = regenerateZip;
-	}
-
 	@Override
 	public String toString() {
 		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
 				+ ", submitterId: " + submitter.getId() + ", protocol: " + protocol + ", subjectId: " + subjectId
 				+ ", experimentDate: " + experimentDate + ", description: " + description + ", tisName: " + tisName
-				+ ", number of attachments: " + attachments.size() + ", regenerateZip: " + regenerateZip;
+				+ ", number of attachments: " + attachments.size();
 	}
 
 }

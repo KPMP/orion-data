@@ -131,24 +131,6 @@ public class PackageController {
 		return new FileUploadResponse(true);
 	}
 
-	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Resource> downloadPackage(@PathVariable String packageId,
-			HttpServletRequest request) {
-		Resource resource = null;
-		try {
-			resource = new UrlResource(packageService.getPackageFile(packageId).toUri());
-		} catch (Exception e) {
-			logger.logErrorMessage(this.getClass(), packageId, "Unable to get package zip with id: " + packageId,
-					request);
-			throw new RuntimeException(e);
-		}
-		String message = fileDownloadRequest.format(new Object[] { packageId, resource.toString() });
-		logger.logInfoMessage(this.getClass(), packageId, message, request);
-
-		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-				.body(resource);
-	}
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/v1/packages/{packageId}/files/move", method = RequestMethod.POST)
