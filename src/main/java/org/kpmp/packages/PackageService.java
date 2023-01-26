@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -37,12 +35,8 @@ public class PackageService {
 	@Value("${package.state.upload.failed}")
 	private String uploadFailedState;
 
-	private static final MessageFormat zipPackage = new MessageFormat("{0} {1}");
-	private static final MessageFormat fileUploadFinishTiming = new MessageFormat(
-			"Timing|end|{0}|{1}|{2}|{3} files|{4}|{5}|{6}");
-	private static final MessageFormat zipTiming = new MessageFormat("Timing|zip|{0}|{1}|{2}|{3} files|{4}|{5}");
-	private static final MessageFormat zipIssue = new MessageFormat("ERROR|zip|{0}");
-
+	private static final MessageFormat packageIssue = new MessageFormat("{0} {1}");
+	private static final MessageFormat fileIssue = new MessageFormat("ERROR|zip|{0}");
 	private PackageFileHandler packageFileHandler;
 	private FilePathHelper filePathHelper;
 	private CustomPackageRepository packageRepository;
@@ -149,14 +143,14 @@ public class PackageService {
 				} else {
 					logger.logInfoMessage(PackageService.class, null, packageID,
 							PackageService.class.getSimpleName() + ".calculateFileChecksums",
-							zipPackage.format(new Object[] { "Checksum already exists for file " + file.getFileName(),
+							packageIssue.format(new Object[] { "Checksum already exists for file " + file.getFileName(),
 									packageID }));
 				}
 			}
 		} else {
 			logger.logInfoMessage(PackageService.class, null, packageID,
 					PackageService.class.getSimpleName() + ".calculateFileChecksums",
-					zipPackage.format(new Object[] { "No files found in this package", packageID }));
+					packageIssue.format(new Object[] { "No files found in this package", packageID }));
 		}
 		return files;
 	}
@@ -179,7 +173,7 @@ public class PackageService {
 			String filename = attachment.getFileName();
 			if (new File(packagePath + filename).length() != attachment.getSize()) {
 				logger.logErrorMessage(this.getClass(), user, packageId,
-						this.getClass().getSimpleName() + ".validateFileLengthsMatch", zipIssue.format(new Object[] {
+						this.getClass().getSimpleName() + ".validateFileLengthsMatch", fileIssue.format(new Object[] {
 								"File size in metadata does not match file size on disk for file: " + filename }));
 				everythingMatches = false;
 			}
@@ -193,7 +187,7 @@ public class PackageService {
 		if (!sameFiles) {
 			logger.logErrorMessage(this.getClass(), user, packageId,
 					this.getClass().getSimpleName() + ".checkFilesExist",
-					zipIssue.format(new Object[] { "File list in metadata does not match file list on disk" }));
+					fileIssue.format(new Object[] { "File list in metadata does not match file list on disk" }));
 		}
 		return sameFiles;
 	}
