@@ -24,11 +24,13 @@ public class PackageFilesValidationService {
 	public PackageValidationResponse matchFiles(PackageFilesRequest request)
 			throws JsonProcessingException, IOException {
 		List<GlobusFileListing> filesInGlobus = globus.getFilesAtEndpoint(request.getPackageId());
+		String message = globus.checkDirectoryExists(request.getPackageId());
 		if (containsOnlyDirectory(filesInGlobus)) {
 			filesInGlobus = globus.getFilesAtEndpoint(request.getPackageId() + "/" + filesInGlobus.get(0).getName());
 		}
 
 		PackageValidationResponse response = new PackageValidationResponse();
+		response.setMessage(message);
 		List<String> globusFiles = getGlobusFileNames(filesInGlobus);
 		List<String> filesFromMetadata = processIncomingFilenames(request);
 		response.setFilesFromMetadata(filesFromMetadata);
