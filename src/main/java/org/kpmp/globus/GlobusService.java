@@ -69,9 +69,10 @@ public class GlobusService {
 		String fullDirName = topDirectory + "/" + packageId;
 		GenericUrl url = new GenericUrl(API_URL + "/operation/endpoint/" + endpointID + "/ls?path=" + fullDirName);
 		HttpRequest request = requestFactory.buildGetRequest(url);
-		HttpResponse response = request.execute();
-		if (response.getStatusCode() == 404) {
-			message = response.parseAsString() + " | " + response.getStatusMessage();
+		try {
+			HttpResponse response = request.execute();
+		} catch (IOException e) {
+			message = e.getMessage();
 		}
 		return message;
 	}

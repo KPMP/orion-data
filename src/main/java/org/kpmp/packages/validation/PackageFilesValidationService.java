@@ -22,34 +22,40 @@ public class PackageFilesValidationService {
 	}
 
 	public PackageValidationResponse matchFiles(PackageFilesRequest request)
-			throws JsonProcessingException, IOException {
-		String message = globus.checkDirectoryExists(request.getPackageId());
+			throws JsonProcessingException {
 		PackageValidationResponse response = new PackageValidationResponse();
-		if (message.equals("")) {
-			List<GlobusFileListing> filesInGlobus = globus.getFilesAtEndpoint(request.getPackageId());
-			if (containsOnlyDirectory(filesInGlobus)) {
+		List<GlobusFileListing> filesInGlobus = null;
+		try {
+			filesInGlobus = globus.getFilesAtEndpoint(request.getPackageId());
+		} catch (IOException e) {
+			response.setMessage(e.getMessage());
+			response.setDirectoryExists(false);
+		}
+		if (containsOnlyDirectory(filesInGlobus)) {
+			try {
 				filesInGlobus = globus.getFilesAtEndpoint(request.getPackageId() + "/" + filesInGlobus.get(0).getName());
-			}
-
-			response.setMessage(message);
-			List<String> globusFiles = getGlobusFileNames(filesInGlobus);
-			List<String> filesFromMetadata = processIncomingFilenames(request);
-			response.setFilesFromMetadata(filesFromMetadata);
-			response.setFilesInGlobus(globusFiles);
-
-			for (String filename : filesFromMetadata) {
-				if (!globusFiles.contains(filename)) {
-					response.addMetadataFileNotFoundInGlobus(filename);
-				}
-			}
-
-			for (String fileInGlobus : globusFiles) {
-				if (!filesFromMetadata.contains(fileInGlobus) && !fileInGlobus.startsWith("METADATA")) {
-					response.addGlobusFileNotFoundInMetadata(fileInGlobus);
-				}
+			} catch (IOException e) {
+				response.setMessage(e.getMessage());
+				response.setDirectoryExists(false);
 			}
 		}
-		response.setMessage(message);
+
+		List<String> globusFiles = getGlobusFileNames(filesInGlobus);
+		List<String> filesFromMetadata = processIncomingFilenames(request);
+		response.setFilesFromMetadata(filesFromMetadata);
+		response.setFilesInGlobus(globusFiles);
+
+		for (String filename : filesFromMetadata) {
+			if (!globusFiles.contains(filename)) {
+				response.addMetadataFileNotFoundInGlobus(filename);
+			}
+		}
+
+		for (String fileInGlobus : globusFiles) {
+			if (!filesFromMetadata.contains(fileInGlobus) && !fileInGlobus.startsWith("METADATA")) {
+				response.addGlobusFileNotFoundInMetadata(fileInGlobus);
+			}
+		}
 		response.setPackageId(request.getPackageId());
 		return response;
 	}
@@ -74,8 +80,7 @@ public class PackageFilesValidationService {
 		return incomingFiles;
 	}
 
-	private List<String> getGlobusFileNames(List<GlobusFileListing> globusFiles)
-			throws JsonProcessingException, IOException {
+	private List<String> getGlobusFileNames(List<GlobusFileListing> globusFiles) {
 		List<String> deliveredFiles = new ArrayList<String>();
 		for (GlobusFileListing globusListingResponse : globusFiles) {
 			deliveredFiles.add(globusListingResponse.getName());
