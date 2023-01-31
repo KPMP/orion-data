@@ -88,7 +88,6 @@ public class CustomPackageRepository {
 		document.put(PackageKeys.SUBMITTER.getKey(), userRef);
 		document.put(PackageKeys.CREATED_AT.getKey(), startTime);
 		document.put(PackageKeys.ID.getKey(), packageId);
-		document.put(PackageKeys.REGENERATE_ZIP.getKey(), false);
 
 		MongoCollection<Document> collection = mongoTemplate.getCollection(PACKAGES_COLLECTION);
 		collection.insertOne(document);
@@ -171,7 +170,6 @@ public class CustomPackageRepository {
 		String json = document.toJson(settings, codec);
 
 		JSONObject jsonObject = setUserInformation(json);
-		jsonObject.remove(PackageKeys.REGENERATE_ZIP.getKey());
 		jsonObject.remove(PackageKeys.LARGE_FILES_CHECKED.getKey());
 		return StringEscapeUtils.unescapeJava(jsonObject.toString());
 	}
