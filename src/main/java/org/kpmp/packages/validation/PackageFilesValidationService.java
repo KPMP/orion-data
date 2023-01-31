@@ -22,7 +22,7 @@ public class PackageFilesValidationService {
 	}
 
 	public PackageValidationResponse matchFiles(PackageFilesRequest request)
-			throws JsonProcessingException {
+			throws IOException {
 		PackageValidationResponse response = new PackageValidationResponse();
 		List<GlobusFileListing> filesInGlobus = null;
 		try {
@@ -31,31 +31,30 @@ public class PackageFilesValidationService {
 			response.setMessage(e.getMessage());
 			response.setDirectoryExists(false);
 		}
-		if (containsOnlyDirectory(filesInGlobus)) {
-			try {
+
+		if (response.getDirectoryExists()) {
+			if (containsOnlyDirectory(filesInGlobus)) {
 				filesInGlobus = globus.getFilesAtEndpoint(request.getPackageId() + "/" + filesInGlobus.get(0).getName());
-			} catch (IOException e) {
-				response.setMessage(e.getMessage());
-				response.setDirectoryExists(false);
+			}
+
+			List<String> globusFiles = getGlobusFileNames(filesInGlobus);
+			List<String> filesFromMetadata = processIncomingFilenames(request);
+			response.setFilesFromMetadata(filesFromMetadata);
+			response.setFilesInGlobus(globusFiles);
+
+			for (String filename : filesFromMetadata) {
+				if (!globusFiles.contains(filename)) {
+					response.addMetadataFileNotFoundInGlobus(filename);
+				}
+			}
+
+			for (String fileInGlobus : globusFiles) {
+				if (!filesFromMetadata.contains(fileInGlobus) && !fileInGlobus.startsWith("METADATA")) {
+					response.addGlobusFileNotFoundInMetadata(fileInGlobus);
+				}
 			}
 		}
 
-		List<String> globusFiles = getGlobusFileNames(filesInGlobus);
-		List<String> filesFromMetadata = processIncomingFilenames(request);
-		response.setFilesFromMetadata(filesFromMetadata);
-		response.setFilesInGlobus(globusFiles);
-
-		for (String filename : filesFromMetadata) {
-			if (!globusFiles.contains(filename)) {
-				response.addMetadataFileNotFoundInGlobus(filename);
-			}
-		}
-
-		for (String fileInGlobus : globusFiles) {
-			if (!filesFromMetadata.contains(fileInGlobus) && !fileInGlobus.startsWith("METADATA")) {
-				response.addGlobusFileNotFoundInMetadata(fileInGlobus);
-			}
-		}
 		response.setPackageId(request.getPackageId());
 		return response;
 	}
