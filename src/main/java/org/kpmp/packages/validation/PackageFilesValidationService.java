@@ -27,6 +27,7 @@ public class PackageFilesValidationService {
 		List<GlobusFileListing> filesInGlobus = null;
 		try {
 			filesInGlobus = globus.getFilesAtEndpoint(request.getPackageId());
+			response.setDirectoryExists(true);
 		} catch (IOException e) {
 			response.setMessage(e.getMessage());
 			response.setDirectoryExists(false);
