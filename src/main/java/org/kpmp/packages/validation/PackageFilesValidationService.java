@@ -29,8 +29,11 @@ public class PackageFilesValidationService {
 			filesInGlobus = globus.getFilesAtEndpoint(request.getPackageId());
 			response.setDirectoryExists(true);
 		} catch (IOException e) {
-			response.setMessage(e.getMessage());
-			response.setDirectoryExists(false);
+			if (e.getMessage().contains("ClientError.NotFound")) {
+				response.setDirectoryExists(false);
+			} else {
+				throw e;
+			}
 		}
 
 		if (response.getDirectoryExists()) {

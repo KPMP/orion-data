@@ -10,7 +10,6 @@ public class PackageValidationResponse {
 	private String packageId;
 	private List<String> filesFromMetadata;
 	private List<String> filesInGlobus;
-
 	private Boolean directoryExists;
 
 	private String message;
