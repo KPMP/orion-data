@@ -11,9 +11,6 @@ public class PackageValidationResponse {
 	private List<String> filesFromMetadata;
 	private List<String> filesInGlobus;
 	private Boolean directoryExists;
-
-	private String message;
-
 	public List<String> getMetadataFilesNotFoundInGlobus() {
 		return metadataFilesNotFoundInGlobus;
 	}
@@ -68,11 +65,4 @@ public class PackageValidationResponse {
 		this.directoryExists = directoryExists;
 	}
 
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
 }
