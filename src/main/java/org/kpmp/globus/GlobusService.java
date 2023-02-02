@@ -63,20 +63,6 @@ public class GlobusService {
 		return fileManagerUrl + "?origin_id=" + endpointID + "&origin_path=" + fullDirName;
 	}
 
-	public String checkDirectoryExists(String packageId) throws IOException {
-		String message = "";
-		String topDirectory = env.getProperty("GLOBUS_DIR");
-		String fullDirName = topDirectory + "/" + packageId;
-		GenericUrl url = new GenericUrl(API_URL + "/operation/endpoint/" + endpointID + "/ls?path=" + fullDirName);
-		HttpRequest request = requestFactory.buildGetRequest(url);
-		try {
-			HttpResponse response = request.execute();
-		} catch (IOException e) {
-			message = e.getMessage();
-		}
-		return message;
-	}
-
 	@SuppressWarnings("serial")
 	public List<GlobusFileListing> getFilesAtEndpoint(String packageId) throws JsonProcessingException, IOException {
 		System.err.println(packageId);
