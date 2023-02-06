@@ -12,7 +12,7 @@ Additionally, you will need a tunnel to the DMD tables of your choosing (note th
 
 You will need to install the necessary libraries:
 
-    pip install -r requirments.txt
+    pip install -r requirements.txt
 
 Lastly, you will run the script thusly (filling in the correct password):
 
