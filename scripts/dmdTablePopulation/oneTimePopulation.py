@@ -6,7 +6,7 @@ import logging
 
 parser = ArgumentParser(description='Dump from DLU to DMD tables')
 parser.add_argument('-dluHost', '--dlu-mongo-host', dest='mongo_host', help='hostname for dlu mongo', required=True)
-parser.add_argument('-dluPot', '--dlu-mongo-port', dest='mongo_port', help='port for dlu mongo', required=True)
+parser.add_argument('-dluPort', '--dlu-mongo-port', dest='mongo_port', help='port for dlu mongo', required=True)
 parser.add_argument('-dmdHost', '--dmd-mariadb-host', dest='mariadb_host', help='hostname for dmd mariadb',
                     required=True)
 parser.add_argument('-dmdPass', '--dmd-mariadb-password', dest='mariadb_pass', help='password for dmd tables',
@@ -19,7 +19,7 @@ args = parser.parse_args()
 
 def get_data_lake():
     try:
-        CONNECTION_STRING = "mongodb://" + args.mongo_host + ":" + args.mongo_host + "/"
+        CONNECTION_STRING = "mongodb://" + args.mongo_host + ":" + args.mongo_port + "/"
         client = MongoClient(CONNECTION_STRING, serverSelectionTimeoutMS=5000)
         database = client['dataLake']
         return database
