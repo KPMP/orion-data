@@ -39,75 +39,7 @@ public class PackageFileHandlerTest {
 		fileHandler = null;
 	}
 
-	@Test
-	public void testSaveFile() throws Exception {
-		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
-		File tempDirectory = new File(dataDirectory.toString());
-		tempDirectory.deleteOnExit();
-		String dataDirectoryPath = dataDirectory.toString();
-		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
-		String fileContents = "Here is the data in the file with special characters: µg/µL";
 
-		fileHandler.saveFile(fileContents, "packageId", "metadata.json", true);
-
-		File savedFile = new File(dataDirectoryPath + File.separator + "metadata.json");
-		assertEquals(true, savedFile.exists());
-		BufferedReader reader = new BufferedReader(new FileReader(savedFile));
-		String line = "";
-		String actualFileContents = "";
-		while ((line = reader.readLine()) != null) {
-			actualFileContents += line;
-		}
-
-		assertEquals("Here is the data in the file with special characters: µg/µL", actualFileContents);
-		reader.close();
-	}
-
-	@Test
-	public void testSaveFile_whenFileExistsAndShouldOverwrite() throws Exception {
-		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
-		File tempDirectory = new File(dataDirectory.toString());
-		tempDirectory.deleteOnExit();
-		File existingFile = new File(dataDirectory + File.separator + "metadata.json");
-		existingFile.createNewFile();
-		String dataDirectoryPath = dataDirectory.toString();
-		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
-		String fileContents = "Here is the data in the file with special characters: µg/µL";
-
-		fileHandler.saveFile(fileContents, "packageId", "metadata.json", true);
-
-		File savedFile = new File(dataDirectoryPath + File.separator + "metadata.json");
-		assertEquals(true, savedFile.exists());
-		BufferedReader reader = new BufferedReader(new FileReader(savedFile));
-		String line = "";
-		String actualFileContents = "";
-		while ((line = reader.readLine()) != null) {
-			actualFileContents += line;
-		}
-		assertEquals("Here is the data in the file with special characters: µg/µL", actualFileContents);
-		reader.close();
-	}
-
-	@Test
-	public void testSaveFile_whenFileExistsAndShouldNotOverwrite() throws Exception {
-		Path dataDirectory = Files.createTempDirectory("packageFileHandler");
-		File tempDirectory = new File(dataDirectory.toString());
-		tempDirectory.deleteOnExit();
-		File existingFile = new File(dataDirectory + File.separator + "metadata.json");
-		existingFile.createNewFile();
-		String dataDirectoryPath = dataDirectory.toString();
-		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
-		String fileContents = "Here is the data in the file with special characters: µg/µL";
-
-		try {
-			fileHandler.saveFile(fileContents, "packageId", "metadata.json", false);
-			// cleaning up after ourselves
-			fail("Should have thrown " + IOException.class);
-		} catch (IOException expected) {
-			assertEquals(dataDirectory + File.separator + "metadata.json", expected.getMessage());
-		}
-
-	}
 
 	@Test
 	public void testSaveMultipartFile_firstPart() throws IOException {

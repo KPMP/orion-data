@@ -42,26 +42,4 @@ public class PackageFileHandler {
 			IOUtils.copy(inputStream, fileOutputStream);
 		}
 	}
-
-	public File saveFile(String fileContents, String packageId, String filename, boolean shouldOverwrite)
-			throws IOException {
-		String packageDirectoryPath = filePathHelper.getPackagePath(packageId);
-		File packageDirectory = new File(packageDirectoryPath);
-
-		if (!packageDirectory.exists()) {
-			Files.createDirectories(Paths.get(packageDirectoryPath));
-		}
-
-		File fileToSave = new File(packageDirectoryPath + File.separator + filename);
-
-		if (fileToSave.exists() && shouldOverwrite) {
-			fileToSave.delete();
-		} else if (fileToSave.exists() && !shouldOverwrite) {
-			throw new FileAlreadyExistsException(fileToSave.getPath());
-		}
-
-		FileUtils.writeStringToFile(fileToSave, fileContents, "UTF-8");
-
-		return fileToSave;
-	}
 }

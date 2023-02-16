@@ -26,7 +26,6 @@ public class PackageKeysTest {
 		assertEquals("lastName", PackageKeys.LAST_NAME.getKey());
 		assertEquals("packageType", PackageKeys.PACKAGE_TYPE.getKey());
 		assertEquals("protocol", PackageKeys.PROTOCOL.getKey());
-		assertEquals("regenerateZip", PackageKeys.REGENERATE_ZIP.getKey());
 		assertEquals("shibId", PackageKeys.SHIBID.getKey());
 		assertEquals("size", PackageKeys.SIZE.getKey());
 		assertEquals("subjectId", PackageKeys.SUBJECT_ID.getKey());
