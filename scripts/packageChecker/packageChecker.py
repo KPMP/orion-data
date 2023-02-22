@@ -10,6 +10,7 @@ slack_passcode = os.environ.get('slack_passcode')
 logger = logging.getLogger("packageChecker")
 logging.basicConfig(level=logging.ERROR)
 slack_url = "https://hooks.slack.com/services/" + slack_passcode
+data_directory = os.environ.get('data_directory')
 
 class PackageChecker:
 
@@ -37,7 +38,7 @@ class PackageChecker:
             for state in package_states:
                 if state['state'] == "UPLOAD_SUCCEEDED":
                     try:
-                        directory = "/data/dataLake/package_";
+                        directory = data_directory + "/package_";
                         files = os.listdir(directory + package_id)
                         expected_file_names = self.get_expected_files(package)
                         actual_file_names = []
