@@ -21,10 +21,6 @@ public class FilePathHelper {
 		return getPackagePath(packageId) + fileName;
 	}
 
-	public String getZipFileName(String packageId) {
-		return getPackagePath(packageId) + packageId + ".zip";
-	}
-
 	public List<String> getFilenames(String path) {
 		List<String> filenames = new ArrayList<>();
 		File packageDir = new File(path);

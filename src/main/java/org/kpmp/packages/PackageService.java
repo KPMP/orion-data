@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -18,12 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.kpmp.externalProcess.CommandBuilder;
-import org.kpmp.externalProcess.CommandResult;
-import org.kpmp.externalProcess.ProcessExecutor;
+import org.kpmp.dmd.DmdService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,30 +35,23 @@ public class PackageService {
 	@Value("${package.state.upload.failed}")
 	private String uploadFailedState;
 
-	private static final MessageFormat zipPackage = new MessageFormat("{0} {1}");
-	private static final MessageFormat fileUploadFinishTiming = new MessageFormat(
-			"Timing|end|{0}|{1}|{2}|{3} files|{4}|{5}|{6}");
-	private static final MessageFormat zipTiming = new MessageFormat("Timing|zip|{0}|{1}|{2}|{3} files|{4}|{5}");
-	private static final MessageFormat zipIssue = new MessageFormat("ERROR|zip|{0}");
-
+	private static final MessageFormat packageIssue = new MessageFormat("{0} {1}");
+	private static final MessageFormat fileIssue = new MessageFormat("ERROR|zip|{0}");
 	private PackageFileHandler packageFileHandler;
 	private FilePathHelper filePathHelper;
 	private CustomPackageRepository packageRepository;
+	private DmdService dmdService;
 	private LoggingService logger;
 	private StateHandlerService stateHandler;
-	private CommandBuilder commandBuilder;
-	private ProcessExecutor processExecutor;
 
 	@Autowired
 	public PackageService(PackageFileHandler packageFileHandler, FilePathHelper filePathHelper,
-			CustomPackageRepository packageRepository, StateHandlerService stateHandler, CommandBuilder commandBuilder,
-			ProcessExecutor processExecutor, LoggingService logger) {
+						  CustomPackageRepository packageRepository, StateHandlerService stateHandler, DmdService dmdService, LoggingService logger) {
 		this.filePathHelper = filePathHelper;
 		this.packageFileHandler = packageFileHandler;
 		this.packageRepository = packageRepository;
 		this.stateHandler = stateHandler;
-		this.commandBuilder = commandBuilder;
-		this.processExecutor = processExecutor;
+		this.dmdService = dmdService;
 		this.logger = logger;
 	}
 
@@ -80,17 +68,10 @@ public class PackageService {
 		return packageViews;
 	}
 
-	public Path getPackageFile(String packageId) {
-		String zipFileName = filePathHelper.getZipFileName(packageId);
-		Path filePath = Paths.get(zipFileName);
-		if (!filePath.toFile().exists()) {
-			throw new RuntimeException("The file was not found: " + filePath.getFileName().toString());
-		}
-		return filePath;
-	}
-
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
 		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
+		Package myPackage = packageRepository.findByPackageId(packageId);
+		dmdService.convertAndSendNewPackage(myPackage);
 		return packageId;
 	}
 
@@ -105,62 +86,6 @@ public class PackageService {
 		}
 		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
 	}
-
-	@CacheEvict(value = "packages", allEntries = true)
-	public void createZipFile(String packageId, String origin, User user) throws Exception {
-
-		Package packageInfo = packageRepository.findByPackageId(packageId);
-
-		List<Attachment> attachments = packageInfo.getAttachments();
-		String displaySize = FileUtils.byteCountToDisplaySize(getTotalSizeOfAttachmentsInBytes(attachments));
-		Date finishUploadTime = new Date();
-		long duration = calculateDurationInSeconds(packageInfo.getCreatedAt(), finishUploadTime);
-		double uploadRate = calculateUploadRate(duration, attachments);
-		DecimalFormat rateFormat = new DecimalFormat("###.###");
-
-		logger.logInfoMessage(this.getClass(), user, packageId, this.getClass().getSimpleName() + ".createZipFile",
-				fileUploadFinishTiming
-						.format(new Object[] { finishUploadTime, user.toString(), packageId, attachments.size(),
-								displaySize, duration + " seconds", rateFormat.format(uploadRate) + " MB/sec" }));
-
-		new Thread() {
-			@CacheEvict(value = "packages", allEntries = true)
-			public void run() {
-				try {
-					String packageMetadata = packageRepository.getJSONByPackageId(packageId);
-					File metadataJson = packageFileHandler.saveFile(packageMetadata, packageId, "metadata.json", true);
-
-					String[] zipCommand = commandBuilder.buildZipCommand(packageId);
-					boolean success = processExecutor.executeProcess(zipCommand);
-					metadataJson.delete();
-
-					if (success) {
-						logger.logInfoMessage(PackageService.class, null, packageId,
-								PackageService.class.getSimpleName() + ".createZipFile",
-								zipPackage.format(new Object[] { "Zip file created for package: ", packageId }));
-						long zipDuration = calculateDurationInSeconds(finishUploadTime, new Date());
-						logger.logInfoMessage(PackageService.class, user, packageId,
-								PackageService.class.getSimpleName() + ".createZipFile",
-								zipTiming.format(new Object[] { packageInfo.getCreatedAt(), user.toString(), packageId,
-										packageInfo.getAttachments().size(), displaySize, zipDuration + " seconds" }));
-
-						stateHandler.sendStateChange(packageId, uploadSucceededState, null, null, origin);
-
-					} else {
-						logger.logErrorMessage(PackageService.class, user, packageId,
-								PackageService.class.getSimpleName(), "Unable to zip package");
-						sendStateChangeEvent(packageId, uploadFailedState, null, "Unable to zip package", origin);
-					}
-				} catch (Exception e) {
-					logger.logErrorMessage(PackageService.class, user, packageId, PackageService.class.getSimpleName(),
-							e.getMessage());
-					sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), origin);
-				}
-			}
-
-		}.start();
-	}
-
 	private double calculateUploadRate(long duration, List<Attachment> attachments) {
 		double fileSizeInMeg = calculateFileSizeInMeg(attachments);
 		return (double) fileSizeInMeg / duration;
@@ -186,7 +111,7 @@ public class PackageService {
 		return (double) totalSize / megabyteValue;
 	}
 
-	public boolean validatePackageForZipping(String packageId, User user) {
+	public boolean validatePackage(String packageId, User user) {
 		Package packageInformation = findPackage(packageId);
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
@@ -200,6 +125,8 @@ public class PackageService {
 	public void calculateAndSaveChecksums(String packageId) throws IOException {
 		Package myPackage = packageRepository.findByPackageId(packageId);
 		List<Attachment> updatedFiles = calculateChecksums(myPackage);
+		myPackage.setAttachments(updatedFiles);
+		dmdService.sendPackageFiles(myPackage);
 		packageRepository.updateField(packageId, "files", updatedFiles);
 	}
 
@@ -216,14 +143,14 @@ public class PackageService {
 				} else {
 					logger.logInfoMessage(PackageService.class, null, packageID,
 							PackageService.class.getSimpleName() + ".calculateFileChecksums",
-							zipPackage.format(new Object[] { "Checksum already exists for file " + file.getFileName(),
+							packageIssue.format(new Object[] { "Checksum already exists for file " + file.getFileName(),
 									packageID }));
 				}
 			}
 		} else {
 			logger.logInfoMessage(PackageService.class, null, packageID,
 					PackageService.class.getSimpleName() + ".calculateFileChecksums",
-					zipPackage.format(new Object[] { "No files found in this package", packageID }));
+					packageIssue.format(new Object[] { "No files found in this package", packageID }));
 		}
 		return files;
 	}
@@ -246,7 +173,7 @@ public class PackageService {
 			String filename = attachment.getFileName();
 			if (new File(packagePath + filename).length() != attachment.getSize()) {
 				logger.logErrorMessage(this.getClass(), user, packageId,
-						this.getClass().getSimpleName() + ".validateFileLengthsMatch", zipIssue.format(new Object[] {
+						this.getClass().getSimpleName() + ".validateFileLengthsMatch", fileIssue.format(new Object[] {
 								"File size in metadata does not match file size on disk for file: " + filename }));
 				everythingMatches = false;
 			}
@@ -260,39 +187,10 @@ public class PackageService {
 		if (!sameFiles) {
 			logger.logErrorMessage(this.getClass(), user, packageId,
 					this.getClass().getSimpleName() + ".checkFilesExist",
-					zipIssue.format(new Object[] { "File list in metadata does not match file list on disk" }));
+					fileIssue.format(new Object[] { "File list in metadata does not match file list on disk" }));
 		}
 		return sameFiles;
 	}
-
-	protected void movePackageFiles(String packageId) throws IOException, InterruptedException {
-		String[] command = { "/home/gradle/scripts/processLargeFileUpload/processLargeFileUploadNoGlobus.sh",
-				packageId };
-		new Thread() {
-			@CacheEvict(value = "packages", allEntries = true)
-			public void run() {
-				CommandResult commandResult = null;
-				try {
-					commandResult = processExecutor.executeProcessWithOutput(command);
-				} catch (Exception e) {
-					logger.logErrorMessage(PackageService.class, null, packageId,
-							PackageService.class.getSimpleName() + ".movePackageFiles",
-							"There was a problem executing the move file command: " + e.getMessage());
-				}
-				if (commandResult.isResult()) {
-					logger.logInfoMessage(PackageService.class, null, packageId,
-							PackageService.class.getSimpleName() + ".movePackageFiles",
-							zipPackage.format(new Object[] { "Files moved for package: ", packageId }));
-				} else {
-					logger.logErrorMessage(PackageService.class, null, packageId,
-							PackageService.class.getSimpleName() + ".movePackageFiles",
-							"There was a problem moving the files: " + commandResult.getOutput());
-				}
-			}
-
-		}.start();
-	}
-
 	private List<String> getAttachmentFilenames(Package packageInformation) {
 		ArrayList<String> filenames = new ArrayList<>();
 		List<Attachment> attachments = packageInformation.getAttachments();

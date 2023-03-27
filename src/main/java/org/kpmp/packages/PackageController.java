@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.kpmp.dmd.DmdResponse;
+import org.kpmp.dmd.DmdService;
 import org.kpmp.globus.GlobusService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
@@ -42,6 +44,9 @@ public class PackageController {
 	@Value("${package.state.upload.failed}")
 	private String uploadFailedState;
 
+	@Value("${package.state.upload.succeeded}")
+	private String uploadSucceededState;
+
 	private static final MessageFormat finish = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat(
 			"Posting file: {0} to package with id: {1}, filesize: {2}, chunk: {3} out of {4} chunks");
@@ -54,15 +59,18 @@ public class PackageController {
 	private UniversalIdGenerator universalIdGenerator;
 	private GlobusService globusService;
 
+	private DmdService dmdService;
+
 	@Autowired
 	public PackageController(PackageService packageService, LoggingService logger,
 			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator,
-			GlobusService globusService) {
+			GlobusService globusService, DmdService dmdService) {
 		this.packageService = packageService;
 		this.logger = logger;
 		this.shibUserService = shibUserService;
 		this.universalIdGenerator = universalIdGenerator;
 		this.globusService = globusService;
+		this.dmdService = dmdService;
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
@@ -123,35 +131,26 @@ public class PackageController {
 		return new FileUploadResponse(true);
 	}
 
-	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Resource> downloadPackage(@PathVariable String packageId,
-			HttpServletRequest request) {
-		Resource resource = null;
-		try {
-			resource = new UrlResource(packageService.getPackageFile(packageId).toUri());
-		} catch (Exception e) {
-			logger.logErrorMessage(this.getClass(), packageId, "Unable to get package zip with id: " + packageId,
-					request);
-			throw new RuntimeException(e);
-		}
-		String message = fileDownloadRequest.format(new Object[] { packageId, resource.toString() });
-		logger.logInfoMessage(this.getClass(), packageId, message, request);
-
-		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-				.body(resource);
-	}
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/v1/packages/{packageId}/files/move", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity movePackageFiles(@PathVariable String packageId, HttpServletRequest request) {
 		ResponseEntity responseEntity;
+		DmdResponse dmdResponse;
 		try {
-			packageService.movePackageFiles(packageId);
-			responseEntity = ResponseEntity.ok().body("Moving files for package " + packageId);
-		} catch (IOException | InterruptedException e) {
+			logger.logInfoMessage(this.getClass(), packageId, "Moving files for package " + packageId, request);
+			dmdResponse = dmdService.moveFiles(packageId);
+			if (dmdResponse.isSuccess()) {
+				String successMessage = "The following files were moved successfully: " + String.join(",", dmdResponse.getFileNameList());
+				logger.logInfoMessage(this.getClass(), packageId, successMessage, request);
+				responseEntity = ResponseEntity.ok().body(successMessage);
+			} else {
+				logger.logErrorMessage(this.getClass(), packageId, dmdResponse.getMessage(), request);
+				responseEntity = ResponseEntity.status(INTERNAL_SERVER_ERROR).body("The following problem occurred while moving the files: " + dmdResponse.getMessage());
+			}
+		} catch (IOException e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-			responseEntity = ResponseEntity.status(INTERNAL_SERVER_ERROR).body("There was a problem moving the files.");
+			responseEntity = ResponseEntity.status(INTERNAL_SERVER_ERROR).body("There was a server error while moving the files.");
 		}
 		return responseEntity;
 	}
@@ -165,10 +164,11 @@ public class PackageController {
 		FileUploadResponse fileUploadResponse;
 		String message = finish.format(new Object[] { "Finishing file upload with packageId: ", packageId });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
-		if (packageService.validatePackageForZipping(packageId, shibUserService.getUser(request))) {
+		if (packageService.validatePackage(packageId, shibUserService.getUser(request))) {
 			try {
 				packageService.calculateAndSaveChecksums(packageId);
 				fileUploadResponse = new FileUploadResponse(true);
+				packageService.sendStateChangeEvent(packageId, uploadSucceededState, null, cleanHostName);
 			} catch (Exception e) {
 				String errorMessage = finish
 						.format(new Object[] { "There was a problem calculating the checksum for package ", packageId });
@@ -176,18 +176,8 @@ public class PackageController {
 				fileUploadResponse = new FileUploadResponse(false);
 				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
 			}
-			try {
-				packageService.createZipFile(packageId, cleanHostName, shibUserService.getUser(request));
-				fileUploadResponse.setSuccess(true);
-			} catch (Exception e) {
-				String errorMessage = finish
-						.format(new Object[] { "error getting metadata for package id: ", packageId });
-				logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
-				fileUploadResponse.setSuccess(false);
-				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
-			}
 		} else {
-			String errorMessage = finish.format(new Object[] { "Unable to zip package with package id: ", packageId });
+			String errorMessage = finish.format(new Object[] { "The files on disk did not match the database: ", packageId });
 			logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
 			fileUploadResponse = new FileUploadResponse(false);
 			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);

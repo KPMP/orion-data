@@ -1,6 +1,7 @@
 package org.kpmp.packages.validation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Arrays;
 import java.util.List;
@@ -64,5 +65,11 @@ public class PackageValidationResponseTest {
 		response.setFilesInGlobus(globusFiles);
 
 		assertEquals(globusFiles, response.getFilesInGlobus());
+	}
+
+	@Test
+	public void testSetPackageExists() throws Exception {
+		response.setDirectoryExists(false);
+		assertFalse(response.getDirectoryExists());
 	}
 }

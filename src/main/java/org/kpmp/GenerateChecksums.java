@@ -35,15 +35,19 @@ public class GenerateChecksums implements CommandLineRunner {
     @Override
     public void run(String... args) {
         List<Package> packages = packageRepository.findAll();
-        for (Package myPackage: packages) {
-            String packageID = myPackage.getPackageId();
-            try {
-                List<Attachment> files = packageService.calculateChecksums(myPackage);
-                customPackageRepository.updateField(myPackage.getPackageId(), "files", files);
-            } catch (Exception e){
-                logger.logErrorMessage(PackageService.class, null, packageID,
-                        PackageService.class.getSimpleName() + ".calculateFileChecksums", "There was a problem calculating the checksum for package " + packageID + ": " + e.getMessage());
+        if (generateChecksums) {
+            for (Package myPackage : packages) {
+                String packageID = myPackage.getPackageId();
+                try {
+                    List<Attachment> files = packageService.calculateChecksums(myPackage);
+                    customPackageRepository.updateField(myPackage.getPackageId(), "files", files);
+                } catch (Exception e) {
+                    logger.logErrorMessage(PackageService.class, null, packageID,
+                            PackageService.class.getSimpleName() + ".calculateFileChecksums", "There was a problem calculating the checksum for package " + packageID + ": " + e.getMessage());
+                }
             }
+        } else {
+            logger.logInfoMessage(GenerateChecksums.class, null, null, null, "Not generating checksums. Set generate-checksums to true in application.properties if you want to.");
         }
     }
 }

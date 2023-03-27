@@ -96,7 +96,6 @@ public class CustomPackageRepositoryTest {
 		Document actualDocument = documentCaptor.getValue();
 		assertEquals("123", actualDocument.get("_id"));
 		assertNotNull(actualDocument.get("createdAt"));
-		assertEquals(false, actualDocument.get("regenerateZip"));
 		DBRef submitter = (DBRef) actualDocument.get("submitter");
 		assertEquals("users", submitter.getCollectionName());
 		ObjectId objectId = (ObjectId) submitter.getId();
@@ -151,7 +150,6 @@ public class CustomPackageRepositoryTest {
 		Document actualDocument = documentCaptor.getValue();
 		assertEquals("123", actualDocument.get("_id"));
 		assertNotNull(actualDocument.get("createdAt"));
-		assertEquals(false, actualDocument.get("regenerateZip"));
 		DBRef submitter = (DBRef) actualDocument.get("submitter");
 		assertEquals("users", submitter.getCollectionName());
 		ObjectId objectId = (ObjectId) submitter.getId();
@@ -190,7 +188,7 @@ public class CustomPackageRepositoryTest {
 
 		when(jsonWriterSettings.getSettings()).thenReturn(JsonWriterSettings.builder().build());
 		when(document.toJson(any(JsonWriterSettings.class), any(DocumentCodec.class))).thenReturn(
-				"{ \"_id\": \"123\", \"key\": \"value with /\", \"submitter\": { $id: { $oid: '123' }, \"shibId\": \"555\"}, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
+				"{ \"_id\": \"123\", \"key\": \"value with /\", \"submitter\": { $id: { $oid: '123' }, \"shibId\": \"555\"}, \"createdAt\": { $date: 123567 } }");
 		when(result.first()).thenReturn(document);
 		User user = mock(User.class);
 		when(user.generateJSONForApp()).thenReturn("{ $id: { $oid: '123' }, 'shibId': '555', 'firstName': 'John'}");
@@ -215,7 +213,7 @@ public class CustomPackageRepositoryTest {
 		when(mongoTemplate.find(any(Query.class), any(Class.class), any(String.class))).thenReturn(results);
 		when(jsonWriterSettings.getSettings()).thenReturn(JsonWriterSettings.builder().build());
 		when(firstResult.toJson(any(JsonWriterSettings.class), any(DocumentCodec.class))).thenReturn(
-				"{ \"_id\": \"123\", \"key\": \"value\", \"submitter\": { $id: { $oid: '123' } }, \"regenerateZip\": true, \"createdAt\": { $date: 123567 } }");
+				"{ \"_id\": \"123\", \"key\": \"value\", \"submitter\": { $id: { $oid: '123' } }, \"createdAt\": { $date: 123567 } }");
 
 		List<JSONObject> allJsons = repo.findAll();
 
