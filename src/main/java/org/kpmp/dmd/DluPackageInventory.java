@@ -15,11 +15,11 @@ public class DluPackageInventory {
     private Boolean dluLfu;
     private String knownSpecimen;
     private String redcapId;
-    private Boolean userPackageReady;
+    private String userPackageReady;
     private Boolean dvcValidationComplete;
     private String packageValidated;
     private String readyToMoveFromGlobus;
-    private Boolean globusDluStatus;
+    private String globusDluStatus;
     private String removedFromGlobus;
     private String promotionStatus;
     private String notes;
@@ -32,8 +32,13 @@ public class DluPackageInventory {
         setDluPackageType(myPackage.getPackageType());
         setDluSubjectId(myPackage.getSubjectId());
         setDluError(false);
+        setUserPackageReady(!myPackage.getLargeFilesChecked());
         setDluLfu(myPackage.getLargeFilesChecked());
-        setGlobusDluStatus(false);
+        if (myPackage.getLargeFilesChecked()) {
+            setGlobusDluStatus("waiting");
+        } else {
+            setGlobusDluStatus("N/A");
+        }
     }
 
     public DluPackageInventory() {
@@ -119,11 +124,18 @@ public class DluPackageInventory {
         this.redcapId = redcapId;
     }
 
-    public Boolean getUserPackageReady() {
+    public String getUserPackageReady() {
         return userPackageReady;
     }
 
     public void setUserPackageReady(Boolean userPackageReady) {
+        if (userPackageReady) {
+            this.userPackageReady = "Y";
+        } else {
+            this.userPackageReady = "N";
+        }
+    }
+    public void setUserPackageReady(String userPackageReady) {
         this.userPackageReady = userPackageReady;
     }
 
@@ -151,11 +163,11 @@ public class DluPackageInventory {
         this.readyToMoveFromGlobus = readyToMoveFromGlobus;
     }
 
-    public Boolean getGlobusDluStatus() {
+    public String getGlobusDluStatus() {
         return globusDluStatus;
     }
 
-    public void setGlobusDluStatus(Boolean globusDluStatus) {
+    public void setGlobusDluStatus(String globusDluStatus) {
         this.globusDluStatus = globusDluStatus;
     }
 
