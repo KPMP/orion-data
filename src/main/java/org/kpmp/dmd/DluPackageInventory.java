@@ -18,8 +18,8 @@ public class DluPackageInventory {
     private Boolean userPackageReady;
     private Boolean dvcValidationComplete;
     private String packageValidated;
-    private String readyToPromoteDlu;
-    private Boolean globusDluFailed;
+    private String readyToMoveFromGlobus;
+    private Boolean globusDluStatus;
     private String removedFromGlobus;
     private String promotionStatus;
     private String notes;
@@ -33,9 +33,8 @@ public class DluPackageInventory {
         setDluSubjectId(myPackage.getSubjectId());
         setDluError(false);
         setDluLfu(myPackage.getLargeFilesChecked());
-        setGlobusDluFailed(false);
+        setGlobusDluStatus(false);
     }
-
 
     public DluPackageInventory() {
     }
@@ -144,20 +143,20 @@ public class DluPackageInventory {
         this.packageValidated = packageValidated;
     }
 
-    public String getReadyToPromoteDlu() {
-        return readyToPromoteDlu;
+    public String getReadyToMoveFromGlobus() {
+        return readyToMoveFromGlobus;
     }
 
-    public void setReadyToPromoteDlu(String readyToPromoteDlu) {
-        this.readyToPromoteDlu = readyToPromoteDlu;
+    public void setReadyToMoveFromGlobus(String readyToMoveFromGlobus) {
+        this.readyToMoveFromGlobus = readyToMoveFromGlobus;
     }
 
-    public Boolean getGlobusDluFailed() {
-        return globusDluFailed;
+    public Boolean getGlobusDluStatus() {
+        return globusDluStatus;
     }
 
-    public void setGlobusDluFailed(Boolean globusDluFailed) {
-        this.globusDluFailed = globusDluFailed;
+    public void setGlobusDluStatus(Boolean globusDluStatus) {
+        this.globusDluStatus = globusDluStatus;
     }
 
     public String getRemovedFromGlobus() {
