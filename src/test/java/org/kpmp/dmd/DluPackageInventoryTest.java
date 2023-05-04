@@ -9,7 +9,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class DluPackageInventoryTest {
 
@@ -26,7 +26,7 @@ public class DluPackageInventoryTest {
     }
 
     @Test
-    public void testConstructor() {
+    public void testConstructorDluTrue() {
         Date now = new Date();
         User user = new User();
         user.setDisplayName("name");
@@ -37,6 +37,7 @@ public class DluPackageInventoryTest {
         myPackage.setCreatedAt(now);
         myPackage.setSubmitter(user);
         myPackage.setSubjectId("subjid");
+        myPackage.setLargeFilesChecked(true);
         DluPackageInventory dluPackageInventory = new DluPackageInventory(myPackage);
         assertEquals("123", dluPackageInventory.getDluPackageId());
         assertEquals("name", dluPackageInventory.getDluSubmitter());
@@ -44,6 +45,34 @@ public class DluPackageInventoryTest {
         assertEquals("tis", dluPackageInventory.getDluTis());
         assertEquals(user.getDisplayName(), dluPackageInventory.getDluSubmitter());
         assertEquals("subjid", dluPackageInventory.getDluSubjectId());
+        assertTrue(dluPackageInventory.getDluLfu());
+        assertEquals("waiting", dluPackageInventory.getGlobusDluStatus());
+        assertEquals("N", dluPackageInventory.getUserPackageReady());
+    }
+
+    @Test
+    public void testConstructorDluFalse() {
+        Date now = new Date();
+        User user = new User();
+        user.setDisplayName("name");
+        Package myPackage = new Package();
+        myPackage.setPackageId("123");
+        myPackage.setPackageType("type");
+        myPackage.setTisName("tis");
+        myPackage.setCreatedAt(now);
+        myPackage.setSubmitter(user);
+        myPackage.setSubjectId("subjid");
+        myPackage.setLargeFilesChecked(false);
+        DluPackageInventory dluPackageInventory = new DluPackageInventory(myPackage);
+        assertEquals("123", dluPackageInventory.getDluPackageId());
+        assertEquals("name", dluPackageInventory.getDluSubmitter());
+        assertEquals("type", dluPackageInventory.getDluPackageType());
+        assertEquals("tis", dluPackageInventory.getDluTis());
+        assertEquals(user.getDisplayName(), dluPackageInventory.getDluSubmitter());
+        assertEquals("subjid", dluPackageInventory.getDluSubjectId());
+        assertFalse(dluPackageInventory.getDluLfu());
+        assertEquals("N/A", dluPackageInventory.getGlobusDluStatus());
+        assertEquals("Y", dluPackageInventory.getUserPackageReady());
     }
 
 }
