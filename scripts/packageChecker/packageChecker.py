@@ -48,6 +48,7 @@ class PackageChecker:
                         else:
                             for file in files:
                                 actual_file_names.append(file)
+                                print(actual_file_names)
                                 missing_files = set(expected_file_names) - set(actual_file_names)
                                 missing_files_list = list(missing_files)
                                 if file == "metadata.json" and len(files) == 1:
