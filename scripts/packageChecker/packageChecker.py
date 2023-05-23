@@ -48,13 +48,12 @@ class PackageChecker:
                         else:
                             for file in files:
                                 actual_file_names.append(file)
-                                print(actual_file_names)
-                                missing_files = set(expected_file_names) - set(actual_file_names)
-                                missing_files_list = list(missing_files)
                                 if file == "metadata.json" and len(files) == 1:
                                     empty_package_list.append(package_id)
                             if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
                                 empty_package_list.append(package_id)
+                                missing_files = set(expected_file_names).symmetric_difference(actual_file_names)
+                                missing_files_list.append(missing_files)
                             
                     except:
                         missing_package_list.append(package_id)
