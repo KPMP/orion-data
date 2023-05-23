@@ -15,11 +15,11 @@ public class DluPackageInventory {
     private Boolean dluLfu;
     private String knownSpecimen;
     private String redcapId;
-    private Boolean userPackageReady;
+    private String userPackageReady;
     private Boolean dvcValidationComplete;
     private String packageValidated;
-    private String readyToPromoteDlu;
-    private Boolean globusDluFailed;
+    private String readyToMoveFromGlobus;
+    private String globusDluStatus;
     private String removedFromGlobus;
     private String promotionStatus;
     private String notes;
@@ -32,10 +32,14 @@ public class DluPackageInventory {
         setDluPackageType(myPackage.getPackageType());
         setDluSubjectId(myPackage.getSubjectId());
         setDluError(false);
+        setUserPackageReady(!myPackage.getLargeFilesChecked());
         setDluLfu(myPackage.getLargeFilesChecked());
-        setGlobusDluFailed(false);
+        if (myPackage.getLargeFilesChecked()) {
+            setGlobusDluStatus("waiting");
+        } else {
+            setGlobusDluStatus("N/A");
+        }
     }
-
 
     public DluPackageInventory() {
     }
@@ -120,11 +124,18 @@ public class DluPackageInventory {
         this.redcapId = redcapId;
     }
 
-    public Boolean getUserPackageReady() {
+    public String getUserPackageReady() {
         return userPackageReady;
     }
 
     public void setUserPackageReady(Boolean userPackageReady) {
+        if (userPackageReady) {
+            this.userPackageReady = "Y";
+        } else {
+            this.userPackageReady = "N";
+        }
+    }
+    public void setUserPackageReady(String userPackageReady) {
         this.userPackageReady = userPackageReady;
     }
 
@@ -144,20 +155,20 @@ public class DluPackageInventory {
         this.packageValidated = packageValidated;
     }
 
-    public String getReadyToPromoteDlu() {
-        return readyToPromoteDlu;
+    public String getReadyToMoveFromGlobus() {
+        return readyToMoveFromGlobus;
     }
 
-    public void setReadyToPromoteDlu(String readyToPromoteDlu) {
-        this.readyToPromoteDlu = readyToPromoteDlu;
+    public void setReadyToMoveFromGlobus(String readyToMoveFromGlobus) {
+        this.readyToMoveFromGlobus = readyToMoveFromGlobus;
     }
 
-    public Boolean getGlobusDluFailed() {
-        return globusDluFailed;
+    public String getGlobusDluStatus() {
+        return globusDluStatus;
     }
 
-    public void setGlobusDluFailed(Boolean globusDluFailed) {
-        this.globusDluFailed = globusDluFailed;
+    public void setGlobusDluStatus(String globusDluStatus) {
+        this.globusDluStatus = globusDluStatus;
     }
 
     public String getRemovedFromGlobus() {
