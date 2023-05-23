@@ -69,9 +69,9 @@ class PackageChecker:
                         
         f.close()
             
-        # if len(empty_package_list) > 0:
-        #     message = "Missing files in packages: " + ', '.join(empty_package_list)
-        #     print(message)
+        if len(empty_package_list) > 0:
+            message = "Missing files in packages: " + ', '.join(empty_package_list)
+            print(message)
             # requests.post(
             #     slack_url,
             #     headers={'Content-type': 'application/json', },
