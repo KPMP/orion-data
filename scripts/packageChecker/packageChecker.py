@@ -68,10 +68,10 @@ class PackageChecker:
                         if len(files) == 0:
                             empty_package_list.append(package_id)
                         else:
-                            self.write_csv(package_id, expected_file_names, actual_file_names)
+                            
                             for file in files:
                                 actual_file_names.append(file)
-                                
+                                self.write_csv(package_id, expected_file_names, actual_file_names)
                                 if file == "metadata.json" and len(files) == 1:
                                     empty_package_list.append(package_id)
                             
