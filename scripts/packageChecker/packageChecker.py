@@ -50,19 +50,18 @@ class PackageChecker:
                         actual_file_names = []
                         if len(files) == 0:
                             empty_package_list.append(package_id)
-                        else:
-                            for file in files:
-                                actual_file_names.append(file)
-                                if file == "metadata.json" and len(files) == 1:
-                                    empty_package_list.append(package_id)
-                                    
-                            missing_files_list = set(expected_file_names).symmetric_difference(set(actual_file_names))
-                            data = [
-                                [package_id, missing_files_list]
-                            ]
-                            writer.writerows(data)
-                            if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
+                        for file in files:
+                            actual_file_names.append(file)
+                            if file == "metadata.json" and len(files) == 1:
                                 empty_package_list.append(package_id)
+                                
+                        missing_files_list = set(expected_file_names).difference(set(actual_file_names))
+                        data = [
+                            [package_id, missing_files_list]
+                        ]
+                        writer.writerows(data)
+                        if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
+                            empty_package_list.append(package_id)
                     except:
                         missing_package_list.append(package_id)
                         
