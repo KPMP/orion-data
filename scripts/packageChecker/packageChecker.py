@@ -2,6 +2,7 @@ import pymongo
 import logging
 import requests
 import os
+import csv
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -32,6 +33,9 @@ class PackageChecker:
         empty_package_list = []
         missing_package_list = []
         missing_files_list = []
+        header = ["Package ID", "Missing Files"]
+        f = open("missing_files.csv", "w")
+        writer = csv.writer(f)
         packages = self.dataLake.packages.find({})
         for package in packages:
             package_id = package["_id"]
@@ -53,13 +57,16 @@ class PackageChecker:
                             if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
                                 empty_package_list.append(package_id)
                                 missing_files = set(expected_file_names).difference(actual_file_names)
-                                missing_files_list.append(missing_files)
+                                data = [
+                                    [package_id, missing_files]
+                                ]
+                                writer.writerow(header)
+                                writer.writerows(data)
                             
                     except:
                         missing_package_list.append(package_id)
                         
-        if len(missing_files_list) > 0:
-            print(missing_files_list)
+        f.close()
             
         # if len(empty_package_list) > 0:
         #     message = "Missing files in packages: " + ', '.join(empty_package_list)
