@@ -36,7 +36,7 @@ class PackageChecker:
         data = {}
         header = ["Package ID", "Missing Files", "Empty Package List"]
         f = open("missing_files.csv", "w")
-        writer = csv.Dictwriter(f)
+        writer = csv.DictWriter(f)
         writer.writerow(header)
         packages = self.dataLake.packages.find({})
         for package in packages:
