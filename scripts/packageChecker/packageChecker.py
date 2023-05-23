@@ -43,9 +43,6 @@ class PackageChecker:
                         files = os.listdir(directory + package_id)
                         expected_file_names = self.get_expected_files(package)
                         actual_file_names = []
-                        
-                        print(expected_file_names, end="\n")
-                        
                         if len(files) == 0:
                             empty_package_list.append(package_id)
                         else:
