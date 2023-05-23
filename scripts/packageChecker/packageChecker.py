@@ -51,6 +51,7 @@ class PackageChecker:
                         data = [
                             [package_id, expected_file_names]
                         ]
+                        writer.writerows(data)
                         if len(files) == 0:
                             empty_package_list.append(package_id)
                         else:
