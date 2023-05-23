@@ -3,7 +3,6 @@ import logging
 import requests
 import os
 import csv
-import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -60,7 +59,7 @@ class PackageChecker:
                                 empty_package_list.append(package_id)
                                 missing_files = set(expected_file_names).difference(actual_file_names)
                                 missing_files = missing_files.replace("'", "")
-                                missing_files = re.sub(r"[\([{})\]]", "", missing_files)
+                                missing_files = missing_files
                                 data = [
                                     [package_id, missing_files]
                                 ]
