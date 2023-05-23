@@ -36,7 +36,7 @@ class PackageChecker:
         data = {}
         header = ["Package ID", "Missing Files", "Empty Package List"]
         f = open("missing_files.csv", "w")
-        writer = csv.writer(f)
+        writer = csv.Dictwriter(f)
         writer.writerow(header)
         packages = self.dataLake.packages.find({})
         for package in packages:
@@ -59,7 +59,7 @@ class PackageChecker:
                             if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
                                 empty_package_list.append(package_id)
                                 missing_files = set(expected_file_names).difference(actual_file_names)
-                                data [package_id]= missing_files
+                                data = dict({package_id: missing_files})
                                 
                                 
                                 writer.writerows(data)
