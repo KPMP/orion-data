@@ -36,6 +36,7 @@ class PackageChecker:
         header = ["Package ID", "Missing Files"]
         f = open("missing_files.csv", "w")
         writer = csv.writer(f)
+        writer.writerow(header)
         packages = self.dataLake.packages.find({})
         for package in packages:
             package_id = package["_id"]
@@ -60,7 +61,7 @@ class PackageChecker:
                                 data = [
                                     [package_id, missing_files]
                                 ]
-                                writer.writerow(header)
+                                
                                 writer.writerows(data)
                             
                     except:
