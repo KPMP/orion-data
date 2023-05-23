@@ -32,12 +32,11 @@ class PackageChecker:
     def find_empty_packages(self):
         empty_package_list = []
         missing_package_list = []
-        missing_files_list = []
-        data = {}
+        # data = {}
         header = ["Package ID", "Missing Files"]
         f = open("missing_files.csv", "w")
-        writer = csv.DictWriter(f, fieldnames=header)
-        writer.writeheader()
+        writer = csv.writer(f)
+        writer.writerow(header)
         packages = self.dataLake.packages.find({})
         for package in packages:
             package_id = package["_id"]
@@ -56,13 +55,19 @@ class PackageChecker:
                                 actual_file_names.append(file)
                                 if file == "metadata.json" and len(files) == 1:
                                     empty_package_list.append(package_id)
+                                    
+                            if (not all(p == "metadata.json" for p in actual_file_names)):
+                                missing_files_list = set(expected_file_names).difference(actual_file_names)
+                                data = [
+                                    [package_id, missing_files_list]
+                                ]
+                                writer.writerows(data)
                             if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
                                 empty_package_list.append(package_id)
-                                missing_files = set(expected_file_names).difference(actual_file_names)
-                                data [package_id]= missing_files
+                                # missing_files = set(expected_file_names).difference(actual_file_names)
+                                # data [package_id]= missing_files
                                 
                                 
-                                writer.writerow(data)
                             
                     except:
                         missing_package_list.append(package_id)
