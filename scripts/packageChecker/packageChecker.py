@@ -29,10 +29,27 @@ class PackageChecker:
             expected_file_names.append(file_info['fileName'])
         return expected_file_names
 
+    def get_actual_files(self, files):
+        actual_file_names = []
+        for file in files:
+            actual_file_names.append(file)
+        return actual_file_names
+    
+    def write_csv(self, package_id, expected_file_names, actual_file_names):
+        header = ["Package ID", "Missing Files"]
+        f = open("missing_files.csv", "w")
+        writer = csv.write(f)
+        writer.writerow(header)
+        missing_files = set(expected_file_names).difference(actual_file_names)
+        data = [
+            [package_id, missing_files]
+        ]
+        writer.writerows(data)
+        f.close()
+    
     def find_empty_packages(self):
         empty_package_list = []
         missing_package_list = []
-        missing_files_list = []
         header = ["Package ID", "Missing Files"]
         f = open("missing_files.csv", "w")
         writer = csv.writer(f)
@@ -47,28 +64,21 @@ class PackageChecker:
                         directory = data_directory + "/package_";
                         files = os.listdir(directory + package_id)
                         expected_file_names = self.get_expected_files(package)
-                        actual_file_names = []
+                        actual_file_names = self.get_actual_files(files)
                         if len(files) == 0:
                             empty_package_list.append(package_id)
                         else:
+                            self.write_csv(package_id, expected_file_names, actual_file_names)
                             for file in files:
                                 actual_file_names.append(file)
-                                print(actual_file_names)
-                                missing_files = set(expected_file_names).difference(actual_file_names)
-                                data = [
-                                    [package_id, missing_files]
-                                ]
-                                writer.writerows(data) 
+                                
                                 if file == "metadata.json" and len(files) == 1:
                                     empty_package_list.append(package_id)
                             
-                             
                             if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
                                 empty_package_list.append(package_id)
                     except:
                         missing_package_list.append(package_id)
-                        
-        f.close()
             
         # if len(empty_package_list) > 0:
         #     message = "Missing files in packages: " + ', '.join(empty_package_list)
