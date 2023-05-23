@@ -33,7 +33,7 @@ class PackageChecker:
         empty_package_list = []
         missing_package_list = []
         missing_files_list = []
-        header = ["Package ID", "Missing Files"]
+        header = ["Package ID", "Missing Files", "Empty Package List"]
         f = open("missing_files.csv", "w")
         writer = csv.writer(f)
         writer.writerow(header)
@@ -59,7 +59,7 @@ class PackageChecker:
                                 empty_package_list.append(package_id)
                                 missing_files = set(expected_file_names).difference(actual_file_names)
                                 data = [
-                                    [package_id, missing_files]
+                                    [package_id, missing_files, empty_package_list]
                                 ]
                                 
                                 writer.writerows(data)
