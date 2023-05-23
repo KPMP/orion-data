@@ -57,7 +57,7 @@ class PackageChecker:
                                     empty_package_list.append(package_id)
                                     
                             if (p != "metadata.json" for p in actual_file_names):
-                                missing_files_list = set(expected_file_names).difference(actual_file_names)
+                                missing_files_list = set(expected_file_names).difference(set(actual_file_names))
                                 data = [
                                     [package_id, missing_files_list]
                                 ]
