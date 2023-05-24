@@ -15,7 +15,7 @@ public class DmdResponse {
 
     public static class DMDResponseFile {
         private String name;
-        private int size;
+        private long size;
         private String checksum;
         private String path;
 
@@ -29,11 +29,11 @@ public class DmdResponse {
             this.name = name;
         }
 
-        public int getSize() {
+        public long getSize() {
             return size;
         }
 
-        public void setSize(int size) {
+        public void setSize(long size) {
             this.size = size;
         }
 
