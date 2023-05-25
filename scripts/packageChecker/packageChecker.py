@@ -51,9 +51,10 @@ class PackageChecker:
                         if len(files) == 0:
                             empty_package_list.append(package_id)
                         else:
+                            print("if file length > 0")
                             for file in files:
                                 actual_file_names.append(file)
-                                
+                                print("Looping through files...")
                                 
                                 if file == "metadata.json" and len(files) == 1:
                                     empty_package_list.append(package_id)
