@@ -58,7 +58,7 @@ class PackageChecker:
                                 if file == "metadata.json" and len(files) == 1:
                                     empty_package_list.append(package_id)
                                     
-                            missing_files_list = set(expected_file_names).difference(set(actual_file_names))        
+                                  
                             
                             
                             
@@ -66,6 +66,7 @@ class PackageChecker:
                                 empty_package_list.append(package_id)
                     except:
                         missing_package_list.append(package_id)
+            missing_files_list = set(expected_file_names).difference(set(actual_file_names))  
             if len(missing_files_list) != 0:
                                     data = [
                                     [package_id, missing_files_list]
