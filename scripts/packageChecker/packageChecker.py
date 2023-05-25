@@ -2,6 +2,7 @@ import pymongo
 import logging
 import requests
 import os
+import csv
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -31,6 +32,11 @@ class PackageChecker:
     def find_empty_packages(self):
         empty_package_list = []
         missing_package_list = []
+        # data = {}
+        header = ["Package ID", "Missing Files"]
+        f = open("missing_files.csv", "w")
+        writer = csv.writer(f)
+        writer.writerow(header)
         packages = self.dataLake.packages.find({})
         for package in packages:
             package_id = package["_id"]
@@ -47,16 +53,28 @@ class PackageChecker:
                         else:
                             for file in files:
                                 actual_file_names.append(file)
+                                
                                 if file == "metadata.json" and len(files) == 1:
                                     empty_package_list.append(package_id)
+                                    
                             if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
                                 empty_package_list.append(package_id)
+                                
+                        missing_files_list = set(expected_file_names).difference(set(actual_file_names)) 
+                        missing_files_list = ', '.join(missing_files_list)
+                        if len(missing_files_list) != 0:
+                            data = [
+                                [package_id, missing_files_list]
+                            ]
+                            writer.writerows(data)
                     except:
                         missing_package_list.append(package_id)
-
+                        
+                        
+        f.close()
+            
         if len(empty_package_list) > 0:
             message = "Missing files in packages: " + ', '.join(empty_package_list)
-
             requests.post(
                 slack_url,
                 headers={'Content-type': 'application/json', },
