@@ -30,6 +30,7 @@ class PackageChecker:
         return expected_file_names
 
     def find_empty_packages(self):
+        print("Run empty packages")
         empty_package_list = []
         missing_package_list = []
         # data = {}
@@ -39,11 +40,13 @@ class PackageChecker:
         writer.writerow(header)
         packages = self.dataLake.packages.find({})
         for package in packages:
+            print("loop through packages")
             package_id = package["_id"]
             package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
             for state in package_states:
                 if state['state'] == "UPLOAD_SUCCEEDED":
                     try:
+                        print("Inside try except")
                         directory = data_directory + "/package_";
                         files = os.listdir(directory + package_id)
                         expected_file_names = self.get_expected_files(package)
