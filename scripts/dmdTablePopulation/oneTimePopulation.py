@@ -15,7 +15,7 @@ parser.add_argument('-dmdUser', '--dmd-mariadb-user', dest='mariadb_user', help=
                     required=True)
 
 args = parser.parse_args()
-
+logging.basicConfig(level=logging.INFO)
 
 def get_data_lake():
     try:
