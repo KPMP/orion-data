@@ -78,27 +78,37 @@ def is_error(data_lake, package):
 
 def insert_packages(data_lake, dmd):
     packages_collection = data_lake['packages']
+    cursor = dmd.cursor(buffered=False)
 
     for package in packages_collection.find():
-        full_name = get_submitter_name(data_lake, package)
-        package_in_error = is_error(data_lake, package)
-        insert_query = "INSERT INTO dlu_package_inventory (dlu_package_id, dlu_created, dlu_tis, dlu_packageType, " \
-                       "dlu_subject_id, dlu_lfu, dlu_submitter, dlu_error) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        package_id = package['_id']
+        select_query = "SELECT dlu_package_id FROM dlu_package_inventory WHERE dlu_package_id = %s"
+        cursor.execute(select_query, (package_id,))
+        package_row_count = cursor.rowcount
 
-        large_file_upload = 0
-        if 'largeFilesChecked' in package:
-            if package['largeFilesChecked']:
-                large_file_upload = 1
+        if package_row_count == 0:
+            full_name = get_submitter_name(data_lake, package)
+            package_in_error = is_error(data_lake, package)
 
-        try:
-            cursor = dmd.cursor(buffered=False)
-            cursor.execute(insert_query, (
-                package['_id'], package['createdAt'], package['tisName'], package['packageType'], package['subjectId'],
-                large_file_upload, full_name, package_in_error))
-            insert_files(package, dmd)
-        except Exception as error:
-            logging.error(f'Unable to insert package {package}. Error: {error}')
-            raise error
+            insert_query = "INSERT INTO dlu_package_inventory (dlu_package_id, dlu_created, dlu_tis, dlu_packageType, " \
+                           "dlu_subject_id, dlu_lfu, dlu_submitter, dlu_error) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+
+            large_file_upload = 0
+            if 'largeFilesChecked' in package:
+                if package['largeFilesChecked']:
+                    large_file_upload = 1
+
+            try:
+                cursor.execute(insert_query, (
+                    package_id, package['createdAt'], package['tisName'], package['packageType'], package['subjectId'],
+                    large_file_upload, full_name, package_in_error))
+                insert_files(package, dmd)
+            except Exception as error:
+                logging.error(f'Unable to insert package {package}. Error: {error}')
+                raise error
+        else:
+            logging.info(f'Package {package_id} already exists. Skipping.')
+
 
 
 def insert_files(package, dmd):
