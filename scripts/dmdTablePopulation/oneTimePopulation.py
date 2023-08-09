@@ -85,6 +85,7 @@ def insert_packages(data_lake, dmd):
         select_query = "SELECT dlu_package_id FROM dlu_package_inventory WHERE dlu_package_id = %s"
         cursor.execute(select_query, (package_id,))
         package_row_count = cursor.rowcount
+        cursor.reset()
 
         if package_row_count == 0:
             logging.info(f'Adding package {package_id}')
