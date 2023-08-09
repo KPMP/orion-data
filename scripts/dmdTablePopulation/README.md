@@ -16,7 +16,7 @@ You will need to install the necessary libraries:
 
 Lastly, you will run the script thusly (filling in the correct password):
 
-    python3 oneTimePopulation.py -dluHost=localhost -dluPort=27108 -dmdHost=localhost -dmdUser=root -dmdPass='<password>'
+    python3 oneTimePopulation.py -dluHost=localhost -dluPort=27018 -dmdHost=localhost -dmdUser=root -dmdPass='<password>'
 
 The script will take at least 10 minutes to run as it needs to loop through all of the packages and all of the files associated with each package to fill in the necessary tables.
 
