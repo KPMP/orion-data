@@ -87,6 +87,7 @@ def insert_packages(data_lake, dmd):
         package_row_count = cursor.rowcount
 
         if package_row_count == 0:
+            logging.info(f'Adding package {package_id}')
             full_name = get_submitter_name(data_lake, package)
             package_in_error = is_error(data_lake, package)
 
