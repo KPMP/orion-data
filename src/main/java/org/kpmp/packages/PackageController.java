@@ -3,7 +3,6 @@ package org.kpmp.packages;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,25 +28,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class PackageController {
-
-	@Value("${package.state.files.received}")
-	private String filesReceivedState;
 	@Value("${package.state.upload.started}")
 	private String uploadStartedState;
 	@Value("${package.state.metadata.received}")
 	private String metadataReceivedState;
 	@Value("${package.state.upload.failed}")
 	private String uploadFailedState;
-
-	@Value("${package.state.upload.succeeded}")
-	private String uploadSucceededState;
-
-	private static final MessageFormat finish = new MessageFormat("{0} {1}");
-	private static final MessageFormat fileUploadRequest = new MessageFormat(
-			"Posting file: {0} to package with id: {1}, filesize: {2}, chunk: {3} out of {4} chunks");
-	private static final MessageFormat fileDownloadRequest = new MessageFormat(
-			"Requesting package download with id {0}, filename {1}");
-
 	private LoggingService logger;
 	private PackageService packageService;
 	private ShibbolethUserService shibUserService;
@@ -125,8 +111,4 @@ public class PackageController {
 		}
 		return responseEntity;
 	}
-	private boolean shouldAppend(int chunk) {
-		return chunk != 0;
-	}
-
 }
