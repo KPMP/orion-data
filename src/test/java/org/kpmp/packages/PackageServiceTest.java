@@ -37,7 +37,6 @@ public class PackageServiceTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		service = new PackageService(packageRepository, stateHandlerService, dmdService, logger);
-		ReflectionTestUtils.setField(service, "uploadSucceededState", "UPLOAD_SUCCEEDED");
 	}
 
 	@After
