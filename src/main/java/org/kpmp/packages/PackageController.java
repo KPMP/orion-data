@@ -18,10 +18,6 @@ import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class PackageController {
@@ -91,6 +86,7 @@ public class PackageController {
 		JSONObject packageInfo;
 		try {
 			packageInfo = new JSONObject(packageInfoString);
+			packageInfo.put("largeFilesChecked", true);
 			logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
 			User user = shibUserService.getUser(request);
 			packageService.savePackageInformation(packageInfo, user, packageId);
@@ -106,31 +102,6 @@ public class PackageController {
 		}
 		return packageResponse;
 	}
-
-	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.POST, consumes = {
-			"multipart/form-data" })
-	public @ResponseBody FileUploadResponse postFilesToPackage(@PathVariable("packageId") String packageId,
-			@RequestParam("qqfile") MultipartFile file, @RequestParam("qqfilename") String filename,
-			@RequestParam("qqtotalfilesize") long fileSize,
-			@RequestParam(name = "qqtotalparts", defaultValue = "1") int chunks,
-			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk, HttpServletRequest request) {
-
-		String hostname = request.getHeader("Host");
-		String message = fileUploadRequest.format(new Object[] { filename, packageId, fileSize, chunk, chunks });
-		logger.logInfoMessage(this.getClass(), packageId, message, request);
-
-		try {
-			packageService.saveFile(file, packageId, filename, shouldAppend(chunk));
-		} catch (Exception e) {
-			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-			String cleanHostName = hostname.replace("=", "");
-			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), cleanHostName);
-			return new FileUploadResponse(false);
-		}
-
-		return new FileUploadResponse(true);
-	}
-
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/v1/packages/{packageId}/files/move", method = RequestMethod.POST)
@@ -154,37 +125,6 @@ public class PackageController {
 		}
 		return responseEntity;
 	}
-
-	@RequestMapping(value = "/v1/packages/{packageId}/files/finish", method = RequestMethod.POST)
-	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId,
-			@RequestBody String hostname, HttpServletRequest request) {
-
-		String cleanHostName = hostname.replace("=", "");
-		packageService.sendStateChangeEvent(packageId, filesReceivedState, null, cleanHostName);
-		FileUploadResponse fileUploadResponse;
-		String message = finish.format(new Object[] { "Finishing file upload with packageId: ", packageId });
-		logger.logInfoMessage(this.getClass(), packageId, message, request);
-		if (packageService.validatePackage(packageId, shibUserService.getUser(request))) {
-			try {
-				packageService.calculateAndSaveChecksums(packageId);
-				fileUploadResponse = new FileUploadResponse(true);
-				packageService.sendStateChangeEvent(packageId, uploadSucceededState, null, cleanHostName);
-			} catch (Exception e) {
-				String errorMessage = finish
-						.format(new Object[] { "There was a problem calculating the checksum for package ", packageId });
-				logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
-				fileUploadResponse = new FileUploadResponse(false);
-				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
-			}
-		} else {
-			String errorMessage = finish.format(new Object[] { "The files on disk did not match the database: ", packageId });
-			logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
-			fileUploadResponse = new FileUploadResponse(false);
-			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
-		}
-		return fileUploadResponse;
-	}
-
 	private boolean shouldAppend(int chunk) {
 		return chunk != 0;
 	}
