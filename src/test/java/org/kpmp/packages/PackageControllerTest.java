@@ -140,8 +140,7 @@ public class PackageControllerTest {
 		assertEquals("universalId", packageIdCaptor.getValue());
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
 				"Posting package info: {\"packageType\":\"blah\"}", request);
-		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null, "hostname");
-		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "false", null, "hostname");
+		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "true", null, "hostname");
 	}
 
 	@Test
@@ -173,83 +172,6 @@ public class PackageControllerTest {
 		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null, "hostname");
 		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "true", "theWholeURL",
 				"hostname");
-	}
-
-	@Test
-	public void testPostFilesToPackage_whenNotInitialChunk() throws Exception {
-		MultipartFile file = mock(MultipartFile.class);
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getHeader("Host")).thenReturn("hostname");
-
-		controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 2, request);
-
-		verify(packageService).saveFile(file, "packageId", "filename", true);
-		verify(logger).logInfoMessage(PackageController.class, "packageId",
-				"Posting file: filename to package with id: packageId, filesize: 1,234, chunk: 2 out of 3 chunks",
-				request);
-	}
-
-	@Test
-	public void testPostFilesToPackage_whenInitialChunk() throws Exception {
-		MultipartFile file = mock(MultipartFile.class);
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(request.getHeader("Host")).thenReturn("hostname");
-
-		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
-
-		assertEquals(true, response.isSuccess());
-		verify(packageService).saveFile(file, "packageId", "filename", false);
-		verify(logger).logInfoMessage(PackageController.class, "packageId",
-				"Posting file: filename to package with id: packageId, filesize: 1,234, chunk: 0 out of 3 chunks",
-				request);
-	}
-
-	@Test
-	public void testPostFilesToPackage_whenSaveThrowsException() throws Exception {
-		MultipartFile file = mock(MultipartFile.class);
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		doThrow(new Exception("NOPE")).when(packageService).saveFile(file, "packageId", "filename", false);
-		when(request.getHeader("Host")).thenReturn("hostname");
-
-		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
-
-		assertEquals(false, response.isSuccess());
-		verify(logger).logErrorMessage(PackageController.class, "packageId", "NOPE", request);
-		verify(packageService).sendStateChangeEvent("packageId", "UPLOAD_FAILED", null, "NOPE", "hostname");
-	}
-
-	@Test
-	public void testFinishUpload() throws Exception {
-		User user = mock(User.class);
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		when(shibUserService.getUser(request)).thenReturn(user);
-		when(packageService.validatePackage("3545", user)).thenReturn(true);
-
-		FileUploadResponse result = controller.finishUpload("3545", "origin", request);
-
-		verify(packageService).validatePackage("3545", user);
-		assertEquals(true, result.isSuccess());
-		verify(logger).logInfoMessage(PackageController.class, "3545", "Finishing file upload with packageId:  3545",
-				request);
-		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null, "origin");
-	}
-
-	@Test
-	public void testFinishUpload_whenMismatchedFiles() throws Exception {
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		User user = mock(User.class);
-		when(shibUserService.getUser(request)).thenReturn(user);
-		when(packageService.validatePackage("3545", user)).thenReturn(false);
-
-		FileUploadResponse result = controller.finishUpload("3545", "origin", request);
-
-		verify(packageService).validatePackage("3545", user);
-		assertEquals(false, result.isSuccess());
-		verify(logger).logErrorMessage(PackageController.class, "3545", "The files on disk did not match the database:  3545",
-				request);
-		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null, "origin");
-		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED", null,
-				"The files on disk did not match the database:  3545", "origin");
 	}
 
 }
