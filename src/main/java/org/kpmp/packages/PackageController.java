@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class PackageController {
+
 	@Value("${package.state.upload.started}")
 	private String uploadStartedState;
 	@Value("${package.state.metadata.received}")
