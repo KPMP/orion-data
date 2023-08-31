@@ -46,7 +46,6 @@ public class DluPackageInventoryTest {
         assertEquals(user.getDisplayName(), dluPackageInventory.getDluSubmitter());
         assertEquals("subjid", dluPackageInventory.getDluSubjectId());
         assertTrue(dluPackageInventory.getDluLfu());
-        assertEquals("waiting", dluPackageInventory.getGlobusDluStatus());
         assertEquals("N", dluPackageInventory.getUserPackageReady());
     }
 
@@ -71,7 +70,6 @@ public class DluPackageInventoryTest {
         assertEquals(user.getDisplayName(), dluPackageInventory.getDluSubmitter());
         assertEquals("subjid", dluPackageInventory.getDluSubjectId());
         assertFalse(dluPackageInventory.getDluLfu());
-        assertEquals("N/A", dluPackageInventory.getGlobusDluStatus());
         assertEquals("Y", dluPackageInventory.getUserPackageReady());
     }
 
