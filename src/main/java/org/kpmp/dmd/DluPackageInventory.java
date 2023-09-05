@@ -34,11 +34,6 @@ public class DluPackageInventory {
         setDluError(false);
         setUserPackageReady(!myPackage.getLargeFilesChecked());
         setDluLfu(myPackage.getLargeFilesChecked());
-        if (myPackage.getLargeFilesChecked()) {
-            setGlobusDluStatus("waiting");
-        } else {
-            setGlobusDluStatus("N/A");
-        }
     }
 
     public DluPackageInventory() {
