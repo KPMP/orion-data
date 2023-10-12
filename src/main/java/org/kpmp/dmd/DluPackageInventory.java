@@ -27,7 +27,7 @@ public class DluPackageInventory {
     public DluPackageInventory(Package myPackage) {
         setDluPackageId(myPackage.getPackageId());
         setDluCreated(myPackage.getCreatedAt());
-        setDluSubmitter(myPackage.getSubmitter().getDisplayName());
+        setDluSubmitter(myPackage.getSubmitter().getFirstName() + " " + myPackage.getSubmitter().getLastName());
         setDluTis(myPackage.getTisName());
         setDluPackageType(myPackage.getPackageType());
         setDluSubjectId(myPackage.getSubjectId());
