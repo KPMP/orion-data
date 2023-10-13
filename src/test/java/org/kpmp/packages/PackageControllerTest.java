@@ -51,7 +51,6 @@ public class PackageControllerTest {
 		mocks = MockitoAnnotations.openMocks(this);
 		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator,
 				globusService, dmdService);
-		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadFailedState", "UPLOAD_FAILED");
@@ -70,21 +69,21 @@ public class PackageControllerTest {
 		when(packageService.findAllPackages()).thenReturn(expectedPackages);
 		HttpServletRequest request = mock(HttpServletRequest.class);
 
-		List<PackageView> packages = controller.getAllPackages(true, request);
+		List<PackageView> packages = controller.getAllPackages(false, request);
 
 		assertEquals(expectedPackages, packages);
 		verify(packageService).findAllPackages();
-		verify(packageService, times(0)).findAllPackages();
+		verify(packageService, times(0)).findMostPackages();
 		verify(logger).logInfoMessage(PackageController.class, null, "Request for all packages", request);
 	}
 
 	@Test
-	public void testGetAllPackages_whenFalse() throws JSONException, IOException {
+	public void testGetAllPackages_whenShouldExclude() throws JSONException, IOException {
 		List<PackageView> expectedPackages = Arrays.asList(new PackageView(new JSONObject()));
 		when(packageService.findMostPackages()).thenReturn(expectedPackages);
 		HttpServletRequest request = mock(HttpServletRequest.class);
 
-		List<PackageView> packages = controller.getAllPackages(false, request);
+		List<PackageView> packages = controller.getAllPackages(true, request);
 
 		assertEquals(expectedPackages, packages);
 		verify(packageService).findMostPackages();

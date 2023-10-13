@@ -19,6 +19,7 @@ import org.kpmp.logging.LoggingService;
 
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class PackageServiceTest {
 
@@ -37,6 +38,7 @@ public class PackageServiceTest {
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 		service = new PackageService(packageRepository, stateHandlerService, dmdService, logger);
+		ReflectionTestUtils.setField(service, "packageTypesToExclude", Arrays.asList("Electron Microscopy Images"));
 	}
 
 	@After
@@ -71,6 +73,32 @@ public class PackageServiceTest {
 		verify(packageRepository).findAll();
 		verify(stateHandlerService).getState();
 	}
+
+	@Test
+	public void testfindMostPackages() throws JSONException, IOException {
+		State newState = mock(State.class);
+		HashMap<String, State> stateMap = new HashMap<String, State>();
+		stateMap.put("packageId", newState);
+		stateMap.put("anotherId", mock(State.class));
+		when(stateHandlerService.getState()).thenReturn(stateMap);
+		JSONObject excludedPackage = mock(JSONObject.class);
+		when(excludedPackage.toString()).thenReturn("");
+		when(excludedPackage.getString("_id")).thenReturn("packageId");
+		when(excludedPackage.getString("packageType")).thenReturn("Electron Microscopy Images");
+		JSONObject uploadedPackage = mock(JSONObject.class);
+		when(uploadedPackage.toString()).thenReturn("");
+		when(uploadedPackage.getString("_id")).thenReturn("packageId");
+		when(uploadedPackage.getString("packageType")).thenReturn("Anything Else");
+		when(packageRepository.findAll()).thenReturn(Arrays.asList(excludedPackage, uploadedPackage));
+
+		List<PackageView> packages = service.findMostPackages();
+
+		assertEquals(1, packages.size());
+		assertEquals(newState, packages.get(0).getState());
+		verify(packageRepository).findAll();
+		verify(stateHandlerService).getState();
+	}
+
 
 	@Test
 	public void testSavePackageInformation() throws Exception {
