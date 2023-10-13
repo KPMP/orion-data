@@ -17,15 +17,17 @@ public class REDCapIngestServiceTest {
 	@Mock
 	private REDCapIngestRepository repository;
 	private REDCapIngestService service;
+	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		mocks = MockitoAnnotations.openMocks(this);
 		service = new REDCapIngestService(repository);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		mocks.close();
 		service = null;
 	}
 

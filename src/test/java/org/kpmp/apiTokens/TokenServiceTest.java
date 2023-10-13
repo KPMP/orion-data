@@ -3,7 +3,6 @@ package org.kpmp.apiTokens;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
 import org.mockito.Mock;
 
@@ -19,17 +18,17 @@ public class TokenServiceTest {
     private TokenService tokenService;
     @Mock
     private TokenRepository tokenRepository;
-    @Mock
-    private ShibbolethUserService userService;
+    private AutoCloseable mocks;
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        tokenService = new TokenService(tokenRepository, userService);
+        mocks = MockitoAnnotations.openMocks(this);
+        tokenService = new TokenService(tokenRepository);
     }
 
     @After
     public void tearDown() throws Exception {
+        mocks.close();
         tokenService = null;
     }
 

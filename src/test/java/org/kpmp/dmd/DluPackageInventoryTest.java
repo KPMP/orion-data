@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.packages.Package;
 import org.kpmp.users.User;
-import org.mockito.MockitoAnnotations;
 
 import java.util.Date;
 

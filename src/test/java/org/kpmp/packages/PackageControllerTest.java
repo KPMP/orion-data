@@ -1,18 +1,13 @@
 package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,12 +26,7 @@ import org.kpmp.users.User;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 public class PackageControllerTest {
 
@@ -54,10 +44,11 @@ public class PackageControllerTest {
 
 	@Mock
 	private DmdService dmdService;
+	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		mocks = MockitoAnnotations.openMocks(this);
 		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator,
 				globusService, dmdService);
 		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
@@ -69,6 +60,7 @@ public class PackageControllerTest {
 
 	@After
 	public void tearDown() throws Exception {
+		mocks.close();
 		controller = null;
 	}
 
@@ -78,10 +70,25 @@ public class PackageControllerTest {
 		when(packageService.findAllPackages()).thenReturn(expectedPackages);
 		HttpServletRequest request = mock(HttpServletRequest.class);
 
-		List<PackageView> packages = controller.getAllPackages(request);
+		List<PackageView> packages = controller.getAllPackages(true, request);
 
 		assertEquals(expectedPackages, packages);
 		verify(packageService).findAllPackages();
+		verify(packageService, times(0)).findAllPackages();
+		verify(logger).logInfoMessage(PackageController.class, null, "Request for all packages", request);
+	}
+
+	@Test
+	public void testGetAllPackages_whenFalse() throws JSONException, IOException {
+		List<PackageView> expectedPackages = Arrays.asList(new PackageView(new JSONObject()));
+		when(packageService.findMostPackages()).thenReturn(expectedPackages);
+		HttpServletRequest request = mock(HttpServletRequest.class);
+
+		List<PackageView> packages = controller.getAllPackages(false, request);
+
+		assertEquals(expectedPackages, packages);
+		verify(packageService).findMostPackages();
+		verify(packageService, times(0)).findAllPackages();
 		verify(logger).logInfoMessage(PackageController.class, null, "Request for all packages", request);
 	}
 

@@ -85,8 +85,8 @@ public class DmdResponse {
         this.message = message;
     }
 
-    public List getFileNameList() {
-        ArrayList fileNames = new ArrayList();
+    public List<String> getFileNameList() {
+        ArrayList<String> fileNames = new ArrayList<>();
         for (DMDResponseFile file : fileList) {
             fileNames.add(file.getName());
         }

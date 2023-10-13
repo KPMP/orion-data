@@ -23,10 +23,11 @@ public class GlobusServiceTest {
 	private Environment env;
 
 	private GlobusService globusService;
+	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		mocks = MockitoAnnotations.openMocks(this);
 		globusService = new GlobusService(httpTransport, globusAuthService, env);
 		when(env.getProperty("GLOBUS_DIR")).thenReturn("thePathToEnlightenment");
 		ReflectionTestUtils.setField(globusService, "endpointID", "epID");
@@ -36,6 +37,7 @@ public class GlobusServiceTest {
 
 	@After
 	public void tearDown() throws Exception {
+		mocks.close();
 		globusService = null;
 	}
 

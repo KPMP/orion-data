@@ -19,7 +19,6 @@ import org.kpmp.logging.LoggingService;
 
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
 
 public class PackageServiceTest {
 
@@ -32,15 +31,17 @@ public class PackageServiceTest {
 	private LoggingService logger;
 	@Mock
 	private StateHandlerService stateHandlerService;
+	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		mocks = MockitoAnnotations.openMocks(this);
 		service = new PackageService(packageRepository, stateHandlerService, dmdService, logger);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		mocks.close();
 		service = null;
 	}
 
