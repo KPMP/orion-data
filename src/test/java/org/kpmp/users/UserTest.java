@@ -46,7 +46,9 @@ public class UserTest {
 
 	@Test
 	public void testSetDisplayName() {
-		testUser.setDisplayName("Space Oddity");
+        testUser.setFirstName("Space");
+        testUser.setLastName("Oddity");
+		testUser.setDisplayName(testUser.getFirstName() + testUser.getLastName());
 		assertEquals("Space Oddity", testUser.getDisplayName());
 	}
 
@@ -64,7 +66,7 @@ public class UserTest {
 
 	@Test
 	public void testGenerateJSON() throws Exception {
-		testUser.setDisplayName("displayName");
+		testUser.setDisplayName(testUser.getFirstName() + testUser.getLastName());
 		testUser.setEmail("emailAddress");
 		testUser.setFirstName("firstName");
 		testUser.setId("id");
@@ -72,7 +74,7 @@ public class UserTest {
 		testUser.setShibId("shibId");
 
 		assertEquals("{\"firstName\":\"firstName\",\"lastName\":\"lastName\","
-				+ "\"displayName\":\"displayName\",\"email\":\"emailAddress\"}", testUser.generateJSON());
+				+ "\"displayName\":\"firstName lastName\",\"email\":\"emailAddress\"}", testUser.generateJSON());
 	}
 
 	@Test
@@ -86,7 +88,7 @@ public class UserTest {
 
 		assertEquals(
 				"{\"id\":\"id\",\"firstName\":\"firstName\",\"lastName\":\"lastName\","
-						+ "\"displayName\":\"displayName\",\"email\":\"emailAddress\",\"shibId\":\"shibId\"}",
+						+ "\"displayName\":\"firstName lastName\",\"email\":\"emailAddress\",\"shibId\":\"shibId\"}",
 				testUser.generateJSONForApp());
 	}
 }
