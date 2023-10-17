@@ -50,8 +50,8 @@ public class PackageService {
 		Map<String, State> stateMap = stateHandler.getState();
 		for (JSONObject packageToCheck : jsons) {
 			String packageType = packageToCheck.getString("packageType");
-			logger.logInfoMessage(this.getClass(), packageToCheck.getString("_id"), "Package type: " + packageToCheck.getString("packageType"), null);
-			logger.logInfoMessage(this.getClass(), packageToCheck.getString("_id"), "packagesToExclude: " + packageTypesToExclude.get(0), null);
+			logger.logInfoMessage(this.getClass(), null, packageToCheck.getString("_id"), "/v1/app/packages/exclude/true", "Package type: " + packageToCheck.getString("packageType"));
+			logger.logInfoMessage(this.getClass(), null, packageToCheck.getString("_id"), "/v1/app/packages/exclude/true",  "packagesToExclude: " + packageTypesToExclude.get(0));
 			if (!packageTypesToExclude.contains(packageType)) {
 				PackageView packageView = new PackageView(packageToCheck);
 				String packageId = packageToCheck.getString("_id");
