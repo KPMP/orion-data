@@ -48,6 +48,7 @@ public class PackageService {
 		List<JSONObject> jsons = packageRepository.findAll();
 		List<PackageView> packageViews = new ArrayList<>();
 		Map<String, State> stateMap = stateHandler.getState();
+		logger.logInfoMessage(this.getClass(), null, "", "/v1/app/packages/exclude/true", "Package type to exclude: [" + packageTypeToExclude + "]");
 		for (JSONObject packageToCheck : jsons) {
 			String packageType = packageToCheck.getString("packageType");
 			logger.logInfoMessage(this.getClass(), null, packageToCheck.getString("_id"), "/v1/app/packages/exclude/true", "Package type: [" + packageToCheck.getString("packageType") + "]");
