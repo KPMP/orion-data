@@ -38,7 +38,7 @@ public class PackageServiceTest {
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 		service = new PackageService(packageRepository, stateHandlerService, dmdService, logger);
-		ReflectionTestUtils.setField(service, "packageTypesToExclude", Arrays.asList("Electron Microscopy Images"));
+		ReflectionTestUtils.setField(service, "packageTypeToExclude", "Electron Microscopy Images");
 	}
 
 	@After

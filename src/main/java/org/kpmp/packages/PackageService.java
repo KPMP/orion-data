@@ -20,8 +20,8 @@ public class PackageService {
 	private CustomPackageRepository packageRepository;
 	private DmdService dmdService;
 	private StateHandlerService stateHandler;
-	@Value("#{'${packageType.exclusions}'.split(',')}")
-	private List<String> packageTypesToExclude;
+	@Value("${packageType.exclusions}")
+	private String packageTypeToExclude;
 	private LoggingService logger;
 
 	@Autowired
@@ -51,7 +51,7 @@ public class PackageService {
 		for (JSONObject packageToCheck : jsons) {
 			String packageType = packageToCheck.getString("packageType");
 			logger.logInfoMessage(this.getClass(), null, packageToCheck.getString("_id"), "/v1/app/packages/exclude/true", "Package type: [" + packageToCheck.getString("packageType") + "]");
-			if (!packageTypesToExclude.contains(packageType)) {
+			if (!packageTypeToExclude.equalsIgnoreCase(packageType)) {
 				logger.logInfoMessage(this.getClass(), null, packageToCheck.getString("_id"), "v1/app/packages/exclude/true", "not excluded");
 				PackageView packageView = new PackageView(packageToCheck);
 				String packageId = packageToCheck.getString("_id");
