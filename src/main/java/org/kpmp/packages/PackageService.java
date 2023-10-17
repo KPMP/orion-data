@@ -22,12 +22,14 @@ public class PackageService {
 	private StateHandlerService stateHandler;
 	@Value("#{'${packageType.exclusions}'.split(',')}")
 	private List<String> packageTypesToExclude;
+	private LoggingService logger;
 
 	@Autowired
 	public PackageService(CustomPackageRepository packageRepository, StateHandlerService stateHandler, DmdService dmdService, LoggingService logger) {
 		this.packageRepository = packageRepository;
 		this.stateHandler = stateHandler;
 		this.dmdService = dmdService;
+		this.logger = logger;
 	}
 	public List<PackageView> findAllPackages() throws JSONException, IOException {
 		List<JSONObject> jsons = packageRepository.findAll();
@@ -48,6 +50,8 @@ public class PackageService {
 		Map<String, State> stateMap = stateHandler.getState();
 		for (JSONObject packageToCheck : jsons) {
 			String packageType = packageToCheck.getString("packageType");
+			logger.logInfoMessage(this.getClass(), packageToCheck.getString("_id"), "Package type: " + packageToCheck.getString("packageType"), null);
+			logger.logInfoMessage(this.getClass(), packageToCheck.getString("_id"), "packagesToExclude: " + packageTypesToExclude.get(0), null);
 			if (!packageTypesToExclude.contains(packageType)) {
 				PackageView packageView = new PackageView(packageToCheck);
 				String packageId = packageToCheck.getString("_id");
