@@ -58,10 +58,12 @@ public class PackageController {
 	@RequestMapping(value = "/v1/packages/exclude/{shouldExclude}", method = RequestMethod.GET)
 	public @ResponseBody List<PackageView> getAllPackages(@PathVariable("shouldExclude") boolean shouldExclude, HttpServletRequest request)
 			throws JSONException, IOException {
-		logger.logInfoMessage(this.getClass(), null, "Request for all packages", request);
+		
 		if (shouldExclude) {
+			logger.logInfoMessage(this.getClass(), null, "Request for filtered packages", request);
 			return packageService.findMostPackages();
 		} else {
+			logger.logInfoMessage(this.getClass(), null, "Request for all packages", request);
 			return packageService.findAllPackages();
 		}
 		
