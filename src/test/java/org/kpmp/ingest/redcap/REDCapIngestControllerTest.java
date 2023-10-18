@@ -28,15 +28,17 @@ public class REDCapIngestControllerTest {
 	private REDCapIngestController controller;
 	@Mock
 	private TokenService tokenService;
+	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		mocks = MockitoAnnotations.openMocks(this);
 		controller = new REDCapIngestController(service, tokenService);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		mocks.close();
 		controller = null;
 	}
 

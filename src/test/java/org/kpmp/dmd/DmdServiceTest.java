@@ -33,9 +33,11 @@ public class DmdServiceTest {
     @Mock
     private LoggingService logger;
 
+    private AutoCloseable mocks;
+
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        mocks = MockitoAnnotations.openMocks(this);
         dmdService = new DmdService(restTemplate, logger);
         ReflectionTestUtils.setField(dmdService, "dataManagerHost", "dmd.hostname");
         ReflectionTestUtils.setField(dmdService, "dataManagerEndpoint", "/uri/to/dmd/endpoint");
@@ -43,6 +45,7 @@ public class DmdServiceTest {
 
     @After
     public void tearDown() throws Exception {
+        mocks.close();
         dmdService = null;
     }
 
@@ -95,7 +98,7 @@ public class DmdServiceTest {
 
     @Test
     public void testMoveFiles() throws JsonProcessingException {
-        HashMap payload = new HashMap<>();
+        HashMap<String, String> payload = new HashMap<>();
         when(restTemplate.postForObject("dmd.hostname" + "/uri/to/dmd/endpoint/package/123/move", payload, String.class))
                 .thenReturn("{\"success\": true, \"message\":\"message\", \"file_list\":[{\"name\":\"file name\", \"size\": 123, \"path\":\"file path\", \"checksum\": \"checksum val\", \"file_id\": \"1234\"}]}");
         DmdResponse response = dmdService.moveFiles("123");

@@ -55,11 +55,18 @@ public class PackageController {
 		this.dmdService = dmdService;
 	}
 
-	@RequestMapping(value = "/v1/packages", method = RequestMethod.GET)
-	public @ResponseBody List<PackageView> getAllPackages(HttpServletRequest request)
+	@RequestMapping(value = "/v1/packages/exclude/{shouldExclude}", method = RequestMethod.GET)
+	public @ResponseBody List<PackageView> getAllPackages(@PathVariable("shouldExclude") boolean shouldExclude, HttpServletRequest request)
 			throws JSONException, IOException {
-		logger.logInfoMessage(this.getClass(), null, "Request for all packages", request);
-		return packageService.findAllPackages();
+		
+		if (shouldExclude) {
+			logger.logInfoMessage(this.getClass(), null, "Request for filtered packages", request);
+			return packageService.findMostPackages();
+		} else {
+			logger.logInfoMessage(this.getClass(), null, "Request for all packages", request);
+			return packageService.findAllPackages();
+		}
+		
 	}
 
 	@RequestMapping(value = "/v1/packages", method = RequestMethod.POST)

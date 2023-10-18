@@ -20,15 +20,17 @@ public class ShibbolethUserServiceTest {
 	private ShibbolethUserService shibbolethUserService;
 	@Mock
 	private UTF8Encoder utf8Encoder;
+	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		mocks = MockitoAnnotations.openMocks(this);
 		shibbolethUserService = new ShibbolethUserService(utf8Encoder);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		mocks.close();
 		shibbolethUserService = null;
 	}
 

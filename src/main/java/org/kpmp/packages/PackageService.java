@@ -11,6 +11,7 @@ import org.kpmp.dmd.DmdService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +20,16 @@ public class PackageService {
 	private CustomPackageRepository packageRepository;
 	private DmdService dmdService;
 	private StateHandlerService stateHandler;
+	@Value("${packageType.exclusions}")
+	private String packageTypeToExclude;
+	private LoggingService logger;
 
 	@Autowired
 	public PackageService(CustomPackageRepository packageRepository, StateHandlerService stateHandler, DmdService dmdService, LoggingService logger) {
 		this.packageRepository = packageRepository;
 		this.stateHandler = stateHandler;
 		this.dmdService = dmdService;
+		this.logger = logger;
 	}
 	public List<PackageView> findAllPackages() throws JSONException, IOException {
 		List<JSONObject> jsons = packageRepository.findAll();
@@ -35,6 +40,22 @@ public class PackageService {
 			String packageId = packageToCheck.getString("_id");
 			packageView.setState(stateMap.get(packageId));
 			packageViews.add(packageView);
+		}
+		return packageViews;
+	}
+
+	public List<PackageView> findMostPackages() throws JSONException, IOException {
+		List<JSONObject> jsons = packageRepository.findAll();
+		List<PackageView> packageViews = new ArrayList<>();
+		Map<String, State> stateMap = stateHandler.getState();
+		for (JSONObject packageToCheck : jsons) {
+			String packageType = packageToCheck.getString("packageType");
+			if (!packageTypeToExclude.equalsIgnoreCase(packageType)) {
+				PackageView packageView = new PackageView(packageToCheck);
+				String packageId = packageToCheck.getString("_id");
+				packageView.setState(stateMap.get(packageId));
+				packageViews.add(packageView);
+			}
 		}
 		return packageViews;
 	}
