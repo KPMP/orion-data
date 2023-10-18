@@ -86,5 +86,12 @@ public class DmdService {
         return dmdResponse;
     }
 
+    public String getPackageStatus(String packageId) throws JsonProcessingException {
+        HashMap payload = new HashMap<>();
+        String response = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/package/" + packageId + "/status",
+        payload, String.class);
+        return response;
+    }
+
 
 }
