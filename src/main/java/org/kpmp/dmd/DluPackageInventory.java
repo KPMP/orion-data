@@ -16,12 +16,13 @@ public class DluPackageInventory {
     private String knownSpecimen;
     private String redcapId;
     private String userPackageReady;
-    private Boolean dvcValidationComplete;
     private String packageValidated;
     private String readyToMoveFromGlobus;
     private String globusDluStatus;
     private String removedFromGlobus;
-    private String promotionStatus;
+    private String arPromotionStatus;
+
+    private String svPromotionStatus;
     private String notes;
 
     public DluPackageInventory(Package myPackage) {
@@ -34,6 +35,7 @@ public class DluPackageInventory {
         setDluError(false);
         setUserPackageReady(!myPackage.getLargeFilesChecked());
         setDluLfu(myPackage.getLargeFilesChecked());
+        setGlobusDluStatus("waiting");
     }
 
     public DluPackageInventory() {
@@ -134,14 +136,6 @@ public class DluPackageInventory {
         this.userPackageReady = userPackageReady;
     }
 
-    public Boolean getDvcValidationComplete() {
-        return dvcValidationComplete;
-    }
-
-    public void setDvcValidationComplete(Boolean dvcValidationComplete) {
-        this.dvcValidationComplete = dvcValidationComplete;
-    }
-
     public String getPackageValidated() {
         return packageValidated;
     }
@@ -174,12 +168,21 @@ public class DluPackageInventory {
         this.removedFromGlobus = removedFromGlobus;
     }
 
-    public String getPromotionStatus() {
-        return promotionStatus;
+
+    public String getArPromotionStatus() {
+        return arPromotionStatus;
     }
 
-    public void setPromotionStatus(String promotionStatus) {
-        this.promotionStatus = promotionStatus;
+    public void setArPromotionStatus(String arPromotionStatus) {
+        this.arPromotionStatus = arPromotionStatus;
+    }
+
+    public String getSvPromotionStatus() {
+        return svPromotionStatus;
+    }
+
+    public void setSvPromotionStatus(String svPromotionStatus) {
+        this.svPromotionStatus = svPromotionStatus;
     }
 
     public String getNotes() {
