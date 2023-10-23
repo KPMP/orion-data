@@ -88,7 +88,7 @@ public class PackageControllerTest {
 		assertEquals(expectedPackages, packages);
 		verify(packageService).findMostPackages();
 		verify(packageService, times(0)).findAllPackages();
-		verify(logger).logInfoMessage(PackageController.class, null, "Request for all packages", request);
+		verify(logger).logInfoMessage(PackageController.class, null, "Request for filtered packages", request);
 	}
 
 	@Test
