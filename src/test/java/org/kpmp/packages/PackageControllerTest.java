@@ -57,10 +57,9 @@ public class PackageControllerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator,
 				globusService, dmdService);
-		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadFailedState", "UPLOAD_FAILED");

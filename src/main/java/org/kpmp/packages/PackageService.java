@@ -34,6 +34,7 @@ public class PackageService {
 			PackageView packageView = new PackageView(packageToCheck);
 			String packageId = packageToCheck.getString("_id");
 			packageView.setState(stateMap.get(packageId));
+			packageView.setGlobusMoveStatus(dmdService.getPackageStatus(packageId));
 			packageViews.add(packageView);
 		}
 		return packageViews;
