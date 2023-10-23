@@ -23,3 +23,4 @@ globus_tokens
 __pycache__/
 .vscode
 .DS_Store
+!gradle/wrapper/gradle-wrapper.jar

@@ -2,11 +2,12 @@ plugins {
 	id 'org.springframework.boot' version '2.6.4'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
   	id 'java'
+	id 'com.palantir.docker' version '0.22.1'
 }
 
-    repositories {
-        mavenCentral()
-    }
+repositories {
+	mavenCentral()
+}
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
@@ -16,8 +17,10 @@ apply plugin: 'io.spring.dependency-management'
 
 jar {
     baseName='orion-data'
-    version= '2.9'
+    version= '4.1'
 }
+
+group = 'kingstonduo'
 
 repositories {
     mavenCentral()
@@ -45,4 +48,16 @@ dependencies {
 
 springBoot {
     mainClass = "org.kpmp.Application"
+}
+
+task unpack(type: Copy) {
+    dependsOn bootJar
+    from(zipTree(tasks.bootJar.outputs.files.singleFile))
+    into("build/dependency")
+}
+
+docker {
+    name "${project.group}/${jar.baseName}:latest"
+    copySpec.from(tasks.unpack.outputs).into("dependency")
+    buildArgs(['DEPENDENCY': "dependency"])
 }
