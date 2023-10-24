@@ -104,16 +104,20 @@ def insert_packages(data_lake, dmd):
 def insert_files(package, dmd):
     files = package['files']
     for file in files:
-        insert_query = 'INSERT INTO dlu_file (dlu_fileName, dlu_package_id, dlu_file_id, dlu_filesize, dlu_md5checksum)' \
-                       'VALUES(%s, %s, %s , %s, %s)'
+        insert_query = 'INSERT INTO dlu_file (dlu_fileName, dlu_package_id, dlu_file_id, dlu_filesize, dlu_md5checksum, dlu_metadata)' \
+                       'VALUES(%s, %s, %s , %s, %s, %s)'
 
         checksum = None
         if 'md5checksum' in file:
             checksum = file['md5checksum']
 
+        metadata = None
+        if 'metadata' in file:
+            metadata = file['metadata']
+
         try:
             cursor = dmd.cursor(buffered=False)
-            cursor.execute(insert_query, (file['fileName'], package['_id'], file['_id'], int(file['size']), checksum))
+            cursor.execute(insert_query, (file['fileName'], package['_id'], file['_id'], int(file['size']), checksum, metadata))
         except Exception as error:
             logging.error(f'Unable to insert record: {file} for package: {package}. Error: {error}')
             exit(0)
