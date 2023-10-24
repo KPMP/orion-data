@@ -55,8 +55,8 @@ public class PackageController {
 		this.dmdService = dmdService;
 	}
 
-	@RequestMapping(value = "/v1/packages/exclude/{shouldExclude}", method = RequestMethod.GET)
-	public @ResponseBody List<PackageView> getAllPackages(@PathVariable("shouldExclude") boolean shouldExclude, HttpServletRequest request)
+	@RequestMapping(value = "/v1/packages", params="shouldExclude", method = RequestMethod.GET)
+	public @ResponseBody List<PackageView> getAllPackages( @RequestParam("shouldExclude") boolean shouldExclude, HttpServletRequest request)
 			throws JSONException, IOException {
 		
 		if (shouldExclude) {
