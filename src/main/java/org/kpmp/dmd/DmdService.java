@@ -7,6 +7,7 @@ import org.kpmp.packages.Attachment;
 import org.kpmp.packages.Package;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -85,6 +86,17 @@ public class DmdService {
         ObjectMapper objectMapper = new ObjectMapper();
         DmdResponse dmdResponse = objectMapper.readValue(response, DmdResponse.class);
         return dmdResponse;
+    }
+
+    public String getPackageStatus(String packageId) throws JsonProcessingException {
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+            dataManagerHost + dataManagerEndpoint + "/package/" + packageId + "/status", 
+            String.class);
+        String response = responseEntity.getBody();
+        if (response == null) {
+            return "";
+        }
+        return response;
     }
 
 
