@@ -64,6 +64,8 @@ public class PackageServiceTest {
 		JSONObject uploadedPackage = mock(JSONObject.class);
 		when(uploadedPackage.toString()).thenReturn("");
 		when(uploadedPackage.getString("_id")).thenReturn("packageId");
+		when(dmdService.getPackageStatus("packageId")).thenReturn("testStatus1");
+		when(dmdService.getPackageStatus("anotherId")).thenReturn("testStatus2");
 		List<JSONObject> expectedResults = Arrays.asList(uploadedPackage);
 		when(packageRepository.findAll()).thenReturn(expectedResults);
 
