@@ -24,15 +24,17 @@ public class UserServiceTest {
 	private UserService userService;
 	@Mock
 	private UserRepository userRepository;
+	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		mocks = MockitoAnnotations.openMocks(this);
 		userService = new UserService(packageRepository, userRepository);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		mocks.close();
 		userService = null;
 	}
 

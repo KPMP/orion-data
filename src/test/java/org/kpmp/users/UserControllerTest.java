@@ -24,15 +24,17 @@ public class UserControllerTest {
 	private UserController controller;
 	@Mock
 	private LoggingService logger;
+	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		mocks = MockitoAnnotations.openMocks(this);
 		controller = new UserController(userService, logger);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		mocks.close();
 		controller = null;
 	}
 

@@ -24,15 +24,17 @@ public class PackageFilesValidationServiceTest {
 	@Mock
 	private GlobusService globus;
 	private PackageFilesValidationService service;
+	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		mocks = MockitoAnnotations.openMocks(this);
 		service = new PackageFilesValidationService(globus);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		mocks.close();
 		service = null;
 	}
 

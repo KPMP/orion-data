@@ -21,15 +21,17 @@ public class TokenControllerTest {
     @Mock
     private TokenService tokenService;
     private TokenController tokenController;
+    private AutoCloseable mocks;
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        mocks = MockitoAnnotations.openMocks(this);
         tokenController = new TokenController(userService, tokenService);
     }
 
     @After
     public void tearDown() throws Exception {
+        mocks.close();
         tokenController = null;
     }
 
