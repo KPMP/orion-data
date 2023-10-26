@@ -22,14 +22,12 @@ public class PackageService {
 	private StateHandlerService stateHandler;
 	@Value("${packageType.exclusions}")
 	private String packageTypeToExclude;
-	private LoggingService logger;
 
 	@Autowired
 	public PackageService(CustomPackageRepository packageRepository, StateHandlerService stateHandler, DmdService dmdService, LoggingService logger) {
 		this.packageRepository = packageRepository;
 		this.stateHandler = stateHandler;
 		this.dmdService = dmdService;
-		this.logger = logger;
 	}
 	public List<PackageView> findAllPackages() throws JSONException, IOException {
 		List<JSONObject> jsons = packageRepository.findAll();

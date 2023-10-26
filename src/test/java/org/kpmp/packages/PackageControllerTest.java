@@ -49,6 +49,7 @@ public class PackageControllerTest {
 	@Before
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
+
 		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator,
 				globusService, dmdService);
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
