@@ -2,13 +2,11 @@ buildscript {
 	repositories {
 		mavenCentral()
 	}
-	dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.7.17")
-    }
 }
 
 plugins {
 	id 'com.palantir.docker' version '0.22.1'
+	id 'org.springframework.boot' version '2.6.4'
 }
 
 
@@ -34,21 +32,28 @@ repositories {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web' 
+	implementation ('org.springframework.boot:spring-boot-starter-web')
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'commons-io:commons-io:2.6' 
 	implementation 'mysql:mysql-connector-java:8.0.15'
 	implementation 'org.apache.commons:commons-compress:1.17'
 	implementation 'org.apache.commons:commons-text:1.7'
 	implementation 'commons-codec:commons-codec:1.15'
-	implementation 'com.google.api-client:google-api-client:1.23.0'
-	implementation 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
+	implementation ('com.google.api-client:google-api-client:1.23.0') {
+		exclude group: 'javax.servelet'
+	}
+	implementation ('com.google.oauth-client:google-oauth-client-jetty:1.23.0') {
+		exclude group: 'org.mortbay.jetty', module: 'servlet-api'
+		exclude group: 'javax.servelet'
+	}
 	implementation 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
 	implementation 'org.json:json:20220924'
 	testImplementation 'org.mockito:mockito-core'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'junit:junit:4.13.2'
+	
 }
 
 springBoot {
