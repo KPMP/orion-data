@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from argparse import ArgumentParser
 import mysql.connector
 import logging
+import json
 
 parser = ArgumentParser(description='Dump from DLU to DMD tables')
 parser.add_argument('-dluHost', '--dlu-mongo-host', dest='mongo_host', help='hostname for dlu mongo', required=True)
@@ -113,7 +114,7 @@ def insert_files(package, dmd):
 
         metadata = None
         if 'metadata' in file:
-            metadata = file['metadata']
+            metadata = json.dumps(file['metadata'])
 
         try:
             cursor = dmd.cursor(buffered=False)
