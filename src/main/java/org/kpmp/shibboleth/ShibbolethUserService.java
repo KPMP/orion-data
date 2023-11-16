@@ -20,29 +20,29 @@ public class ShibbolethUserService {
 	public User getUser(HttpServletRequest request, JSONObject packageInfo) {
 
 		String value = handleNull(request.getHeader("mail"));
-        if (value == null || value == ""){
-            value = (String) packageInfo.getJSONObject("submitter").get("email");
+        if (value == ""){
+            value = packageInfo.getJSONObject("submitter").get("email").toString();
         }
 		String email = encoder.convertFromLatin1(value);
 		value = handleNull(request.getHeader("displayname"));
-        if (value == null || value == ""){
-            value = (String) packageInfo.getJSONObject("submitter").get("givenname") 
-            + " " +  packageInfo.getJSONObject("submitter").get("sn");
+        if (value == ""){
+            value = packageInfo.getJSONObject("submitter").get("givenname") 
+            + " " +  packageInfo.getJSONObject("submitter").get("sn").toString();
         }
 		String displayName = encoder.convertFromLatin1(value);
 		value = handleNull(request.getHeader("givenname"));
-        if (value == null || value == ""){
-            value = (String) packageInfo.getJSONObject("submitter").get("firstName");
+        if (value == ""){
+            value = packageInfo.getJSONObject("submitter").get("firstName").toString();
         }
 		String firstName = encoder.convertFromLatin1(value);
 		value = handleNull(request.getHeader("sn"));
-        if (value == null || value == ""){
-            value = (String) packageInfo.getJSONObject("submitter").get("lastName");
+        if (value == ""){
+            value = packageInfo.getJSONObject("submitter").get("lastName").toString();
         }
 		String lastName = encoder.convertFromLatin1(value);
 		value = handleNull(request.getHeader("eppn"));
-        if (value == null || value == ""){
-            value = (String) packageInfo.getJSONObject("submitter").get("email");
+        if (value == ""){
+            value = packageInfo.getJSONObject("submitter").get("email").toString();
         }
 		String shibId = encoder.convertFromLatin1(value);
 
