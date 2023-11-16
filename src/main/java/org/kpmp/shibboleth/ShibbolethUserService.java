@@ -21,29 +21,26 @@ public class ShibbolethUserService {
 
 		String value = handleNull(request.getHeader("mail"));
         if (value == ""){
-            value = packageInfo.getJSONObject("submitter").get("email").toString();
+            value = packageInfo.getString("submitterEmail");
         }
 		String email = encoder.convertFromLatin1(value);
 		value = handleNull(request.getHeader("displayname"));
         if (value == ""){
-            value = packageInfo.getJSONObject("submitter").get("givenname") 
-            + " " +  packageInfo.getJSONObject("submitter").get("sn").toString();
+            value = packageInfo.getString("submitterFirstName") 
+            + " " +  packageInfo.getString("submitterLastName");
         }
 		String displayName = encoder.convertFromLatin1(value);
 		value = handleNull(request.getHeader("givenname"));
         if (value == ""){
-            value = packageInfo.getJSONObject("submitter").get("firstName").toString();
+            value = packageInfo.getString("submitterFirstName");
         }
 		String firstName = encoder.convertFromLatin1(value);
 		value = handleNull(request.getHeader("sn"));
         if (value == ""){
-            value = packageInfo.getJSONObject("submitter").get("lastName").toString();
+            value = packageInfo.getString("submitterLastName");
         }
 		String lastName = encoder.convertFromLatin1(value);
 		value = handleNull(request.getHeader("eppn"));
-        if (value == ""){
-            value = packageInfo.getJSONObject("submitter").get("email").toString();
-        }
 		String shibId = encoder.convertFromLatin1(value);
 
 		User user = new User();
