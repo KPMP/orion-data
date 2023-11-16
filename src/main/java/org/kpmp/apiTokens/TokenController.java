@@ -23,7 +23,7 @@ public class TokenController {
 
 	@RequestMapping(value = "/v1/token", method = RequestMethod.GET)
 	public @ResponseBody TokenResponse getToken(HttpServletRequest request) {
-		String shibId = userService.getUser(request).getShibId();
+		String shibId = userService.getUser(request, null).getShibId();
 		Token token = tokenService.getOrSetToken(shibId);
 		TokenResponse tokenResponse = new TokenResponse();
 		if (!tokenService.checkToken(token)) {

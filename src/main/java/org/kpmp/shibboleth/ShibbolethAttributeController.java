@@ -29,7 +29,7 @@ public class ShibbolethAttributeController {
 
 		logger.logInfoMessage(this.getClass(), null, "Retrieving user information from shibboleth", request);
 
-		User user = shibbolethUserService.getUser(request);
+		User user = shibbolethUserService.getUser(request, null);
 		return user;
 	}
 }

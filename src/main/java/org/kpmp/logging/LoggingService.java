@@ -23,7 +23,7 @@ public class LoggingService {
 	@SuppressWarnings("rawtypes")
 	public void logInfoMessage(Class clazz, String packageId, String message, HttpServletRequest request) {
 		Logger log = LoggerFactory.getLogger(clazz);
-		User user = shibUserService.getUser(request);
+		User user = shibUserService.getUser(request, null);
 		if (user == null) {
 			log.info(LOG_MESSAGE_FORMAT, "Unknown user", packageId, request.getRequestURI(), message);
 		} else {
@@ -44,7 +44,7 @@ public class LoggingService {
 	@SuppressWarnings("rawtypes")
 	public void logErrorMessage(Class clazz, String packageId, String message, HttpServletRequest request) {
 		Logger log = LoggerFactory.getLogger(clazz);
-		User user = shibUserService.getUser(request);
+		User user = shibUserService.getUser(request, null);
 		if (user == null) {
 			log.error(LOG_MESSAGE_FORMAT, "Unknown user", packageId, request.getRequestURI(), message);
 		} else {
@@ -65,7 +65,7 @@ public class LoggingService {
 	@SuppressWarnings("rawtypes")
 	public void logWarnMessage(Class clazz, String packageId, String message, HttpServletRequest request) {
 		Logger log = LoggerFactory.getLogger(clazz);
-		User user = shibUserService.getUser(request);
+		User user = shibUserService.getUser(request, null);
 		if (user == null) {
 			log.warn(LOG_MESSAGE_FORMAT, "Unknown user", packageId, request.getRequestURI(), message);
 		} else {

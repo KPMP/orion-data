@@ -48,7 +48,7 @@ public class ShibbolethUserServiceTest {
 		when(utf8Encoder.convertFromLatin1("maninblack@jcash.com")).thenReturn("maninblack@jcash.com");
 		when(utf8Encoder.convertFromLatin1("shibId")).thenReturn("shibId");
 
-		User user = shibbolethUserService.getUser(request);
+		User user = shibbolethUserService.getUser(request,null);
 
 		assertEquals("maninblack@jcash.com", user.getEmail());
 		assertEquals("Johnny Cash", user.getDisplayName());

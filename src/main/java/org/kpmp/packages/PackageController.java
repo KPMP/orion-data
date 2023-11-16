@@ -82,7 +82,7 @@ public class PackageController {
 			packageInfo = new JSONObject(packageInfoString);
 			logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
 			packageInfo.put("largeFilesChecked", true);
-			User user = shibUserService.getUser(request);
+			User user = shibUserService.getUser(request, packageInfo);
 			packageService.savePackageInformation(packageInfo, user, packageId);
 			String largeFilesChecked = packageInfo.optBoolean("largeFilesChecked") ? "true" : "false";
 			if ("true".equals(largeFilesChecked)) {

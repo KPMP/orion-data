@@ -42,7 +42,7 @@ public class TokenControllerTest {
         Token token = new Token();
         User user = new User();
         user.setShibId("shibId");
-        when(userService.getUser(request)).thenReturn(user);
+        when(userService.getUser(request, null)).thenReturn(user);
         tokenResponse.setToken(token);
         tokenResponse.setMessage("This is the message");
         when(tokenService.getOrSetToken("shibId")).thenReturn(token);
