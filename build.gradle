@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
 	id 'com.palantir.docker' version '0.22.1'
-	id 'org.springframework.boot' version '2.6.4'
+	id 'org.springframework.boot' version '2.6.15'
 }
 
 
@@ -34,7 +34,7 @@ targetCompatibility = 1.8
 
 
 dependencies {
-	implementation ('org.springframework.boot:spring-boot-starter-web')
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'commons-io:commons-io:2.6' 
 	implementation 'mysql:mysql-connector-java:8.0.15'
