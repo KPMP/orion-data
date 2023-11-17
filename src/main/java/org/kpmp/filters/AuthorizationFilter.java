@@ -83,7 +83,7 @@ public class AuthorizationFilter implements Filter {
 		HttpServletResponse response = (HttpServletResponse) incomingResponse;
 
 		Cookie[] cookies = request.getCookies();
-		User user = shibUserService.getUser(request, null);
+		User user = shibUserService.getUser(request);
 		String shibId = user.getShibId();
 		if (hasExistingSession(user, shibId, cookies, request) || allowedEndpoints.contains(request.getRequestURI())
 				|| !isFirstFilePartUpload(request)) {

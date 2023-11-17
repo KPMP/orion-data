@@ -42,7 +42,7 @@ public class ShibbolethAttributeControllerTest {
 	public void testGetAttributes() throws UnsupportedEncodingException {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User testUser = new User();
-		when(shibbolethUserService.getUser(request,null)).thenReturn(testUser);
+		when(shibbolethUserService.getUser(request)).thenReturn(testUser);
 
 		assertEquals(testUser, controller.getAttributes(request));
 		verify(logger).logInfoMessage(ShibbolethAttributeController.class, null,

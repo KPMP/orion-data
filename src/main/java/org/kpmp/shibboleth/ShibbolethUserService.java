@@ -17,9 +17,8 @@ public class ShibbolethUserService {
 		this.encoder = encoder;
 	}
 
-	public User getUser(HttpServletRequest request, JSONObject packageInfo) {
-
-		String email = handleNull(request.getHeader("mail"));
+    public User getUserNoHeaders(HttpServletRequest request, JSONObject packageInfo){
+        String email = handleNull(request.getHeader("mail"));
         if (email == ""){
             email = packageInfo.getString("submitterEmail");
         }
@@ -45,6 +44,30 @@ public class ShibbolethUserService {
 		lastName = encoder.convertFromLatin1(lastName);
         
 		String value = handleNull(request.getHeader("eppn"));
+		String shibId = encoder.convertFromLatin1(value);
+
+		User user = new User();
+		user.setDisplayName(displayName);
+		user.setLastName(lastName);
+		user.setFirstName(firstName);
+		user.setEmail(email);
+		user.setShibId(shibId);
+
+		return user;
+
+    }
+
+	public User getUser(HttpServletRequest request) {
+
+		String value = handleNull(request.getHeader("mail"));
+		String email = encoder.convertFromLatin1(value);
+		value = handleNull(request.getHeader("displayname"));
+		String displayName = encoder.convertFromLatin1(value);
+		value = handleNull(request.getHeader("givenname"));
+		String firstName = encoder.convertFromLatin1(value);
+		value = handleNull(request.getHeader("sn"));
+		String lastName = encoder.convertFromLatin1(value);
+		value = handleNull(request.getHeader("eppn"));
 		String shibId = encoder.convertFromLatin1(value);
 
 		User user = new User();

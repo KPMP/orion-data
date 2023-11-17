@@ -92,25 +92,22 @@ public class PackageControllerTest {
 		verify(logger).logInfoMessage(PackageController.class, null, "Request for filtered packages", request);
 	}
 
-	// @Test
-	// public void testPostPackageInformation_whenSaveThrowsException() throws Exception {
-	// 	String packageInfoString = "{\"packageType\":\"blah\"}";
-    //     String userInfoString = "{\"submitter\":{\"firstName\":\"Space\",\"lastName\":\"Oddity\",\"email\":\"spaceOddity@email.com\"}}";
-    //     JSONObject userInfo = new JSONObject(userInfoString);
-	// 	when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
-	// 	when(packageService.savePackageInformation(any(JSONObject.class), any(User.class), any(String.class)))
-	// 			.thenThrow(new JSONException("FAIL"));
-	// 	HttpServletRequest request = mock(HttpServletRequest.class);
-    //     JSONObject userInfo = mock()
-	// 	User user = mock(User.class);
-	// 	when(shibUserService.getUser(request,userInfo)).thenReturn(user);
+	@Test
+	public void testPostPackageInformation_whenSaveThrowsException() throws Exception {
+		String packageInfoString = "{\"packageType\":\"blah\"}";
+		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
+		when(packageService.savePackageInformation(any(JSONObject.class), any(User.class), any(String.class)))
+				.thenThrow(new JSONException("FAIL"));
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		User user = mock(User.class);
+		when(shibUserService.getUser(request)).thenReturn(user);
 
-	// 	PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
+		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
 
-	// 	assertEquals(null, response.getGlobusURL());
-	// 	verify(logger).logErrorMessage(PackageController.class, "universalId", "FAIL", request);
-	// 	verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", null, "FAIL", "hostname");
-	// }
+		assertEquals(null, response.getGlobusURL());
+		verify(logger).logErrorMessage(PackageController.class, "universalId", "FAIL", request);
+		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", null, "FAIL", "hostname");
+	}
 
 	@Test
 	public void testPostPackageInformation_whenGoogleDriveServiceThrowsException() throws Exception {
@@ -118,7 +115,7 @@ public class PackageControllerTest {
 		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
-		when(shibUserService.getUser(request,null)).thenReturn(user);
+		when(shibUserService.getUser(request)).thenReturn(user);
 		when(globusService.createDirectory("universalId")).thenThrow(new IOException("NO DICE"));
 
 		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
@@ -131,12 +128,10 @@ public class PackageControllerTest {
 	@Test
 	public void testPostPackageInformation() throws Exception {
 		String packageInfoString = "{\"packageType\":\"blah\"}";
-        String userInfoString = "{\"submitter\":{\"firstName\":\"Space\",\"lastName\":\"Oddity\",\"email\":\"spaceOddity@email.com\"}}";
-        JSONObject userInfo = new JSONObject(userInfoString);
 		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
-		when(shibUserService.getUser(request,userInfo)).thenReturn(user);
+		when(shibUserService.getUser(request)).thenReturn(user);
 
 		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
 
@@ -162,7 +157,7 @@ public class PackageControllerTest {
 
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
-		when(shibUserService.getUser(request,null)).thenReturn(user);
+		when(shibUserService.getUser(request)).thenReturn(user);
 		when(globusService.createDirectory("universalId")).thenReturn("theWholeURL");
 
 		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);

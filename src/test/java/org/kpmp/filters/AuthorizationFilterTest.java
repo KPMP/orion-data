@@ -76,7 +76,7 @@ public class AuthorizationFilterTest {
 		FilterChain chain = mock(FilterChain.class);
 		User user = mock(User.class);
 		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest, null)).thenReturn(user);
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(false)).thenReturn(session);
 
@@ -94,7 +94,7 @@ public class AuthorizationFilterTest {
 		FilterChain chain = mock(FilterChain.class);
 		User user = mock(User.class);
 		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest, null)).thenReturn(user);
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(true)).thenReturn(session);
 		ResponseEntity<String> response = mock(ResponseEntity.class);
@@ -116,7 +116,7 @@ public class AuthorizationFilterTest {
 		FilterChain chain = mock(FilterChain.class);
 		User user = mock(User.class);
 		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest, null)).thenReturn(user);
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(true)).thenReturn(session);
 		ResponseEntity<String> response = mock(ResponseEntity.class);
@@ -138,7 +138,7 @@ public class AuthorizationFilterTest {
 		FilterChain chain = mock(FilterChain.class);
 		User user = mock(User.class);
 		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest, null)).thenReturn(user);
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		HttpSession session = mock(HttpSession.class);
 		when(incomingRequest.getSession(true)).thenReturn(session);
 		ResponseEntity<String> response = mock(ResponseEntity.class);
@@ -161,7 +161,7 @@ public class AuthorizationFilterTest {
 		FilterChain chain = mock(FilterChain.class);
 		User user = mock(User.class);
 		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest, null)).thenReturn(user);
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		when(incomingRequest.getSession(false)).thenReturn(null);
 		ResponseEntity<String> response = mock(ResponseEntity.class);
 		when(response.getBody()).thenReturn("{}");
@@ -187,7 +187,7 @@ public class AuthorizationFilterTest {
 		FilterChain chain = mock(FilterChain.class);
 		User user = mock(User.class);
 		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest,null)).thenReturn(user);
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		when(incomingRequest.getSession(false)).thenReturn(null);
 		ResponseEntity<String> response = mock(ResponseEntity.class);
 		when(response.getBody()).thenReturn("{groups: [ 'group1', 'another group'], active: true}");
@@ -211,7 +211,7 @@ public class AuthorizationFilterTest {
 		FilterChain chain = mock(FilterChain.class);
 		User user = mock(User.class);
 		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest, null)).thenReturn(user);
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		when(incomingRequest.getSession(false)).thenReturn(null);
 		ResponseEntity<String> response = mock(ResponseEntity.class);
 		when(response.getBody()).thenReturn("{groups: [ 'imaKpmpUser', 'another group']}");
@@ -237,7 +237,7 @@ public class AuthorizationFilterTest {
 		FilterChain chain = mock(FilterChain.class);
 		User user = mock(User.class);
 		when(user.getShibId()).thenReturn("");
-		when(shibUserService.getUser(incomingRequest,null)).thenReturn(user);
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		when(incomingRequest.getSession(false)).thenReturn(null);
 		ResponseEntity<String> response = mock(ResponseEntity.class);
 		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
@@ -261,7 +261,7 @@ public class AuthorizationFilterTest {
 		FilterChain chain = mock(FilterChain.class);
 		User user = mock(User.class);
 		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest,null)).thenReturn(user);
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		when(incomingRequest.getSession(false)).thenReturn(null);
 		ResponseEntity<String> response = mock(ResponseEntity.class);
 		when(response.getBody()).thenReturn("{groups: [ 'unrelated group', 'another group']}");
@@ -286,7 +286,7 @@ public class AuthorizationFilterTest {
 		FilterChain chain = mock(FilterChain.class);
 		User user = mock(User.class);
 		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest,null)).thenReturn(user);
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		when(incomingRequest.getSession(false)).thenReturn(null);
 		when(restTemplate.getForEntity(any(String.class), any(Class.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
@@ -310,7 +310,7 @@ public class AuthorizationFilterTest {
 		FilterChain chain = mock(FilterChain.class);
 		User user = mock(User.class);
 		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest,null)).thenReturn(user);
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
 		when(incomingRequest.getSession(false)).thenReturn(null);
 		when(restTemplate.getForEntity(any(String.class), any(Class.class)))
 				.thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
