@@ -19,29 +19,33 @@ public class ShibbolethUserService {
 
 	public User getUser(HttpServletRequest request, JSONObject packageInfo) {
 
-		String value = handleNull(request.getHeader("mail"));
-        if (value == ""){
-            value = packageInfo.getString("submitterEmail");
+		String email = handleNull(request.getHeader("mail"));
+        if (email == ""){
+            email = packageInfo.getString("submitterEmail");
         }
-		String email = encoder.convertFromLatin1(value);
-		value = handleNull(request.getHeader("displayname"));
-        if (value == ""){
-            value = packageInfo.getString("submitterFirstName") 
+		email = encoder.convertFromLatin1(email);
+
+		String displayName = handleNull(request.getHeader("displayname"));
+        if (displayName == ""){
+            displayName = packageInfo.getString("submitterFirstName") 
             + " " +  packageInfo.getString("submitterLastName");
         }
-		String displayName = encoder.convertFromLatin1(value);
-		value = handleNull(request.getHeader("givenname"));
-        if (value == ""){
-            value = packageInfo.getString("submitterFirstName");
+		displayName = encoder.convertFromLatin1(displayName);
+
+		String firstName = handleNull(request.getHeader("givenname"));
+        if (firstName == ""){
+            firstName = packageInfo.getString("submitterFirstName");
         }
-		String firstName = encoder.convertFromLatin1(value);
-		value = handleNull(request.getHeader("sn"));
-        if (value == ""){
-            value = packageInfo.getString("submitterLastName");
+		firstName = encoder.convertFromLatin1(firstName);
+
+		String lastName = handleNull(request.getHeader("sn"));
+        if (lastName == ""){
+            lastName = packageInfo.getString("submitterLastName");
         }
-		String lastName = encoder.convertFromLatin1(value);
-		value = handleNull(request.getHeader("eppn"));
-		String shibId = encoder.convertFromLatin1(value);
+		// String lastName = encoder.convertFromLatin1(value);
+        
+		String shibId = handleNull(request.getHeader("eppn"));
+		// String shibId = encoder.convertFromLatin1(value);
 
 		User user = new User();
 		user.setDisplayName(displayName);
