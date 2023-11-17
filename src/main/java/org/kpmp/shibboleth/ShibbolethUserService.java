@@ -42,10 +42,10 @@ public class ShibbolethUserService {
         if (lastName == ""){
             lastName = packageInfo.getString("submitterLastName");
         }
-		// String lastName = encoder.convertFromLatin1(value);
+		lastName = encoder.convertFromLatin1(lastName);
         
-		String shibId = handleNull(request.getHeader("eppn"));
-		// String shibId = encoder.convertFromLatin1(value);
+		String value = handleNull(request.getHeader("eppn"));
+		String shibId = encoder.convertFromLatin1(value);
 
 		User user = new User();
 		user.setDisplayName(displayName);
