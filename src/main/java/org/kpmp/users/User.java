@@ -44,7 +44,7 @@ public class User {
 	}
 
 	public String getDisplayName() {
-		return this.getFirstName() + " " + this.getLastName();
+		return displayName;
 	}
 
 	public void setDisplayName(String displayName) {

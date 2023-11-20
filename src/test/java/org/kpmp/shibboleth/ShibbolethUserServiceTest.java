@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +38,7 @@ public class ShibbolethUserServiceTest {
 	@Test
 	public void testGetUser() throws UnsupportedEncodingException {
 		HttpServletRequest request = mock(HttpServletRequest.class);
+
 		when(request.getHeader("mail")).thenReturn("maninblack@jcash.com");
 		when(request.getHeader("givenname")).thenReturn("Johnny");
 		when(request.getHeader("sn")).thenReturn("Cash");
@@ -48,14 +50,15 @@ public class ShibbolethUserServiceTest {
 		when(utf8Encoder.convertFromLatin1("maninblack@jcash.com")).thenReturn("maninblack@jcash.com");
 		when(utf8Encoder.convertFromLatin1("shibId")).thenReturn("shibId");
 
-		User user = shibbolethUserService.getUser(request);
+		User user2 = shibbolethUserService.getUser(request);
 
-		assertEquals("maninblack@jcash.com", user.getEmail());
-		assertEquals("Johnny Cash", user.getDisplayName());
-		assertEquals("Cash", user.getLastName());
-		assertEquals("Johnny", user.getFirstName());
-		assertEquals("shibId", user.getShibId());
+		assertEquals("maninblack@jcash.com", user2.getEmail());
+		assertEquals("Johnny Cash", user2.getDisplayName());
+		assertEquals("Cash", user2.getLastName());
+		assertEquals("Johnny", user2.getFirstName());
+		assertEquals("shibId", user2.getShibId());
 
+        
 	}
 
 }
