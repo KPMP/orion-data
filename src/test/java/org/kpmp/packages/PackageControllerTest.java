@@ -100,7 +100,7 @@ public class PackageControllerTest {
 				.thenThrow(new JSONException("FAIL"));
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
-		when(shibUserService.getUser(request)).thenReturn(user);
+		when(shibUserService.getUserNoHeaders(any(HttpServletRequest.class), any(JSONObject.class))).thenReturn(user);
 
 		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
 
@@ -131,7 +131,7 @@ public class PackageControllerTest {
 		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
-		when(shibUserService.getUser(request)).thenReturn(user);
+		when(shibUserService.getUserNoHeaders(any(HttpServletRequest.class), any(JSONObject.class))).thenReturn(user);
 
 		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
 
@@ -157,7 +157,7 @@ public class PackageControllerTest {
 
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
-		when(shibUserService.getUser(request)).thenReturn(user);
+		when(shibUserService.getUserNoHeaders(any(HttpServletRequest.class), any(JSONObject.class))).thenReturn(user);
 		when(globusService.createDirectory("universalId")).thenReturn("theWholeURL");
 
 		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
