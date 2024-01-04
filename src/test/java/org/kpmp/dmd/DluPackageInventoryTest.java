@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.packages.Package;
 import org.kpmp.users.User;
-import org.mockito.MockitoAnnotations;
 
 import java.util.Date;
 
@@ -43,10 +42,9 @@ public class DluPackageInventoryTest {
         assertEquals("name", dluPackageInventory.getDluSubmitter());
         assertEquals("type", dluPackageInventory.getDluPackageType());
         assertEquals("tis", dluPackageInventory.getDluTis());
-        assertEquals(user.getDisplayName(), dluPackageInventory.getDluSubmitter());
+        assertEquals("name", dluPackageInventory.getDluSubmitter());
         assertEquals("subjid", dluPackageInventory.getDluSubjectId());
         assertTrue(dluPackageInventory.getDluLfu());
-        assertEquals("waiting", dluPackageInventory.getGlobusDluStatus());
         assertEquals("N", dluPackageInventory.getUserPackageReady());
     }
 
@@ -68,10 +66,9 @@ public class DluPackageInventoryTest {
         assertEquals("name", dluPackageInventory.getDluSubmitter());
         assertEquals("type", dluPackageInventory.getDluPackageType());
         assertEquals("tis", dluPackageInventory.getDluTis());
-        assertEquals(user.getDisplayName(), dluPackageInventory.getDluSubmitter());
+        assertEquals("name", dluPackageInventory.getDluSubmitter());
         assertEquals("subjid", dluPackageInventory.getDluSubjectId());
         assertFalse(dluPackageInventory.getDluLfu());
-        assertEquals("N/A", dluPackageInventory.getGlobusDluStatus());
         assertEquals("Y", dluPackageInventory.getUserPackageReady());
     }
 

@@ -51,16 +51,18 @@ public class CustomPackageRepositoryTest {
 	private CustomPackageRepository repo;
 	@Mock
 	private LoggingService logger;
+	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		mocks = MockitoAnnotations.openMocks(this);
 		repo = new CustomPackageRepository(packageRepository, mongoTemplate, universalIdGenerator, userRepo,
 				jsonWriterSettings, logger);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		mocks.close();
 		repo = null;
 	}
 

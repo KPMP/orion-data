@@ -46,7 +46,7 @@ public class UserTest {
 
 	@Test
 	public void testSetDisplayName() {
-		testUser.setDisplayName("Space Oddity");
+        testUser.setDisplayName("Space Oddity");
 		assertEquals("Space Oddity", testUser.getDisplayName());
 	}
 

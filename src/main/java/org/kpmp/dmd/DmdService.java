@@ -7,6 +7,7 @@ import org.kpmp.packages.Attachment;
 import org.kpmp.packages.Package;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -48,8 +49,8 @@ public class DmdService {
         return dluPackageInventoryId;
     }
 
-    public List sendPackageFiles(Package myPackage) {
-        List fileIds = new ArrayList<>();
+    public List<String> sendPackageFiles(Package myPackage) {
+        List<String> fileIds = new ArrayList<>();
         for (Attachment attachment : myPackage.getAttachments()) {
             DluFile file = new DluFile(attachment, myPackage.getPackageId());
             fileIds.add(file.getDluFileId());
@@ -70,7 +71,7 @@ public class DmdService {
     }
 
     public String setPackageInError(String packageId) {
-        HashMap payload = new HashMap<>();
+        HashMap<String, Boolean> payload = new HashMap<>();
         payload.put("dlu_error", true);
         String retPackageId = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/package/" + packageId,
                 payload, String.class);
@@ -78,12 +79,24 @@ public class DmdService {
     }
 
     public DmdResponse moveFiles(String packageId) throws JsonProcessingException {
-        HashMap payload = new HashMap<>();
+        // type of map doesn't matter here, just specified one to stop warnings
+        HashMap<String, String> payload = new HashMap<>();
         String response = restTemplate.postForObject(dataManagerHost + dataManagerEndpoint + "/package/" + packageId + "/move",
                 payload, String.class);
         ObjectMapper objectMapper = new ObjectMapper();
         DmdResponse dmdResponse = objectMapper.readValue(response, DmdResponse.class);
         return dmdResponse;
+    }
+
+    public String getPackageStatus(String packageId) throws JsonProcessingException {
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+            dataManagerHost + dataManagerEndpoint + "/package/" + packageId + "/status", 
+            String.class);
+        String response = responseEntity.getBody();
+        if (response == null) {
+            return "";
+        }
+        return response;
     }
 
 

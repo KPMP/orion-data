@@ -9,8 +9,6 @@ import org.kpmp.globus.GlobusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 @Service
 public class PackageFilesValidationService {
 

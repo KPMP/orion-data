@@ -22,15 +22,17 @@ public class REDCapIngestRepositoryTest {
 	@Mock
 	private MongoTemplate mongoTemplate;
 	private REDCapIngestRepository repository;
+	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		mocks = MockitoAnnotations.openMocks(this);
 		repository = new REDCapIngestRepository(mongoTemplate);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		mocks.close();
 		repository = null;
 	}
 

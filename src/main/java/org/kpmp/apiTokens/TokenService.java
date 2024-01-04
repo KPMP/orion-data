@@ -4,18 +4,15 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.kpmp.shibboleth.ShibbolethUserService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TokenService {
 
 	private TokenRepository tokenRepository;
-	private ShibbolethUserService userService;
 
-	public TokenService(TokenRepository tokenRepository, ShibbolethUserService userService) {
+	public TokenService(TokenRepository tokenRepository) {
 		this.tokenRepository = tokenRepository;
-		this.userService = userService;
 	}
 
 	public Token getOrSetToken(String shibId) {

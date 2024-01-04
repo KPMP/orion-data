@@ -12,6 +12,8 @@ class PackageView {
 	private JsonNode packageInfo;
 	private ObjectMapper mapper;
 	private State state;
+	private String globusMoveStatus;
+	private String errorMessage;
 
 	public PackageView(JSONObject packageJSON) throws IOException {
 		mapper = new ObjectMapper();
@@ -32,5 +34,23 @@ class PackageView {
 
 	public void setState(State state) {
 		this.state = state;
+	}
+
+	public String getGlobusMoveStatus() {
+		return globusMoveStatus;
+	}
+
+	public void setGlobusMoveStatus(String state) {
+		if (state.contains("error")) {
+			String[] bits = state.split(":");
+			errorMessage = bits[1];
+			globusMoveStatus = bits[0];
+		} else {
+			globusMoveStatus = state;
+		}
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
 	}
 }

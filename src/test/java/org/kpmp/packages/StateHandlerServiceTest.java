@@ -31,10 +31,11 @@ public class StateHandlerServiceTest {
 	private RestTemplate restTemplate;
 	@Mock
 	private LoggingService logger;
+	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		mocks = MockitoAnnotations.openMocks(this);
 		service = new StateHandlerService(restTemplate, logger);
 		ReflectionTestUtils.setField(service, "stateServiceHost", "state.hostname");
 		ReflectionTestUtils.setField(service, "stateServiceEndpoint", "/uri/to/state/endpoint");
@@ -42,6 +43,7 @@ public class StateHandlerServiceTest {
 
 	@After
 	public void tearDown() throws Exception {
+		mocks.close();
 		service = null;
 	}
 
