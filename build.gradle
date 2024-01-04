@@ -20,7 +20,7 @@ apply plugin: 'com.palantir.docker'
 
 jar {
     baseName='orion-data'
-    version= '4.1'
+    version= '4.0'
 }
 
 group = 'kingstonduo'
@@ -35,7 +35,9 @@ targetCompatibility = 1.8
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	implementation ('org.springframework.boot:spring-boot-starter-data-mongodb') {
+		exclude group: 'ch.qos.logback', module: 'logback-classics'
+	}
 	implementation 'commons-io:commons-io:2.6' 
 	implementation 'mysql:mysql-connector-java:8.0.15'
 	implementation 'org.apache.commons:commons-compress:1.17'
