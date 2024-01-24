@@ -69,13 +69,13 @@ class PackageChecker:
                         missing_files_list = ', '.join(missing_files_list)
                         extra_files_list = set(actual_file_names).difference(set(expected_file_names))
                         extra_files_list = ", ".join(extra_files_list)
-                        print(len(extra_files_list))
                         # if len(missing_files_list) != 0:
                         #     data = [
                         #         [package_id, missing_files_list]
                         #     ]
                         #     missing_writer.writerows(data)
                         if len(extra_files_list != 0):
+                            print("inside if statement")
                             data = [
                                 [package_id, extra_files_list]
                             ]
