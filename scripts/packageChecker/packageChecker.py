@@ -74,8 +74,7 @@ class PackageChecker:
                         #         [package_id, missing_files_list]
                         #     ]
                         #     missing_writer.writerows(data)
-                        if len(extra_files_list != 0):
-                            print("inside if statement")
+                        if len(extra_files_list) != 0:
                             data = [
                                 [package_id, extra_files_list]
                             ]
