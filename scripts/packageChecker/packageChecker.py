@@ -69,7 +69,6 @@ class PackageChecker:
                         missing_files_list = ', '.join(missing_files_list)
                         extra_files_list = set(actual_file_names).difference(set(expected_file_names))
                         extra_files_list = ", ".join(extra_files_list)
-                        print(extra_files_list)
                         if len(missing_files_list) != 0 or len(extra_files_list) != 0:
                             data = [
                                 [package_id, missing_files_list]
