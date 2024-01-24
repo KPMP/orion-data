@@ -69,6 +69,7 @@ class PackageChecker:
                         missing_files_list = ', '.join(missing_files_list)
                         extra_files_list = set(actual_file_names).difference(set(expected_file_names))
                         extra_files_list = ", ".join(extra_files_list)
+                        print(extra_files_list)
                         if len(missing_files_list) != 0 or len(extra_files_list) != 0:
                             data = [
                                 [package_id, missing_files_list]
@@ -86,18 +87,18 @@ class PackageChecker:
         missing_files_csv.close()
         extra_files_csv.close()
             
-        if len(empty_package_list) > 0:
-            message = "Missing files in packages: " + ', '.join(empty_package_list)
-            requests.post(
-                slack_url,
-                headers={'Content-type': 'application/json', },
-                data='{"text":"' + message+'"}')
-        if len(missing_package_list) > 0:
-            message = "Missing package directories for packages: " + ', '.join(missing_package_list)
-            requests.post(
-                slack_url,
-                headers={'Content-type': 'application/json', },
-                data='{"text":"' + message + '"}')
+        # if len(empty_package_list) > 0:
+        #     message = "Missing files in packages: " + ', '.join(empty_package_list)
+        #     requests.post(
+        #         slack_url,
+        #         headers={'Content-type': 'application/json', },
+        #         data='{"text":"' + message+'"}')
+        # if len(missing_package_list) > 0:
+        #     message = "Missing package directories for packages: " + ', '.join(missing_package_list)
+        #     requests.post(
+        #         slack_url,
+        #         headers={'Content-type': 'application/json', },
+        #         data='{"text":"' + message + '"}')
 
 
 if __name__ == "__main__":
