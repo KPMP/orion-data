@@ -79,6 +79,7 @@ class PackageChecker:
                             data = [
                                 [package_id, extra_files_list]
                             ]
+                            print(data)
                             extra_writer.writerows(data)
                     except:
                         missing_package_list.append(package_id)
