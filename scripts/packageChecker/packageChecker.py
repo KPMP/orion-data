@@ -33,10 +33,10 @@ class PackageChecker:
         empty_package_list = []
         missing_package_list = []
         
-        # missing_files_header = ["Package ID", "Missing Files"]
-        # missing_files_csv = open("missing_files.csv", "w")
-        # missing_writer = csv.writer(missing_files_csv)
-        # missing_writer.writerow(missing_files_header)
+        missing_files_header = ["Package ID", "Missing Files"]
+        missing_files_csv = open("missing_files.csv", "w")
+        missing_writer = csv.writer(missing_files_csv)
+        missing_writer.writerow(missing_files_header)
         
         extra_files_header = ['Package ID', 'Extra Files']
         extra_files_csv = open("extra_files.csv", "w")
@@ -69,11 +69,11 @@ class PackageChecker:
                         missing_files_list = ', '.join(missing_files_list)
                         extra_files_list = set(actual_file_names).difference(set(expected_file_names))
                         extra_files_list = ", ".join(extra_files_list)
-                        # if len(missing_files_list) != 0:
-                        #     data = [
-                        #         [package_id, missing_files_list]
-                        #     ]
-                        #     missing_writer.writerows(data)
+                        if len(missing_files_list) != 0:
+                            data = [
+                                [package_id, missing_files_list]
+                            ]
+                            missing_writer.writerows(data)
                         if len(extra_files_list) != 0:
                             data = [
                                 [package_id, extra_files_list]
@@ -83,7 +83,7 @@ class PackageChecker:
                         missing_package_list.append(package_id)
                         
                         
-        # missing_files_csv.close()
+        missing_files_csv.close()
         extra_files_csv.close()
             
         # if len(empty_package_list) > 0:
