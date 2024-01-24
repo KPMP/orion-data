@@ -34,10 +34,14 @@ class PackageChecker:
         missing_package_list = []
         extra_package_list = []
         # data = {}
-        header = ["Package ID", "Missing Files"]
-        f = open("missing_files.csv", "w")
-        writer = csv.writer(f)
-        writer.writerow(header)
+        missing_files_header = ["Package ID", "Missing Files"]
+        missing_files_csv = open("missing_files.csv", "w")
+        extra_files_header = ['Package ID', 'Extra Files']
+        extra_files_csv = open("extra_files.csv", "w")
+        missing_writer = csv.writer(missing_files_csv)
+        missing_writer.writerow(missing_files_header)
+        extra_writer = csv.writer(extra_files_csv)
+        extra_writer.writerow(extra_files_header)
         packages = self.dataLake.packages.find({})
         for package in packages:
             package_id = package["_id"]
@@ -65,21 +69,22 @@ class PackageChecker:
                         missing_files_list = ', '.join(missing_files_list)
                         extra_files_list = set(actual_file_names).difference(set(expected_file_names))
                         extra_files_list = ", ".join(extra_files_list)
-                        if len(missing_files_list) != 0:
+                        if len(missing_files_list) != 0 or len(extra_files_list) != 0:
                             data = [
                                 [package_id, missing_files_list]
                             ]
-                        elif len(extra_files_list) != 0:
+                            missing_writer.writerows(data)
+                        elif len(extra_files_list != 0):
                             data = [
-                              [package_id, extra_files_list]
+                                [package_id, extra_files_list]
                             ]
-                        writer.writerows(data)
+                            extra_writer.writerows(data)
                     except:
                         missing_package_list.append(package_id)
-                        extra_package_list.append(package_id)
                         
                         
-        f.close()
+        missing_files_csv.close()
+        extra_files_csv.close()
             
         if len(empty_package_list) > 0:
             message = "Missing files in packages: " + ', '.join(empty_package_list)
@@ -93,13 +98,6 @@ class PackageChecker:
                 slack_url,
                 headers={'Content-type': 'application/json', },
                 data='{"text":"' + message + '"}')
-
-        if len(extra_package_list) > 0:
-          message = "Extra files found on disk: " + ", ".join(extra_package_list)
-          requests.post(
-              slack_url,
-              headers={"Content-type: ": "application/json", },
-              data='{"text":"' + message + '"}')
 
 
 if __name__ == "__main__":
