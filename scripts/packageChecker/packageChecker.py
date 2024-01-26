@@ -72,6 +72,7 @@ class PackageChecker:
                                 
                         for file_names in mongo_files:
                           file_name = file_names['fileName']
+                          print(file_name)
                           if len(missing_files_list) != 0 and file_name not in missing_files_list:
                               data = [
                                   [package_id, missing_files_list]
