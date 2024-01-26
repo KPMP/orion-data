@@ -44,6 +44,7 @@ class PackageChecker:
         extra_writer.writerow(extra_files_header)
         packages = self.dataLake.packages.find({})
         mongo_files = self.dataLake.files.find({})
+        print(mongo_files)
         for package in packages:
             package_id = package["_id"]
             package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
