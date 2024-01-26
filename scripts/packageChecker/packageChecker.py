@@ -44,7 +44,6 @@ class PackageChecker:
         extra_writer.writerow(extra_files_header)
         packages = self.dataLake.packages.find({})
         mongo_files = self.dataLake.files.find({})
-        print(mongo_files)
         for package in packages:
             package_id = package["_id"]
             package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
@@ -71,9 +70,8 @@ class PackageChecker:
                         extra_files_list = set(actual_file_names).difference(set(expected_file_names))
                         extra_files_list = ", ".join(extra_files_list)
                                 
-                        for file_name in mongo_files:
-                          file_name = mongo_files['fileName']
-                          print(file_name)
+                        for file_names in mongo_files:
+                          file_name = file_names['fileName']
                           if len(missing_files_list) != 0 and file_name not in missing_files_list:
                               data = [
                                   [package_id, missing_files_list]
