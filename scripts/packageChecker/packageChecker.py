@@ -43,6 +43,7 @@ class PackageChecker:
         extra_writer = csv.writer(extra_files_csv)
         extra_writer.writerow(extra_files_header)
         packages = self.dataLake.packages.find({})
+        mongo_files = self.dataLake.files.find({})
         for package in packages:
             package_id = package["_id"]
             package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
@@ -64,21 +65,24 @@ class PackageChecker:
                                     
                             if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
                                 empty_package_list.append(package_id)
-                                
                         missing_files_list = set(expected_file_names).difference(set(actual_file_names)) 
                         missing_files_list = ', '.join(missing_files_list)
                         extra_files_list = set(actual_file_names).difference(set(expected_file_names))
                         extra_files_list = ", ".join(extra_files_list)
-                        if len(missing_files_list) != 0:
-                            data = [
-                                [package_id, missing_files_list]
-                            ]
-                            missing_writer.writerows(data)
-                        if len(extra_files_list) != 0:
-                            data = [
-                                [package_id, extra_files_list]
-                            ]
-                            extra_writer.writerows(data)
+                                
+                        for file_name in mongo_files:
+                          file_name = mongo_files['fileName']
+                        
+                          if len(missing_files_list) != 0 and file_name not in missing_files_list:
+                              data = [
+                                  [package_id, missing_files_list]
+                              ]
+                              missing_writer.writerows(data)
+                          if len(extra_files_list) != 0 and file_name not in extra_files_list:
+                              data = [
+                                  [package_id, extra_files_list]
+                              ]
+                              extra_writer.writerows(data)
                     except:
                         missing_package_list.append(package_id)
                         
@@ -86,18 +90,18 @@ class PackageChecker:
         missing_files_csv.close()
         extra_files_csv.close()
             
-        if len(empty_package_list) > 0:
-            message = "Missing files in packages: " + ', '.join(empty_package_list)
-            requests.post(
-                slack_url,
-                headers={'Content-type': 'application/json', },
-                data='{"text":"' + message+'"}')
-        if len(missing_package_list) > 0:
-            message = "Missing package directories for packages: " + ', '.join(missing_package_list)
-            requests.post(
-                slack_url,
-                headers={'Content-type': 'application/json', },
-                data='{"text":"' + message + '"}')
+        # if len(empty_package_list) > 0:
+        #     message = "Missing files in packages: " + ', '.join(empty_package_list)
+        #     requests.post(
+        #         slack_url,
+        #         headers={'Content-type': 'application/json', },
+        #         data='{"text":"' + message+'"}')
+        # if len(missing_package_list) > 0:
+        #     message = "Missing package directories for packages: " + ', '.join(missing_package_list)
+        #     requests.post(
+        #         slack_url,
+        #         headers={'Content-type': 'application/json', },
+        #         data='{"text":"' + message + '"}')
 
 
 if __name__ == "__main__":
