@@ -43,7 +43,8 @@ class PackageChecker:
         extra_writer = csv.writer(extra_files_csv)
         extra_writer.writerow(extra_files_header)
         packages = self.dataLake.packages.find({})
-        mongo_files = self.dataLake.files.find({})
+        mongo_files = self.dataLake.files.find({}, {"fileName": 1})
+        print(mongo_files)
         for package in packages:
             package_id = package["_id"]
             package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
@@ -65,6 +66,7 @@ class PackageChecker:
                                     
                             if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
                                 empty_package_list.append(package_id)
+                                
                         missing_files_list = set(expected_file_names).difference(set(actual_file_names)) 
                         missing_files_list = ', '.join(missing_files_list)
                         extra_files_list = set(actual_file_names).difference(set(expected_file_names))
