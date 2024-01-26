@@ -43,7 +43,7 @@ class PackageChecker:
         extra_writer = csv.writer(extra_files_csv)
         extra_writer.writerow(extra_files_header)
         packages = self.dataLake.packages.find({})
-        mongo_files = self.dataLake.files.find({}, {"fileName": 1})
+        mongo_files = self.dataLake.files.find({})
         for package in packages:
             package_id = package["_id"]
             package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
@@ -88,7 +88,8 @@ class PackageChecker:
                         missing_package_list.append(package_id)
                         
         for file_names in mongo_files:
-          print(file_names)                
+          file_name = file_names['fileName']          
+          print(file_name)
         # missing_files_csv.close()
         # extra_files_csv.close()
             
