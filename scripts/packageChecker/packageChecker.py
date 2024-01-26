@@ -44,7 +44,6 @@ class PackageChecker:
         extra_writer.writerow(extra_files_header)
         packages = self.dataLake.packages.find({})
         mongo_files = self.dataLake.files.find({}, {"fileName": 1})
-        print(mongo_files)
         for package in packages:
             package_id = package["_id"]
             package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
@@ -72,25 +71,26 @@ class PackageChecker:
                         extra_files_list = set(actual_file_names).difference(set(expected_file_names))
                         extra_files_list = ", ".join(extra_files_list)
                                 
-                        for file_names in mongo_files:
-                          file_name = file_names['fileName']
-                          print(file_name)
-                          if len(missing_files_list) != 0 and file_name not in missing_files_list:
-                              data = [
-                                  [package_id, missing_files_list]
-                              ]
-                              missing_writer.writerows(data)
-                          if len(extra_files_list) != 0 and file_name not in extra_files_list:
-                              data = [
-                                  [package_id, extra_files_list]
-                              ]
-                              extra_writer.writerows(data)
+                        # for file_names in mongo_files:
+                        #   file_name = file_names['fileName']
+                        #   print(file_name)
+                        #   if len(missing_files_list) != 0 and file_name not in missing_files_list:
+                        #       data = [
+                        #           [package_id, missing_files_list]
+                        #       ]
+                        #       missing_writer.writerows(data)
+                        #   if len(extra_files_list) != 0 and file_name not in extra_files_list:
+                        #       data = [
+                        #           [package_id, extra_files_list]
+                        #       ]
+                        #       extra_writer.writerows(data)
                     except:
                         missing_package_list.append(package_id)
                         
-                        
-        missing_files_csv.close()
-        extra_files_csv.close()
+        for file_names in mongo_files:
+          print(file_names)                
+        # missing_files_csv.close()
+        # extra_files_csv.close()
             
         # if len(empty_package_list) > 0:
         #     message = "Missing files in packages: " + ', '.join(empty_package_list)
