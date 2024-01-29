@@ -83,7 +83,11 @@ class PackageChecker:
                         
                         print("Before removal: " + str(files_list))
                         
-                        extra_files_list = [i for i in files_list if i != "metadata.json"]
+                        x = "-".join(files_list)
+                        x = x.replace("metadata.json", "")
+                        extra_files_list = x.split("-")
+                        while ("" in a ):
+                          extra_files_list.remove("")
                         
                         print("After removal: " + str(extra_files_list))
                         
