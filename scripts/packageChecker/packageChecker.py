@@ -97,7 +97,7 @@ class PackageChecker:
                           ]
                           missing_writer.writerows(data)
                           
-                        if len(extra_files_list) != 0:
+                        if len(extra_files_list) != 0 and file_name not in extra_files_list:
                           data = [
                             [package_id, extra_files_list]
                           ]
