@@ -87,7 +87,7 @@ class PackageChecker:
                         
                         extra_files_list = np.setdiff1d(disk_files, mongo_files_col_list)
                         
-                        extra_files_list = [ele for ele in extra_files_list if self.check_list(ele, "metadata.json")]
+                        extra_files_list.remove("metadata.json")
                         
                         
                         if len(missing_files_list) != 0 and file_name not in missing_files_list:
