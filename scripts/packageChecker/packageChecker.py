@@ -80,6 +80,8 @@ class PackageChecker:
                         
                         extra_files_list = disk_files.difference(mongo_files_col_list)
                         
+                        print(extra_files_list)
+                        
                         if len(missing_files_list) != 0 and file_name not in missing_files_list:
                           data = [
                             [package_id, missing_files_list]
