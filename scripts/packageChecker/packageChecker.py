@@ -91,6 +91,9 @@ class PackageChecker:
                         
                         print(len(extra_files_list))
                         
+                        if '' in extra_files_list:
+                          extra_files_list.remove("")
+                        
                         if len(missing_files_list) != 0 and file_name not in missing_files_list:
                           data = [
                             [package_id, missing_files_list]
