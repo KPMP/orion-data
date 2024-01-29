@@ -83,13 +83,13 @@ class PackageChecker:
                         
                         print("Before removal: " + str(files_list))
                         
-                        x = "-".join(files_list)
-                        x = x.replace("metadata.json", "")
-                        extra_files_list = x.split("-")
-                        while ("" in a ):
-                          extra_files_list.remove("")
+                        x="-".join(files_list)
+                        x=x.replace(K,"")
+                        a=x.split("-")
+                        while("" in a ):
+                          a.remove("")
                         
-                        print("After removal: " + str(extra_files_list))
+                        print("After removal: " + str(a))
                         
                         
                         if len(missing_files_list) != 0 and file_name not in missing_files_list:
@@ -98,9 +98,9 @@ class PackageChecker:
                           ]
                           missing_writer.writerows(data)
                           
-                        if len(extra_files_list) != 0 and file_name not in extra_files_list:
+                        if len(a) != 0 and file_name not in a:
                           data = [
-                            [package_id, extra_files_list]
+                            [package_id, a]
                           ]
                           extra_writer.writerows(data)
                     except:
