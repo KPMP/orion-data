@@ -85,12 +85,6 @@ class PackageChecker:
                         files_list = np.setdiff1d(disk_files, mongo_files_col_list)
                         extra_files_list = list(files_list)
                         
-                        print(extra_files_list)
-                        res = '' in extra_files_list
-                        print("is '' in list? " + str(res))
-                        
-                        print(len(extra_files_list))
-                        
                         if '' in extra_files_list:
                           extra_files_list.remove("")
                         
