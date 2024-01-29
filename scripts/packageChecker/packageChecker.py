@@ -49,7 +49,6 @@ class PackageChecker:
         for file_names in mongo_files:
           file_name = file_names['fileName']
           mongo_files_col_list.append(file_name)
-          print(mongo_files_col_list)
           
           
         for package in packages:
@@ -78,6 +77,8 @@ class PackageChecker:
                         missing_files_list = ', '.join(missing_files_list)
                         disk_files = set(actual_file_names).difference(set(expected_file_names))
                         disk_files = ", ".join(disk_files)
+                        
+                        print(disk_files)
                         
                         extra_files_list = set(disk_files).difference(mongo_files_col_list)
                         
