@@ -81,13 +81,9 @@ class PackageChecker:
                         
                         files_list = np.setdiff1d(disk_files, mongo_files_col_list)
                         files_list.tolist()
-                        print("Before removal: " + str(files_list))
-                        
                         extra_files_list = list(files_list)
                         
                         extra_files_list.remove("metadata.json")
-                        
-                        print("After removal: " + str(extra_files_list))
                         
                         
                         if len(missing_files_list) != 0 and file_name not in missing_files_list:
@@ -96,7 +92,7 @@ class PackageChecker:
                           ]
                           missing_writer.writerows(data)
                           
-                        if len(extra_files_list) != 0 and file_name not in extra_files_list:
+                        if len(extra_files_list) != 0:
                           data = [
                             [package_id, extra_files_list]
                           ]
