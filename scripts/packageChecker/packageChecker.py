@@ -85,11 +85,11 @@ class PackageChecker:
                         disk_files = ", ".join(disk_files)
                         
                         files_list = np.setdiff1d(disk_files, mongo_files_col_list)
-                        files_list.tolist()
                         extra_files_list = list(files_list)
                         
                         print(extra_files_list)
                         
+                        print(len(extra_files_list))
                         
                         if len(missing_files_list) != 0 and file_name not in missing_files_list:
                           data = [
