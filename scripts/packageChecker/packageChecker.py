@@ -78,7 +78,7 @@ class PackageChecker:
                         disk_files = set(actual_file_names).difference(set(expected_file_names))
                         disk_files = ", ".join(disk_files)
                         
-                        extra_files_list = list(set(disk_files).difference(mongo_files_col_list))
+                        extra_files_list = set(disk_files).difference(mongo_files_col_list)
                         
                         if len(missing_files_list) != 0 and file_name not in missing_files_list:
                           data = [
