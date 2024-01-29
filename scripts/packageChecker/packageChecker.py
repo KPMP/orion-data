@@ -49,6 +49,7 @@ class PackageChecker:
         for file_names in mongo_files:
           file_name = file_names['fileName']
           mongo_files_col_list.append(file_name)
+          print(mongo_files_col_list)
           
           
         for package in packages:
