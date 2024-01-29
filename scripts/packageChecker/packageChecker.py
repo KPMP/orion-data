@@ -77,6 +77,8 @@ class PackageChecker:
                         missing_files_list = set(expected_file_names).difference(set(actual_file_names)) 
                         missing_files_list = ', '.join(missing_files_list)
                         disk_files = set(actual_file_names).difference(set(expected_file_names))
+                        
+                        print("disk files before join operation: " + str(disk_files))
                         disk_files = ", ".join(disk_files)
                         
                         files_list = np.setdiff1d(disk_files, mongo_files_col_list)
