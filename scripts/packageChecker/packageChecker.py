@@ -83,8 +83,7 @@ class PackageChecker:
                         files_list.tolist()
                         extra_files_list = list(files_list)
                         
-                        if "metadata.json" in extra_files_list:
-                          extra_files_list.remove("metadata.json")
+                        print(extra_files_list)
                         
                         
                         if len(missing_files_list) != 0 and file_name not in missing_files_list:
