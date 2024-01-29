@@ -44,62 +44,58 @@ class PackageChecker:
         extra_writer.writerow(extra_files_header)
         packages = self.dataLake.packages.find({})
         mongo_files = self.dataLake.files.find({})
+        mongo_files_col_list = []
         
         for file_names in mongo_files:
           file_name = file_names['fileName']
-          print(file_name)
+          mongo_files_col_list.append(file_name)
+          
           
         for package in packages:
-          package_id = package['_id']
-          print(package_id)
-        # for package in packages:
-        #     package_id = package["_id"]
-        #     package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
-        #     for state in package_states:
-        #         if state['state'] == "UPLOAD_SUCCEEDED":
-        #             try:
-        #                 directory = data_directory + "/package_";
-        #                 files = os.listdir(directory + package_id)
-        #                 expected_file_names = self.get_expected_files(package)
-        #                 actual_file_names = []
-        #                 if len(files) == 0:
-        #                     empty_package_list.append(package_id)
-        #                 else:
-        #                     for file in files:
-        #                         actual_file_names.append(file)
+            package_id = package["_id"]
+            package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
+            for state in package_states:
+                if state['state'] == "UPLOAD_SUCCEEDED":
+                    try:
+                        directory = data_directory + "/package_";
+                        files = os.listdir(directory + package_id)
+                        expected_file_names = self.get_expected_files(package)
+                        actual_file_names = []
+                        if len(files) == 0:
+                            empty_package_list.append(package_id)
+                        else:
+                            for file in files:
+                                actual_file_names.append(file)
                                 
-        #                         if file == "metadata.json" and len(files) == 1:
-        #                             empty_package_list.append(package_id)
+                                if file == "metadata.json" and len(files) == 1:
+                                    empty_package_list.append(package_id)
                                     
-        #                     if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
-        #                         empty_package_list.append(package_id)
+                            if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
+                                empty_package_list.append(package_id)
                                 
-        #                 missing_files_list = set(expected_file_names).difference(set(actual_file_names)) 
-        #                 missing_files_list = ', '.join(missing_files_list)
-        #                 extra_files_list = set(actual_file_names).difference(set(expected_file_names))
-        #                 extra_files_list = ", ".join(extra_files_list)
-                                
-                        # for file_names in mongo_files:
-                        #   file_name = file_names['fileName']
-                        #   print(file_name)
-                        #   if len(missing_files_list) != 0 and file_name not in missing_files_list:
-                        #       data = [
-                        #           [package_id, missing_files_list]
-                        #       ]
-                        #       missing_writer.writerows(data)
-                        #   if len(extra_files_list) != 0 and file_name not in extra_files_list:
-                        #       data = [
-                        #           [package_id, extra_files_list]
-                        #       ]
-                        #       extra_writer.writerows(data)
-        #             except:
-        #                 missing_package_list.append(package_id)
+                        missing_files_list = set(expected_file_names).difference(set(actual_file_names)) 
+                        missing_files_list = ', '.join(missing_files_list)
+                        disk_files = set(actual_file_names).difference(set(expected_file_names))
+                        disk_files = ", ".join(disk_files)
                         
-        # for file_names in mongo_files:
-        #   file_name = file_names['fileName']          
-        #   print(file_name)
-        # missing_files_csv.close()
-        # extra_files_csv.close()
+                        extra_files_list = list(set(disk_files).difference(mongo_files_col_list))
+                        
+                        if len(missing_files_list) != 0 and file_name not in missing_files_list:
+                          data = [
+                            [package_id, missing_files_list]
+                          ]
+                          missing_writer.writerows(data)
+                          
+                        if len(extra_files_list) != 0 and file_name not in extra_files_list:
+                          data = [
+                            [package_id, extra_files_list]
+                          ]
+                          extra_writer.writerows(data)
+                    except:
+                        missing_package_list.append(package_id)
+                      
+        missing_files_csv.close()
+        extra_files_csv.close()
             
         # if len(empty_package_list) > 0:
         #     message = "Missing files in packages: " + ', '.join(empty_package_list)
