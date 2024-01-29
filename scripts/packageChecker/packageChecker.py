@@ -22,12 +22,6 @@ class PackageChecker:
             self.dataLake= mongo_client['dataLake']
         except:
             print("Unable to connect to database")
-            
-    def check_list(sub, test_str):
-      for ele in sub:
-        if ele in test_str:
-          return 0
-        return 1
 
     def get_expected_files(self, package):
         expected_file_information = package['files']
@@ -87,7 +81,11 @@ class PackageChecker:
                         
                         extra_files_list = np.setdiff1d(disk_files, mongo_files_col_list)
                         
+                        print("Before removal: " + str(extra_files_list))
+                        
                         extra_files_list.remove("metadata.json")
+                        
+                        print("After removal: " + str(extra_files_list))
                         
                         
                         if len(missing_files_list) != 0 and file_name not in missing_files_list:
