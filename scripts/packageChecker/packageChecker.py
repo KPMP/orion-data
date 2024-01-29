@@ -78,7 +78,7 @@ class PackageChecker:
                         disk_files = set(actual_file_names).difference(set(expected_file_names))
                         disk_files = ", ".join(disk_files)
                         
-                        extra_files_list = disk_files.difference(mongo_files_col_list)
+                        extra_files_list = set(disk_files).difference(set(mongo_files_col_list))
                         
                         print(extra_files_list)
                         
