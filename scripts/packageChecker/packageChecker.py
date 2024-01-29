@@ -48,6 +48,10 @@ class PackageChecker:
         for file_names in mongo_files:
           file_name = file_names['fileName']
           print(file_name)
+          
+        for package in packages:
+          package_id = package['_id']
+          print(package_id)
         # for package in packages:
         #     package_id = package["_id"]
         #     package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
