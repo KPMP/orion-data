@@ -79,11 +79,11 @@ class PackageChecker:
                         disk_files = set(actual_file_names).difference(set(expected_file_names))
                         disk_files = ", ".join(disk_files)
                         
-                        extra_files_list = np.setdiff1d(disk_files, mongo_files_col_list)
+                        files_list = np.setdiff1d(disk_files, mongo_files_col_list)
                         
-                        print("Before removal: " + str(extra_files_list))
+                        print("Before removal: " + str(files_list))
                         
-                        extra_files_list.remove("metadata.json")
+                        extra_files_list = [i for i in files_list if i != "metadata.json"]
                         
                         print("After removal: " + str(extra_files_list))
                         
