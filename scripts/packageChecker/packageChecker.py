@@ -4,6 +4,7 @@ import requests
 import os
 import csv
 from dotenv import load_dotenv
+import numpy as np
 
 load_dotenv()
 
@@ -78,9 +79,7 @@ class PackageChecker:
                         disk_files = set(actual_file_names).difference(set(expected_file_names))
                         disk_files = ", ".join(disk_files)
                         
-                        extra_files_list = list(set(disk_files) - set(mongo_files_col_list))
-                        
-                        print(extra_files_list)
+                        extra_files_list = np.setdiff1d(disk_files, mongo_files_col_list)
                         
                         if len(missing_files_list) != 0 and file_name not in missing_files_list:
                           data = [
