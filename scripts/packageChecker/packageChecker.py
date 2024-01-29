@@ -86,6 +86,8 @@ class PackageChecker:
                         extra_files_list = list(files_list)
                         
                         print(extra_files_list)
+                        res = '' in extra_files_list
+                        print("is '' in list? " + '' in extra_files_list)
                         
                         print(len(extra_files_list))
                         
