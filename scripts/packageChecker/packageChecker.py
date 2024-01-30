@@ -4,6 +4,7 @@ import requests
 import os
 import csv
 from dotenv import load_dotenv
+import numpy as np
 
 load_dotenv()
 
@@ -43,6 +44,14 @@ class PackageChecker:
         extra_writer = csv.writer(extra_files_csv)
         extra_writer.writerow(extra_files_header)
         packages = self.dataLake.packages.find({})
+        mongo_files = self.dataLake.files.find({})
+        mongo_files_col_list = []
+        
+        for file_names in mongo_files:
+          file_name = file_names['fileName']
+          mongo_files_col_list.append(file_name)
+          
+          
         for package in packages:
             package_id = package["_id"]
             package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
@@ -67,22 +76,32 @@ class PackageChecker:
                                 
                         missing_files_list = set(expected_file_names).difference(set(actual_file_names)) 
                         missing_files_list = ', '.join(missing_files_list)
-                        extra_files_list = set(actual_file_names).difference(set(expected_file_names))
-                        extra_files_list = ", ".join(extra_files_list)
-                        if len(missing_files_list) != 0:
-                            data = [
-                                [package_id, missing_files_list]
-                            ]
-                            missing_writer.writerows(data)
-                        if len(extra_files_list) != 0:
-                            data = [
-                                [package_id, extra_files_list]
-                            ]
-                            extra_writer.writerows(data)
+                        disk_files = set(actual_file_names).difference(set(expected_file_names))
+                        
+                        if "metadata.json" in disk_files:
+                          disk_files.remove("metadata.json")
+                          
+                        disk_files = ", ".join(disk_files)
+                        files_list = np.setdiff1d(disk_files, mongo_files_col_list)
+                        extra_files_list = list(files_list)
+                        
+                        if '' in extra_files_list:
+                          extra_files_list.remove("")
+                        
+                        if len(missing_files_list) != 0 and file_name not in missing_files_list:
+                          data = [
+                            [package_id, missing_files_list]
+                          ]
+                          missing_writer.writerows(data)
+                          
+                        if len(extra_files_list) != 0 and file_name not in extra_files_list:
+                          data = [
+                            [package_id, extra_files_list]
+                          ]
+                          extra_writer.writerows(data)
                     except:
                         missing_package_list.append(package_id)
-                        
-                        
+                      
         missing_files_csv.close()
         extra_files_csv.close()
             
