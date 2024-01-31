@@ -117,6 +117,12 @@ class PackageChecker:
                 slack_url,
                 headers={'Content-type': 'application/json', },
                 data='{"text":"' + message + '"}')
+        if len(extra_files_list) > 0:
+            message = "Extra files for packages: " + ', '.join(extra_files_list)
+            requests.post(
+              slack_url,
+              headers={'Content-type': 'application/json', },
+                data='{"text":"' + message + '"}')
 
 
 if __name__ == "__main__":
