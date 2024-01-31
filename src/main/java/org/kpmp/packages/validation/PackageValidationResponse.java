@@ -11,6 +11,16 @@ public class PackageValidationResponse {
 	private List<String> filesFromMetadata;
 	private List<String> filesInGlobus;
 	private Boolean directoryExists;
+	private List<String> directoriesInGlobus;
+	
+	public List<String> getDirectoriesInGlobus() {
+		return directoriesInGlobus;
+	}
+
+	public void setDirectoriesInGlobus(List<String> directoriesInGlobus) {
+		this.directoriesInGlobus = directoriesInGlobus;
+	}
+
 	public List<String> getMetadataFilesNotFoundInGlobus() {
 		return metadataFilesNotFoundInGlobus;
 	}
