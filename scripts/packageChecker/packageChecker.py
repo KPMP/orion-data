@@ -33,6 +33,7 @@ class PackageChecker:
     def find_empty_packages(self):
         empty_package_list = []
         missing_package_list = []
+        extra_package_list = []
         
         missing_files_header = ["Package ID", "Missing Files"]
         missing_files_csv = open("missing_files.csv", "w")
@@ -95,16 +96,17 @@ class PackageChecker:
                           missing_writer.writerows(data)
                           
                         if len(extra_files_list) != 0 and file_name not in extra_files_list:
+                          extra_package_list.append(package_id)
                           data = [
                             [package_id, extra_files_list]
                           ]
                           extra_writer.writerows(data)
+                          
                     except:
                         missing_package_list.append(package_id)
                       
         missing_files_csv.close()
         extra_files_csv.close()
-            
         if len(empty_package_list) > 0:
             message = "Missing files in packages: " + ', '.join(empty_package_list)
             requests.post(
@@ -116,6 +118,12 @@ class PackageChecker:
             requests.post(
                 slack_url,
                 headers={'Content-type': 'application/json', },
+                data='{"text":"' + message + '"}')
+        if len(extra_package_list) > 0:
+            message = "Extra files for packages: " + ', '.join(extra_package_list)
+            requests.post(
+              slack_url,
+              headers={'Content-type': 'application/json', },
                 data='{"text":"' + message + '"}')
 
 
