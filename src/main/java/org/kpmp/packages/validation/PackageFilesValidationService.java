@@ -64,7 +64,7 @@ public class PackageFilesValidationService {
 
 			List<String> filesMissingInGlobus = filenamesNotInGlobus(filesInGlobusDirectories, filesFromMetadata);
 			response.setMetadataFilesNotFoundInGlobus(filesMissingInGlobus);
-
+			response.setGlobusFileNotFoundInMetadata(filenamesNotInMetadata(filesInGlobusDirectories, filesFromMetadata));
 
 		}
 
@@ -72,7 +72,7 @@ public class PackageFilesValidationService {
 		return response;
 	}
 
-	protected List<String> filesNotInMetadata(Map<String, List<String>> globusListing, List<String> metadataFiles) {
+	protected List<String> filenamesNotInMetadata(Map<String, List<String>> globusListing, List<String> metadataFiles) {
 		List<String> missingFiles = new ArrayList<>();
 		Set<String> directories = globusListing.keySet();
 		for (String directory : directories) {

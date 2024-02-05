@@ -47,6 +47,10 @@ public class PackageValidationResponse {
 		globusFilesNotFoundInMetadata.add(fileNotFound);
 	}
 
+	public void setGlobusFileNotFoundInMetadata(List<String> missingFiles) {
+		globusFilesNotFoundInMetadata = missingFiles;
+	}
+
 	public String getPackageId() {
 		return packageId;
 	}

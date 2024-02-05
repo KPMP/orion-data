@@ -178,7 +178,7 @@ public class PackageFilesValidationServiceTest {
 		globusListing.put("subdirectory", Arrays.asList("file2", "file3"));
 		List<String> metadataFiles = Arrays.asList("file1.txt", "subdirectory/file2", "subdirectory/file3");
 
-		assertEquals(Collections.emptyList(), service.filesNotInMetadata(globusListing, metadataFiles));
+		assertEquals(Collections.emptyList(), service.filenamesNotInMetadata(globusListing, metadataFiles));
 	}
 
 	@Test
@@ -188,7 +188,7 @@ public class PackageFilesValidationServiceTest {
 		globusListing.put("subdirectory", Arrays.asList("file2", "file3"));
 		List<String> metadataFiles = Arrays.asList("subdirectory/file2", "subdirectory/file3");
 
-		assertEquals(Arrays.asList("file1.txt"), service.filesNotInMetadata(globusListing, metadataFiles));
+		assertEquals(Arrays.asList("file1.txt"), service.filenamesNotInMetadata(globusListing, metadataFiles));
 	}
 
 	@Test
@@ -198,7 +198,7 @@ public class PackageFilesValidationServiceTest {
 		globusListing.put("subdirectory", Arrays.asList("file2", "file3"));
 		List<String> metadataFiles = Arrays.asList("file1.txt", "subdirectory/file3");
 
-		assertEquals(Arrays.asList("subdirectory/file2"), service.filesNotInMetadata(globusListing, metadataFiles));
+		assertEquals(Arrays.asList("subdirectory/file2"), service.filenamesNotInMetadata(globusListing, metadataFiles));
 	}
 
 	@Test
@@ -208,7 +208,7 @@ public class PackageFilesValidationServiceTest {
 		globusListing.put("subdirectory", Arrays.asList("file2", "file3"));
 		List<String> metadataFiles = Arrays.asList("file1.txt", "subdirectory/file2", "subdirectory/file3");
 
-		assertEquals(Collections.emptyList(), service.filesNotInMetadata(globusListing, metadataFiles));
+		assertEquals(Collections.emptyList(), service.filenamesNotInMetadata(globusListing, metadataFiles));
 	}
 
 }
