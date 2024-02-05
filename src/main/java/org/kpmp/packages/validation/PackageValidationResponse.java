@@ -32,6 +32,10 @@ public class PackageValidationResponse {
 		metadataFilesNotFoundInGlobus.add(fileNotFound);
 	}
 
+	public void setMetadataFilesNotFoundInGlobus(List<String> missingFiles) {
+		metadataFilesNotFoundInGlobus = missingFiles;
+	}
+
 	public List<String> getGlobusFilesNotFoundInMetadata() {
 		return globusFilesNotFoundInMetadata;
 	}

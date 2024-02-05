@@ -2,9 +2,11 @@ package org.kpmp.packages.validation;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.kpmp.globus.GlobusFileListing;
 import org.kpmp.globus.GlobusService;
@@ -47,9 +49,9 @@ public class PackageFilesValidationService {
 			List<String> globusFiles = getGlobusFileNames(objectsInGlobus);
 			List<String> globusDirectories = getGlobusDirectoryNames(objectsInGlobus);
 			List<String> filesFromMetadata = processIncomingFilenames(request);
+
 			response.setFilesFromMetadata(filesFromMetadata);
 			response.setPackageId(request.getPackageId());
-
 			response.setFilesInGlobus(globusFiles);
 			response.setDirectoriesInGlobus(globusDirectories);
 
@@ -59,98 +61,47 @@ public class PackageFilesValidationService {
 			String currentDirectory = "";
 			filesInGlobusDirectories = processGlobusDirectory(filesInGlobusDirectories, globusDirectories, request.getPackageId(), currentDirectory);
 
-			// now we have a full Globus listing and the full set of files we expect to find
-			for (String filename : filesFromMetadata) {
-				String[] fileParts = filename.split("/");
-				if (fileParts.length == 1) {
-					// if this file is not at the top level AND
-					if (!filesInGlobusDirectories.get("").contains(filename) && !filesInGlobusDirectories.containsKey(filename)) {
-						response.addMetadataFileNotFoundInGlobus(filename);
-					}
-				} else {
-					String directoryPath = "";
-					for (String filePart : fileParts) {
-						directoryPath = directoryPath + "/" + filePart;
-						if (!filesInGlobusDirectories.containsKey(directoryPath)) { 
-							// if we are missing the directory for this file, we def don't have the file
-							response.addMetadataFileNotFoundInGlobus(filename);
-						}
-					}
 
-				}
+			List<String> filesMissingInGlobus = filenamesNotInGlobus(filesInGlobusDirectories, filesFromMetadata);
+			response.setMetadataFilesNotFoundInGlobus(filesMissingInGlobus);
 
 
-			}
-
-
-
-
-			// for (String filename : filesFromMetadata) {
-			// 	String[] fileParts = filename.split("/");
-				
-			// 	if (fileParts.length == 1) {
-			// 		// did the split on the filename, and there were no slashes in it, so either a top level directory, or a top level file
-			// 		if (!globusFiles.contains(filename) && !globusDirectories.contains(filename)) {
-			// 			// we don't have this file or directory in globus, mark it as missing
-			// 			response.addMetadataFileNotFoundInGlobus(filename);
-			// 		}
-				
-			// 	} else if (fileParts.length > 1) {
-			// 		// did the split and there was at least one slash in the filename (meaning there was a directory and filename at least)
-			// 		int depth = 1;
-			// 		String additionalPath = "";
-			// 		for (String filePart : fileParts) {
-			// 			additionalPath = "/" + filePart;
-			// 			// take the directory name and get the file listing from Globus for this path
-			// 			if (!filesInGlobusDirectories.containsKey(additionalPath)) {
-			// 				List<GlobusFileListing> globusFilesInSubdirectory = globus.getFilesAndDirectoriesAtEndpoint(request.getPackageId() + "/" + additionalPath);
-			// 				filesInGlobusDirectories.put(additionalPath, globusFilesInSubdirectory);
-			// 			}
-			// 			if (fileParts.length == depth) {
-			// 				// we are at the last part (either filename or empty directory), do we have this in Globus
-			// 				List<GlobusFileListing> globusFilesInSubdirectory = filesInGlobusDirectories.get(currentDirectory);
-			// 				List<String> globusFileNames = getGlobusFileNames(globusFilesInSubdirectory);
-			// 				if (!globusFileNames.contains(fileParts[depth])) {
-			// 					response.addMetadataFileNotFoundInGlobus(filename);
-			// 				}
-			// 			} 
-			// 			depth++;		
-			// 		}
-					
-			// 	}
-			// }
-
-
-			// now we have an ALMOST full listing of what is in Globus
-
-			for (String fileInGlobus : globusFiles) {
-				if (!filesFromMetadata.contains(fileInGlobus) && !fileInGlobus.startsWith("METADATA")) {
-					response.addGlobusFileNotFoundInMetadata(fileInGlobus);
-				}
-			}
 		}
 
 		
 		return response;
 	}
 
-	protected List<String> filenamesNotInGlobus(Map<String, List<String>> globusListing, List<String> expectedFiles) {
+	protected List<String> filesNotInMetadata(Map<String, List<String>> globusListing, List<String> metadataFiles) {
 		List<String> missingFiles = new ArrayList<>();
-		missingFiles = filenamesNotInGlobus(missingFiles, globusListing, expectedFiles, "");
+		Set<String> directories = globusListing.keySet();
+		for (String directory : directories) {
+			List<String> filesInDirectory = globusListing.get(directory);
+			for (String file : filesInDirectory) {
+				String fileWithPath = directory + "/" + file;
+				if (directory == "") {
+					fileWithPath = file;
+				}
+				if (!metadataFiles.contains(fileWithPath) && !file.startsWith("METADATA_")) {
+					missingFiles.add(fileWithPath);
+				}
+			}
+		}
 		return missingFiles;
 	}
 
-	private List<String> filenamesNotInGlobus(List<String> missingFiles, Map<String, List<String>> globusListing, List<String> expectedFiles, String initialDirectory) {
-		List<String> filesInGlobus = globusListing.get(initialDirectory);
+	protected List<String> filenamesNotInGlobus(Map<String, List<String>> globusListing, List<String> expectedFiles) {
+		List<String> missingFiles = new ArrayList<>();
+		List<String> filesInGlobusAtRoot = globusListing.get("");
 		for (String filename : expectedFiles) {
 			if (filename.contains("/")) {
 				int i = filename.lastIndexOf("/");
 				String[] fileParts =  {filename.substring(0, i+1), filename.substring(i+1)};
-				if (!globusListing.containsKey(fileParts[0]) && !globusListing.get(fileParts[0]).contains(fileParts[1])) {
+				if (!globusListing.containsKey(fileParts[0]) || !globusListing.get(fileParts[0]).contains(fileParts[1])) {
 					missingFiles.add(filename);
 				}
 			} else {
-				if (filesInGlobus == null || !filesInGlobus.contains(filename)) {
+				if (filesInGlobusAtRoot == null || !filesInGlobusAtRoot.contains(filename)) {
 					missingFiles.add(filename);
 				}	
 			}

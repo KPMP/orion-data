@@ -7,7 +7,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,109 +150,65 @@ public class PackageFilesValidationServiceTest {
 		assertEquals(Arrays.asList(), actualFilenamesNotFound);
 	}
 
-	// @Test
-	// public void testMatchFiles() throws JsonProcessingException, IOException {
-	// 	PackageFilesRequest request = new PackageFilesRequest();
-	// 	request.setPackageId("323");
-	// 	request.setFilenames("file1, file2.xls");
-	// 	GlobusFileListing globusFile1 = new GlobusFileListing();
-	// 	globusFile1.setName("file2.xls");
-	// 	GlobusFileListing globusFile2 = new GlobusFileListing();
-	// 	globusFile2.setName("file1");
-	// 	when(globus.getFilesAndDirectoriesAtEndpoint("323")).thenReturn(Arrays.asList(globusFile1, globusFile2));
+	@Test
+	public void testFilenamesNotInGlobus_filesAtMultipleLevelsDoNotMatch() {
+		Map<String, List<String>> globusListing = new HashMap<>();
+		globusListing.put("", Arrays.asList("file1", "file2"));
+		globusListing.put("directory1/", Arrays.asList("file3"));
+		globusListing.put("directory2/",new ArrayList<String>());
+		List<String> actualFilenamesNotFound = service.filenamesNotInGlobus(globusListing , Arrays.asList("file1", "file2", "directory1/file3", "directory2/file4"));
 
-	// 	PackageValidationResponse result = service.matchFiles(request);
+		assertEquals(Arrays.asList("directory2/file4"), actualFilenamesNotFound);
+	}
 
-	// 	assertEquals(null, result.getGlobusFilesNotFoundInMetadata());
-	// 	assertEquals(null, result.getMetadataFilesNotFoundInGlobus());
-	// 	assertEquals("323", result.getPackageId());
-	// 	assertEquals(Arrays.asList("file1", "file2.xls"), result.getFilesFromMetadata());
-	// 	assertEquals(Arrays.asList("file2.xls", "file1"), result.getFilesInGlobus());
-	// }
+	@Test
+	public void testFilenamesNotInGlobus_missingEmptyDirectories() {
+		Map<String, List<String>> globusListing = new HashMap<>();
+		globusListing.put("", Arrays.asList("file1", "file2"));
+		globusListing.put("directory1/", Arrays.asList("file3"));
+		List<String> actualFilenamesNotFound = service.filenamesNotInGlobus(globusListing , Arrays.asList("file1", "file2", "directory1/file3", "directory2", "directory3/"));
 
-	// @Test
-	// public void testMatchFilesWhenUserUploadsToSubdir() throws JsonProcessingException, IOException {
-	// 	PackageFilesRequest request = new PackageFilesRequest();
-	// 	request.setPackageId("323");
-	// 	request.setFilenames("file1, file2.xls");
-	// 	GlobusFileListing globusFile1 = new GlobusFileListing();
-	// 	globusFile1.setName("directory");
-	// 	globusFile1.setType("dir");
-	// 	when(globus.getFilesAndDirectoriesAtEndpoint("323")).thenReturn(Arrays.asList(globusFile1));
-	// 	when(globus.getFilesAndDirectoriesAtEndpoint("323/dir")).thenReturn(Arrays.asList(globusFile1));
+		assertEquals(Arrays.asList("directory2", "directory3/"), actualFilenamesNotFound);
+	}
 
-	// 	PackageValidationResponse result = service.matchFiles(request);
+	@Test
+	public void testFilesNotInMetadata_perfectMatch() {
+		Map<String, List<String>> globusListing = new HashMap<>();
+		globusListing.put("", Arrays.asList("file1.txt"));
+		globusListing.put("subdirectory", Arrays.asList("file2", "file3"));
+		List<String> metadataFiles = Arrays.asList("file1.txt", "subdirectory/file2", "subdirectory/file3");
 
-	// 	verify(globus, times(2)).getFilesAndDirectoriesAtEndpoint(any(String.class));
-	// 	assertEquals(null, result.getGlobusFilesNotFoundInMetadata());
-	// 	assertEquals(Arrays.asList("file1", "file2.xls"), result.getMetadataFilesNotFoundInGlobus());
-	// 	assertEquals("323", result.getPackageId());
-	// 	assertEquals(Arrays.asList("file1", "file2.xls"), result.getFilesFromMetadata());
-	// 	assertEquals(Arrays.asList(), result.getFilesInGlobus());
-	// }
+		assertEquals(Collections.emptyList(), service.filesNotInMetadata(globusListing, metadataFiles));
+	}
 
-	// @Test
-	// public void testMatchFilesIgnoresMetadataFile() throws JsonProcessingException, IOException {
-	// 	PackageFilesRequest request = new PackageFilesRequest();
-	// 	request.setPackageId("323");
-	// 	request.setFilenames("file1, file2.xls");
-	// 	GlobusFileListing globusFile1 = new GlobusFileListing();
-	// 	globusFile1.setName("file2.xls");
-	// 	GlobusFileListing globusFile2 = new GlobusFileListing();
-	// 	globusFile2.setName("file1");
-	// 	GlobusFileListing globusFile3 = new GlobusFileListing();
-	// 	globusFile3.setName("METADATA_stuff.xls");
-	// 	when(globus.getFilesAndDirectoriesAtEndpoint("323")).thenReturn(Arrays.asList(globusFile1, globusFile2, globusFile3));
+	@Test
+	public void testFilesNotInMetadata_missingFileAtTopLevel() {
+		Map<String, List<String>> globusListing = new HashMap<>();
+		globusListing.put("", Arrays.asList("file1.txt"));
+		globusListing.put("subdirectory", Arrays.asList("file2", "file3"));
+		List<String> metadataFiles = Arrays.asList("subdirectory/file2", "subdirectory/file3");
 
-	// 	PackageValidationResponse result = service.matchFiles(request);
+		assertEquals(Arrays.asList("file1.txt"), service.filesNotInMetadata(globusListing, metadataFiles));
+	}
 
-	// 	assertEquals(null, result.getGlobusFilesNotFoundInMetadata());
-	// 	assertEquals(null, result.getMetadataFilesNotFoundInGlobus());
-	// 	assertEquals("323", result.getPackageId());
-	// 	assertEquals(Arrays.asList("file1", "file2.xls"), result.getFilesFromMetadata());
-	// 	assertEquals(Arrays.asList("file2.xls", "file1", "METADATA_stuff.xls"), result.getFilesInGlobus());
-	// }
+	@Test
+	public void testFilesNotInMetadata_missingFileAtSecondLevel() {
+		Map<String, List<String>> globusListing = new HashMap<>();
+		globusListing.put("", Arrays.asList("file1.txt"));
+		globusListing.put("subdirectory", Arrays.asList("file2", "file3"));
+		List<String> metadataFiles = Arrays.asList("file1.txt", "subdirectory/file3");
 
-	// @Test
-	// public void testMatchFilesExtraFilesInGlobus() throws JsonProcessingException, IOException {
-	// 	PackageFilesRequest request = new PackageFilesRequest();
-	// 	request.setPackageId("323");
-	// 	request.setFilenames("file1, file2.xls");
-	// 	GlobusFileListing globusFile1 = new GlobusFileListing();
-	// 	globusFile1.setName("file2.xls");
-	// 	GlobusFileListing globusFile2 = new GlobusFileListing();
-	// 	globusFile2.setName("file1");
-	// 	GlobusFileListing globusFile3 = new GlobusFileListing();
-	// 	globusFile3.setName("extraGlobusFile.bam");
-	// 	when(globus.getFilesAndDirectoriesAtEndpoint("323")).thenReturn(Arrays.asList(globusFile1, globusFile2, globusFile3));
+		assertEquals(Arrays.asList("subdirectory/file2"), service.filesNotInMetadata(globusListing, metadataFiles));
+	}
 
-	// 	PackageValidationResponse result = service.matchFiles(request);
+	@Test
+	public void testFilesNotInMetadata_ignoreMetadataFile() {
+		Map<String, List<String>> globusListing = new HashMap<>();
+		globusListing.put("", Arrays.asList("file1.txt", "METADATA_file.xlsx"));
+		globusListing.put("subdirectory", Arrays.asList("file2", "file3"));
+		List<String> metadataFiles = Arrays.asList("file1.txt", "subdirectory/file2", "subdirectory/file3");
 
-	// 	assertEquals(Arrays.asList("extraGlobusFile.bam"), result.getGlobusFilesNotFoundInMetadata());
-	// 	assertEquals(null, result.getMetadataFilesNotFoundInGlobus());
-	// 	assertEquals("323", result.getPackageId());
-	// 	assertEquals(Arrays.asList("file1", "file2.xls"), result.getFilesFromMetadata());
-	// 	assertEquals(Arrays.asList("file2.xls", "file1", "extraGlobusFile.bam"), result.getFilesInGlobus());
-	// }
-
-	// @Test
-	// public void testMatchFilesExtraFilesInMetadata() throws JsonProcessingException, IOException {
-	// 	PackageFilesRequest request = new PackageFilesRequest();
-	// 	request.setPackageId("323");
-	// 	request.setFilenames("file1, file2.xls, extraFile.txt");
-	// 	GlobusFileListing globusFile1 = new GlobusFileListing();
-	// 	globusFile1.setName("file2.xls");
-	// 	GlobusFileListing globusFile2 = new GlobusFileListing();
-	// 	globusFile2.setName("file1");
-	// 	when(globus.getFilesAndDirectoriesAtEndpoint("323")).thenReturn(Arrays.asList(globusFile1, globusFile2));
-
-	// 	PackageValidationResponse result = service.matchFiles(request);
-
-	// 	assertEquals(null, result.getGlobusFilesNotFoundInMetadata());
-	// 	assertEquals(Arrays.asList("extraFile.txt"), result.getMetadataFilesNotFoundInGlobus());
-	// 	assertEquals("323", result.getPackageId());
-	// 	assertEquals(Arrays.asList("file1", "file2.xls", "extraFile.txt"), result.getFilesFromMetadata());
-	// 	assertEquals(Arrays.asList("file2.xls", "file1"), result.getFilesInGlobus());
-	// }
+		assertEquals(Collections.emptyList(), service.filesNotInMetadata(globusListing, metadataFiles));
+	}
 
 }
