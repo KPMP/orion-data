@@ -2,7 +2,6 @@ package org.kpmp.packages.validation;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,9 +41,6 @@ public class PackageFilesValidationService {
 		}
 
 		if (response.getDirectoryExists()) {
-			if (containsOnlyDirectory(objectsInGlobus)) {
-				objectsInGlobus = globus.getFilesAndDirectoriesAtEndpoint(request.getPackageId() + "/" + objectsInGlobus.get(0).getName());
-			}
 
 			List<String> globusFiles = getGlobusFileNames(objectsInGlobus);
 			List<String> globusDirectories = getGlobusDirectoryNames(objectsInGlobus);
@@ -52,19 +48,19 @@ public class PackageFilesValidationService {
 
 			response.setFilesFromMetadata(filesFromMetadata);
 			response.setPackageId(request.getPackageId());
-			response.setFilesInGlobus(globusFiles);
-			response.setDirectoriesInGlobus(globusDirectories);
 
 			Map<String, List<String>> filesInGlobusDirectories = new HashMap<>();
 			// put top level files in our map
 			filesInGlobusDirectories.put("", globusFiles);
 			String currentDirectory = "";
 			filesInGlobusDirectories = processGlobusDirectory(filesInGlobusDirectories, globusDirectories, request.getPackageId(), currentDirectory);
+			List<String> filePathsInGlobus = getGlobusFilePaths(filesInGlobusDirectories);
 
+			response.setFilesInGlobus(filePathsInGlobus);
 
-			List<String> filesMissingInGlobus = filenamesNotInGlobus(filesInGlobusDirectories, filesFromMetadata);
+			List<String> filesMissingInGlobus = filenamesNotInGlobus(filePathsInGlobus, filesFromMetadata);
 			response.setMetadataFilesNotFoundInGlobus(filesMissingInGlobus);
-			response.setGlobusFileNotFoundInMetadata(filenamesNotInMetadata(filesInGlobusDirectories, filesFromMetadata));
+			response.setGlobusFileNotFoundInMetadata(filenamesNotInMetadata(filePathsInGlobus, filesFromMetadata));
 
 		}
 
@@ -72,38 +68,43 @@ public class PackageFilesValidationService {
 		return response;
 	}
 
-	protected List<String> filenamesNotInMetadata(Map<String, List<String>> globusListing, List<String> metadataFiles) {
-		List<String> missingFiles = new ArrayList<>();
-		Set<String> directories = globusListing.keySet();
+	protected List<String> getGlobusFilePaths(Map<String, List<String>> filesInGlobusDirectories) {
+		List<String> filePaths = new ArrayList<>();
+		Set<String> directories = filesInGlobusDirectories.keySet();
 		for (String directory : directories) {
-			List<String> filesInDirectory = globusListing.get(directory);
+			List<String> filesInDirectory = filesInGlobusDirectories.get(directory);
+			if (filesInDirectory.size() == 0) {
+				filePaths.add(directory);
+			}
 			for (String file : filesInDirectory) {
 				String fileWithPath = directory + "/" + file;
 				if (directory == "") {
 					fileWithPath = file;
 				}
-				if (!metadataFiles.contains(fileWithPath) && !file.startsWith("METADATA_")) {
-					missingFiles.add(fileWithPath);
-				}
+				filePaths.add(fileWithPath);
+			}
+			
+		}
+		return filePaths;
+	}
+
+	protected List<String> filenamesNotInMetadata(List<String> globusListing, List<String> metadataFiles) {
+		List<String> missingFiles = new ArrayList<>();
+
+		for (String globusFile : globusListing) {
+			if (!metadataFiles.contains(globusFile) && !globusFile.startsWith("METADATA_")) {
+				missingFiles.add(globusFile);
 			}
 		}
+
 		return missingFiles;
 	}
 
-	protected List<String> filenamesNotInGlobus(Map<String, List<String>> globusListing, List<String> expectedFiles) {
+	protected List<String> filenamesNotInGlobus(List<String> globusListing, List<String> expectedFiles) {
 		List<String> missingFiles = new ArrayList<>();
-		List<String> filesInGlobusAtRoot = globusListing.get("");
-		for (String filename : expectedFiles) {
-			if (filename.contains("/")) {
-				int i = filename.lastIndexOf("/");
-				String[] fileParts =  {filename.substring(0, i+1), filename.substring(i+1)};
-				if (!globusListing.containsKey(fileParts[0]) || !globusListing.get(fileParts[0]).contains(fileParts[1])) {
-					missingFiles.add(filename);
-				}
-			} else {
-				if (filesInGlobusAtRoot == null || !filesInGlobusAtRoot.contains(filename)) {
-					missingFiles.add(filename);
-				}	
+		for (String fileFromMetadata : expectedFiles) {
+			if (!globusListing.contains(fileFromMetadata)) {
+				missingFiles.add(fileFromMetadata);
 			}
 		}
 		return missingFiles;
@@ -114,8 +115,13 @@ public class PackageFilesValidationService {
 		List<String> globusDirectories, String packageId, String initialDirectory) throws JsonProcessingException, IOException {
 
 		for (String globusDirectory : globusDirectories) {
-			String currentDirectory = initialDirectory + "/" + globusDirectory;
-			List<GlobusFileListing> globusFilesInSubdirectory = globus.getFilesAndDirectoriesAtEndpoint(packageId + currentDirectory);
+			String prefix = "";
+			if (initialDirectory != "") {
+				prefix = initialDirectory + "/";
+			}
+			String currentDirectory = prefix + globusDirectory;
+
+			List<GlobusFileListing> globusFilesInSubdirectory = globus.getFilesAndDirectoriesAtEndpoint(packageId + "/" + currentDirectory);
 			List<String> globusFiles = getGlobusFileNames(globusFilesInSubdirectory);
 			globusListing.put(currentDirectory, globusFiles);
 			List<String> globusSubDirectories = getGlobusDirectoryNames(globusFilesInSubdirectory);
@@ -124,14 +130,6 @@ public class PackageFilesValidationService {
 			}
 		}
 		return globusListing;
-	}
-
-
-	private boolean containsOnlyDirectory(List<GlobusFileListing> filesInGlobus) {
-		if (filesInGlobus.size() == 1 && filesInGlobus.get(0).getType().equals(DIRECTORY_TYPE)) {
-			return true;
-		}
-		return false;
 	}
 
 	private List<String> processIncomingFilenames(PackageFilesRequest request) {
@@ -147,7 +145,7 @@ public class PackageFilesValidationService {
 		return incomingFiles;
 	}
 
-	private List<String> getGlobusDirectoryNames(List<GlobusFileListing> globusFiles) {
+	protected List<String> getGlobusDirectoryNames(List<GlobusFileListing> globusFiles) {
 		List<String> globusDirectories = new ArrayList<>();
 		for (GlobusFileListing globusFileListing : globusFiles) {
 			if (globusFileListing.getType().equals(DIRECTORY_TYPE)) {
@@ -157,7 +155,7 @@ public class PackageFilesValidationService {
 		return globusDirectories;
 	}
 
-	private List<String> getGlobusFileNames(List<GlobusFileListing> globusFiles) {
+	protected List<String> getGlobusFileNames(List<GlobusFileListing> globusFiles) {
 		List<String> deliveredFiles = new ArrayList<String>();
 		for (GlobusFileListing globusListingResponse : globusFiles) {
 			if (!globusListingResponse.getType().equals(DIRECTORY_TYPE)) {
