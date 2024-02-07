@@ -25,6 +25,14 @@ public class PackageValidationResponseTest {
 	}
 
 	@Test
+	public void testGetDirectoriesInGlobus() {
+		List<String> expected = Arrays.asList("dir1", "dir2");
+		response.setDirectoriesInGlobus(expected);
+
+		assertEquals(expected, response.getDirectoriesInGlobus());
+	}
+
+	@Test
 	public void testAddMetadataFileNotFoundInGlobus() {
 		List<String> expected = Arrays.asList("file1", "file2");
 		response.addMetadataFileNotFoundInGlobus("file1");

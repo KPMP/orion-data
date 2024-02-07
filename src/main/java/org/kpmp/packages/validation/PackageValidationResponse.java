@@ -11,6 +11,16 @@ public class PackageValidationResponse {
 	private List<String> filesFromMetadata;
 	private List<String> filesInGlobus;
 	private Boolean directoryExists;
+	private List<String> directoriesInGlobus;
+	
+	public List<String> getDirectoriesInGlobus() {
+		return directoriesInGlobus;
+	}
+
+	public void setDirectoriesInGlobus(List<String> directoriesInGlobus) {
+		this.directoriesInGlobus = directoriesInGlobus;
+	}
+
 	public List<String> getMetadataFilesNotFoundInGlobus() {
 		return metadataFilesNotFoundInGlobus;
 	}
@@ -22,6 +32,10 @@ public class PackageValidationResponse {
 		metadataFilesNotFoundInGlobus.add(fileNotFound);
 	}
 
+	public void setMetadataFilesNotFoundInGlobus(List<String> missingFiles) {
+		metadataFilesNotFoundInGlobus = missingFiles;
+	}
+
 	public List<String> getGlobusFilesNotFoundInMetadata() {
 		return globusFilesNotFoundInMetadata;
 	}
@@ -31,6 +45,10 @@ public class PackageValidationResponse {
 			globusFilesNotFoundInMetadata = new ArrayList<>();
 		}
 		globusFilesNotFoundInMetadata.add(fileNotFound);
+	}
+
+	public void setGlobusFileNotFoundInMetadata(List<String> missingFiles) {
+		globusFilesNotFoundInMetadata = missingFiles;
 	}
 
 	public String getPackageId() {
