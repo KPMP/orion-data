@@ -59,8 +59,14 @@ public class PackageFilesValidationService {
 			response.setFilesInGlobus(filePathsInGlobus);
 
 			List<String> filesMissingInGlobus = filenamesNotInGlobus(filePathsInGlobus, filesFromMetadata);
-			response.setMetadataFilesNotFoundInGlobus(filesMissingInGlobus);
-			response.setGlobusFileNotFoundInMetadata(filenamesNotInMetadata(filePathsInGlobus, filesFromMetadata));
+			if (filesMissingInGlobus.size() > 0) {
+				response.setMetadataFilesNotFoundInGlobus(filesMissingInGlobus);
+			}
+			List<String> filesMissingInMetadata = filenamesNotInMetadata(filePathsInGlobus, filesFromMetadata);
+			if (filesMissingInMetadata.size() > 0) {
+				response.setGlobusFileNotFoundInMetadata(filesMissingInMetadata);
+			}
+			
 
 		}
 

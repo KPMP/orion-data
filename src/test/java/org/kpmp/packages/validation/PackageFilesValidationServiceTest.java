@@ -248,8 +248,8 @@ public class PackageFilesValidationServiceTest {
 		assertEquals(Arrays.asList("file1", "file2", "file3"), response.getFilesFromMetadata());
 		assertEquals("package123", response.getPackageId());
 		assertEquals(Arrays.asList("file1", "file2", "file3"), response.getFilesInGlobus());
-		assertEquals(Collections.emptyList(), response.getMetadataFilesNotFoundInGlobus());
-		assertEquals(Collections.emptyList(), response.getGlobusFilesNotFoundInMetadata());
+		assertEquals(null, response.getMetadataFilesNotFoundInGlobus());
+		assertEquals(null, response.getGlobusFilesNotFoundInMetadata());
 	}
 
 	@Test
@@ -274,7 +274,7 @@ public class PackageFilesValidationServiceTest {
 		assertEquals("package123", response.getPackageId());
 		assertEquals(Arrays.asList("file1", "file2"), response.getFilesInGlobus());
 		assertEquals(Arrays.asList("file3"), response.getMetadataFilesNotFoundInGlobus());
-		assertEquals(Collections.emptyList(), response.getGlobusFilesNotFoundInMetadata());
+		assertEquals(null, response.getGlobusFilesNotFoundInMetadata());
 	}
 
 	@Test
@@ -302,8 +302,8 @@ public class PackageFilesValidationServiceTest {
 		assertEquals(Arrays.asList("file1", "directory/file2"), response.getFilesFromMetadata());
 		assertEquals("package123", response.getPackageId());
 		assertEquals(Arrays.asList("file1", "directory/file2"), response.getFilesInGlobus());
-		assertEquals(Collections.emptyList(), response.getMetadataFilesNotFoundInGlobus());
-		assertEquals(Collections.emptyList(), response.getGlobusFilesNotFoundInMetadata());
+		assertEquals(null, response.getMetadataFilesNotFoundInGlobus());
+		assertEquals(null, response.getGlobusFilesNotFoundInMetadata());
 	}
 
 	@Test
@@ -324,7 +324,7 @@ public class PackageFilesValidationServiceTest {
 		request.setPackageId("package123");
 
 		PackageValidationResponse response = service.matchFiles(request);
-		
+
 		assertEquals(true, response.getDirectoryExists());
 		assertEquals(Arrays.asList("file1", "directory/file2"), response.getFilesFromMetadata());
 		assertEquals("package123", response.getPackageId());
