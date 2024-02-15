@@ -225,6 +225,38 @@ public class PackageFilesValidationServiceTest {
 	}
 
 	@Test
+	public void testMatchFile_perfectMatchIgnoresParentFolderWhenLone() throws JsonProcessingException, IOException {
+		
+		GlobusFileListing parent = new GlobusFileListing();
+		parent.setName("parent");
+		parent.setType("dir");
+		GlobusFileListing globusFile1 = new GlobusFileListing();
+		globusFile1.setName("file1");
+		globusFile1.setType("file");
+		GlobusFileListing globusFile2 = new GlobusFileListing();
+		globusFile2.setName("file2");
+		globusFile2.setType("file");
+		GlobusFileListing globusFile3 = new GlobusFileListing();
+		globusFile3.setName("file3");
+		globusFile3.setType("file");
+		List<GlobusFileListing> globusFileListing = Arrays.asList(globusFile1, globusFile2, globusFile3);
+		when(globus.getFilesAndDirectoriesAtEndpoint("package123")).thenReturn(Arrays.asList(parent));
+		when(globus.getFilesAndDirectoriesAtEndpoint("package123/parent")).thenReturn(globusFileListing);
+		PackageFilesRequest request = new PackageFilesRequest();
+		request.setFilenames("file1\nfile2,file3");
+		request.setPackageId("package123");
+
+
+		PackageValidationResponse response = service.matchFiles(request);
+		assertEquals(true, response.getDirectoryExists());
+		assertEquals(Arrays.asList("file1", "file2", "file3"), response.getFilesFromMetadata());
+		assertEquals("package123", response.getPackageId());
+		assertEquals(Arrays.asList("file1", "file2", "file3"), response.getFilesInGlobus());
+		assertEquals(null, response.getMetadataFilesNotFoundInGlobus());
+		assertEquals(null, response.getGlobusFilesNotFoundInMetadata());
+	}
+
+	@Test
 	public void testMatchFile_perfectMatchOneLevel() throws JsonProcessingException, IOException {
 		
 		GlobusFileListing globusFile1 = new GlobusFileListing();

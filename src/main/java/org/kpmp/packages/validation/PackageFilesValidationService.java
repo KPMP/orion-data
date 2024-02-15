@@ -41,19 +41,29 @@ public class PackageFilesValidationService {
 		}
 
 		if (response.getDirectoryExists()) {
-
 			List<String> globusFiles = getGlobusFileNames(objectsInGlobus);
 			List<String> globusDirectories = getGlobusDirectoryNames(objectsInGlobus);
 			List<String> filesFromMetadata = processIncomingFilenames(request);
+
+			String baseDirectory = "";
+			boolean ignoreBaseDirectory = false;
+			// if we only have a top level folder, ignore it and go down one to start validation
+			if (globusFiles.size() == 0 && globusDirectories.size() == 1) {
+				baseDirectory = globusDirectories.get(0);
+				objectsInGlobus = globus.getFilesAndDirectoriesAtEndpoint(request.getPackageId() + "/" +baseDirectory);
+				globusFiles = getGlobusFileNames(objectsInGlobus);
+				globusDirectories = getGlobusDirectoryNames(objectsInGlobus);
+				ignoreBaseDirectory = true;
+			}
 
 			response.setFilesFromMetadata(filesFromMetadata);
 			response.setPackageId(request.getPackageId());
 
 			Map<String, List<String>> filesInGlobusDirectories = new HashMap<>();
 			// put top level files in our map
+			
 			filesInGlobusDirectories.put("", globusFiles);
-			String currentDirectory = "";
-			filesInGlobusDirectories = processGlobusDirectory(filesInGlobusDirectories, globusDirectories, request.getPackageId(), currentDirectory);
+			filesInGlobusDirectories = processGlobusDirectory(filesInGlobusDirectories, globusDirectories, request.getPackageId() + baseDirectory, baseDirectory);
 			List<String> filePathsInGlobus = getGlobusFilePaths(filesInGlobusDirectories);
 
 			response.setFilesInGlobus(filePathsInGlobus);
