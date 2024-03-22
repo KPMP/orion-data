@@ -8,7 +8,7 @@ import org.kpmp.users.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;

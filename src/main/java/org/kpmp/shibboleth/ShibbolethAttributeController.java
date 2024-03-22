@@ -2,7 +2,7 @@ package org.kpmp.shibboleth;
 
 import java.io.UnsupportedEncodingException;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;

@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.After;
 import org.junit.Before;
