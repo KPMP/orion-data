@@ -67,13 +67,15 @@ class PackageChecker:
                             empty_package_list.append(package_id)
                         else:
                             for file in files:
-                                actual_file_names.append(file)
+                                ext = os.path.splitext(file)
+                                if not ext[1] == ".bfmemo" or "_expression_matrix" not in file or "_bundle.zip" not in file or "_spatial_metabolomics" not in file or "_spatial_n-glycomics" in file or "_image_collection.zip" in file or "_segmentation_data.zip" not in file:
+                                  actual_file_names.append(file)
                                 
                                 if file == "metadata.json" and len(files) == 1:
                                     empty_package_list.append(package_id)
-                                ext = os.path.splitext(file)
                                 
-                            if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names and not ext[1] == ".bfmemo"):
+                                
+                            if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
                                 empty_package_list.append(package_id)
                                 
                         missing_files_list = set(expected_file_names).difference(set(actual_file_names)) 
@@ -82,8 +84,6 @@ class PackageChecker:
                         
                         if "metadata.json" in disk_files:
                           disk_files.remove("metadata.json")
-                        elif "expression_matrix.zip" in disk_files:
-                          disk_files.remove("expression_matrix.zip")
                           
                         disk_files = ", ".join(disk_files)
                         files_list = np.setdiff1d(disk_files, mongo_files_col_list)
