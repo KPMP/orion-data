@@ -68,9 +68,7 @@ class PackageChecker:
                         else:
                             for file in files:
                                 ext = os.path.splitext(file)
-                                if ext[1] != ".bfmemo":
-                                  actual_file_names.append(file)
-                                elif ext[1] != ".zip":
+                                if ext[1] != ".bfmemo" and not ext[1] == ".zip":
                                   actual_file_names.append(file)
                                   
                                 if file == "metadata.json" and len(files) == 1:
