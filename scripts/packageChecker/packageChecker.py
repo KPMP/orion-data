@@ -67,11 +67,14 @@ class PackageChecker:
                             empty_package_list.append(package_id)
                         else:
                             for file in files:
-                                actual_file_names.append(file)
-                                
+                                ext = os.path.splitext(file)
+                                if not ext[1] == ".bfmemo" and not "expression_matrix" in ext[0]:
+                                  actual_file_names.append(file)
+                                  
                                 if file == "metadata.json" and len(files) == 1:
                                     empty_package_list.append(package_id)
-                                    
+
+                                
                             if (not set(expected_file_names).issubset(set(actual_file_names))) and not all(p == "metadata.json" for p in actual_file_names):
                                 empty_package_list.append(package_id)
                                 
