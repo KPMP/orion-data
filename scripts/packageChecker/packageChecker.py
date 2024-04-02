@@ -68,7 +68,6 @@ class PackageChecker:
                         else:
                             for file in files:
                                 ext = os.path.splitext(file)
-                                print(ext)
                                 if not ext[1] == ".bfmemo" and not ext[1] == ".zip":
                                   actual_file_names.append(file)
                                   
