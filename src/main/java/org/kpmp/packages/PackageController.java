@@ -11,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.kpmp.dmd.DmdResponse;
 import org.kpmp.dmd.DmdService;
-import org.kpmp.globus.GlobusService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
@@ -39,19 +38,16 @@ public class PackageController {
 	private PackageService packageService;
 	private ShibbolethUserService shibUserService;
 	private UniversalIdGenerator universalIdGenerator;
-	private GlobusService globusService;
 
 	private DmdService dmdService;
 
 	@Autowired
 	public PackageController(PackageService packageService, LoggingService logger,
-			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator,
-			GlobusService globusService, DmdService dmdService) {
+			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator, DmdService dmdService) {
 		this.packageService = packageService;
 		this.logger = logger;
 		this.shibUserService = shibUserService;
 		this.universalIdGenerator = universalIdGenerator;
-		this.globusService = globusService;
 		this.dmdService = dmdService;
 	}
 
@@ -85,9 +81,6 @@ public class PackageController {
 			User user = shibUserService.getUserNoHeaders(request, packageInfo);
 			packageService.savePackageInformation(packageInfo, user, packageId);
 			String largeFilesChecked = packageInfo.optBoolean("largeFilesChecked") ? "true" : "false";
-			if ("true".equals(largeFilesChecked)) {
-				packageResponse.setGlobusURL(globusService.createDirectory(packageId));
-			}
 			packageService.sendStateChangeEvent(packageId, metadataReceivedState, largeFilesChecked,
 					packageResponse.getGlobusURL(), cleanHostName);
 		} catch (Exception e) {
