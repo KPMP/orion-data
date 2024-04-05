@@ -19,7 +19,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.dmd.DmdService;
-import org.kpmp.globus.GlobusService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
@@ -39,8 +38,6 @@ public class PackageControllerTest {
 	private ShibbolethUserService shibUserService;
 	@Mock
 	private UniversalIdGenerator universalIdGenerator;
-	@Mock
-	private GlobusService globusService;
 
 	@Mock
 	private DmdService dmdService;
@@ -50,8 +47,7 @@ public class PackageControllerTest {
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 
-		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator,
-				globusService, dmdService);
+		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator, dmdService);
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadFailedState", "UPLOAD_FAILED");
@@ -116,7 +112,6 @@ public class PackageControllerTest {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
 		when(shibUserService.getUser(request)).thenReturn(user);
-		when(globusService.createDirectory("universalId")).thenThrow(new IOException("NO DICE"));
 
 		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
 
@@ -158,7 +153,6 @@ public class PackageControllerTest {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
 		when(shibUserService.getUserNoHeaders(any(HttpServletRequest.class), any(JSONObject.class))).thenReturn(user);
-		when(globusService.createDirectory("universalId")).thenReturn("theWholeURL");
 
 		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
 
