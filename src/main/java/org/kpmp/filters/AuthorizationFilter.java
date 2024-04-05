@@ -29,7 +29,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-@Component
+// Turn this off until we get Shibboleth working
+//@Component
 public class AuthorizationFilter implements Filter {
 
 	private static final String FILE_PART_INDEX = "qqpartindex";
