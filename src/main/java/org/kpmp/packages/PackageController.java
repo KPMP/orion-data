@@ -95,7 +95,6 @@ public class PackageController {
 		try {
 			packageInfo = new JSONObject(packageInfoString);
 			logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
-			packageInfo.put("largeFilesChecked", true);
 			// Fake this until we get Shibboleth working
 			// User user = shibUserService.getUserNoHeaders(request, packageInfo);
 			User user = new User();
