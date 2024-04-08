@@ -32,7 +32,7 @@ public class DluPackageInventoryTest {
         Package myPackage = new Package();
         myPackage.setPackageId("123");
         myPackage.setPackageType("type");
-        myPackage.setTisName("tis");
+        myPackage.setSiteName("tis");
         myPackage.setCreatedAt(now);
         myPackage.setSubmitter(user);
         myPackage.setSubjectId("subjid");
@@ -56,7 +56,7 @@ public class DluPackageInventoryTest {
         Package myPackage = new Package();
         myPackage.setPackageId("123");
         myPackage.setPackageType("type");
-        myPackage.setTisName("tis");
+        myPackage.setSiteName("tis");
         myPackage.setCreatedAt(now);
         myPackage.setSubmitter(user);
         myPackage.setSubjectId("subjid");
