@@ -22,7 +22,7 @@ public class Package {
 	private String packageId;
 	private String packageType;
 	private Date createdAt;
-	private String tisName;
+	private String siteName;
 	private String protocol;
 	private String subjectId;
 	private Date experimentDate;
@@ -59,12 +59,12 @@ public class Package {
 		this.createdAt = submitted;
 	}
 
-	public String getTisName() {
-		return tisName;
+	public String getSiteName() {
+		return siteName;
 	}
 
-	public void setTisName(String tisName) {
-		this.tisName = tisName;
+	public void setSiteName(String siteName) {
+		this.siteName = siteName;
 	}
 
 	public List<Attachment> getAttachments() {
@@ -129,7 +129,7 @@ public class Package {
 	public String toString() {
 		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
 				+ ", submitterId: " + submitter.getId() + ", protocol: " + protocol + ", subjectId: " + subjectId
-				+ ", experimentDate: " + experimentDate + ", description: " + description + ", tisName: " + tisName
+				+ ", experimentDate: " + experimentDate + ", description: " + description + ", siteName: " + siteName
 				+ ", number of attachments: " + attachments.size();
 	}
 

@@ -46,9 +46,9 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testSetTisName() {
-		testPackage.setTisName("TIS");
-		assertEquals("TIS", testPackage.getTisName());
+	public void testSetSiteName() {
+		testPackage.setSiteName("TIS");
+		assertEquals("TIS", testPackage.getSiteName());
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class PackageTest {
 		packageInfo.setAttachments(Arrays.asList(mock(Attachment.class)));
 		packageInfo.setCreatedAt(createdAt);
 		packageInfo.setDescription("description");
-		packageInfo.setTisName("TIS");
+		packageInfo.setSiteName("TIS");
 		packageInfo.setPackageId("packageId");
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
