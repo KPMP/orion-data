@@ -65,7 +65,7 @@ public class PackageService {
 			PackageView packageView = new PackageView(packageToCheck);
 			String packageId = packageToCheck.getString("_id");
 			packageView.setState(stateMap.get(packageId));
-			packageView.setGlobusMoveStatus(dmdService.getPackageStatus(packageId));
+			//packageView.setGlobusMoveStatus(dmdService.getPackageStatus(packageId));
 			packageViews.add(packageView);
 		}
 		return packageViews;
@@ -90,7 +90,8 @@ public class PackageService {
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
 		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
 		Package myPackage = packageRepository.findByPackageId(packageId);
-		dmdService.convertAndSendNewPackage(myPackage);
+		// Remove DMD code for now
+		// dmdService.convertAndSendNewPackage(myPackage);
 		return packageId;
 	}
 
@@ -145,7 +146,7 @@ public class PackageService {
 		Package myPackage = packageRepository.findByPackageId(packageId);
 		List<Attachment> updatedFiles = calculateChecksums(myPackage);
 		myPackage.setAttachments(updatedFiles);
-		dmdService.sendPackageFiles(myPackage);
+		// dmdService.sendPackageFiles(myPackage);
 		packageRepository.updateField(packageId, "files", updatedFiles);
 	}
 
