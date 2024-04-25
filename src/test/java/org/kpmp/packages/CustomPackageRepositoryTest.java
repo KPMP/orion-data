@@ -71,6 +71,7 @@ public class CustomPackageRepositoryTest {
 	public void testSaveDynamicForm_happyPath() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
 		when(packageMetadata.toString()).thenReturn("{}");
+		when(packageMetadata.)
 		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
 		when(packageMetadata.getString("submitterEmail")).thenReturn("emailAddress");
 		User user = mock(User.class);
