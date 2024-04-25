@@ -118,6 +118,7 @@ public class PackageController {
 			"multipart/form-data" })
 	public @ResponseBody FileUploadResponse postFilesToPackage(@PathVariable("packageId") String packageId,
 			@RequestParam("qqfile") MultipartFile file, @RequestParam("qqfilename") String filename,
+            @RequestParam("qqstudy") String study,
 			@RequestParam("qqtotalfilesize") long fileSize,
 			@RequestParam(name = "qqtotalparts", defaultValue = "1") int chunks,
 			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk, HttpServletRequest request) {
@@ -127,7 +128,7 @@ public class PackageController {
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
 
 		try {
-			packageService.saveFile(file, packageId, filename, shouldAppend(chunk));
+			packageService.saveFile(file, packageId, filename, study, shouldAppend(chunk));
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
 			String cleanHostName = hostname.replace("=", "");

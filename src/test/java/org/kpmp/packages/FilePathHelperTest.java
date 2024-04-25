@@ -32,7 +32,7 @@ public class FilePathHelperTest {
 	@Test
 	public void testGetPackagePath_OnlySuffix() throws Exception {
 		assertEquals(File.separator + "data" + File.separator + "package_1234_UUID" + File.separator,
-				filePathHelper.getPackagePath("1234_UUID"));
+				filePathHelper.getPackagePath("1234_UUID", "study"));
 	}
 
 	@Test
