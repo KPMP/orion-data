@@ -92,10 +92,13 @@ public class CustomPackageRepository {
 
 		if (document.containsKey(PackageKeys.CUREGN_DIABETES_SITE.getKey())) {
 			site = document.getString(PackageKeys.CUREGN_DIABETES_SITE.getKey());
+			document.remove(PackageKeys.CUREGN_DIABETES_SITE.getKey());
 		} else if (document.containsKey(PackageKeys.CUREGN_SITE.getKey())) {
 			site =  document.getString(PackageKeys.CUREGN_SITE.getKey());
+			document.remove(PackageKeys.CUREGN_SITE.getKey());
 		} else if (document.containsKey(PackageKeys.NEPTUNE_SITE.getKey())) {
 			site =  document.getString(PackageKeys.NEPTUNE_SITE.getKey());
+			document.remove(PackageKeys.NEPTUNE_SITE.getKey());
 		}
 		document.put(PackageKeys.SITE.getKey(), site);
 
