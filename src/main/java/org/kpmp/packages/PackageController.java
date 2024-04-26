@@ -125,6 +125,9 @@ public class PackageController {
 
         Package packageInfo = packageService.findPackage(packageId);
         String study = packageInfo.getStudy();
+        if(study == "CureGN Diabetes"){
+            study = "CureGNDiabetes";
+        }
 		String hostname = request.getHeader("Host");
 		String message = fileUploadRequest.format(new Object[] { filename, packageId, fileSize, chunk, chunks });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
