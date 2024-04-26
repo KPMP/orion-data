@@ -47,12 +47,12 @@ public class PackageFileHandlerTest {
 		File tempDirectory = new File(dataDirectory.toString());
 		tempDirectory.deleteOnExit();
 		String dataDirectoryPath = dataDirectory.toString();
-		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
+		when(filePathHelper.getPackagePath("packageId", "study")).thenReturn(dataDirectoryPath);
 		MultipartFile file = mock(MultipartFile.class);
 		InputStream testInputStream = IOUtils.toInputStream("Here is the data in the file", "UTF-8");
 		when(file.getInputStream()).thenReturn(testInputStream);
 
-		fileHandler.saveMultipartFile(file, "packageId", "filename.txt", false);
+		fileHandler.saveMultipartFile(file, "packageId", "filename.txt", "study", false);
 
 		File savedFile = new File(dataDirectoryPath + File.separator + "filename.txt");
 		assertEquals(true, savedFile.exists());
@@ -72,12 +72,12 @@ public class PackageFileHandlerTest {
 		File tempDirectory = new File(dataDirectory.toString());
 		tempDirectory.deleteOnExit();
 		String dataDirectoryPath = dataDirectory.toString() + File.separator + "anotherDirectory";
-		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
+		when(filePathHelper.getPackagePath("packageId", "study")).thenReturn(dataDirectoryPath);
 		MultipartFile file = mock(MultipartFile.class);
 		InputStream testInputStream = IOUtils.toInputStream("Here is the data in the file", "UTF-8");
 		when(file.getInputStream()).thenReturn(testInputStream);
 
-		fileHandler.saveMultipartFile(file, "packageId", "filename.txt", false);
+		fileHandler.saveMultipartFile(file, "packageId", "filename.txt", "study", false);
 
 		File savedFile = new File(dataDirectoryPath + File.separator + "filename.txt");
 		assertEquals(true, savedFile.exists());
@@ -89,7 +89,7 @@ public class PackageFileHandlerTest {
 		File tempDirectory = new File(dataDirectory.toString());
 		tempDirectory.deleteOnExit();
 		String dataDirectoryPath = dataDirectory.toString();
-		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
+		when(filePathHelper.getPackagePath("packageId", "study")).thenReturn(dataDirectoryPath);
 		MultipartFile filePartOne = mock(MultipartFile.class);
 		InputStream testInputStream1 = IOUtils.toInputStream("Here is the data in the file", "UTF-8");
 		when(filePartOne.getInputStream()).thenReturn(testInputStream1);
@@ -97,10 +97,10 @@ public class PackageFileHandlerTest {
 		InputStream testInputStream2 = IOUtils.toInputStream("Here is the more data", "UTF-8");
 		when(filePartTwo.getInputStream()).thenReturn(testInputStream2);
 
-		fileHandler.saveMultipartFile(filePartOne, "packageId", "filename.txt", false);
+		fileHandler.saveMultipartFile(filePartOne, "packageId", "filename.txt", "study", false);
 		File firstPart = new File(dataDirectoryPath + File.separator + "filename.txt");
 		long firstPartFileSize = firstPart.length();
-		fileHandler.saveMultipartFile(filePartTwo, "packageId", "filename.txt", true);
+		fileHandler.saveMultipartFile(filePartTwo, "packageId", "filename.txt", "study", true);
 
 		File savedFile = new File(dataDirectoryPath + File.separator + "filename.txt");
 		assertEquals(true, firstPartFileSize < savedFile.length());
@@ -121,7 +121,7 @@ public class PackageFileHandlerTest {
 		File tempDirectory = new File(dataDirectory.toString());
 		tempDirectory.deleteOnExit();
 		String dataDirectoryPath = dataDirectory.toString();
-		when(filePathHelper.getPackagePath("packageId")).thenReturn(dataDirectoryPath);
+		when(filePathHelper.getPackagePath("packageId", "study")).thenReturn(dataDirectoryPath);
 		MultipartFile fileOne = mock(MultipartFile.class);
 		InputStream testInputStream1 = IOUtils.toInputStream("Here is the data in file 1", "UTF-8");
 		when(fileOne.getInputStream()).thenReturn(testInputStream1);
@@ -130,8 +130,8 @@ public class PackageFileHandlerTest {
 		when(fileTwo.getInputStream()).thenReturn(testInputStream2);
 
 		try {
-			fileHandler.saveMultipartFile(fileOne, "packageId", "filename.txt", false);
-			fileHandler.saveMultipartFile(fileOne, "packageId", "filename.txt", false);
+			fileHandler.saveMultipartFile(fileOne, "packageId", "filename.txt", "study", false);
+			fileHandler.saveMultipartFile(fileOne, "packageId", "filename.txt", "study", false);
 			fail("Should have thrown exception");
 		} catch (FileAlreadyExistsException e) {
 

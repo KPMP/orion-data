@@ -24,9 +24,9 @@ public class PackageFileHandler {
 		this.filePathHelper = filePathHelper;
 	}
 
-	public void saveMultipartFile(MultipartFile file, String packageId, String filename, boolean shouldAppend)
+	public void saveMultipartFile(MultipartFile file, String packageId, String filename, String study, boolean shouldAppend)
 			throws IOException {
-		String packageDirectoryPath = filePathHelper.getPackagePath(packageId);
+		String packageDirectoryPath = filePathHelper.getPackagePath(packageId, study);
 		File packageDirectory = new File(packageDirectoryPath);
 		if (!packageDirectory.exists()) {
 			Files.createDirectories(Paths.get(packageDirectoryPath));
