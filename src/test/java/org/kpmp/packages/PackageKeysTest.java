@@ -8,7 +8,7 @@ public class PackageKeysTest {
 
 	@Test
 	public void testLength() throws Exception {
-		assertEquals(26, PackageKeys.values().length);
+		assertEquals(30, PackageKeys.values().length);
 	}
 
 	@Test
@@ -39,6 +39,10 @@ public class PackageKeysTest {
 		assertEquals("tisName", PackageKeys.TIS_NAME.getKey());
 		assertEquals("version", PackageKeys.VERSION.getKey());
 		assertEquals("largeFilesChecked", PackageKeys.LARGE_FILES_CHECKED.getKey());
+		assertEquals("siteCuregn", PackageKeys.CUREGN_SITE.getKey());
+		assertEquals("siteCuregnDiabetes", PackageKeys.CUREGN_DIABETES_SITE.getKey());
+		assertEquals("siteNeptune", PackageKeys.NEPTUNE_SITE.getKey());
+		assertEquals("site", PackageKeys.SITE.getKey());
 	}
 
 }

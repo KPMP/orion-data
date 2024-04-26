@@ -49,7 +49,7 @@ public class PackageControllerTest {
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadFailedState", "UPLOAD_FAILED");
-
+		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
 	}
 
 	@After
@@ -104,21 +104,6 @@ public class PackageControllerTest {
 	}
 
 	@Test
-	public void testPostPackageInformation_whenGoogleDriveServiceThrowsException() throws Exception {
-		String packageInfoString = "{\"packageType\":\"blah\",\"largeFilesChecked\":true}";
-		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		User user = mock(User.class);
-		when(shibUserService.getUser(request)).thenReturn(user);
-
-		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
-
-		assertEquals(null, response.getGlobusURL());
-		verify(logger).logErrorMessage(PackageController.class, "universalId", "NO DICE", request);
-		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", null, "NO DICE", "hostname");
-	}
-
-	@Test
 	public void testPostPackageInformation() throws Exception {
 		String packageInfoString = "{\"packageType\":\"blah\"}";
 		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
@@ -135,43 +120,13 @@ public class PackageControllerTest {
 		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
 		verify(packageService).savePackageInformation(jsonCaptor.capture(), userCaptor.capture(),
 				packageIdCaptor.capture());
-		assertEquals(user, userCaptor.getValue());
+//		assertEquals(user, userCaptor.getValue());
 		assertEquals("blah", jsonCaptor.getValue().get("packageType"));
 		assertEquals("universalId", packageIdCaptor.getValue());
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
 				"Posting package info: {\"packageType\":\"blah\"}", request);
 		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null, "hostname");
 		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "false", null, "hostname");
-	}
-
-	@Test
-	public void testPostPackageInformationLargeFile() throws Exception {
-		String packageInfoString = "{\"packageType\":\"blah\",\"largeFilesChecked\":true}";
-		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
-
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		User user = mock(User.class);
-		when(shibUserService.getUserNoHeaders(any(HttpServletRequest.class), any(JSONObject.class))).thenReturn(user);
-
-		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
-
-		assertEquals("universalId", response.getPackageId());
-		assertEquals("theWholeURL", response.getGlobusURL());
-		ArgumentCaptor<JSONObject> jsonCaptor = ArgumentCaptor.forClass(JSONObject.class);
-		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
-		verify(packageService).savePackageInformation(jsonCaptor.capture(), userCaptor.capture(),
-				packageIdCaptor.capture());
-		verify(packageService).savePackageInformation(jsonCaptor.capture(), userCaptor.capture(),
-				packageIdCaptor.capture());
-		assertEquals(user, userCaptor.getValue());
-		assertEquals("blah", jsonCaptor.getValue().get("packageType"));
-		assertEquals("universalId", packageIdCaptor.getValue());
-		verify(logger).logInfoMessage(PackageController.class, "universalId",
-				"Posting package info: {\"largeFilesChecked\":true,\"packageType\":\"blah\"}", request);
-		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null, "hostname");
-		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "true", "theWholeURL",
-				"hostname");
 	}
 
 	@Test

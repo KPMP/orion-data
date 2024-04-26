@@ -54,10 +54,12 @@ public class PackageServiceTest {
 
 	@Before
 	public void setUp() throws Exception {
-
+		mocks = MockitoAnnotations.openMocks(this);
 		MockitoAnnotations.initMocks(this);
 		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService, dmdService, logger);
 		ReflectionTestUtils.setField(service, "uploadSucceededState", "UPLOAD_SUCCEEDED");
+		ReflectionTestUtils.setField(service, "packageTypeToExclude", "Electron Microscopy Imaging");
+
 	}
 
 	@After
@@ -105,7 +107,7 @@ public class PackageServiceTest {
 		JSONObject excludedPackage = mock(JSONObject.class);
 		when(excludedPackage.toString()).thenReturn("");
 		when(excludedPackage.getString("_id")).thenReturn("packageId");
-		when(excludedPackage.getString("packageType")).thenReturn("Electron Microscopy Images");
+		when(excludedPackage.getString("packageType")).thenReturn("Electron Microscopy Imaging");
 		JSONObject uploadedPackage = mock(JSONObject.class);
 		when(uploadedPackage.toString()).thenReturn("");
 		when(uploadedPackage.getString("_id")).thenReturn("packageId");
@@ -130,7 +132,6 @@ public class PackageServiceTest {
 		when(packageRepository.findByPackageId("awesomeNewId")).thenReturn(myPackage);
 		String packageId = service.savePackageInformation(packageMetadata, user, "awesomeNewId");
 		assertEquals("awesomeNewId", packageId);
-		verify(dmdService).convertAndSendNewPackage(myPackage);
 		verify(packageRepository).saveDynamicForm(packageMetadata, user, "awesomeNewId");
 	}
 

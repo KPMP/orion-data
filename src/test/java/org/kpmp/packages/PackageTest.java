@@ -110,7 +110,7 @@ public class PackageTest {
 		assertEquals(
 				"packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", " + "submitterId: 1234, "
 						+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
-						+ "tisName: TIS, number of attachments: 1",
+						+ "siteName: TIS, number of attachments: 1",
 				packageInfo.toString());
 	}
 
