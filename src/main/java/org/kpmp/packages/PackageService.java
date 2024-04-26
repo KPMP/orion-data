@@ -98,12 +98,12 @@ public class PackageService {
 		return packageRepository.findByPackageId(packageId);
 	}
 
-	public void saveFile(MultipartFile file, String packageId, String filename, boolean shouldAppend) throws Exception {
+	public void saveFile(MultipartFile file, String packageId, String filename, String study, boolean shouldAppend) throws Exception {
 
 		if (filename.equalsIgnoreCase("metadata.json")) {
 			filename = filename.replace(".", "_user.");
 		}
-		packageFileHandler.saveMultipartFile(file, packageId, filename, shouldAppend);
+		packageFileHandler.saveMultipartFile(file, packageId, filename, study, shouldAppend);
 	}
 	private double calculateUploadRate(long duration, List<Attachment> attachments) {
 		double fileSizeInMeg = calculateFileSizeInMeg(attachments);
@@ -132,7 +132,7 @@ public class PackageService {
 
 	public boolean validatePackage(String packageId, User user) {
 		Package packageInformation = findPackage(packageId);
-		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId());
+		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId(), packageInformation.getStudy());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
 		List<String> filesInPackage = getAttachmentFilenames(packageInformation);
 		Collections.sort(filesOnDisk);
@@ -152,10 +152,11 @@ public class PackageService {
 	public List<Attachment> calculateChecksums(Package myPackage) throws IOException {
 		List<Attachment> files = myPackage.getAttachments();
 		String packageID = myPackage.getPackageId();
+        String study = myPackage.getStudy();
 		if (files.size() > 0) {
 			for (Attachment file : files) {
 				if (file.getMd5checksum() == null) {
-					String filePath = filePathHelper.getFilePath(packageID, file.getFileName());
+					String filePath = filePathHelper.getFilePath(packageID, study, file.getFileName());
 					InputStream is = Files.newInputStream(Paths.get(filePath));
 					String md5 = DigestUtils.md5Hex(is);
 					file.setMd5checksum(md5);

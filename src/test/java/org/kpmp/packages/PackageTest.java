@@ -90,6 +90,12 @@ public class PackageTest {
 		assertEquals(testUser, testPackage.getSubmitter());
 	}
 
+    @Test
+    public void testSetStudy() throws Exception {
+        testPackage.setStudy("study");
+        assertEquals("study", testPackage.getStudy());
+    }
+
 
 	@Test
 	public void testToString() throws Exception {
@@ -98,11 +104,12 @@ public class PackageTest {
 		packageInfo.setAttachments(Arrays.asList(mock(Attachment.class)));
 		packageInfo.setCreatedAt(createdAt);
 		packageInfo.setDescription("description");
-		packageInfo.setSiteName("TIS");
+		packageInfo.setSiteName("siteName");
 		packageInfo.setPackageId("packageId");
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
 		packageInfo.setSubjectId("subjectId");
+        packageInfo.setStudy("study");
 		User user = new User();
 		user.setId("1234");
 		packageInfo.setSubmitter(user);
@@ -110,7 +117,7 @@ public class PackageTest {
 		assertEquals(
 				"packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", " + "submitterId: 1234, "
 						+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
-						+ "siteName: TIS, number of attachments: 1",
+						+ "siteName: TIS, study: study, number of attachments: 1",
 				packageInfo.toString());
 	}
 

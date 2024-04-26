@@ -151,9 +151,9 @@ public class PackageServiceTest {
 		MultipartFile file = mock(MultipartFile.class);
 		boolean shouldAppend = false;
 
-		service.saveFile(file, "packageId", "metadata.json", shouldAppend);
+		service.saveFile(file, "packageId", "metadata.json", "study", shouldAppend);
 
-		verify(packageFileHandler).saveMultipartFile(file, "packageId", "metadata_user.json", shouldAppend);
+		verify(packageFileHandler).saveMultipartFile(file, "packageId", "metadata_user.json", "study", shouldAppend);
 	}
 
 	@Test
@@ -163,9 +163,9 @@ public class PackageServiceTest {
 		when(packageRepository.findByPackageId("packageId")).thenReturn(packageToUpdate);
 		boolean shouldAppend = false;
 
-		service.saveFile(file, "packageId", "filename", shouldAppend);
+		service.saveFile(file, "packageId", "filename", "study", shouldAppend);
 
-		verify(packageFileHandler).saveMultipartFile(file, "packageId", "filename", shouldAppend);
+		verify(packageFileHandler).saveMultipartFile(file, "packageId", "filename", "study", shouldAppend);
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -178,9 +178,9 @@ public class PackageServiceTest {
 		when(packageToUpdate.getAttachments()).thenReturn(files);
 		boolean shouldAppend = true;
 
-		service.saveFile(file, "packageId", "filename", shouldAppend);
+		service.saveFile(file, "packageId", "filename", "study", shouldAppend);
 
-		verify(packageFileHandler).saveMultipartFile(file, "packageId", "filename", shouldAppend);
+		verify(packageFileHandler).saveMultipartFile(file, "packageId", "filename", "study", shouldAppend);
 		verify(packageRepository, times(0)).findByPackageId("packageId");
 	}
 
@@ -189,11 +189,11 @@ public class PackageServiceTest {
 		MultipartFile file = mock(MultipartFile.class);
 		boolean shouldAppend = true;
 		Exception expectedException = new IOException();
-		doThrow(expectedException).when(packageFileHandler).saveMultipartFile(file, "packageId", "filename",
+		doThrow(expectedException).when(packageFileHandler).saveMultipartFile(file, "packageId", "filename", "study",
 				shouldAppend);
 
 		try {
-			service.saveFile(file, "packageId", "filename", shouldAppend);
+			service.saveFile(file, "packageId", "filename", "study", shouldAppend);
 			fail("Should have thrown exception");
 		} catch (Exception actual) {
 			assertEquals(expectedException, actual);
@@ -286,8 +286,8 @@ public class PackageServiceTest {
 		Package newPackage = new org.kpmp.packages.Package();
 		newPackage.setPackageId("1234");
 		newPackage.setAttachments(attachments);
-		when(filePathHelper.getFilePath("1234", "file1")).thenReturn(file1Path);
-		when(filePathHelper.getFilePath("1234", "file2")).thenReturn(file2Path);
+		when(filePathHelper.getFilePath("1234", "study", "file1")).thenReturn(file1Path);
+		when(filePathHelper.getFilePath("1234", "study", "file2")).thenReturn(file2Path);
 		service.calculateChecksums(newPackage);
 		List<Attachment> attachments1 = newPackage.getAttachments();
 		assertNotNull(attachments1.get(0).getMd5checksum());
