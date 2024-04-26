@@ -23,7 +23,7 @@ jar {
     version= '4.0'
 }
 
-group = 'kretzler-devs'
+group = 'kretzlerdevs'
 
 repositories {
     mavenCentral()
