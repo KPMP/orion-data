@@ -113,9 +113,6 @@ public class CustomPackageRepository {
 		packageMetadata.remove(PackageKeys.SUBMITTER_EMAIL.getKey());
 		packageMetadata.remove(PackageKeys.SUBMITTER_FIRST_NAME.getKey());
 		packageMetadata.remove(PackageKeys.SUBMITTER_LAST_NAME.getKey());
-		packageMetadata.remove(PackageKeys.NEPTUNE_SITE.getKey());
-		packageMetadata.remove(PackageKeys.CUREGN_SITE.getKey());
-		packageMetadata.remove(PackageKeys.CUREGN_DIABETES_SITE.getKey());
 	}
 
 	private User findUser(User userFromHeader) throws JSONException {
