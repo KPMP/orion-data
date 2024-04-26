@@ -13,12 +13,12 @@ public class FilePathHelper {
 	@Value("${file.base.path}")
 	private String basePath;
 
-	public String getPackagePath(String packageId) {
-		return basePath + File.separator + "package_" + packageId + File.separator;
+	public String getPackagePath(String packageId, String study) {
+		return basePath + File.separator + study + File.separator + "package_" + packageId + File.separator;
 	}
 
-	public String getFilePath(String packageId, String fileName) {
-		return getPackagePath(packageId) + fileName;
+	public String getFilePath(String packageId, String study, String fileName) {
+		return getPackagePath(packageId, study) + fileName;
 	}
 
 	public List<String> getFilenames(String path) {

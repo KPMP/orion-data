@@ -27,6 +27,7 @@ public class Package {
 	private String subjectId;
 	private Date experimentDate;
 	private String description;
+    private String study;
 	@DBRef(lazy = false)
 	private User submitter;
 	@Nullable
@@ -46,6 +47,14 @@ public class Package {
 	public String getPackageType() {
 		return packageType;
 	}
+
+    public String getStudy(){
+        return study;
+    }
+
+    public void setStudy(String study){
+        this.study = study;
+    }
 
 	public void setPackageType(String packageType) {
 		this.packageType = packageType;
@@ -130,6 +139,7 @@ public class Package {
 		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
 				+ ", submitterId: " + submitter.getId() + ", protocol: " + protocol + ", subjectId: " + subjectId
 				+ ", experimentDate: " + experimentDate + ", description: " + description + ", siteName: " + siteName
+                + ", study: " + study
 				+ ", number of attachments: " + attachments.size();
 	}
 
