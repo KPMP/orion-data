@@ -94,6 +94,8 @@ public class PackageTest {
     public void testSetStudy() throws Exception {
         testPackage.setStudy("study");
         assertEquals("study", testPackage.getStudy());
+        testPackage.setStudy("CureGN Diabetes");
+        assertEquals("CureGNDiabetes", testPackage.getStudy());
     }
 
 
