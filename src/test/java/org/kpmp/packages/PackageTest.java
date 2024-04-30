@@ -96,6 +96,13 @@ public class PackageTest {
         assertEquals("study", testPackage.getStudy());
     }
 
+    @Test
+    public void testSetStudyFolderName() throws Exception {
+        testPackage.setStudyFolderName("blah");
+        assertEquals("blah", testPackage.getStudyFolderName());
+        testPackage.setStudyFolderName("CureGN Diabetes");
+        assertEquals("CureGNDiabetes", testPackage.getStudyFolderName());
+    }
 
 	@Test
 	public void testToString() throws Exception {

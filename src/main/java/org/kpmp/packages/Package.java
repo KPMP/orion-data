@@ -3,6 +3,7 @@ package org.kpmp.packages;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.kpmp.users.User;
 import org.springframework.data.annotation.Id;
@@ -28,6 +29,7 @@ public class Package {
 	private Date experimentDate;
 	private String description;
     private String study;
+    private String studyFolderName;
 	@DBRef(lazy = false)
 	private User submitter;
 	@Nullable
@@ -54,6 +56,18 @@ public class Package {
 
     public void setStudy(String study){
         this.study = study;
+    }
+
+    public String getStudyFolderName(){
+        if (Objects.equals(study, "CureGN Diabetes")){
+            study = "CureGNDiabetes";
+            return study;
+        }
+        return getStudy();
+    }
+
+    public void setStudyFolderName(String studyFolderName) {
+        this.studyFolderName = studyFolderName;
     }
 
 	public void setPackageType(String packageType) {
