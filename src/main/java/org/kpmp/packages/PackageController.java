@@ -121,7 +121,7 @@ public class PackageController {
 			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk, HttpServletRequest request) {
 
         Package packageInfo = packageService.findPackage(packageId);
-        String study = packageInfo.getStudy();
+        String study = packageInfo.getStudyFolderName();
 		String hostname = request.getHeader("Host");
 		String message = fileUploadRequest.format(new Object[] { filename, packageId, fileSize, chunk, chunks });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);

@@ -94,10 +94,15 @@ public class PackageTest {
     public void testSetStudy() throws Exception {
         testPackage.setStudy("study");
         assertEquals("study", testPackage.getStudy());
-        testPackage.setStudy("CureGN Diabetes");
-        assertEquals("CureGNDiabetes", testPackage.getStudy());
     }
 
+    @Test
+    public void testSetStudyFolderName() throws Exception {
+        testPackage.setStudyFolderName("blah");
+        assertEquals("blah", testPackage.getStudyFolderName());
+        testPackage.setStudyFolderName("CureGN Diabetes");
+        assertEquals("CureGNDiabetes", testPackage.getStudyFolderName());
+    }
 
 	@Test
 	public void testToString() throws Exception {
