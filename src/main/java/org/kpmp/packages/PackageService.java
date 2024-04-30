@@ -132,7 +132,7 @@ public class PackageService {
 
 	public boolean validatePackage(String packageId, User user) {
 		Package packageInformation = findPackage(packageId);
-		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId(), packageInformation.getStudy());
+		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId(), packageInformation.getStudyFolderName());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
 		List<String> filesInPackage = getAttachmentFilenames(packageInformation);
 		Collections.sort(filesOnDisk);
@@ -152,7 +152,7 @@ public class PackageService {
 	public List<Attachment> calculateChecksums(Package myPackage) throws IOException {
 		List<Attachment> files = myPackage.getAttachments();
 		String packageID = myPackage.getPackageId();
-        String study = myPackage.getStudy();
+        String study = myPackage.getStudyFolderName();
 		if (files.size() > 0) {
 			for (Attachment file : files) {
 				if (file.getMd5checksum() == null) {
