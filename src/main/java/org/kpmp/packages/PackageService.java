@@ -18,7 +18,6 @@ import java.util.Map;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.kpmp.dmd.DmdService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,6 @@ public class PackageService {
 	private PackageFileHandler packageFileHandler;
 	private FilePathHelper filePathHelper;
 	private CustomPackageRepository packageRepository;
-	private DmdService dmdService;
 	private LoggingService logger;
 	private StateHandlerService stateHandler;
 	@Value("${packageType.exclusions}")
@@ -48,12 +46,11 @@ public class PackageService {
 
 	@Autowired
 	public PackageService(PackageFileHandler packageFileHandler, FilePathHelper filePathHelper,
-						  CustomPackageRepository packageRepository, StateHandlerService stateHandler, DmdService dmdService, LoggingService logger) {
+						  CustomPackageRepository packageRepository, StateHandlerService stateHandler, LoggingService logger) {
 		this.filePathHelper = filePathHelper;
 		this.packageFileHandler = packageFileHandler;
 		this.packageRepository = packageRepository;
 		this.stateHandler = stateHandler;
-		this.dmdService = dmdService;
 		this.logger = logger;
 	}
 

@@ -50,6 +50,7 @@ public class PackageControllerTest {
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadFailedState", "UPLOAD_FAILED");
 		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
+
 	}
 
 	@After
@@ -120,7 +121,6 @@ public class PackageControllerTest {
 		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
 		verify(packageService).savePackageInformation(jsonCaptor.capture(), userCaptor.capture(),
 				packageIdCaptor.capture());
-//		assertEquals(user, userCaptor.getValue());
 		assertEquals("blah", jsonCaptor.getValue().get("packageType"));
 		assertEquals("universalId", packageIdCaptor.getValue());
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
@@ -134,8 +134,11 @@ public class PackageControllerTest {
 		MultipartFile file = mock(MultipartFile.class);
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		when(request.getHeader("Host")).thenReturn("hostname");
+        Package myPackage = new Package();
+        myPackage.setStudy("study");
+        when(packageService.findPackage("packageId")).thenReturn(myPackage);
 
-		controller.postFilesToPackage("packageId", file, "filename", "study", 1234, 3, 2, request);
+		controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 2, request);
 
 		verify(packageService).saveFile(file, "packageId","filename", "study", true);
 		verify(logger).logInfoMessage(PackageController.class, "packageId",
@@ -148,8 +151,11 @@ public class PackageControllerTest {
 		MultipartFile file = mock(MultipartFile.class);
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		when(request.getHeader("Host")).thenReturn("hostname");
+        Package myPackage = new Package();
+        myPackage.setStudy("study");
+        when(packageService.findPackage("packageId")).thenReturn(myPackage);
 
-		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", "study", 1234, 3, 0, request);
+		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
 
 		assertEquals(true, response.isSuccess());
 		verify(packageService).saveFile(file, "packageId", "filename", "study", false);
@@ -162,10 +168,13 @@ public class PackageControllerTest {
 	public void testPostFilesToPackage_whenSaveThrowsException() throws Exception {
 		MultipartFile file = mock(MultipartFile.class);
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		doThrow(new Exception("NOPE")).when(packageService).saveFile(file, "packageId", "study", "filename", false);
+		doThrow(new Exception("NOPE")).when(packageService).saveFile(file, "packageId", "filename", "study", false);
 		when(request.getHeader("Host")).thenReturn("hostname");
+        Package myPackage = new Package();
+        myPackage.setStudy("study");
+        when(packageService.findPackage("packageId")).thenReturn(myPackage);
 
-		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", "study", 1234, 3, 0, request);
+		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
 
 		assertEquals(false, response.isSuccess());
 		verify(logger).logErrorMessage(PackageController.class, "packageId", "NOPE", request);

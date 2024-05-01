@@ -2,7 +2,6 @@ package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
@@ -21,8 +20,7 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.users.User;import org.kpmp.dmd.DluFile;
-import org.kpmp.dmd.DmdService;
+import org.kpmp.users.User;
 import org.kpmp.logging.LoggingService;
 
 import org.mockito.Mock;
@@ -45,12 +43,10 @@ public class PackageServiceTest {
 	private FilePathHelper filePathHelper;
 	private PackageService service;
 	@Mock
-	private DmdService dmdService;
-	@Mock
 	private LoggingService logger;
 	@Mock
 	private StateHandlerService stateHandlerService;
-	private AutoCloseable mocks;
+	
 
 	@Before
 	public void setUp() throws Exception {
@@ -59,12 +55,11 @@ public class PackageServiceTest {
 		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService, dmdService, logger);
 		ReflectionTestUtils.setField(service, "uploadSucceededState", "UPLOAD_SUCCEEDED");
 		ReflectionTestUtils.setField(service, "packageTypeToExclude", "Electron Microscopy Imaging");
-
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		mocks.close();
+		MockitoAnnotations.openMocks(this).close();
 		service = null;
 	}
 
@@ -85,8 +80,6 @@ public class PackageServiceTest {
 		JSONObject uploadedPackage = mock(JSONObject.class);
 		when(uploadedPackage.toString()).thenReturn("");
 		when(uploadedPackage.getString("_id")).thenReturn("packageId");
-		when(dmdService.getPackageStatus("packageId")).thenReturn("testStatus1");
-		when(dmdService.getPackageStatus("anotherId")).thenReturn("testStatus2");
 		List<JSONObject> expectedResults = Arrays.asList(uploadedPackage);
 		when(packageRepository.findAll()).thenReturn(expectedResults);
 
@@ -266,7 +259,9 @@ public class PackageServiceTest {
 
 	@Test
 	public void testCalculateChecksums() throws Exception {
-		Path packagePath = Files.createTempDirectory("data");
+		Path rootPath = Files.createTempDirectory("data");
+        Path packagePath = Files.createTempDirectory(rootPath, "study");
+        String studyDir = packagePath.getFileName().toString();
 		packagePath.toFile().deleteOnExit();
 		String file1Path = Paths.get(packagePath.toString(), "file1").toString();
 		String file2Path = Paths.get(packagePath.toString(), "file2").toString();
@@ -283,11 +278,12 @@ public class PackageServiceTest {
 		attachment2.setFileName("file2");
 		attachment2.setSize(file2.length());
 		List<Attachment> attachments = Arrays.asList(attachment1, attachment2);
-		Package newPackage = new org.kpmp.packages.Package();
+		Package newPackage = new Package();
 		newPackage.setPackageId("1234");
 		newPackage.setAttachments(attachments);
-		when(filePathHelper.getFilePath("1234", "study", "file1")).thenReturn(file1Path);
-		when(filePathHelper.getFilePath("1234", "study", "file2")).thenReturn(file2Path);
+        newPackage.setStudyFolderName(studyDir);
+		when(filePathHelper.getFilePath("1234", studyDir, "file1")).thenReturn(file1Path);
+		when(filePathHelper.getFilePath("1234", studyDir, "file2")).thenReturn(file2Path);
 		service.calculateChecksums(newPackage);
 		List<Attachment> attachments1 = newPackage.getAttachments();
 		assertNotNull(attachments1.get(0).getMd5checksum());
