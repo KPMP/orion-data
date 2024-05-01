@@ -50,11 +50,11 @@ public class PackageServiceTest {
 
 	@Before
 	public void setUp() throws Exception {
-
-		MockitoAnnotations.openMocks(this);
-		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService, logger);
+		mocks = MockitoAnnotations.openMocks(this);
+		MockitoAnnotations.initMocks(this);
+		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService, dmdService, logger);
 		ReflectionTestUtils.setField(service, "uploadSucceededState", "UPLOAD_SUCCEEDED");
-        ReflectionTestUtils.setField(service, "packageTypeToExclude", "Anything Else");
+		ReflectionTestUtils.setField(service, "packageTypeToExclude", "Electron Microscopy Imaging");
 	}
 
 	@After
@@ -100,7 +100,7 @@ public class PackageServiceTest {
 		JSONObject excludedPackage = mock(JSONObject.class);
 		when(excludedPackage.toString()).thenReturn("");
 		when(excludedPackage.getString("_id")).thenReturn("packageId");
-		when(excludedPackage.getString("packageType")).thenReturn("Electron Microscopy Images");
+		when(excludedPackage.getString("packageType")).thenReturn("Electron Microscopy Imaging");
 		JSONObject uploadedPackage = mock(JSONObject.class);
 		when(uploadedPackage.toString()).thenReturn("");
 		when(uploadedPackage.getString("_id")).thenReturn("packageId");

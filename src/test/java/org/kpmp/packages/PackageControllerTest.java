@@ -49,7 +49,7 @@ public class PackageControllerTest {
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadFailedState", "UPLOAD_FAILED");
-        ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECIEVED");
+		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
 
 	}
 
@@ -121,8 +121,6 @@ public class PackageControllerTest {
 		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
 		verify(packageService).savePackageInformation(jsonCaptor.capture(), userCaptor.capture(),
 				packageIdCaptor.capture());
-                
-		// assertEquals(user, userCaptor.getValue()); //COMMENTED OUT SINCE SHIBBOLETH IS NOT IMPLEMENTED YET.
 		assertEquals("blah", jsonCaptor.getValue().get("packageType"));
 		assertEquals("universalId", packageIdCaptor.getValue());
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
@@ -196,7 +194,7 @@ public class PackageControllerTest {
 		assertEquals(true, result.isSuccess());
 		verify(logger).logInfoMessage(PackageController.class, "3545", "Finishing file upload with packageId:  3545",
 				request);
-		verify(packageService).sendStateChangeEvent("3545", "FILES_RECIEVED", null, "origin");
+		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null, "origin");
 	}
 
 	@Test
@@ -212,7 +210,7 @@ public class PackageControllerTest {
 		assertEquals(false, result.isSuccess());
 		verify(logger).logErrorMessage(PackageController.class, "3545", "The files on disk did not match the database:  3545",
 				request);
-		verify(packageService).sendStateChangeEvent("3545", "FILES_RECIEVED", null, "origin");
+		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null, "origin");
 		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED", null,
 				"The files on disk did not match the database:  3545", "origin");
 	}

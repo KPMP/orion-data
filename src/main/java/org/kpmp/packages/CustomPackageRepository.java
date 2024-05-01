@@ -66,6 +66,7 @@ public class CustomPackageRepository {
 	public String saveDynamicForm(JSONObject packageMetadata, User userFromHeader, String packageId)
 			throws JSONException {
 		Date startTime = new Date();
+		String site = "";
 		String submitterEmail = userFromHeader.getEmail();
 		JSONArray files = packageMetadata.getJSONArray(PackageKeys.FILES.getKey());
 
@@ -88,6 +89,18 @@ public class CustomPackageRepository {
 		document.put(PackageKeys.SUBMITTER.getKey(), userRef);
 		document.put(PackageKeys.CREATED_AT.getKey(), startTime);
 		document.put(PackageKeys.ID.getKey(), packageId);
+
+		if (document.containsKey(PackageKeys.CUREGN_DIABETES_SITE.getKey())) {
+			site = document.getString(PackageKeys.CUREGN_DIABETES_SITE.getKey());
+			document.remove(PackageKeys.CUREGN_DIABETES_SITE.getKey());
+		} else if (document.containsKey(PackageKeys.CUREGN_SITE.getKey())) {
+			site =  document.getString(PackageKeys.CUREGN_SITE.getKey());
+			document.remove(PackageKeys.CUREGN_SITE.getKey());
+		} else if (document.containsKey(PackageKeys.NEPTUNE_SITE.getKey())) {
+			site =  document.getString(PackageKeys.NEPTUNE_SITE.getKey());
+			document.remove(PackageKeys.NEPTUNE_SITE.getKey());
+		}
+		document.put(PackageKeys.SITE.getKey(), site);
 
 		MongoCollection<Document> collection = mongoTemplate.getCollection(PACKAGES_COLLECTION);
 		collection.insertOne(document);

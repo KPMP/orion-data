@@ -122,11 +122,9 @@ public class PackageTest {
 		packageInfo.setSubmitter(user);
 
 		assertEquals(
-				"packageId: packageId, packageType: packageType, createdAt: " + createdAt 
-                        + ", submitterId: 1234, protocol: protocol, subjectId: subjectId"
-						+ ", experimentDate: null, description: description, siteName: siteName"
-                        + ", study: study"
-						+ ", number of attachments: 1",
+				"packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", " + "submitterId: 1234, "
+						+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
+						+ "siteName: TIS, study: study, number of attachments: 1",
 				packageInfo.toString());
 	}
 
