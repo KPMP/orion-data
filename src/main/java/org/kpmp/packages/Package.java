@@ -67,7 +67,7 @@ public class Package {
     }
 
     public void setStudyFolderName(String studyFolderName) {
-        this.studyFolderName = studyFolderName;
+        this.study = studyFolderName;
     }
 
 	public void setPackageType(String packageType) {
