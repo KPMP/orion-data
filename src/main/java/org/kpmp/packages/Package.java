@@ -29,8 +29,7 @@ public class Package {
 	private Date experimentDate;
 	private String description;
     private String study;
-    private String studyFolderName;
-	@DBRef(lazy = false)
+    @DBRef(lazy = false)
 	private User submitter;
 	@Nullable
 	private Boolean largeFilesChecked = false;
@@ -56,18 +55,6 @@ public class Package {
 
     public void setStudy(String study){
         this.study = study;
-    }
-
-    public String getStudyFolderName(){
-        if (Objects.equals(study, "CureGN Diabetes")){
-            study = "CureGNDiabetes";
-            return study;
-        }
-        return getStudy();
-    }
-
-    public void setStudyFolderName(String studyFolderName) {
-        this.study = studyFolderName;
     }
 
 	public void setPackageType(String packageType) {

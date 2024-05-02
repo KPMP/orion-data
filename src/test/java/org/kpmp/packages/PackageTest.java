@@ -96,14 +96,6 @@ public class PackageTest {
         assertEquals("study", testPackage.getStudy());
     }
 
-    @Test
-    public void testSetStudyFolderName() throws Exception {
-        testPackage.setStudyFolderName("blah");
-        assertEquals("blah", testPackage.getStudyFolderName());
-        testPackage.setStudyFolderName("CureGN Diabetes");
-        assertEquals("CureGNDiabetes", testPackage.getStudyFolderName());
-    }
-
 	@Test
 	public void testToString() throws Exception {
 		Date createdAt = new Date();
@@ -124,7 +116,7 @@ public class PackageTest {
 		assertEquals(
 				"packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", " + "submitterId: 1234, "
 						+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
-						+ "siteName: TIS, study: study, number of attachments: 1",
+						+ "siteName: siteName, study: study, number of attachments: 1",
 				packageInfo.toString());
 	}
 
