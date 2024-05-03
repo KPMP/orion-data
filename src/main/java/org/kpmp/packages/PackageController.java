@@ -176,6 +176,7 @@ public class PackageController {
 				//packageService.calculateAndSaveChecksums(packageId);
 				fileUploadResponse = new FileUploadResponse(true);
 				packageService.sendStateChangeEvent(packageId, uploadSucceededState, null, cleanHostName);
+                packageService.stripMetadata(packageService.findPackage(packageId));
 			} catch (Exception e) {
 				String errorMessage = finish
 						.format(new Object[] { "There was a problem calculating the checksum for package ", packageId });
