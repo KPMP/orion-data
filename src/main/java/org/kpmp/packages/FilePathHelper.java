@@ -14,7 +14,8 @@ public class FilePathHelper {
 	private String basePath;
 
 	public String getPackagePath(String packageId, String study) {
-		return basePath + File.separator + study + File.separator + "package_" + packageId + File.separator;
+		String studyFolder = study.replaceAll(" ", "");
+		return basePath + File.separator + studyFolder + File.separator + "package_" + packageId + File.separator;
 	}
 
 	public String getFilePath(String packageId, String study, String fileName) {
