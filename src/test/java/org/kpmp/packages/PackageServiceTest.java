@@ -396,16 +396,13 @@ public class PackageServiceTest {
         newPackage.setPackageId("1234");
         newPackage.setAttachments(attachments);
         newPackage.setStudyFolderName(studyDir);
-        Package stripPackage = new Package();
-        int successCode = 0;
         when(filePathHelper.getFilePath("1234", studyDir, "file1")).thenReturn(file1Path);
         when(filePathHelper.getFilePath("1234", studyDir, "file2")).thenReturn(file2Path);
-        when(service.findPackage(newPackage.getPackageId())).thenReturn(stripPackage);
-        when(service.stripMetadata(stripPackage)).thenReturn(successCode);
+        when(service.findPackage(newPackage.getPackageId())).thenReturn(newPackage);
         
-        service.stripMetadata(stripPackage);
+        int testSuccessCode = service.stripMetadata(newPackage);
 
-        assertEquals(1, successCode);
+        assertEquals(1, testSuccessCode);
     }
 
 }
