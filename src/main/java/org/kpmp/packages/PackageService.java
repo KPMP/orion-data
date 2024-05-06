@@ -114,7 +114,6 @@ public class PackageService {
 		Package myPackage = packageRepository.findByPackageId(packageId);
 		List<Attachment> updatedFiles = calculateChecksums(myPackage);
 		myPackage.setAttachments(updatedFiles);
-		// dmdService.sendPackageFiles(myPackage);
 		packageRepository.updateField(packageId, "files", updatedFiles);
 	}
 
