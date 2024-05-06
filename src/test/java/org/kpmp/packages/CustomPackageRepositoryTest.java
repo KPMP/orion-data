@@ -118,6 +118,7 @@ public class CustomPackageRepositoryTest {
 		assertEquals(true, messageCaptor.getValue().endsWith("|emailAddress|123|1 files"));
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void testSaveDynamicForm_happyPath_curegnDiabetes() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
@@ -170,6 +171,7 @@ public class CustomPackageRepositoryTest {
 		assertEquals(true, messageCaptor.getValue().endsWith("|emailAddress|123|1 files"));
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void testSaveDynamicForm_happyPath_neptune() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);

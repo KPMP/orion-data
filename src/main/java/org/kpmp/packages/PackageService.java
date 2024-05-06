@@ -6,12 +6,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +81,7 @@ public class PackageService {
 
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
 		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
-		Package myPackage = packageRepository.findByPackageId(packageId);
+		// Package myPackage = packageRepository.findByPackageId(packageId);
 		// Remove DMD code for now
 		// dmdService.convertAndSendNewPackage(myPackage);
 		return packageId;
@@ -101,30 +97,6 @@ public class PackageService {
 			filename = filename.replace(".", "_user.");
 		}
 		packageFileHandler.saveMultipartFile(file, packageId, filename, study, shouldAppend);
-	}
-	private double calculateUploadRate(long duration, List<Attachment> attachments) {
-		double fileSizeInMeg = calculateFileSizeInMeg(attachments);
-		return (double) fileSizeInMeg / duration;
-	}
-
-	private long calculateDurationInSeconds(Date startTime, Date endTime) {
-		LocalDateTime start = LocalDateTime.ofInstant(startTime.toInstant(), ZoneId.systemDefault());
-		LocalDateTime end = LocalDateTime.ofInstant(endTime.toInstant(), ZoneId.systemDefault());
-		return ChronoUnit.SECONDS.between(start, end);
-	}
-
-	private long getTotalSizeOfAttachmentsInBytes(List<Attachment> attachments) {
-		long totalSize = 0;
-		for (Attachment attachment : attachments) {
-			totalSize += attachment.getSize();
-		}
-		return totalSize;
-	}
-
-	private double calculateFileSizeInMeg(List<Attachment> attachments) {
-		long totalSize = getTotalSizeOfAttachmentsInBytes(attachments);
-		long megabyteValue = 1024L * 1024L;
-		return (double) totalSize / megabyteValue;
 	}
 
 	public boolean validatePackage(String packageId, User user) {

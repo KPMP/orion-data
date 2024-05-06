@@ -5,7 +5,6 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,8 +45,6 @@ public class PackageController {
 	private static final MessageFormat finish = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat(
 			"Posting file: {0} to package with id: {1}, filesize: {2}, chunk: {3} out of {4} chunks");
-	private static final MessageFormat fileDownloadRequest = new MessageFormat(
-			"Requesting package download with id {0}, filename {1}");
 
 	private LoggingService logger;
 	private PackageService packageService;
