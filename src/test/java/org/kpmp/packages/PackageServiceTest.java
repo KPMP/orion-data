@@ -373,7 +373,7 @@ public class PackageServiceTest {
 
     @Test 
     public void testStripMetadata() throws Exception {
-        Path rootPath = Files.createTempDirectory("data");
+        Path rootPath = Files.createTempDirectory("dataLake");
         Path packagePath = Files.createTempDirectory(rootPath, "study");
         String studyDir = packagePath.getFileName().toString();
         packagePath.toFile().deleteOnExit();
