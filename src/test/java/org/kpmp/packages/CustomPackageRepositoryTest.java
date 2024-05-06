@@ -47,16 +47,18 @@ public class CustomPackageRepositoryTest {
 	private UserRepository userRepo;
 	@Mock
 	private JsonWriterSettingsConstructor jsonWriterSettings;
-	private CustomPackageRepository repo;
 	@Mock
 	private LoggingService logger;
+	@Mock
+	private StudyFileInfoRepository studyFileInfoRepository;
+	private CustomPackageRepository repo;
 	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 		repo = new CustomPackageRepository(packageRepository, mongoTemplate, universalIdGenerator, userRepo,
-				jsonWriterSettings, logger);
+				jsonWriterSettings, studyFileInfoRepository, logger);
 	}
 
 	@After
@@ -70,6 +72,8 @@ public class CustomPackageRepositoryTest {
 	public void testSaveDynamicForm_happyPath_curegn() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
 		when(packageMetadata.toString()).thenReturn("{\"siteCuregn\":\"CureGN Site\"}");
+		when(packageMetadata.getString("study")).thenReturn("curegn");
+		when(packageMetadata.getString("biopsyId")).thenReturn("2344");
 		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
 		when(packageMetadata.getString("submitterEmail")).thenReturn("emailAddress");
 		User user = mock(User.class);
@@ -79,10 +83,16 @@ public class CustomPackageRepositoryTest {
 		JSONArray files = mock(JSONArray.class);
 		when(files.length()).thenReturn(1);
 		JSONObject file = mock(JSONObject.class);
+		when(file.getString("fileName")).thenReturn("orignalFileName.txt");
 		when(files.getJSONObject(0)).thenReturn(file);
 		when(packageMetadata.getJSONArray("files")).thenReturn(files);
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
+		StudyFileInfo studyFileInfo = mock (StudyFileInfo.class);
+		when(studyFileInfo.getShouldRename()).thenReturn(true);
+		when(studyFileInfo.getFileCounter()).thenReturn(54);
+		when(studyFileInfo.getUploadSourceLetter()).thenReturn("D")
+;		when(studyFileInfoRepository.findByStudy("curegn")).thenReturn(studyFileInfo);
 
 		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
 
@@ -90,6 +100,8 @@ public class CustomPackageRepositoryTest {
 		verify(mongoCollection).insertOne(documentCaptor.capture());
 		assertEquals("123", packageId);
 		verify(file).put("_id", "456");
+		verify(file).put("originalFileName", "orignalFileName.txt");
+		verify(file).put("fileName", "2344_D_54.txt");
 		verify(packageMetadata).remove("submitterEmail");
 		verify(packageMetadata).remove("submitterFirstName");
 		verify(packageMetadata).remove("submitterLastName");
@@ -122,6 +134,7 @@ public class CustomPackageRepositoryTest {
 	@Test
 	public void testSaveDynamicForm_happyPath_curegnDiabetes() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
+		when(packageMetadata.getString("study")).thenReturn("curegnDiabetes");
 		when(packageMetadata.toString()).thenReturn("{\"siteCuregnDiabetes\":\"CureGN Diabetes Site\"}");
 		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
 		when(packageMetadata.getString("submitterEmail")).thenReturn("emailAddress");
@@ -136,6 +149,9 @@ public class CustomPackageRepositoryTest {
 		when(packageMetadata.getJSONArray("files")).thenReturn(files);
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
+		StudyFileInfo studyFileInfo = mock (StudyFileInfo.class);
+		when(studyFileInfo.getShouldRename()).thenReturn(false);
+		when(studyFileInfoRepository.findByStudy("curegnDiabetes")).thenReturn(studyFileInfo);
 
 		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
 
@@ -175,6 +191,7 @@ public class CustomPackageRepositoryTest {
 	@Test
 	public void testSaveDynamicForm_happyPath_neptune() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
+		when(packageMetadata.getString("study")).thenReturn("neptune");
 		when(packageMetadata.toString()).thenReturn("{\"siteNeptune\":\"Neptune Site\"}");
 		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
 		when(packageMetadata.getString("submitterEmail")).thenReturn("emailAddress");
@@ -189,6 +206,9 @@ public class CustomPackageRepositoryTest {
 		when(packageMetadata.getJSONArray("files")).thenReturn(files);
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
+		StudyFileInfo studyFileInfo = mock (StudyFileInfo.class);
+		when(studyFileInfo.getShouldRename()).thenReturn(false);
+		when(studyFileInfoRepository.findByStudy("neptune")).thenReturn(studyFileInfo);
 
 		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
 
@@ -228,6 +248,7 @@ public class CustomPackageRepositoryTest {
 	@Test
 	public void testSaveDynamicForm_whenNewUser() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
+		when(packageMetadata.getString("study")).thenReturn("neptune");
 		when(packageMetadata.toString()).thenReturn("{}");
 		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
 		User user = mock(User.class);
@@ -245,6 +266,9 @@ public class CustomPackageRepositoryTest {
 		when(packageMetadata.getJSONArray("files")).thenReturn(files);
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
+		StudyFileInfo studyFileInfo = mock (StudyFileInfo.class);
+		when(studyFileInfo.getShouldRename()).thenReturn(false);
+		when(studyFileInfoRepository.findByStudy("neptune")).thenReturn(studyFileInfo);
 
 		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
 

@@ -272,10 +272,10 @@ public class PackageServiceTest {
 		file2.createNewFile();
 		file2.deleteOnExit();
 		Attachment attachment1 = new Attachment();
-		attachment1.setFileName("file1");
+		attachment1.setOriginalFileName("file1");
 		attachment1.setSize(file1.length());
 		Attachment attachment2 = new Attachment();
-		attachment2.setFileName("file2");
+		attachment2.setOriginalFileName("file2");
 		attachment2.setSize(file2.length());
 		List<Attachment> attachments = Arrays.asList(attachment1, attachment2);
 		Package newPackage = new Package();
@@ -307,10 +307,10 @@ public class PackageServiceTest {
 		file2.createNewFile();
 		file2.deleteOnExit();
 		Attachment attachment1 = new Attachment();
-		attachment1.setFileName("file1");
+		attachment1.setOriginalFileName("file1");
 		attachment1.setSize(file1.length());
 		Attachment attachment2 = new Attachment();
-		attachment2.setFileName("file2");
+		attachment2.setOriginalFileName("file2");
 		attachment2.setSize(file2.length());
 		List<Attachment> attachments = Arrays.asList(attachment1, attachment2);
 		User user = mock(User.class);
@@ -336,10 +336,10 @@ public class PackageServiceTest {
 		file2.createNewFile();
 		file2.deleteOnExit();
 		Attachment attachment1 = new Attachment();
-		attachment1.setFileName("file1");
+		attachment1.setOriginalFileName("file1");
 		attachment1.setSize(file1.length());
 		Attachment attachment2 = new Attachment();
-		attachment2.setFileName("file2");
+		attachment2.setOriginalFileName("file2");
 		attachment2.setSize(1234l);
 		List<Attachment> attachments = Arrays.asList(attachment1, attachment2);
 		User user = mock(User.class);

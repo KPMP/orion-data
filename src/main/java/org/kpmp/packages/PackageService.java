@@ -42,7 +42,8 @@ public class PackageService {
 
 	@Autowired
 	public PackageService(PackageFileHandler packageFileHandler, FilePathHelper filePathHelper,
-						  CustomPackageRepository packageRepository, StateHandlerService stateHandler, LoggingService logger) {
+						  CustomPackageRepository packageRepository, StateHandlerService stateHandler,
+						  LoggingService logger) {
 		this.filePathHelper = filePathHelper;
 		this.packageFileHandler = packageFileHandler;
 		this.packageRepository = packageRepository;
@@ -92,7 +93,7 @@ public class PackageService {
 	}
 
 	public void saveFile(MultipartFile file, String packageId, String filename, String study, boolean shouldAppend) throws Exception {
-
+		
 		if (filename.equalsIgnoreCase("metadata.json")) {
 			filename = filename.replace(".", "_user.");
 		}
@@ -124,14 +125,14 @@ public class PackageService {
 		if (files.size() > 0) {
 			for (Attachment file : files) {
 				if (file.getMd5checksum() == null) {
-					String filePath = filePathHelper.getFilePath(packageID, study, file.getFileName());
+					String filePath = filePathHelper.getFilePath(packageID, study, file.getOriginalFileName());
 					InputStream is = Files.newInputStream(Paths.get(filePath));
 					String md5 = DigestUtils.md5Hex(is);
 					file.setMd5checksum(md5);
 				} else {
 					logger.logInfoMessage(PackageService.class, null, packageID,
 							PackageService.class.getSimpleName() + ".calculateFileChecksums",
-							packageIssue.format(new Object[] { "Checksum already exists for file " + file.getFileName(),
+							packageIssue.format(new Object[] { "Checksum already exists for file " + file.getOriginalFileName(),
 									packageID }));
 				}
 			}
@@ -158,7 +159,7 @@ public class PackageService {
 			User user) {
 		boolean everythingMatches = true;
 		for (Attachment attachment : filesInPackage) {
-			String filename = attachment.getFileName();
+			String filename = attachment.getOriginalFileName();
 			if (new File(packagePath + filename).length() != attachment.getSize()) {
 				logger.logErrorMessage(this.getClass(), user, packageId,
 						this.getClass().getSimpleName() + ".validateFileLengthsMatch", fileIssue.format(new Object[] {

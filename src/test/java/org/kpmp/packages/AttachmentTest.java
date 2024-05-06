@@ -21,6 +21,12 @@ public class AttachmentTest {
 	}
 
 	@Test
+	public void testFilemame() {
+		attachment.setFileName("file22.txt");
+		assertEquals("file22.txt", attachment.getFileName());
+	}
+
+	@Test
 	public void testSetId() {
 		attachment.setId("id");
 		assertEquals("id", attachment.getId());
@@ -33,9 +39,9 @@ public class AttachmentTest {
 	}
 
 	@Test
-	public void testSetFilename() {
-		attachment.setFileName("filename.txt");
-		assertEquals("filename.txt", attachment.getFileName());
+	public void testSetOriginalFilename() {
+		attachment.setOriginalFileName("filename.txt");
+		assertEquals("filename.txt", attachment.getOriginalFileName());
 	}
 
 	@Test

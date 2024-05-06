@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.bson.Document;
 import org.bson.codecs.BsonTypeClassMap;
@@ -50,16 +51,18 @@ public class CustomPackageRepository {
 	private UserRepository userRepository;
 	private JsonWriterSettingsConstructor jsonSettings;
 	private LoggingService logger;
+    private StudyFileInfoRepository studyFileInfoRepository;
 
 	@Autowired
 	public CustomPackageRepository(PackageRepository repo, MongoTemplate mongoTemplate,
 			UniversalIdGenerator universalIdGenerator, UserRepository userRepo,
-			JsonWriterSettingsConstructor jsonSettings, LoggingService logger) {
+			JsonWriterSettingsConstructor jsonSettings, StudyFileInfoRepository studyFileInfoRepository, LoggingService logger) {
 		this.repo = repo;
 		this.mongoTemplate = mongoTemplate;
 		this.universalIdGenerator = universalIdGenerator;
 		this.userRepository = userRepo;
 		this.jsonSettings = jsonSettings;
+        this.studyFileInfoRepository = studyFileInfoRepository;
 		this.logger = logger;
 	}
 
@@ -74,9 +77,20 @@ public class CustomPackageRepository {
 				this.getClass().getSimpleName() + ".saveDynamicForm",
 				fileUploadStartTiming.format(new Object[] { startTime, submitterEmail, packageId, files.length() }));
 
+		String studyName = packageMetadata.getString(PackageKeys.STUDY.getKey());
+		StudyFileInfo studyFileInfo = studyFileInfoRepository.findByStudy(studyName);
+		String biopsyId = packageMetadata.getString(PackageKeys.BIOPSY_ID.getKey());
+	
 		for (int i = 0; i < files.length(); i++) {
 			JSONObject file = files.getJSONObject(i);
 			file.put(PackageKeys.ID.getKey(), universalIdGenerator.generateUniversalId());
+			if (studyFileInfo.getShouldRename()) {
+				String originalFileName = file.getString(PackageKeys.FILE_NAME.getKey());
+				String fileExtension = FilenameUtils.getExtension(originalFileName);
+				String fileRename = biopsyId+"_"+studyFileInfo.getUploadSourceLetter()+"_"+studyFileInfo.getFileCounter()+"."+fileExtension;
+				file.put(PackageKeys.ORIGINAL_FILE_NAME.getKey(), originalFileName);
+				file.put(PackageKeys.FILE_NAME.getKey(), fileRename);
+			}
 		}
 
 		User user = findUser(userFromHeader);

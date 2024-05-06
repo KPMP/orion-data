@@ -11,7 +11,7 @@ public class DluFile {
     private String dluMd5Checksum;
 
     public DluFile(Attachment attachment, String packageId) {
-        setDluFileName(attachment.getFileName());
+        setDluFileName(attachment.getOriginalFileName());
         setDluFileId(attachment.getId());
         setDluPackageId(packageId);
         setDluMd5Checksum(attachment.getMd5checksum());
