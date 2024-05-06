@@ -43,8 +43,14 @@ class PackageView {
 	public void setGlobusMoveStatus(String state) {
 		if (state.contains("error")) {
 			String[] bits = state.split(":");
-			errorMessage = bits[1];
-			globusMoveStatus = bits[0];
+			if (bits.length > 1) {
+				errorMessage = bits[1];
+				globusMoveStatus = bits[0];
+			}
+			else {
+				errorMessage = bits[0];
+				globusMoveStatus = "error";
+			}
 		} else {
 			globusMoveStatus = state;
 		}
