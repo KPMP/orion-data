@@ -2,7 +2,9 @@ package org.kpmp.packages;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -102,6 +104,8 @@ public class CustomPackageRepositoryTest {
 		verify(file).put("_id", "456");
 		verify(file).put("originalFileName", "orignalFileName.txt");
 		verify(file).put("fileName", "2344_D_54.txt");
+		verify(studyFileInfo).setFileCounter(55);
+		verify(studyFileInfoRepository).save(studyFileInfo);
 		verify(packageMetadata).remove("submitterEmail");
 		verify(packageMetadata).remove("submitterFirstName");
 		verify(packageMetadata).remove("submitterLastName");
@@ -280,6 +284,8 @@ public class CustomPackageRepositoryTest {
 		verify(packageMetadata).remove("submitterFirstName");
 		verify(packageMetadata).remove("submitterLastName");
 		verify(packageMetadata).remove("submitter");
+		verify(studyFileInfo, times(0)).setFileCounter(anyInt());
+		verify(studyFileInfoRepository).save(studyFileInfo);
 		Document actualDocument = documentCaptor.getValue();
 		assertEquals("123", actualDocument.get("_id"));
 		assertNotNull(actualDocument.get("createdAt"));

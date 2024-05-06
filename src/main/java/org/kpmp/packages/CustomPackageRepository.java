@@ -87,11 +87,15 @@ public class CustomPackageRepository {
 			if (studyFileInfo.getShouldRename()) {
 				String originalFileName = file.getString(PackageKeys.FILE_NAME.getKey());
 				String fileExtension = FilenameUtils.getExtension(originalFileName);
-				String fileRename = biopsyId+"_"+studyFileInfo.getUploadSourceLetter()+"_"+studyFileInfo.getFileCounter()+"."+fileExtension;
+				int studyFileCount = studyFileInfo.getFileCounter();
+				String fileRename = biopsyId+"_"+studyFileInfo.getUploadSourceLetter()+"_"+studyFileCount+"."+fileExtension;
 				file.put(PackageKeys.ORIGINAL_FILE_NAME.getKey(), originalFileName);
 				file.put(PackageKeys.FILE_NAME.getKey(), fileRename);
+				studyFileInfo.setFileCounter(++studyFileCount);
 			}
 		}
+		// need to update the file counter for next time
+		studyFileInfoRepository.save(studyFileInfo);
 
 		User user = findUser(userFromHeader);
 		cleanUpObject(packageMetadata);

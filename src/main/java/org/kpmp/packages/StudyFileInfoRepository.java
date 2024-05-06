@@ -7,4 +7,7 @@ import org.springframework.stereotype.Service;
 public interface StudyFileInfoRepository extends MongoRepository<StudyFileInfo, String> {
 
     public StudyFileInfo findByStudy(String study);
+    
+    @SuppressWarnings("unchecked")
+    public StudyFileInfo save(StudyFileInfo studyFileInfo);
 }
