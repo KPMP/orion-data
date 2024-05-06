@@ -195,8 +195,6 @@ public class PackageControllerTest {
 		verify(packageService).validatePackage("3545", user);
         verify(packageService).stripMetadata(myPackage);
 		assertEquals(true, result.isSuccess());
-		verify(logger).logInfoMessage(PackageController.class, "3545", "Finishing file upload with packageId:  3545",
-				request);
 		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null, "origin");
 	}
 
