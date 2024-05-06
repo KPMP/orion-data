@@ -94,15 +94,16 @@ public class PackageService {
                 String ext = FilenameUtils.getExtension(file.toString());
                 if (ext != null){
                     try {
-                        String command = "mogrify -strip " + basePath + File.separator + packageInformation.getStudyFolderName() + File.separator + file;
+                        String path = basePath + File.separator + packageInformation.getStudyFolderName() + File.separator + file;
+                        String command = "mogrify -strip " + path;
                         Runtime runTime = Runtime.getRuntime();
                         runTime.exec(command);
                         successCode = 1;
-                        String successMessage = packageIssue.format(new Object[] {"Successfully stripped metadata from file " + file, packageInformation.getPackageId()});
-                        logger.logInfoMessage(PackageService.class, packageInformation.getPackageId(), successMessage, null);
+                        String successMessage = packageIssue.format(new Object[] {"Successfully stripped metadata from file " + path, packageInformation.getPackageId()});
+                        logger.logInfoMessage(this.getClass(), null, packageInformation.getPackageId(), "/v1/packages/" + packageInformation.getPackageId() + "/files/finish", successMessage);
                     } catch (Exception e) {
                         String errorMessage = packageIssue.format(new Object[] {"There was a problem stripping the metadata from file " + file, packageInformation.getPackageId()});
-                        logger.logErrorMessage(PackageService.class, packageInformation.getPackageId(), errorMessage, null);
+                        logger.logErrorMessage(this.getClass(), null, packageInformation.getPackageId(), "/v1/packages/" + packageInformation.getPackageId() + "/files/finish", errorMessage);
                         successCode = 0;
                     }
                 }
