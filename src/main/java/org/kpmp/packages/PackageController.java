@@ -92,14 +92,7 @@ public class PackageController {
 		try {
 			packageInfo = new JSONObject(packageInfoString);
 			logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
-			// Fake this until we get Shibboleth working
-			// User user = shibUserService.getUserNoHeaders(request, packageInfo);
-			User user = new User();
-			user.setDisplayName("Test User");
-			user.setShibId("test_user@test.com");
-			user.setEmail("test_user@test.com");
-			user.setFirstName("Test");
-			user.setLastName("User");
+			User user = shibUserService.getUserNoHeaders(request, packageInfo);
 			packageService.savePackageInformation(packageInfo, user, packageId);
 			String largeFilesChecked = packageInfo.optBoolean("largeFilesChecked") ? "true" : "false";
 			packageService.sendStateChangeEvent(packageId, metadataReceivedState, largeFilesChecked,
@@ -121,7 +114,7 @@ public class PackageController {
 			@RequestParam(name = "qqpartindex", defaultValue = "0") int chunk, HttpServletRequest request) {
 
         Package packageInfo = packageService.findPackage(packageId);
-        String study = packageInfo.getStudyFolderName();
+        String study = packageInfo.getStudy();
 		String hostname = request.getHeader("Host");
 		String message = fileUploadRequest.format(new Object[] { filename, packageId, fileSize, chunk, chunks });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);

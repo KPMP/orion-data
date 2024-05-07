@@ -46,7 +46,8 @@ public class PackageServiceTest {
 	private LoggingService logger;
 	@Mock
 	private StateHandlerService stateHandlerService;
-	
+	private AutoCloseable mocks;
+
 
 	@Before
 	public void setUp() throws Exception {
@@ -281,7 +282,7 @@ public class PackageServiceTest {
 		Package newPackage = new Package();
 		newPackage.setPackageId("1234");
 		newPackage.setAttachments(attachments);
-        newPackage.setStudyFolderName(studyDir);
+        newPackage.setStudy(studyDir);
 		when(filePathHelper.getFilePath("1234", studyDir, "file1")).thenReturn(file1Path);
 		when(filePathHelper.getFilePath("1234", studyDir, "file2")).thenReturn(file2Path);
 		service.calculateChecksums(newPackage);
