@@ -120,14 +120,21 @@ public class PackageController {
         Package packageInfo = packageService.findPackage(packageId);
         String study = packageInfo.getStudy();
 		String hostname = request.getHeader("Host");
-		String message = fileUploadRequest.format(new Object[] { filename, packageId, fileSize, chunk, chunks });
+		String fileRename = findFileRename(packageInfo.getAttachments(), filename);
+		String cleanHostName = hostname.replace("=", "");
+		if (fileRename == null) {
+			logger.logErrorMessage(this.getClass(), packageId, "Unable to find file rename for file: " + filename, request);
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, "Unable to find file rename", cleanHostName);
+			return new FileUploadResponse(false);
+		}
+
+		String message = fileUploadRequest.format(new Object[] { fileRename, packageId, fileSize, chunk, chunks });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
 
 		try {
-			packageService.saveFile(file, packageId, filename, study, shouldAppend(chunk));
+			packageService.saveFile(file, packageId, fileRename, study, shouldAppend(chunk));
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-			String cleanHostName = hostname.replace("=", "");
 			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), cleanHostName);
 			return new FileUploadResponse(false);
 		}
@@ -191,6 +198,15 @@ public class PackageController {
 
 	private boolean shouldAppend(int chunk) {
 		return chunk != 0;
+	}
+
+	private String findFileRename (List<Attachment> attachments, String originalFileName) {
+		for (Attachment attachment : attachments) {
+			if (attachment.getOriginalFileName().equalsIgnoreCase(originalFileName)) {
+				return attachment.getFileName();
+			}
+		}
+		return null;
 	}
 
 }
