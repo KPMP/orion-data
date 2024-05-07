@@ -185,15 +185,16 @@ public class PackageControllerTest {
 	public void testFinishUpload() throws Exception {
 		User user = mock(User.class);
 		HttpServletRequest request = mock(HttpServletRequest.class);
+        Package myPackage = new Package();
+        when(packageService.findPackage("3545")).thenReturn(myPackage);
 		when(shibUserService.getUser(request)).thenReturn(user);
 		when(packageService.validatePackage("3545", user)).thenReturn(true);
 
 		FileUploadResponse result = controller.finishUpload("3545", "origin", request);
 
 		verify(packageService).validatePackage("3545", user);
+        verify(packageService).stripMetadata(myPackage);
 		assertEquals(true, result.isSuccess());
-		verify(logger).logInfoMessage(PackageController.class, "3545", "Finishing file upload with packageId:  3545",
-				request);
 		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null, "origin");
 	}
 

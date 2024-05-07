@@ -166,6 +166,7 @@ public class PackageController {
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
 		if (packageService.validatePackage(packageId, shibUserService.getUser(request))) {
 			try {
+                packageService.stripMetadata(packageService.findPackage(packageId));
 				//packageService.calculateAndSaveChecksums(packageId);
 				fileUploadResponse = new FileUploadResponse(true);
 				packageService.sendStateChangeEvent(packageId, uploadSucceededState, null, cleanHostName);
@@ -173,6 +174,7 @@ public class PackageController {
 				String errorMessage = finish
 						.format(new Object[] { "There was a problem calculating the checksum for package ", packageId });
 				logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
+                e.printStackTrace();
 				fileUploadResponse = new FileUploadResponse(false);
 				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
 			}

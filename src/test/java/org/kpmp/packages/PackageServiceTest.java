@@ -55,6 +55,7 @@ public class PackageServiceTest {
 		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService, logger);
 		ReflectionTestUtils.setField(service, "uploadSucceededState", "UPLOAD_SUCCEEDED");
 		ReflectionTestUtils.setField(service, "packageTypeToExclude", "Electron Microscopy Imaging");
+        ReflectionTestUtils.setField(service, "basePath", "/data/dataLake");
 	}
 
 	@After
@@ -370,5 +371,39 @@ public class PackageServiceTest {
 		verify(logger).logErrorMessage(PackageService.class, user, "packageId", "PackageService.checkFilesExist",
 				"ERROR|zip|File list in metadata does not match file list on disk");
 	}
+
+    @Test 
+    public void testStripMetadata() throws Exception {
+        Path rootPath = Files.createTempDirectory("dataLake");
+        Path packagePath = Files.createTempDirectory(rootPath, "study");
+        String studyDir = packagePath.getFileName().toString();
+        packagePath.toFile().deleteOnExit();
+        String file1Path = Paths.get(packagePath.toString(), "file1.jpg").toString();
+        String file2Path = Paths.get(packagePath.toString(), "file2.png").toString();
+        File file1 = new File(file1Path);
+        File file2 = new File(file2Path);
+        file1.createNewFile();
+        file1.deleteOnExit();
+        file2.createNewFile();
+        file2.deleteOnExit();
+        Attachment attachment1 = new Attachment();
+        attachment1.setFileName("file1.jpg");
+        attachment1.setSize(file1.length());
+        Attachment attachment2 = new Attachment();
+        attachment2.setFileName("file2.png");
+        attachment2.setSize(file2.length());
+        List<Attachment> attachments = Arrays.asList(attachment1, attachment2);
+        Package newPackage = new Package();
+        newPackage.setPackageId("1234");
+        newPackage.setAttachments(attachments);
+        newPackage.setStudyFolderName(studyDir);
+        when(filePathHelper.getFilePath("1234", studyDir, "file1")).thenReturn(file1Path);
+        when(filePathHelper.getFilePath("1234", studyDir, "file2")).thenReturn(file2Path);
+        when(service.findPackage(newPackage.getPackageId())).thenReturn(newPackage);
+        
+        int testSuccessCode = service.stripMetadata(newPackage);
+
+        assertEquals(1, testSuccessCode);
+    }
 
 }
