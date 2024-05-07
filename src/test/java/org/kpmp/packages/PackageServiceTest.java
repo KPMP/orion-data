@@ -51,7 +51,7 @@ public class PackageServiceTest {
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.openMocks(this);
+		mocks = MockitoAnnotations.openMocks(this);
 		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService, logger);
 		ReflectionTestUtils.setField(service, "uploadSucceededState", "UPLOAD_SUCCEEDED");
 		ReflectionTestUtils.setField(service, "packageTypeToExclude", "Electron Microscopy Imaging");
@@ -60,7 +60,7 @@ public class PackageServiceTest {
 
 	@After
 	public void tearDown() throws Exception {
-		MockitoAnnotations.openMocks(this).close();
+		mocks.close();
 		service = null;
 	}
 
