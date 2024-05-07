@@ -49,7 +49,6 @@ public class AuthorizationFilterTest {
 		ReflectionTestUtils.setField(filter, "userAuthHost", "hostname");
 		ReflectionTestUtils.setField(filter, "userAuthEndpoint", "endpoint");
 		ReflectionTestUtils.setField(filter, "allowedGroups", Arrays.asList("group1", "group2"));
-		ReflectionTestUtils.setField(filter, "kpmpGroup", "imaKpmpUser");
 		ReflectionTestUtils.setField(filter, "allowedEndpoints", Arrays.asList("uri1"));
 	}
 
@@ -201,32 +200,6 @@ public class AuthorizationFilterTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testDoFilter_noSessionDoesNotHaveAllowedGroupHasKpmpGroup() throws Exception { // eslint-disable-line
-																								// no-eval
-		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
-		when(incomingRequest.getRequestURI()).thenReturn("anything");
-		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
-		HttpSession session = mock(HttpSession.class);
-		when(incomingRequest.getSession(true)).thenReturn(session);
-		FilterChain chain = mock(FilterChain.class);
-		User user = mock(User.class);
-		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
-		when(incomingRequest.getSession(false)).thenReturn(null);
-		ResponseEntity<String> response = mock(ResponseEntity.class);
-		when(response.getBody()).thenReturn("{groups: [ 'imaKpmpUser', 'another group']}");
-		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
-
-		filter.doFilter(incomingRequest, incomingResponse, chain);
-
-		verify(chain, times(0)).doFilter(incomingRequest, incomingResponse);
-		verify(incomingResponse).setStatus(HttpStatus.FORBIDDEN.value());
-		verify(logger).logErrorMessage(AuthorizationFilter.class, null,
-				"User does not have access to DLU: [\"imaKpmpUser\",\"another group\"]", incomingRequest);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Test
 	public void testDoFilter_noSessionBlankShibId() throws Exception { // eslint-disable-line
 		// no-eval
 		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
@@ -247,56 +220,6 @@ public class AuthorizationFilterTest {
 		verify(chain, times(0)).doFilter(incomingRequest, incomingResponse);
 		verify(incomingResponse).setStatus(HttpStatus.FORBIDDEN.value());
 		verify(logger).logWarnMessage(AuthorizationFilter.class, null, "request with no shib id", incomingRequest);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testDoFilter_noSessionDoesNotHaveAllowedGroupNoKpmpGroup() throws Exception { // eslint-disable-line
-																								// no-eval
-		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
-		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
-		when(incomingRequest.getRequestURI()).thenReturn("anything");
-		HttpSession session = mock(HttpSession.class);
-		when(incomingRequest.getSession(true)).thenReturn(session);
-		FilterChain chain = mock(FilterChain.class);
-		User user = mock(User.class);
-		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
-		when(incomingRequest.getSession(false)).thenReturn(null);
-		ResponseEntity<String> response = mock(ResponseEntity.class);
-		when(response.getBody()).thenReturn("{groups: [ 'unrelated group', 'another group']}");
-		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
-
-		filter.doFilter(incomingRequest, incomingResponse, chain);
-
-		verify(chain, times(0)).doFilter(incomingRequest, incomingResponse);
-		verify(incomingResponse).setStatus(HttpStatus.NOT_FOUND.value());
-		verify(logger).logErrorMessage(AuthorizationFilter.class, null,
-				"User is not part of KPMP: [\"unrelated group\",\"another group\"]", incomingRequest);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testDoFilter_userAuthReturned404() throws Exception { // eslint-disable-line no-eval
-		HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
-		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
-		when(incomingRequest.getRequestURI()).thenReturn("anything");
-		HttpSession session = mock(HttpSession.class);
-		when(incomingRequest.getSession(true)).thenReturn(session);
-		FilterChain chain = mock(FilterChain.class);
-		User user = mock(User.class);
-		when(user.getShibId()).thenReturn("shibboleth id");
-		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
-		when(incomingRequest.getSession(false)).thenReturn(null);
-		when(restTemplate.getForEntity(any(String.class), any(Class.class)))
-				.thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
-
-		filter.doFilter(incomingRequest, incomingResponse, chain);
-
-		verify(chain, times(0)).doFilter(incomingRequest, incomingResponse);
-		verify(incomingResponse).setStatus(HttpStatus.NOT_FOUND.value());
-		verify(logger).logErrorMessage(AuthorizationFilter.class, null,
-				"User does not exist in User Portal: shibboleth id", incomingRequest);
 	}
 
 	@SuppressWarnings("unchecked")
