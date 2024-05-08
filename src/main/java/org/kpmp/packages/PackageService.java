@@ -95,7 +95,7 @@ public class PackageService {
                 if (ext != null){
                     try {
                         String path = basePath + File.separator + packageInformation.getStudyFolderName() + File.separator + file;
-                        String command = "mogrify -strip " + path;
+                        String command = "exiftool -all= " + path;
                         Runtime runTime = Runtime.getRuntime();
                         runTime.exec(command);
                         successCode = 1;

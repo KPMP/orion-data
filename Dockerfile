@@ -2,7 +2,7 @@ FROM alpine
 
 RUN apk update && \
     apk upgrade && \
-    apk add imagemagick
+    apk add exiftool
 RUN apk add openjdk8
 
 VOLUME /tmp
