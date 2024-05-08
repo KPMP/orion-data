@@ -80,7 +80,7 @@ public class CustomPackageRepository {
 		String studyName = packageMetadata.getString(PackageKeys.STUDY.getKey());
 		StudyFileInfo studyFileInfo = studyFileInfoRepository.findByStudy(studyName);
 		String biopsyId = packageMetadata.getString(PackageKeys.BIOPSY_ID.getKey());
-	
+
 		for (int i = 0; i < files.length(); i++) {
 			JSONObject file = files.getJSONObject(i);
 			file.put(PackageKeys.ID.getKey(), universalIdGenerator.generateUniversalId());

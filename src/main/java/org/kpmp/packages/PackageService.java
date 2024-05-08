@@ -125,14 +125,14 @@ public class PackageService {
 		if (files.size() > 0) {
 			for (Attachment file : files) {
 				if (file.getMd5checksum() == null) {
-					String filePath = filePathHelper.getFilePath(packageID, study, file.getOriginalFileName());
+					String filePath = filePathHelper.getFilePath(packageID, study, file.getFileName());
 					InputStream is = Files.newInputStream(Paths.get(filePath));
 					String md5 = DigestUtils.md5Hex(is);
 					file.setMd5checksum(md5);
 				} else {
 					logger.logInfoMessage(PackageService.class, null, packageID,
 							PackageService.class.getSimpleName() + ".calculateFileChecksums",
-							packageIssue.format(new Object[] { "Checksum already exists for file " + file.getOriginalFileName(),
+							packageIssue.format(new Object[] { "Checksum already exists for file " + file.getFileName(),
 									packageID }));
 				}
 			}
@@ -159,7 +159,7 @@ public class PackageService {
 			User user) {
 		boolean everythingMatches = true;
 		for (Attachment attachment : filesInPackage) {
-			String filename = attachment.getOriginalFileName();
+			String filename = attachment.getFileName();
 			if (new File(packagePath + filename).length() != attachment.getSize()) {
 				logger.logErrorMessage(this.getClass(), user, packageId,
 						this.getClass().getSimpleName() + ".validateFileLengthsMatch", fileIssue.format(new Object[] {

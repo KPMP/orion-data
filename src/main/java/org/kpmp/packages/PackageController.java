@@ -84,6 +84,7 @@ public class PackageController {
 		PackageResponse packageResponse = new PackageResponse();
 		String packageId = universalIdGenerator.generateUniversalId();
 		packageResponse.setPackageId(packageId);
+		logger.logInfoMessage(this.getClass(), packageId, "setting package state", request);
 		packageService.sendStateChangeEvent(packageId, uploadStartedState, null, cleanHostName);
 		JSONObject packageInfo;
 		try {

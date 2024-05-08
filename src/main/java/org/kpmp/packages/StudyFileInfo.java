@@ -7,10 +7,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class StudyFileInfo {
 
     @Id
+    private String id;
     private String study;
     private int fileCounter;
     private String uploadSourceLetter;
     private boolean shouldRename;
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public boolean getShouldRename() {
         return this.shouldRename;
