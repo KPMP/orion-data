@@ -102,7 +102,10 @@ public class AuthorizationFilter implements Filter {
 						session.setAttribute("roles", userGroups);
 						session.setAttribute("shibid", shibId);
 						chain.doFilter(request, response);
+					} else {
+						handleError(USER_NO_DLU_ACCESS + userGroups, HttpStatus.NOT_FOUND, request, response);
 					}
+
 
 				} catch (JSONException e) {
 					handleError("Unable to parse response from User Portal, denying user " + shibId
