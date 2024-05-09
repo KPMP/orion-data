@@ -90,14 +90,7 @@ public class PackageController {
 		try {
 			packageInfo = new JSONObject(packageInfoString);
 			logger.logInfoMessage(this.getClass(), packageId, "Posting package info: " + packageInfo, request);
-			// Fake this until we get Shibboleth working
-			// User user = shibUserService.getUserNoHeaders(request, packageInfo);
-			User user = new User();
-			user.setDisplayName("Test User");
-			user.setShibId("test_user@test.com");
-			user.setEmail("test_user@test.com");
-			user.setFirstName("Test");
-			user.setLastName("User");
+			User user = shibUserService.getUserNoHeaders(request, packageInfo);
 			packageService.savePackageInformation(packageInfo, user, packageId);
 			String largeFilesChecked = packageInfo.optBoolean("largeFilesChecked") ? "true" : "false";
 			packageService.sendStateChangeEvent(packageId, metadataReceivedState, largeFilesChecked,
@@ -178,6 +171,7 @@ public class PackageController {
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
 		if (packageService.validatePackage(packageId, shibUserService.getUser(request))) {
 			try {
+                packageService.stripMetadata(packageService.findPackage(packageId));
 				//packageService.calculateAndSaveChecksums(packageId);
 				fileUploadResponse = new FileUploadResponse(true);
 				packageService.sendStateChangeEvent(packageId, uploadSucceededState, null, cleanHostName);
@@ -185,6 +179,7 @@ public class PackageController {
 				String errorMessage = finish
 						.format(new Object[] { "There was a problem calculating the checksum for package ", packageId });
 				logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
+                e.printStackTrace();
 				fileUploadResponse = new FileUploadResponse(false);
 				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
 			}

@@ -28,6 +28,7 @@ public class Package {
 	private Date experimentDate;
 	private String description;
     private String study;
+    private String studyName;
     @DBRef(lazy = false)
 	private User submitter;
 	@Nullable
@@ -54,6 +55,18 @@ public class Package {
 
     public void setStudy(String study){
         this.study = study;
+    }
+
+    public String getStudyFolderName(){
+        if (Objects.equals(study, "CureGN Diabetes")){
+            study = "CureGNDiabetes";
+            return study;
+        }
+        return getStudy();
+    }
+
+    public void setStudyFolderName(String studyName){
+        this.studyName = studyName;
     }
 
 	public void setPackageType(String packageType) {
@@ -133,6 +146,7 @@ public class Package {
 	public void setSubmitter(User submitter) {
 		this.submitter = submitter;
 	}
+
 
 	@Override
 	public String toString() {
