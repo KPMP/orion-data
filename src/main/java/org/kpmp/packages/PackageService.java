@@ -94,7 +94,7 @@ public class PackageService {
                 String ext = FilenameUtils.getExtension(file.toString());
                 if (ext != null){
                     try {
-                        String path = basePath + File.separator + packageInformation.getStudyFolderName() + File.separator + file;
+                        String path = basePath + File.separator + packageInformation.getStudyFolderName() + File.separator + "package_" + packageInformation.getPackageId() + File.separator + file.getFileName();
                         String command = "exiftool -all= " + path;
                         Runtime runTime = Runtime.getRuntime();
                         runTime.exec(command);
