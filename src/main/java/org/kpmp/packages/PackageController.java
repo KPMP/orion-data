@@ -5,7 +5,6 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,8 +45,6 @@ public class PackageController {
 	private static final MessageFormat finish = new MessageFormat("{0} {1}");
 	private static final MessageFormat fileUploadRequest = new MessageFormat(
 			"Posting file: {0} to package with id: {1}, filesize: {2}, chunk: {3} out of {4} chunks");
-	private static final MessageFormat fileDownloadRequest = new MessageFormat(
-			"Requesting package download with id {0}, filename {1}");
 
 	private LoggingService logger;
 	private PackageService packageService;
@@ -87,6 +84,7 @@ public class PackageController {
 		PackageResponse packageResponse = new PackageResponse();
 		String packageId = universalIdGenerator.generateUniversalId();
 		packageResponse.setPackageId(packageId);
+		logger.logInfoMessage(this.getClass(), packageId, "setting package state", request);
 		packageService.sendStateChangeEvent(packageId, uploadStartedState, null, cleanHostName);
 		JSONObject packageInfo;
 		try {
@@ -116,14 +114,21 @@ public class PackageController {
         Package packageInfo = packageService.findPackage(packageId);
         String study = packageInfo.getStudy();
 		String hostname = request.getHeader("Host");
-		String message = fileUploadRequest.format(new Object[] { filename, packageId, fileSize, chunk, chunks });
+		String fileRename = findFileRename(packageInfo.getAttachments(), filename);
+		String cleanHostName = hostname.replace("=", "");
+		if (fileRename == null) {
+			logger.logErrorMessage(this.getClass(), packageId, "Unable to find file rename for file: " + filename, request);
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, "Unable to find file rename", cleanHostName);
+			return new FileUploadResponse(false);
+		}
+
+		String message = fileUploadRequest.format(new Object[] { fileRename, packageId, fileSize, chunk, chunks });
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
 
 		try {
-			packageService.saveFile(file, packageId, filename, study, shouldAppend(chunk));
+			packageService.saveFile(file, packageId, fileRename, study, shouldAppend(chunk));
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-			String cleanHostName = hostname.replace("=", "");
 			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), cleanHostName);
 			return new FileUploadResponse(false);
 		}
@@ -189,6 +194,15 @@ public class PackageController {
 
 	private boolean shouldAppend(int chunk) {
 		return chunk != 0;
+	}
+
+	private String findFileRename (List<Attachment> attachments, String originalFileName) {
+		for (Attachment attachment : attachments) {
+			if (attachment.getOriginalFileName().equalsIgnoreCase(originalFileName)) {
+				return attachment.getFileName();
+			}
+		}
+		return null;
 	}
 
 }

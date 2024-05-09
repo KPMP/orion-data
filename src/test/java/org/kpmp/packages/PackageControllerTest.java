@@ -136,13 +136,17 @@ public class PackageControllerTest {
 		when(request.getHeader("Host")).thenReturn("hostname");
         Package myPackage = new Package();
         myPackage.setStudy("study");
+		Attachment attachment = new Attachment();
+		attachment.setOriginalFileName("filename");
+		attachment.setFileName("renamedFile");
+		myPackage.setAttachments(Arrays.asList(attachment));
         when(packageService.findPackage("packageId")).thenReturn(myPackage);
 
 		controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 2, request);
 
-		verify(packageService).saveFile(file, "packageId","filename", "study", true);
+		verify(packageService).saveFile(file, "packageId","renamedFile", "study", true);
 		verify(logger).logInfoMessage(PackageController.class, "packageId",
-				"Posting file: filename to package with id: packageId, filesize: 1,234, chunk: 2 out of 3 chunks",
+				"Posting file: renamedFile to package with id: packageId, filesize: 1,234, chunk: 2 out of 3 chunks",
 				request);
 	}
 
@@ -152,15 +156,19 @@ public class PackageControllerTest {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		when(request.getHeader("Host")).thenReturn("hostname");
         Package myPackage = new Package();
+		Attachment attachment = new Attachment();
+		attachment.setOriginalFileName("filename");
+		attachment.setFileName("renamedFile");
+		myPackage.setAttachments(Arrays.asList(attachment));
         myPackage.setStudy("study");
         when(packageService.findPackage("packageId")).thenReturn(myPackage);
 
 		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
 
 		assertEquals(true, response.isSuccess());
-		verify(packageService).saveFile(file, "packageId", "filename", "study", false);
+		verify(packageService).saveFile(file, "packageId", "renamedFile", "study", false);
 		verify(logger).logInfoMessage(PackageController.class, "packageId",
-				"Posting file: filename to package with id: packageId, filesize: 1,234, chunk: 0 out of 3 chunks",
+				"Posting file: renamedFile to package with id: packageId, filesize: 1,234, chunk: 0 out of 3 chunks",
 				request);
 	}
 
@@ -168,10 +176,14 @@ public class PackageControllerTest {
 	public void testPostFilesToPackage_whenSaveThrowsException() throws Exception {
 		MultipartFile file = mock(MultipartFile.class);
 		HttpServletRequest request = mock(HttpServletRequest.class);
-		doThrow(new Exception("NOPE")).when(packageService).saveFile(file, "packageId", "filename", "study", false);
+		doThrow(new Exception("NOPE")).when(packageService).saveFile(file, "packageId", "renamedFile", "study", false);
 		when(request.getHeader("Host")).thenReturn("hostname");
         Package myPackage = new Package();
         myPackage.setStudy("study");
+		Attachment attachment = new Attachment();
+		attachment.setOriginalFileName("filename");
+		attachment.setFileName("renamedFile");
+		myPackage.setAttachments(Arrays.asList(attachment));
         when(packageService.findPackage("packageId")).thenReturn(myPackage);
 
 		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
@@ -179,6 +191,26 @@ public class PackageControllerTest {
 		assertEquals(false, response.isSuccess());
 		verify(logger).logErrorMessage(PackageController.class, "packageId", "NOPE", request);
 		verify(packageService).sendStateChangeEvent("packageId", "UPLOAD_FAILED", null, "NOPE", "hostname");
+	}
+
+	@Test
+	public void testPostFilesToPackage_whenCannotFindFileRename() throws Exception {
+		MultipartFile file = mock(MultipartFile.class);
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(request.getHeader("Host")).thenReturn("hostname");
+        Package myPackage = new Package();
+		Attachment attachment = new Attachment();
+		attachment.setOriginalFileName("someOtherFilename");
+		attachment.setFileName("renamedFile");
+		myPackage.setAttachments(Arrays.asList(attachment));
+        myPackage.setStudy("study");
+        when(packageService.findPackage("packageId")).thenReturn(myPackage);
+
+		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
+
+		assertEquals(false, response.isSuccess());
+		verify(logger).logErrorMessage(PackageController.class, "packageId", "Unable to find file rename for file: filename", request);
+		verify(packageService).sendStateChangeEvent("packageId", "UPLOAD_FAILED", null, "Unable to find file rename", "hostname");
 	}
 
 	@Test

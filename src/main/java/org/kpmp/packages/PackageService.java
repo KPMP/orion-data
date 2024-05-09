@@ -6,12 +6,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +45,8 @@ public class PackageService {
 
 	@Autowired
 	public PackageService(PackageFileHandler packageFileHandler, FilePathHelper filePathHelper,
-						  CustomPackageRepository packageRepository, StateHandlerService stateHandler, LoggingService logger) {
+						  CustomPackageRepository packageRepository, StateHandlerService stateHandler,
+						  LoggingService logger) {
 		this.filePathHelper = filePathHelper;
 		this.packageFileHandler = packageFileHandler;
 		this.packageRepository = packageRepository;
@@ -123,35 +120,11 @@ public class PackageService {
 	}
 
 	public void saveFile(MultipartFile file, String packageId, String filename, String study, boolean shouldAppend) throws Exception {
-
+		
 		if (filename.equalsIgnoreCase("metadata.json")) {
 			filename = filename.replace(".", "_user.");
 		}
 		packageFileHandler.saveMultipartFile(file, packageId, filename, study, shouldAppend);
-	}
-	private double calculateUploadRate(long duration, List<Attachment> attachments) {
-		double fileSizeInMeg = calculateFileSizeInMeg(attachments);
-		return (double) fileSizeInMeg / duration;
-	}
-
-	private long calculateDurationInSeconds(Date startTime, Date endTime) {
-		LocalDateTime start = LocalDateTime.ofInstant(startTime.toInstant(), ZoneId.systemDefault());
-		LocalDateTime end = LocalDateTime.ofInstant(endTime.toInstant(), ZoneId.systemDefault());
-		return ChronoUnit.SECONDS.between(start, end);
-	}
-
-	private long getTotalSizeOfAttachmentsInBytes(List<Attachment> attachments) {
-		long totalSize = 0;
-		for (Attachment attachment : attachments) {
-			totalSize += attachment.getSize();
-		}
-		return totalSize;
-	}
-
-	private double calculateFileSizeInMeg(List<Attachment> attachments) {
-		long totalSize = getTotalSizeOfAttachmentsInBytes(attachments);
-		long megabyteValue = 1024L * 1024L;
-		return (double) totalSize / megabyteValue;
 	}
 
 	public boolean validatePackage(String packageId, User user) {
@@ -169,7 +142,6 @@ public class PackageService {
 		Package myPackage = packageRepository.findByPackageId(packageId);
 		List<Attachment> updatedFiles = calculateChecksums(myPackage);
 		myPackage.setAttachments(updatedFiles);
-		// dmdService.sendPackageFiles(myPackage);
 		packageRepository.updateField(packageId, "files", updatedFiles);
 	}
 
