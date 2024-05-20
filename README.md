@@ -38,3 +38,9 @@ NOTE: You need to create a new credentials file if the permissions change
  4. Authenticate.
  5. The redirect to localhost will probably fail, since you're not running the app locally. Copy this URL.
  6. Go into the spring container and do a wget on the pasted URL. This will create the credentials file and the app will start running.
+
+# Build
+`./gradlew build docker`
+The default tag is the github branch name if no verison is provided
+To pass a version when building the docker image execute
+`./gradlew build docker -Ptag=<tagNumber>`

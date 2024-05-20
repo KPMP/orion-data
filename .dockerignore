@@ -1,0 +1,7 @@
+.*
+*.iml
+gradle
+src
+scripts
+build/*
+!build/docker
