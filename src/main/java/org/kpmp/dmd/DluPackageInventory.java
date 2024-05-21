@@ -29,13 +29,12 @@ public class DluPackageInventory {
         setDluPackageId(myPackage.getPackageId());
         setDluCreated(myPackage.getCreatedAt());
         setDluSubmitter(myPackage.getSubmitter().getDisplayName());
-        setDluTis(myPackage.getTisName());
+        setDluTis(myPackage.getSiteName());
         setDluPackageType(myPackage.getPackageType());
         setDluSubjectId(myPackage.getSubjectId());
         setDluError(false);
         setUserPackageReady(!myPackage.getLargeFilesChecked());
         setDluLfu(myPackage.getLargeFilesChecked());
-        setGlobusDluStatus("waiting");
     }
 
     public DluPackageInventory() {

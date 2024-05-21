@@ -2,10 +2,7 @@ package org.kpmp.packages;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -19,7 +16,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kpmp.dmd.DmdService;
-import org.kpmp.globus.GlobusService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
@@ -27,6 +23,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 public class PackageControllerTest {
 
@@ -39,8 +36,6 @@ public class PackageControllerTest {
 	private ShibbolethUserService shibUserService;
 	@Mock
 	private UniversalIdGenerator universalIdGenerator;
-	@Mock
-	private GlobusService globusService;
 
 	@Mock
 	private DmdService dmdService;
@@ -50,11 +45,11 @@ public class PackageControllerTest {
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 
-		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator,
-				globusService, dmdService);
+		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator, dmdService);
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadFailedState", "UPLOAD_FAILED");
+		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
 
 	}
 
@@ -110,22 +105,6 @@ public class PackageControllerTest {
 	}
 
 	@Test
-	public void testPostPackageInformation_whenGoogleDriveServiceThrowsException() throws Exception {
-		String packageInfoString = "{\"packageType\":\"blah\",\"largeFilesChecked\":true}";
-		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		User user = mock(User.class);
-		when(shibUserService.getUser(request)).thenReturn(user);
-		when(globusService.createDirectory("universalId")).thenThrow(new IOException("NO DICE"));
-
-		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
-
-		assertEquals(null, response.getGlobusURL());
-		verify(logger).logErrorMessage(PackageController.class, "universalId", "NO DICE", request);
-		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_FAILED", null, "NO DICE", "hostname");
-	}
-
-	@Test
 	public void testPostPackageInformation() throws Exception {
 		String packageInfoString = "{\"packageType\":\"blah\"}";
 		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
@@ -142,43 +121,131 @@ public class PackageControllerTest {
 		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
 		verify(packageService).savePackageInformation(jsonCaptor.capture(), userCaptor.capture(),
 				packageIdCaptor.capture());
-		assertEquals(user, userCaptor.getValue());
 		assertEquals("blah", jsonCaptor.getValue().get("packageType"));
 		assertEquals("universalId", packageIdCaptor.getValue());
 		verify(logger).logInfoMessage(PackageController.class, "universalId",
 				"Posting package info: {\"packageType\":\"blah\"}", request);
-		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "true", null, "hostname");
+		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null, "hostname");
+		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "false", null, "hostname");
 	}
 
 	@Test
-	public void testPostPackageInformationLargeFile() throws Exception {
-		String packageInfoString = "{\"packageType\":\"blah\",\"largeFilesChecked\":true}";
-		when(universalIdGenerator.generateUniversalId()).thenReturn("universalId");
+	public void testPostFilesToPackage_whenNotInitialChunk() throws Exception {
+		MultipartFile file = mock(MultipartFile.class);
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(request.getHeader("Host")).thenReturn("hostname");
+        Package myPackage = new Package();
+        myPackage.setStudy("study");
+		Attachment attachment = new Attachment();
+		attachment.setOriginalFileName("filename");
+		attachment.setFileName("renamedFile");
+		myPackage.setAttachments(Arrays.asList(attachment));
+        when(packageService.findPackage("packageId")).thenReturn(myPackage);
 
+		controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 2, request);
+
+		verify(packageService).saveFile(file, "packageId","renamedFile", "study", true);
+		verify(logger).logInfoMessage(PackageController.class, "packageId",
+				"Posting file: renamedFile to package with id: packageId, filesize: 1,234, chunk: 2 out of 3 chunks",
+				request);
+	}
+
+	@Test
+	public void testPostFilesToPackage_whenInitialChunk() throws Exception {
+		MultipartFile file = mock(MultipartFile.class);
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(request.getHeader("Host")).thenReturn("hostname");
+        Package myPackage = new Package();
+		Attachment attachment = new Attachment();
+		attachment.setOriginalFileName("filename");
+		attachment.setFileName("renamedFile");
+		myPackage.setAttachments(Arrays.asList(attachment));
+        myPackage.setStudy("study");
+        when(packageService.findPackage("packageId")).thenReturn(myPackage);
+
+		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
+
+		assertEquals(true, response.isSuccess());
+		verify(packageService).saveFile(file, "packageId", "renamedFile", "study", false);
+		verify(logger).logInfoMessage(PackageController.class, "packageId",
+				"Posting file: renamedFile to package with id: packageId, filesize: 1,234, chunk: 0 out of 3 chunks",
+				request);
+	}
+
+	@Test
+	public void testPostFilesToPackage_whenSaveThrowsException() throws Exception {
+		MultipartFile file = mock(MultipartFile.class);
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		doThrow(new Exception("NOPE")).when(packageService).saveFile(file, "packageId", "renamedFile", "study", false);
+		when(request.getHeader("Host")).thenReturn("hostname");
+        Package myPackage = new Package();
+        myPackage.setStudy("study");
+		Attachment attachment = new Attachment();
+		attachment.setOriginalFileName("filename");
+		attachment.setFileName("renamedFile");
+		myPackage.setAttachments(Arrays.asList(attachment));
+        when(packageService.findPackage("packageId")).thenReturn(myPackage);
+
+		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
+
+		assertEquals(false, response.isSuccess());
+		verify(logger).logErrorMessage(PackageController.class, "packageId", "NOPE", request);
+		verify(packageService).sendStateChangeEvent("packageId", "UPLOAD_FAILED", null, "NOPE", "hostname");
+	}
+
+	@Test
+	public void testPostFilesToPackage_whenCannotFindFileRename() throws Exception {
+		MultipartFile file = mock(MultipartFile.class);
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(request.getHeader("Host")).thenReturn("hostname");
+        Package myPackage = new Package();
+		Attachment attachment = new Attachment();
+		attachment.setOriginalFileName("someOtherFilename");
+		attachment.setFileName("renamedFile");
+		myPackage.setAttachments(Arrays.asList(attachment));
+        myPackage.setStudy("study");
+        when(packageService.findPackage("packageId")).thenReturn(myPackage);
+
+		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
+
+		assertEquals(false, response.isSuccess());
+		verify(logger).logErrorMessage(PackageController.class, "packageId", "Unable to find file rename for file: filename", request);
+		verify(packageService).sendStateChangeEvent("packageId", "UPLOAD_FAILED", null, "Unable to find file rename", "hostname");
+	}
+
+	@Test
+	public void testFinishUpload() throws Exception {
+		User user = mock(User.class);
+		HttpServletRequest request = mock(HttpServletRequest.class);
+        Package myPackage = new Package();
+        when(packageService.findPackage("3545")).thenReturn(myPackage);
+		when(shibUserService.getUser(request)).thenReturn(user);
+		when(packageService.validatePackage("3545", user)).thenReturn(true);
+
+		FileUploadResponse result = controller.finishUpload("3545", "origin", request);
+
+		verify(packageService).validatePackage("3545", user);
+        verify(packageService).stripMetadata(myPackage);
+		assertEquals(true, result.isSuccess());
+		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null, "origin");
+	}
+
+	@Test
+	public void testFinishUpload_whenMismatchedFiles() throws Exception {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		User user = mock(User.class);
-		when(shibUserService.getUserNoHeaders(any(HttpServletRequest.class), any(JSONObject.class))).thenReturn(user);
-		when(globusService.createDirectory("universalId")).thenReturn("theWholeURL");
+		when(shibUserService.getUser(request)).thenReturn(user);
+		when(packageService.validatePackage("3545", user)).thenReturn(false);
 
-		PackageResponse response = controller.postPackageInformation(packageInfoString, "hostname", request);
+		FileUploadResponse result = controller.finishUpload("3545", "origin", request);
 
-		assertEquals("universalId", response.getPackageId());
-		assertEquals("theWholeURL", response.getGlobusURL());
-		ArgumentCaptor<JSONObject> jsonCaptor = ArgumentCaptor.forClass(JSONObject.class);
-		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
-		verify(packageService).savePackageInformation(jsonCaptor.capture(), userCaptor.capture(),
-				packageIdCaptor.capture());
-		verify(packageService).savePackageInformation(jsonCaptor.capture(), userCaptor.capture(),
-				packageIdCaptor.capture());
-		assertEquals(user, userCaptor.getValue());
-		assertEquals("blah", jsonCaptor.getValue().get("packageType"));
-		assertEquals("universalId", packageIdCaptor.getValue());
-		verify(logger).logInfoMessage(PackageController.class, "universalId",
-				"Posting package info: {\"largeFilesChecked\":true,\"packageType\":\"blah\"}", request);
-		verify(packageService).sendStateChangeEvent("universalId", "UPLOAD_STARTED", null, "hostname");
-		verify(packageService).sendStateChangeEvent("universalId", "METADATA_RECEIVED", "true", "theWholeURL",
-				"hostname");
+		verify(packageService).validatePackage("3545", user);
+		assertEquals(false, result.isSuccess());
+		verify(logger).logErrorMessage(PackageController.class, "3545", "The files on disk did not match the database:  3545",
+				request);
+		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null, "origin");
+		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED", null,
+				"The files on disk did not match the database:  3545", "origin");
 	}
 
 }

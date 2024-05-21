@@ -1,9 +1,10 @@
 package org.kpmp.packages;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,16 +49,18 @@ public class CustomPackageRepositoryTest {
 	private UserRepository userRepo;
 	@Mock
 	private JsonWriterSettingsConstructor jsonWriterSettings;
-	private CustomPackageRepository repo;
 	@Mock
 	private LoggingService logger;
+	@Mock
+	private StudyFileInfoRepository studyFileInfoRepository;
+	private CustomPackageRepository repo;
 	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 		repo = new CustomPackageRepository(packageRepository, mongoTemplate, universalIdGenerator, userRepo,
-				jsonWriterSettings, logger);
+				jsonWriterSettings, studyFileInfoRepository, logger);
 	}
 
 	@After
@@ -68,9 +71,75 @@ public class CustomPackageRepositoryTest {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
-	public void testSaveDynamicForm_happyPath() throws Exception {
+	public void testSaveDynamicForm_happyPath_curegn() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
-		when(packageMetadata.toString()).thenReturn("{}");
+		when(packageMetadata.toString()).thenReturn("{\"siteCuregn\":\"CureGN Site\"}");
+		when(packageMetadata.getString("study")).thenReturn("curegn");
+		when(packageMetadata.getString("biopsyId")).thenReturn("2344");
+		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
+		when(packageMetadata.getString("submitterEmail")).thenReturn("emailAddress");
+		User user = mock(User.class);
+		when(user.getEmail()).thenReturn("emailAddress");
+		when(user.getId()).thenReturn("5c2f9e01cb5e710049f33121");
+		when(userRepo.findByEmail("emailAddress")).thenReturn(user);
+		JSONArray files = mock(JSONArray.class);
+		when(files.length()).thenReturn(1);
+		JSONObject file = mock(JSONObject.class);
+		when(file.getString("fileName")).thenReturn("orignalFileName.txt");
+		when(files.getJSONObject(0)).thenReturn(file);
+		when(packageMetadata.getJSONArray("files")).thenReturn(files);
+		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
+		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
+		StudyFileInfo studyFileInfo = mock (StudyFileInfo.class);
+		when(studyFileInfo.getShouldRename()).thenReturn(true);
+		when(studyFileInfo.getFileCounter()).thenReturn(54);
+		when(studyFileInfo.getUploadSourceLetter()).thenReturn("D")
+;		when(studyFileInfoRepository.findByStudy("curegn")).thenReturn(studyFileInfo);
+
+		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
+
+		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
+		verify(mongoCollection).insertOne(documentCaptor.capture());
+		assertEquals("123", packageId);
+		verify(file).put("_id", "456");
+		verify(file).put("originalFileName", "orignalFileName.txt");
+		verify(file).put("fileName", "2344_D_54.txt");
+		verify(studyFileInfo).setFileCounter(55);
+		verify(studyFileInfoRepository).save(studyFileInfo);
+		verify(packageMetadata).remove("submitterEmail");
+		verify(packageMetadata).remove("submitterFirstName");
+		verify(packageMetadata).remove("submitterLastName");
+		verify(packageMetadata).remove("submitter");
+		Document actualDocument = documentCaptor.getValue();
+		assertEquals("123", actualDocument.get("_id"));
+		assertEquals("CureGN Site", actualDocument.get("site"));
+		assertFalse(actualDocument.containsKey("siteCuregn"));
+		assertNotNull(actualDocument.get("createdAt"));
+		DBRef submitter = (DBRef) actualDocument.get("submitter");
+		assertEquals("users", submitter.getCollectionName());
+		ObjectId objectId = (ObjectId) submitter.getId();
+		assertEquals(new ObjectId("5c2f9e01cb5e710049f33121"), objectId);
+		ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
+		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
+		verify(logger).logInfoMessage(classCaptor.capture(), userCaptor.capture(), packageIdCaptor.capture(),
+				uriCaptor.capture(), messageCaptor.capture());
+		assertEquals(CustomPackageRepository.class, classCaptor.getValue());
+		assertEquals(user, userCaptor.getValue());
+		assertEquals(packageId, packageIdCaptor.getValue());
+		assertEquals("CustomPackageRepository.saveDynamicForm", uriCaptor.getValue());
+		assertEquals(true, messageCaptor.getValue().startsWith("Timing|start|"));
+		assertEquals(true, messageCaptor.getValue().endsWith("|emailAddress|123|1 files"));
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testSaveDynamicForm_happyPath_curegnDiabetes() throws Exception {
+		JSONObject packageMetadata = mock(JSONObject.class);
+		when(packageMetadata.getString("study")).thenReturn("curegnDiabetes");
+		when(packageMetadata.toString()).thenReturn("{\"siteCuregnDiabetes\":\"CureGN Diabetes Site\"}");
 		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
 		when(packageMetadata.getString("submitterEmail")).thenReturn("emailAddress");
 		User user = mock(User.class);
@@ -84,6 +153,9 @@ public class CustomPackageRepositoryTest {
 		when(packageMetadata.getJSONArray("files")).thenReturn(files);
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
+		StudyFileInfo studyFileInfo = mock (StudyFileInfo.class);
+		when(studyFileInfo.getShouldRename()).thenReturn(false);
+		when(studyFileInfoRepository.findByStudy("curegnDiabetes")).thenReturn(studyFileInfo);
 
 		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
 
@@ -97,6 +169,65 @@ public class CustomPackageRepositoryTest {
 		verify(packageMetadata).remove("submitter");
 		Document actualDocument = documentCaptor.getValue();
 		assertEquals("123", actualDocument.get("_id"));
+		assertEquals("CureGN Diabetes Site", actualDocument.get("site"));
+		assertFalse(actualDocument.containsKey("siteCuregnDiabetes"));
+		assertNotNull(actualDocument.get("createdAt"));
+		DBRef submitter = (DBRef) actualDocument.get("submitter");
+		assertEquals("users", submitter.getCollectionName());
+		ObjectId objectId = (ObjectId) submitter.getId();
+		assertEquals(new ObjectId("5c2f9e01cb5e710049f33121"), objectId);
+		ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
+		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
+		verify(logger).logInfoMessage(classCaptor.capture(), userCaptor.capture(), packageIdCaptor.capture(),
+				uriCaptor.capture(), messageCaptor.capture());
+		assertEquals(CustomPackageRepository.class, classCaptor.getValue());
+		assertEquals(user, userCaptor.getValue());
+		assertEquals(packageId, packageIdCaptor.getValue());
+		assertEquals("CustomPackageRepository.saveDynamicForm", uriCaptor.getValue());
+		assertEquals(true, messageCaptor.getValue().startsWith("Timing|start|"));
+		assertEquals(true, messageCaptor.getValue().endsWith("|emailAddress|123|1 files"));
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testSaveDynamicForm_happyPath_neptune() throws Exception {
+		JSONObject packageMetadata = mock(JSONObject.class);
+		when(packageMetadata.getString("study")).thenReturn("neptune");
+		when(packageMetadata.toString()).thenReturn("{\"siteNeptune\":\"Neptune Site\"}");
+		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
+		when(packageMetadata.getString("submitterEmail")).thenReturn("emailAddress");
+		User user = mock(User.class);
+		when(user.getEmail()).thenReturn("emailAddress");
+		when(user.getId()).thenReturn("5c2f9e01cb5e710049f33121");
+		when(userRepo.findByEmail("emailAddress")).thenReturn(user);
+		JSONArray files = mock(JSONArray.class);
+		when(files.length()).thenReturn(1);
+		JSONObject file = mock(JSONObject.class);
+		when(files.getJSONObject(0)).thenReturn(file);
+		when(packageMetadata.getJSONArray("files")).thenReturn(files);
+		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
+		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
+		StudyFileInfo studyFileInfo = mock (StudyFileInfo.class);
+		when(studyFileInfo.getShouldRename()).thenReturn(false);
+		when(studyFileInfoRepository.findByStudy("neptune")).thenReturn(studyFileInfo);
+
+		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
+
+		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
+		verify(mongoCollection).insertOne(documentCaptor.capture());
+		assertEquals("123", packageId);
+		verify(file).put("_id", "456");
+		verify(packageMetadata).remove("submitterEmail");
+		verify(packageMetadata).remove("submitterFirstName");
+		verify(packageMetadata).remove("submitterLastName");
+		verify(packageMetadata).remove("submitter");
+		Document actualDocument = documentCaptor.getValue();
+		assertEquals("123", actualDocument.get("_id"));
+		assertEquals("Neptune Site", actualDocument.get("site"));
+		assertFalse(actualDocument.containsKey("siteNeptune"));
 		assertNotNull(actualDocument.get("createdAt"));
 		DBRef submitter = (DBRef) actualDocument.get("submitter");
 		assertEquals("users", submitter.getCollectionName());
@@ -121,6 +252,7 @@ public class CustomPackageRepositoryTest {
 	@Test
 	public void testSaveDynamicForm_whenNewUser() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
+		when(packageMetadata.getString("study")).thenReturn("neptune");
 		when(packageMetadata.toString()).thenReturn("{}");
 		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
 		User user = mock(User.class);
@@ -138,6 +270,9 @@ public class CustomPackageRepositoryTest {
 		when(packageMetadata.getJSONArray("files")).thenReturn(files);
 		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
 		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
+		StudyFileInfo studyFileInfo = mock (StudyFileInfo.class);
+		when(studyFileInfo.getShouldRename()).thenReturn(false);
+		when(studyFileInfoRepository.findByStudy("neptune")).thenReturn(studyFileInfo);
 
 		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
 
@@ -149,6 +284,8 @@ public class CustomPackageRepositoryTest {
 		verify(packageMetadata).remove("submitterFirstName");
 		verify(packageMetadata).remove("submitterLastName");
 		verify(packageMetadata).remove("submitter");
+		verify(studyFileInfo, times(0)).setFileCounter(anyInt());
+		verify(studyFileInfoRepository).save(studyFileInfo);
 		Document actualDocument = documentCaptor.getValue();
 		assertEquals("123", actualDocument.get("_id"));
 		assertNotNull(actualDocument.get("createdAt"));

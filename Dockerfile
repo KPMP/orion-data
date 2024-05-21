@@ -1,7 +1,8 @@
 FROM alpine
 
 RUN apk update && \
-    apk upgrade
+    apk upgrade && \
+    apk add imagemagick
 RUN apk add openjdk8
 
 VOLUME /tmp

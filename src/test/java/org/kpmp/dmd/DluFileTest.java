@@ -24,7 +24,7 @@ public class DluFileTest {
     @Test
     public void testConstructor() {
         Attachment attachment = new Attachment();
-        attachment.setFileName("filename");
+        attachment.setOriginalFileName("filename");
         attachment.setSize(12345);
         attachment.setId("123456");
         attachment.setMd5checksum("checksum");

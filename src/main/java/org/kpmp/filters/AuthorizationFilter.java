@@ -33,7 +33,6 @@ import org.springframework.web.client.RestTemplate;
 public class AuthorizationFilter implements Filter {
 
 	private static final String FILE_PART_INDEX = "qqpartindex";
-	private static final String USER_NOT_PART_OF_KPMP = "User is not part of KPMP: ";
 	private static final String USER_NO_DLU_ACCESS = "User does not have access to DLU: ";
 	private static final String GROUPS_KEY = "groups";
 	private static final String USER_DOES_NOT_EXIST = "User does not exist in User Portal: ";
@@ -54,8 +53,6 @@ public class AuthorizationFilter implements Filter {
 	private String userAuthEndpoint;
 	@Value("#{'${user.auth.allowed.groups}'.split(',')}")
 	private List<String> allowedGroups;
-	@Value("${user.auth.kpmp.group}")
-	private String kpmpGroup;
 	@Value("#{'${user.auth.allow.endpoints}'.split(',')}")
 	private List<String> allowedEndpoints;
 	private Environment env;
@@ -105,11 +102,10 @@ public class AuthorizationFilter implements Filter {
 						session.setAttribute("roles", userGroups);
 						session.setAttribute("shibid", shibId);
 						chain.doFilter(request, response);
-					} else if (isKPMP(userGroups)) {
-						handleError(USER_NO_DLU_ACCESS + userGroups, HttpStatus.FORBIDDEN, request, response);
 					} else {
-						handleError(USER_NOT_PART_OF_KPMP + userGroups, HttpStatus.NOT_FOUND, request, response);
+						handleError(USER_NO_DLU_ACCESS + userGroups, HttpStatus.NOT_FOUND, request, response);
 					}
+
 
 				} catch (JSONException e) {
 					handleError("Unable to parse response from User Portal, denying user " + shibId
@@ -149,16 +145,6 @@ public class AuthorizationFilter implements Filter {
 		for (int i = 0; i < userGroups.length(); i++) {
 			String group = userGroups.getString(i);
 			if (allowedGroups.contains(group)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean isKPMP(JSONArray userGroups) throws JSONException {
-		for (int i = 0; i < userGroups.length(); i++) {
-			String group = userGroups.getString(i);
-			if (kpmpGroup.equals(group)) {
 				return true;
 			}
 		}
