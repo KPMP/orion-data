@@ -63,7 +63,7 @@ public class PackageFilesValidationService {
 			// put top level files in our map
 			
 			filesInGlobusDirectories.put("", globusFiles);
-			filesInGlobusDirectories = processGlobusDirectory(filesInGlobusDirectories, globusDirectories, request.getPackageId() + "/" + baseDirectory, baseDirectory);
+			filesInGlobusDirectories = processGlobusDirectory(filesInGlobusDirectories, globusDirectories, request.getPackageId(), baseDirectory);
 			List<String> filePathsInGlobus = getGlobusFilePaths(filesInGlobusDirectories);
 
 			response.setFilesInGlobus(filePathsInGlobus);
