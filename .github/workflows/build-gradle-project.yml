@@ -1,4 +1,4 @@
-name: Build orion-data docker image
+name: Build miktmc-uploader-data docker image
 
 on: 
   push:
@@ -36,4 +36,4 @@ jobs:
       - name: Run build with Gradle Wrapper
         run: |
           ./gradlew build docker
-          docker push "${{secrets.ENV_DOCKER_USER}}/orion-data:${{ steps.branch-names.outputs.current_branch }}"
+          docker push "${{secrets.ENV_DOCKER_USER}}/miktmc-uploader-data:${{ steps.branch-names.outputs.current_branch }}"
