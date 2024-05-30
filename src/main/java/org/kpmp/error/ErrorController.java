@@ -1,6 +1,6 @@
 package org.kpmp.error;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.kpmp.logging.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;

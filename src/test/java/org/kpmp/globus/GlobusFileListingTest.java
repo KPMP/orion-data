@@ -1,21 +1,21 @@
 package org.kpmp.globus;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class GlobusFileListingTest {
 
 	private GlobusFileListing listing;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		listing = new GlobusFileListing();
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		listing = null;
 	}

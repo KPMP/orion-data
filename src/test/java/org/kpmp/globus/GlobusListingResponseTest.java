@@ -1,25 +1,26 @@
 package org.kpmp.globus;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 public class GlobusListingResponseTest {
 
 	private GlobusListingResponse response;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		response = new GlobusListingResponse();
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		response = null;
 	}

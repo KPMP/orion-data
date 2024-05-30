@@ -7,8 +7,7 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ public class GlobusAuthService {
 
     private final String apiKey;
     private final String apiSecret;
-    private JsonFactory JSON_FACTORY = new JacksonFactory();
+    private static GsonFactory JSON_FACTORY;
 
     public GlobusAuthService(Environment env) {
         this.apiKey = env.getProperty("GLOBUS_API_KEY");
