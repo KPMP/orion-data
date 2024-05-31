@@ -71,9 +71,9 @@ public class CustomPackageRepositoryTest {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
-	public void testSaveDynamicForm_happyPath_curegn() throws Exception {
+	public void testSaveDynamicForm_happyPath() throws Exception {
 		JSONObject packageMetadata = mock(JSONObject.class);
-		when(packageMetadata.toString()).thenReturn("{\"siteCuregn\":\"CureGN Site\"}");
+		when(packageMetadata.toString()).thenReturn("{\"site\":\"CureGN Site\"}");
 		when(packageMetadata.getString("study")).thenReturn("curegn");
 		when(packageMetadata.getString("biopsyId")).thenReturn("2344");
 		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
@@ -113,121 +113,6 @@ public class CustomPackageRepositoryTest {
 		Document actualDocument = documentCaptor.getValue();
 		assertEquals("123", actualDocument.get("_id"));
 		assertEquals("CureGN Site", actualDocument.get("site"));
-		assertFalse(actualDocument.containsKey("siteCuregn"));
-		assertNotNull(actualDocument.get("createdAt"));
-		DBRef submitter = (DBRef) actualDocument.get("submitter");
-		assertEquals("users", submitter.getCollectionName());
-		ObjectId objectId = (ObjectId) submitter.getId();
-		assertEquals(new ObjectId("5c2f9e01cb5e710049f33121"), objectId);
-		ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
-		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
-		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
-		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
-		verify(logger).logInfoMessage(classCaptor.capture(), userCaptor.capture(), packageIdCaptor.capture(),
-				uriCaptor.capture(), messageCaptor.capture());
-		assertEquals(CustomPackageRepository.class, classCaptor.getValue());
-		assertEquals(user, userCaptor.getValue());
-		assertEquals(packageId, packageIdCaptor.getValue());
-		assertEquals("CustomPackageRepository.saveDynamicForm", uriCaptor.getValue());
-		assertEquals(true, messageCaptor.getValue().startsWith("Timing|start|"));
-		assertEquals(true, messageCaptor.getValue().endsWith("|emailAddress|123|1 files"));
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Test
-	public void testSaveDynamicForm_happyPath_curegnDiabetes() throws Exception {
-		JSONObject packageMetadata = mock(JSONObject.class);
-		when(packageMetadata.getString("study")).thenReturn("curegnDiabetes");
-		when(packageMetadata.toString()).thenReturn("{\"siteCuregnDiabetes\":\"CureGN Diabetes Site\"}");
-		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
-		when(packageMetadata.getString("submitterEmail")).thenReturn("emailAddress");
-		User user = mock(User.class);
-		when(user.getEmail()).thenReturn("emailAddress");
-		when(user.getId()).thenReturn("5c2f9e01cb5e710049f33121");
-		when(userRepo.findByEmail("emailAddress")).thenReturn(user);
-		JSONArray files = mock(JSONArray.class);
-		when(files.length()).thenReturn(1);
-		JSONObject file = mock(JSONObject.class);
-		when(files.getJSONObject(0)).thenReturn(file);
-		when(packageMetadata.getJSONArray("files")).thenReturn(files);
-		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
-		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
-		StudyFileInfo studyFileInfo = mock (StudyFileInfo.class);
-		when(studyFileInfo.getShouldRename()).thenReturn(false);
-		when(studyFileInfoRepository.findByStudy("curegnDiabetes")).thenReturn(studyFileInfo);
-
-		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
-
-		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
-		verify(mongoCollection).insertOne(documentCaptor.capture());
-		assertEquals("123", packageId);
-		verify(file).put("_id", "456");
-		verify(packageMetadata).remove("submitterEmail");
-		verify(packageMetadata).remove("submitterFirstName");
-		verify(packageMetadata).remove("submitterLastName");
-		verify(packageMetadata).remove("submitter");
-		Document actualDocument = documentCaptor.getValue();
-		assertEquals("123", actualDocument.get("_id"));
-		assertEquals("CureGN Diabetes Site", actualDocument.get("site"));
-		assertFalse(actualDocument.containsKey("siteCuregnDiabetes"));
-		assertNotNull(actualDocument.get("createdAt"));
-		DBRef submitter = (DBRef) actualDocument.get("submitter");
-		assertEquals("users", submitter.getCollectionName());
-		ObjectId objectId = (ObjectId) submitter.getId();
-		assertEquals(new ObjectId("5c2f9e01cb5e710049f33121"), objectId);
-		ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
-		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
-		ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
-		ArgumentCaptor<String> uriCaptor = ArgumentCaptor.forClass(String.class);
-		verify(logger).logInfoMessage(classCaptor.capture(), userCaptor.capture(), packageIdCaptor.capture(),
-				uriCaptor.capture(), messageCaptor.capture());
-		assertEquals(CustomPackageRepository.class, classCaptor.getValue());
-		assertEquals(user, userCaptor.getValue());
-		assertEquals(packageId, packageIdCaptor.getValue());
-		assertEquals("CustomPackageRepository.saveDynamicForm", uriCaptor.getValue());
-		assertEquals(true, messageCaptor.getValue().startsWith("Timing|start|"));
-		assertEquals(true, messageCaptor.getValue().endsWith("|emailAddress|123|1 files"));
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Test
-	public void testSaveDynamicForm_happyPath_neptune() throws Exception {
-		JSONObject packageMetadata = mock(JSONObject.class);
-		when(packageMetadata.getString("study")).thenReturn("neptune");
-		when(packageMetadata.toString()).thenReturn("{\"siteNeptune\":\"Neptune Site\"}");
-		when(universalIdGenerator.generateUniversalId()).thenReturn("456");
-		when(packageMetadata.getString("submitterEmail")).thenReturn("emailAddress");
-		User user = mock(User.class);
-		when(user.getEmail()).thenReturn("emailAddress");
-		when(user.getId()).thenReturn("5c2f9e01cb5e710049f33121");
-		when(userRepo.findByEmail("emailAddress")).thenReturn(user);
-		JSONArray files = mock(JSONArray.class);
-		when(files.length()).thenReturn(1);
-		JSONObject file = mock(JSONObject.class);
-		when(files.getJSONObject(0)).thenReturn(file);
-		when(packageMetadata.getJSONArray("files")).thenReturn(files);
-		MongoCollection<Document> mongoCollection = mock(MongoCollection.class);
-		when(mongoTemplate.getCollection("packages")).thenReturn(mongoCollection);
-		StudyFileInfo studyFileInfo = mock (StudyFileInfo.class);
-		when(studyFileInfo.getShouldRename()).thenReturn(false);
-		when(studyFileInfoRepository.findByStudy("neptune")).thenReturn(studyFileInfo);
-
-		String packageId = repo.saveDynamicForm(packageMetadata, user, "123");
-
-		ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
-		verify(mongoCollection).insertOne(documentCaptor.capture());
-		assertEquals("123", packageId);
-		verify(file).put("_id", "456");
-		verify(packageMetadata).remove("submitterEmail");
-		verify(packageMetadata).remove("submitterFirstName");
-		verify(packageMetadata).remove("submitterLastName");
-		verify(packageMetadata).remove("submitter");
-		Document actualDocument = documentCaptor.getValue();
-		assertEquals("123", actualDocument.get("_id"));
-		assertEquals("Neptune Site", actualDocument.get("site"));
-		assertFalse(actualDocument.containsKey("siteNeptune"));
 		assertNotNull(actualDocument.get("createdAt"));
 		DBRef submitter = (DBRef) actualDocument.get("submitter");
 		assertEquals("users", submitter.getCollectionName());

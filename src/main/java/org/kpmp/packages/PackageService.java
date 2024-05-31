@@ -112,7 +112,7 @@ public class PackageService {
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
 		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
 		Package myPackage = packageRepository.findByPackageId(packageId);
-		return packageId;
+		return myPackage.getPackageId();
 	}
 
 	public Package findPackage(String packageId) {
