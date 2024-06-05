@@ -1,9 +1,6 @@
 package org.kpmp.packages.validation;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -52,7 +49,7 @@ public class PackageFilesValidationServiceTest {
 
 		List<String> expectedFilePaths = Arrays.asList("file1", "file2", "directory1/file3", "directory1/file4");
 
-		assertEquals(expectedFilePaths, service.getGlobusFilePaths(globusFilesInDirectories));
+		assertEquals(expectedFilePaths, service.getGlobusFilePaths(globusFilesInDirectories, ""));
 	}
 
 	@Test
@@ -63,7 +60,7 @@ public class PackageFilesValidationServiceTest {
 
 		List<String> expectedFilePaths = Arrays.asList("file1", "file2", "directory1");
 
-		assertEquals(expectedFilePaths, service.getGlobusFilePaths(globusFilesInDirectories));
+		assertEquals(expectedFilePaths, service.getGlobusFilePaths(globusFilesInDirectories, ""));
 	}
 
 
@@ -225,7 +222,7 @@ public class PackageFilesValidationServiceTest {
 	}
 
 	@Test
-	public void testMatchFile_perfectMatchIgnoresParentFolderWhenLone() throws JsonProcessingException, IOException {
+	public void testMatchFile_handlesDirectoriesCorrectly() throws JsonProcessingException, IOException {
 		
 		GlobusFileListing parent = new GlobusFileListing();
 		parent.setName("parent");
@@ -239,26 +236,33 @@ public class PackageFilesValidationServiceTest {
 		GlobusFileListing globusFile3 = new GlobusFileListing();
 		globusFile3.setName("file3");
 		globusFile3.setType("file");
-		List<GlobusFileListing> globusFileListing = Arrays.asList(globusFile1, globusFile2, globusFile3);
+		GlobusFileListing globusFolder1 = new GlobusFileListing();
+		globusFolder1.setName("folder1");
+		globusFolder1.setType("dir");
+		GlobusFileListing subFile1 = new GlobusFileListing();
+		subFile1.setName("subFile1");
+		subFile1.setType("file");
+		List<GlobusFileListing> globusFileListing = Arrays.asList(globusFile1, globusFile2, globusFile3, globusFolder1);
 		when(globus.getFilesAndDirectoriesAtEndpoint("package123")).thenReturn(Arrays.asList(parent));
 		when(globus.getFilesAndDirectoriesAtEndpoint("package123/parent")).thenReturn(globusFileListing);
+		when(globus.getFilesAndDirectoriesAtEndpoint("package123/parent/folder1")).thenReturn(Arrays.asList(subFile1));
 		PackageFilesRequest request = new PackageFilesRequest();
-		request.setFilenames("file1\nfile2,file3");
+		request.setFilenames("file1\nfile2\nfile3\nfolder1/subFile1");
 		request.setPackageId("package123");
 
 
 		PackageValidationResponse response = service.matchFiles(request);
 		assertEquals(true, response.getDirectoryExists());
-		assertEquals(Arrays.asList("file1", "file2", "file3"), response.getFilesFromMetadata());
+		assertEquals(Arrays.asList("file1", "file2", "file3", "folder1/subFile1"), response.getFilesFromMetadata());
 		assertEquals("package123", response.getPackageId());
-		assertEquals(Arrays.asList("file1", "file2", "file3"), response.getFilesInGlobus());
+		assertEquals(Arrays.asList("file1", "file2", "file3", "folder1/subFile1"), response.getFilesInGlobus());
 		assertEquals(null, response.getMetadataFilesNotFoundInGlobus());
 		assertEquals(null, response.getGlobusFilesNotFoundInMetadata());
 	}
 
 	@Test
 	public void testMatchFile_perfectMatchOneLevel() throws JsonProcessingException, IOException {
-		
+
 		GlobusFileListing globusFile1 = new GlobusFileListing();
 		globusFile1.setName("file1");
 		globusFile1.setType("file");
@@ -286,7 +290,6 @@ public class PackageFilesValidationServiceTest {
 
 	@Test
 	public void testMatchFile_misatchOneLevel() throws JsonProcessingException, IOException {
-		
 		GlobusFileListing globusFile1 = new GlobusFileListing();
 		globusFile1.setName("file1");
 		globusFile1.setType("file");
@@ -311,7 +314,6 @@ public class PackageFilesValidationServiceTest {
 
 	@Test
 	public void testMatchFile_perfectMatchMultiLevel() throws JsonProcessingException, IOException {
-		
 		GlobusFileListing globusFile1 = new GlobusFileListing();
 		globusFile1.setName("file1");
 		globusFile1.setType("file");

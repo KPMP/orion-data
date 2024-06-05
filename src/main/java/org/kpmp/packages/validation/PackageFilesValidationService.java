@@ -46,14 +46,12 @@ public class PackageFilesValidationService {
 			List<String> filesFromMetadata = processIncomingFilenames(request);
 
 			String baseDirectory = "";
-			boolean ignoreBaseDirectory = false;
 			// if we only have a top level folder, ignore it and go down one to start validation
 			if (globusFiles.size() == 0 && globusDirectories.size() == 1) {
 				baseDirectory = globusDirectories.get(0);
 				objectsInGlobus = globus.getFilesAndDirectoriesAtEndpoint(request.getPackageId() + "/" +baseDirectory);
 				globusFiles = getGlobusFileNames(objectsInGlobus);
 				globusDirectories = getGlobusDirectoryNames(objectsInGlobus);
-				ignoreBaseDirectory = true;
 			}
 
 			response.setFilesFromMetadata(filesFromMetadata);
@@ -63,8 +61,8 @@ public class PackageFilesValidationService {
 			// put top level files in our map
 			
 			filesInGlobusDirectories.put("", globusFiles);
-			filesInGlobusDirectories = processGlobusDirectory(filesInGlobusDirectories, globusDirectories, request.getPackageId() + baseDirectory, baseDirectory);
-			List<String> filePathsInGlobus = getGlobusFilePaths(filesInGlobusDirectories);
+			filesInGlobusDirectories = processGlobusDirectory(filesInGlobusDirectories, globusDirectories, request.getPackageId(), baseDirectory);
+			List<String> filePathsInGlobus = getGlobusFilePaths(filesInGlobusDirectories, baseDirectory);
 
 			response.setFilesInGlobus(filePathsInGlobus);
 
@@ -84,15 +82,17 @@ public class PackageFilesValidationService {
 		return response;
 	}
 
-	protected List<String> getGlobusFilePaths(Map<String, List<String>> filesInGlobusDirectories) {
+	protected List<String> getGlobusFilePaths(Map<String, List<String>> filesInGlobusDirectories, String baseDirectory) {
 		List<String> filePaths = new ArrayList<>();
 		Set<String> directories = filesInGlobusDirectories.keySet();
 		for (String directory : directories) {
 			List<String> filesInDirectory = filesInGlobusDirectories.get(directory);
-			if (filesInDirectory.size() == 0) {
+			if (filesInDirectory.size() == 0 && directory != baseDirectory) {
+				directory = directory.replace(baseDirectory + "/", "");
 				filePaths.add(directory);
 			}
 			for (String file : filesInDirectory) {
+				directory = directory.replace(baseDirectory + "/", "");
 				String fileWithPath = directory + "/" + file;
 				if (directory == "") {
 					fileWithPath = file;
