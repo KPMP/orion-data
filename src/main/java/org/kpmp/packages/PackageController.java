@@ -66,7 +66,7 @@ public class PackageController {
 	@RequestMapping(value = "/v1/packages", params="shouldExclude", method = RequestMethod.GET)
 	public @ResponseBody List<PackageView> getAllPackages( @RequestParam("shouldExclude") boolean shouldExclude, HttpServletRequest request)
 			throws JSONException, IOException {
-		
+
 		if (shouldExclude) {
 			logger.logInfoMessage(this.getClass(), null, "Request for filtered packages", request);
 			return packageService.findMostPackages();
