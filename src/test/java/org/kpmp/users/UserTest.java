@@ -2,6 +2,8 @@ package org.kpmp.users;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,9 +72,11 @@ public class UserTest {
 		testUser.setId("id");
 		testUser.setLastName("lastName");
 		testUser.setShibId("shibId");
+		testUser.setRoles(Arrays.asList("role1")); 
 
 		assertEquals("{\"firstName\":\"firstName\",\"lastName\":\"lastName\","
-				+ "\"displayName\":\"displayName\",\"email\":\"emailAddress\"}", testUser.generateJSON());
+				+ "\"displayName\":\"displayName\",\"email\":\"emailAddress\","
+				+ "\"roles\":[\"role1\"]}", testUser.generateJSON());
 	}
 
 	@Test
@@ -83,10 +87,11 @@ public class UserTest {
 		testUser.setId("id");
 		testUser.setLastName("lastName");
 		testUser.setShibId("shibId");
+		testUser.setRoles(Arrays.asList("role1")); 
 
 		assertEquals(
 				"{\"id\":\"id\",\"firstName\":\"firstName\",\"lastName\":\"lastName\","
-						+ "\"displayName\":\"displayName\",\"email\":\"emailAddress\",\"shibId\":\"shibId\"}",
+						+ "\"displayName\":\"displayName\",\"email\":\"emailAddress\",\"roles\":[\"role1\"],\"shibId\":\"shibId\"}",
 				testUser.generateJSONForApp());
 	}
 }
