@@ -1,5 +1,4 @@
 package org.kpmp.Notification;
-
 public class NotificationEvent {
     private String origin;
     private String userId;
@@ -25,5 +24,6 @@ public class NotificationEvent {
     public void setUserId(String userId) {
         this.userId = userId;
     }
+
 
 }

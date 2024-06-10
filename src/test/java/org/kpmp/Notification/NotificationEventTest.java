@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.users.User;
 
 public class NotificationEventTest {
     
@@ -12,7 +13,7 @@ public class NotificationEventTest {
 
     @Before
     public void setUp() throws Exception {
-        notificationEvent = new NotificationEvent("origin", "user");
+        notificationEvent = new NotificationEvent("shibId", "origin");
     }
 
     @After
@@ -22,9 +23,11 @@ public class NotificationEventTest {
 
     @Test
     public void testConstructor() throws Exception{
-        notificationEvent = new NotificationEvent("user2", "origin2");
+        User user = new User();
+        user.setShibId("shibId");
+        notificationEvent = new NotificationEvent(user.getShibId(), "origin2");
         assertEquals("origin2", notificationEvent.getOrigin());
-        assertEquals("user2", notificationEvent.getUserId());
+        assertEquals("shibId", notificationEvent.getUserId());
         
     }
 
@@ -34,9 +37,9 @@ public class NotificationEventTest {
         assertEquals("localhost", notificationEvent.getOrigin());
     }
 
-    @Test
-    public void testSetUser() throws Exception {
-        notificationEvent.setUserId("user2");
-        assertEquals("user2", notificationEvent.getUserId());
+    @Test 
+    public void testSetUserId() throws Exception {
+        notificationEvent.setUserId("shibId");
+        assertEquals("shibId", notificationEvent.getUserId());
     }
 }

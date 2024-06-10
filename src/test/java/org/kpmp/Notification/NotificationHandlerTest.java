@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.users.User;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -37,10 +38,13 @@ public class NotificationHandlerTest {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void testSendNotfication() {
+        User user = new User();
+        user.setShibId("shibId");
+
         when(restTemplate.postForObject(any(String.class), any(NotificationEvent.class), any(Class.class)))
 				.thenReturn(true);
         
-        handler.sendNotification("user", "origin");
+        handler.sendNotification(user.getShibId(), "origin");
 
         ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<NotificationEvent> eventCaptor = ArgumentCaptor.forClass(NotificationEvent.class);
@@ -49,7 +53,7 @@ public class NotificationHandlerTest {
 
         assertEquals("host/endpoint", urlCaptor.getValue());
         NotificationEvent notificationEvent = eventCaptor.getValue();
-        assertEquals("user", notificationEvent.getUserId());
+        assertEquals("shibId", notificationEvent.getUserId());
         assertEquals("origin", notificationEvent.getOrigin());
         assertEquals(Boolean.class, returnCaptor.getValue());
     }
