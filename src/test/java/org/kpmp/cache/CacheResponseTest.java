@@ -1,24 +1,24 @@
 package org.kpmp.cache;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CacheResponseTest {
 
     private CacheResponse cacheResponse;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         cacheResponse = new CacheResponse();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cacheResponse = null;
     }

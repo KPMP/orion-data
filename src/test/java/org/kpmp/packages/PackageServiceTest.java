@@ -1,6 +1,6 @@
 package org.kpmp.packages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -10,9 +10,9 @@ import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.kpmp.users.User;
 import org.kpmp.dmd.DmdService;
 import org.kpmp.logging.LoggingService;
@@ -34,14 +34,14 @@ public class PackageServiceTest {
 	private StateHandlerService stateHandlerService;
 	private AutoCloseable mocks;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 		service = new PackageService(packageRepository, stateHandlerService, dmdService, logger);
 		ReflectionTestUtils.setField(service, "packageTypeToExclude", "Electron Microscopy Images");
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		mocks.close();
 		service = null;

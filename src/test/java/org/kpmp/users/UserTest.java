@@ -1,21 +1,21 @@
 package org.kpmp.users;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class UserTest {
 
 	private User testUser;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		testUser = new User();
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		testUser = null;
 	}
