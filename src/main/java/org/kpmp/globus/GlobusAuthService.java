@@ -23,7 +23,7 @@ public class GlobusAuthService {
 
     private final String apiKey;
     private final String apiSecret;
-    private static GsonFactory JSON_FACTORY;
+    private static GsonFactory JSON_FACTORY = new GsonFactory();
 
     public GlobusAuthService(Environment env) {
         this.apiKey = env.getProperty("GLOBUS_API_KEY");
