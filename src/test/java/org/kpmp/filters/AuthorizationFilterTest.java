@@ -18,6 +18,7 @@ import javax.servlet.http.HttpSession;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.Notification.NotificationHandler;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
@@ -41,11 +42,13 @@ public class AuthorizationFilterTest {
 	private RestTemplate restTemplate;
 	@Mock
 	private Environment env;
+    @Mock
+    private NotificationHandler handler;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.openMocks(this);
-		filter = new AuthorizationFilter(logger, shibUserService, restTemplate, env);
+		filter = new AuthorizationFilter(logger, shibUserService, restTemplate, env, handler);
 		ReflectionTestUtils.setField(filter, "userAuthHost", "hostname");
 		ReflectionTestUtils.setField(filter, "userAuthEndpoint", "endpoint");
 		ReflectionTestUtils.setField(filter, "allowedGroups", Arrays.asList("group1", "group2"));
@@ -197,6 +200,33 @@ public class AuthorizationFilterTest {
 		verify(chain).doFilter(incomingRequest, incomingResponse);
 		verify(session).setMaxInactiveInterval(8 * 60 * 60);
 	}
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testDoFilter_noSessionIncorrectGroups() throws Exception {
+        HttpServletRequest incomingRequest = mock(HttpServletRequest.class);
+		when(incomingRequest.getRequestURI()).thenReturn("anything");
+		HttpServletResponse incomingResponse = mock(HttpServletResponse.class);
+		HttpSession session = mock(HttpSession.class);
+		when(incomingRequest.getSession(true)).thenReturn(session);
+		FilterChain chain = mock(FilterChain.class);
+		User user = mock(User.class);
+		when(user.getShibId()).thenReturn("shibboleth id");
+		when(shibUserService.getUser(incomingRequest)).thenReturn(user);
+		when(incomingRequest.getSession(false)).thenReturn(null);
+		ResponseEntity<String> response = mock(ResponseEntity.class);
+		when(response.getBody()).thenReturn("{groups: [ 'another group'], active: true}");
+		when(restTemplate.getForEntity(any(String.class), any(Class.class))).thenReturn(response);
+
+        filter.doFilter(incomingRequest, incomingResponse, chain);
+
+        verify(chain, times(0)).doFilter(incomingRequest, incomingResponse);
+		verify(incomingResponse).setStatus(HttpStatus.NOT_FOUND.value());
+		verify(logger).logErrorMessage(AuthorizationFilter.class, null,
+				"User does not have access to DLU: [\"another group\"]",
+				incomingRequest);
+        verify(handler).sendNotification("shibboleth id", "hostname");
+    }
 
 	@SuppressWarnings("unchecked")
 	@Test
