@@ -24,7 +24,7 @@ import com.google.common.reflect.TypeToken;
 @Service
 public class GlobusService {
 
-    private static GsonFactory JSON_FACTORY;
+    private static GsonFactory JSON_FACTORY = new GsonFactory();
 	private static final String API_URL = "https://transfer.api.globusonline.org/v0.10";
 
 	private HttpRequestFactory requestFactory;
