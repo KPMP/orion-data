@@ -1,15 +1,20 @@
 buildscript {
-	repositories {
-		mavenCentral()
-	}
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:3.2.5")
+    }
 }
 
 plugins {
-	id 'com.palantir.docker' version '0.22.1'
-	id 'org.springframework.boot' version '2.6.15'
+    id 'java'
+    id 'com.palantir.docker' version '0.35.0'
+    id 'org.springframework.boot' version '3.2.5'
 }
 
-
+group = 'kingstonduo'
+version = "4.1"
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
@@ -20,8 +25,8 @@ apply plugin: 'com.palantir.docker'
 
 jar {
     baseName='orion-data'
-    version= '4.1'
 }
+
 
 group = 'kingstonduo'
 
@@ -29,8 +34,8 @@ repositories {
     mavenCentral()
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = '21'
+targetCompatibility = '21'
 
 
 dependencies {
@@ -38,23 +43,26 @@ dependencies {
 	implementation ('org.springframework.boot:spring-boot-starter-data-mongodb') {
 		exclude group: 'ch.qos.logback', module: 'logback-classics'
 	}
-	implementation 'commons-io:commons-io:2.6' 
-	implementation 'mysql:mysql-connector-java:8.0.15'
-	implementation 'org.apache.commons:commons-compress:1.17'
-	implementation 'org.apache.commons:commons-text:1.7'
-	implementation 'commons-codec:commons-codec:1.15'
-	implementation ('com.google.api-client:google-api-client:1.23.0') {
-		exclude group: 'javax.servelet'
+	implementation 'commons-io:commons-io:2.16.1'
+	implementation 'com.mysql:mysql-connector-j:8.0.33'
+	implementation 'org.apache.commons:commons-compress:1.26.2'
+	implementation 'org.apache.commons:commons-text:1.12.0'
+	implementation 'commons-codec:commons-codec:1.17.0'
+    implementation 'com.google.http-client:google-http-client-gson:1.19.0'
+	implementation ('com.google.api-client:google-api-client:2.6.0') {
+		exclude group: 'jakarta.servelet'
 	}
-	implementation ('com.google.oauth-client:google-oauth-client-jetty:1.23.0') {
+	implementation ('com.google.oauth-client:google-oauth-client-jetty:1.36.0') {
 		exclude group: 'org.mortbay.jetty', module: 'servlet-api'
-		exclude group: 'javax.servelet'
+		exclude group: 'jakarta.servelet'
 	}
-	implementation 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
-	implementation 'org.json:json:20220924'
-	testImplementation 'org.mockito:mockito-core'
+	implementation 'com.google.apis:google-api-services-drive:v3-rev197-1.25.0'
+	implementation 'org.json:json:20240303'
+    
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'junit:junit:4.13.2'
+	testImplementation 'org.mockito:mockito-core'
+    testImplementation('org.mockito:mockito-junit-jupiter:3.12.4')
+    testImplementation 'org.springframework:spring-test:5.2.25.RELEASE'
 	
 }
 
@@ -68,12 +76,12 @@ task unpack(type: Copy) {
     into("build/dependency")
 }
 
-def getTagInfo() {
-    if (project.hasProperty('tag')) {
-        def tagValue = project.property('tag')
-        return tagValue
-    } else {
-        def gitBranch = "Unknown branch"
+def getCurrentGitBranch() {
+  if (project.hasProperty('tag')) {
+    def tagValue = project.property('tag')
+    return tagValue
+  } else {
+      def gitBranch = "Unknown branch"
       try {
         def workingDir = new File("${project.projectDir}")
         def result = 'git rev-parse --abbrev-ref HEAD'.execute(null, workingDir)
@@ -83,12 +91,16 @@ def getTagInfo() {
         }
       } catch (e) {
         }
-        return gitBranch
+        if (gitBranch == "develop" || gitBranch == "master"){
+          return project.version
+        }else{
+          return gitBranch
+        }
     }
 }
 
 docker {
-    name "${project.group}/${jar.baseName}:" + getTagInfo()
+    name "kingstonduo/orion-data:" + getCurrentGitBranch()
     copySpec.from(tasks.unpack.outputs).into("dependency")
     buildArgs(['DEPENDENCY': "dependency"])
 }

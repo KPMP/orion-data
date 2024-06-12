@@ -1,16 +1,17 @@
 package org.kpmp.dmd;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.packages.Attachment;
 import org.kpmp.packages.Package;
 import org.kpmp.users.User;
 import org.mockito.Mock;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.when;
@@ -22,7 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DmdServiceTest {
 
@@ -35,7 +36,7 @@ public class DmdServiceTest {
 
     private AutoCloseable mocks;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         mocks = MockitoAnnotations.openMocks(this);
         dmdService = new DmdService(restTemplate, logger);
@@ -43,7 +44,7 @@ public class DmdServiceTest {
         ReflectionTestUtils.setField(dmdService, "dataManagerEndpoint", "/uri/to/dmd/endpoint");
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         mocks.close();
         dmdService = null;

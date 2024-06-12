@@ -1,22 +1,23 @@
 package org.kpmp.dmd;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.kpmp.packages.Attachment;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public class DluFileTest {
 
     DluFile dluFile;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         dluFile = new DluFile();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         dluFile = null;
     }

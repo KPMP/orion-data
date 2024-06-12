@@ -1,6 +1,6 @@
 package org.kpmp.shibboleth;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
 import org.kpmp.users.User;

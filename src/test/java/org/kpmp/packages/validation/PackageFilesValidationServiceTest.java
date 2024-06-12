@@ -1,6 +1,6 @@
 package org.kpmp.packages.validation;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.kpmp.globus.GlobusFileListing;
 import org.kpmp.globus.GlobusService;
 import org.mockito.Mock;
@@ -29,13 +29,13 @@ public class PackageFilesValidationServiceTest {
 	private PackageFilesValidationService service;
 	private AutoCloseable mocks;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 		service = new PackageFilesValidationService(globus);
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		mocks.close();
 		service = null;

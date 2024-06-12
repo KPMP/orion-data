@@ -1,25 +1,27 @@
 package org.kpmp.dmd;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.kpmp.packages.Package;
 import org.kpmp.users.User;
 
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DluPackageInventoryTest {
 
     DluPackageInventory dluPackageInventory;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         dluPackageInventory = new DluPackageInventory();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         dluPackageInventory = null;
     }

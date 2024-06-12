@@ -1,27 +1,27 @@
 package org.kpmp.packages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.kpmp.users.User;
 
 public class PackageTest {
 
 	private Package testPackage;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		testPackage = new Package();
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		testPackage = null;
 	}
