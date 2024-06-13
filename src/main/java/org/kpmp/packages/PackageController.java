@@ -1,7 +1,5 @@
 package org.kpmp.packages;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
@@ -10,14 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.kpmp.dmd.DmdResponse;
-import org.kpmp.dmd.DmdService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,16 +46,14 @@ public class PackageController {
 	private ShibbolethUserService shibUserService;
 	private UniversalIdGenerator universalIdGenerator;
 
-	private DmdService dmdService;
 
 	@Autowired
 	public PackageController(PackageService packageService, LoggingService logger,
-			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator, DmdService dmdService) {
+			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator) {
 		this.packageService = packageService;
 		this.logger = logger;
 		this.shibUserService = shibUserService;
 		this.universalIdGenerator = universalIdGenerator;
-		this.dmdService = dmdService;
 	}
 
 	@RequestMapping(value = "/v1/packages", params="shouldExclude", method = RequestMethod.GET)
@@ -136,30 +129,6 @@ public class PackageController {
 		return new FileUploadResponse(true);
 	}
 
-
-	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = "/v1/packages/{packageId}/files/move", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity movePackageFiles(@PathVariable String packageId, HttpServletRequest request) {
-		ResponseEntity responseEntity;
-		DmdResponse dmdResponse;
-		try {
-			logger.logInfoMessage(this.getClass(), packageId, "Moving files for package " + packageId, request);
-			dmdResponse = dmdService.moveFiles(packageId);
-			if (dmdResponse.isSuccess()) {
-				String successMessage = "The following files were moved successfully: " + String.join(",", dmdResponse.getFileNameList());
-				logger.logInfoMessage(this.getClass(), packageId, successMessage, request);
-				responseEntity = ResponseEntity.ok().body(successMessage);
-			} else {
-				logger.logErrorMessage(this.getClass(), packageId, dmdResponse.getMessage(), request);
-				responseEntity = ResponseEntity.status(INTERNAL_SERVER_ERROR).body("The following problem occurred while moving the files: " + dmdResponse.getMessage());
-			}
-		} catch (IOException e) {
-			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-			responseEntity = ResponseEntity.status(INTERNAL_SERVER_ERROR).body("There was a server error while moving the files.");
-		}
-		return responseEntity;
-	}
-
 	@RequestMapping(value = "/v1/packages/{packageId}/files/finish", method = RequestMethod.POST)
 	public @ResponseBody FileUploadResponse finishUpload(@PathVariable("packageId") String packageId,
 			@RequestBody String hostname, HttpServletRequest request) {
@@ -172,7 +141,7 @@ public class PackageController {
 		if (packageService.validatePackage(packageId, shibUserService.getUser(request))) {
 			try {
                 packageService.stripMetadata(packageService.findPackage(packageId));
-				//packageService.calculateAndSaveChecksums(packageId);
+				packageService.calculateAndSaveChecksums(packageId);
 				fileUploadResponse = new FileUploadResponse(true);
 				packageService.sendStateChangeEvent(packageId, uploadSucceededState, null, cleanHostName);
 			} catch (Exception e) {
