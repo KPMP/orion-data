@@ -27,9 +27,6 @@ jar {
     baseName='orion-data'
 }
 
-
-group = 'kingstonduo'
-
 repositories {
     mavenCentral()
 }
