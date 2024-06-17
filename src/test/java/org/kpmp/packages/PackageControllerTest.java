@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,7 +48,7 @@ public class PackageControllerTest {
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadFailedState", "UPLOAD_FAILED");
 		ReflectionTestUtils.setField(controller, "filesReceivedState", "FILES_RECEIVED");
-
+		ReflectionTestUtils.setField(controller, "uploadLockedState", "UPLOAD_LOCKED");
 	}
 
 	@After
@@ -243,6 +244,18 @@ public class PackageControllerTest {
 		verify(packageService).sendStateChangeEvent("3545", "FILES_RECEIVED", null, "origin");
 		verify(packageService).sendStateChangeEvent("3545", "UPLOAD_FAILED", null,
 				"The files on disk did not match the database:  3545", "origin");
+	}
+
+	@Test
+	public void testLockPackage() throws Exception {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		HttpSession session = mock(HttpSession.class);
+		when(session.getAttribute("shibid")).thenReturn("shibId111");
+		when(request.getSession(false)).thenReturn(session);
+		
+		controller.lockPackage("12345", "myHost", request);
+
+		verify(packageService).sendStateChangeEvent("12345", "UPLOAD_LOCKED", null, "Locked by [shibId111]", "myHost");
 	}
 
 }
