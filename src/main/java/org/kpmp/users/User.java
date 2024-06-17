@@ -1,13 +1,16 @@
 package org.kpmp.users;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@JsonPropertyOrder({ "id", "firstName", "lastName", "displayName", "email" })
+@JsonPropertyOrder({ "id", "firstName", "lastName", "displayName", "email", "roles" })
 @Document(collection = "users")
 public class User {
 
@@ -18,6 +21,16 @@ public class User {
 	private String displayName;
 	private String email;
 	private String shibId;
+	@Transient
+	private List<String> roles;
+
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
+	}
 
 	public String getId() {
 		return id;

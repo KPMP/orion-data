@@ -7,8 +7,9 @@ import static org.mockito.Mockito.when;
 import java.io.UnsupportedEncodingException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
-
+import org.json.JSONArray;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,9 @@ public class ShibbolethUserServiceTest {
 		when(request.getHeader("sn")).thenReturn("Cash");
 		when(request.getHeader("displayname")).thenReturn("Johnny Cash");
 		when(request.getHeader("eppn")).thenReturn("shibId");
+		HttpSession session = mock(HttpSession.class);
+		when(session.getAttribute("roles")).thenReturn(new JSONArray());
+		when(request.getSession(false)).thenReturn(session);
 		when(utf8Encoder.convertFromLatin1("Johnny")).thenReturn("Johnny");
 		when(utf8Encoder.convertFromLatin1("Cash")).thenReturn("Cash");
 		when(utf8Encoder.convertFromLatin1("Johnny Cash")).thenReturn("Johnny Cash");

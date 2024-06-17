@@ -18,7 +18,6 @@ public enum PackageKeys {
 	PACKAGE_TYPE("packageType"), 
 	PROTOCOL("protocol"),
 	SHIBID("shibId"), 
-	SITE("site"),
 	SIZE("size"), 
 	STUDY("study"),
 	SUBJECT_ID("subjectId"), 
@@ -31,10 +30,7 @@ public enum PackageKeys {
 	TIS_INTERNAL_EXPERIMENT_ID("tisInternalExperimentID"), 
 	TIS_NAME("tisName"), 
 	VERSION("version"),
-	LARGE_FILES_CHECKED("largeFilesChecked"), 
-	CUREGN_SITE("siteCuregn"), 
-	CUREGN_DIABETES_SITE("siteCuregnDiabetes"), 
-	NEPTUNE_SITE("siteNeptune");
+	LARGE_FILES_CHECKED("largeFilesChecked");
 
 	private String key;
 

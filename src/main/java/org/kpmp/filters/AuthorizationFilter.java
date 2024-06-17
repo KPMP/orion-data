@@ -28,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.kpmp.Notification.NotificationHandler;
 
 @Component
 public class AuthorizationFilter implements Filter {
@@ -46,6 +47,7 @@ public class AuthorizationFilter implements Filter {
 	private LoggingService logger;
 	private ShibbolethUserService shibUserService;
 	private RestTemplate restTemplate;
+    private NotificationHandler notificationHandler;
 
 	@Value("${user.auth.host}")
 	private String userAuthHost;
@@ -59,11 +61,12 @@ public class AuthorizationFilter implements Filter {
 
 	@Autowired
 	public AuthorizationFilter(LoggingService logger, ShibbolethUserService shibUserService, RestTemplate restTemplate,
-			Environment env) {
+			Environment env, NotificationHandler notificationHandler) {
 		this.logger = logger;
 		this.shibUserService = shibUserService;
 		this.restTemplate = restTemplate;
 		this.env = env;
+        this.notificationHandler = notificationHandler;
 	}
 
 	@Override
@@ -104,6 +107,7 @@ public class AuthorizationFilter implements Filter {
 						chain.doFilter(request, response);
 					} else {
 						handleError(USER_NO_DLU_ACCESS + userGroups, HttpStatus.NOT_FOUND, request, response);
+                        notificationHandler.sendNotification(shibId, userAuthHost);
 					}
 
 
@@ -117,6 +121,7 @@ public class AuthorizationFilter implements Filter {
 				int statusCode = e.getRawStatusCode();
 				if (statusCode == HttpStatus.NOT_FOUND.value()) {
 					handleError(USER_DOES_NOT_EXIST + shibId, HttpStatus.NOT_FOUND, request, response);
+                    notificationHandler.sendNotification(shibId, userAuthHost);
 				} else if (statusCode != HttpStatus.OK.value()) {
 					handleError("Unable to get user information. User auth returned status code: " + statusCode,
 							HttpStatus.FAILED_DEPENDENCY, request, response);
@@ -155,6 +160,7 @@ public class AuthorizationFilter implements Filter {
 			HttpServletResponse response) {
 		logger.logErrorMessage(this.getClass(), null, errorMessage, request);
 		response.setStatus(status.value());
+
 	}
 
 	private boolean hasExistingSession(User user, String shibId, Cookie[] cookies, HttpServletRequest request) {

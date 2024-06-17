@@ -29,7 +29,7 @@ public class Package {
 	private Date experimentDate;
 	private String description;
     private String study;
-    private String studyName;
+	
     @DBRef(lazy = false)
 	private User submitter;
 	@Nullable
@@ -64,10 +64,6 @@ public class Package {
             return study;
         }
         return getStudy();
-    }
-
-    public void setStudyFolderName(String studyName){
-        this.studyName = studyName;
     }
 
 	public void setPackageType(String packageType) {

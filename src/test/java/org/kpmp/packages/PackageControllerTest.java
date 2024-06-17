@@ -15,7 +15,6 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.kpmp.dmd.DmdService;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
@@ -37,15 +36,13 @@ public class PackageControllerTest {
 	@Mock
 	private UniversalIdGenerator universalIdGenerator;
 
-	@Mock
-	private DmdService dmdService;
 	private AutoCloseable mocks;
 
 	@Before
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 
-		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator, dmdService);
+		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator);
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadFailedState", "UPLOAD_FAILED");
