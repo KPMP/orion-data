@@ -5,7 +5,9 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.kpmp.logging.LoggingService;
@@ -33,7 +35,8 @@ public class PackageController {
 	private String metadataReceivedState;
 	@Value("${package.state.upload.failed}")
 	private String uploadFailedState;
-
+	@Value("${package.state.upload.locked}")
+	private String uploadLockedState;
 	@Value("${package.state.upload.succeeded}")
 	private String uploadSucceededState;
 
@@ -159,6 +162,18 @@ public class PackageController {
 			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, errorMessage, cleanHostName);
 		}
 		return fileUploadResponse;
+	}
+
+	@RequestMapping(value = "/v1/packages/{packageId}/lock", method = RequestMethod.POST)
+	public void lockPackage(@PathVariable("packageId") String packageId,@RequestBody String hostname, HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		String shibId = "";
+		if (session != null) {
+			shibId = (String)session.getAttribute("shibid");
+		}
+
+		String cleanHostName = hostname.replace("=", "");
+		packageService.sendStateChangeEvent(packageId, uploadLockedState, null, "Locked by ["+ shibId + "]", cleanHostName);
 	}
 
 	private boolean shouldAppend(int chunk) {
