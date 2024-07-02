@@ -164,8 +164,8 @@ public class PackageController {
 		return fileUploadResponse;
 	}
 
-	@RequestMapping(value = "/v1/packages/{packageId}/lock", method = RequestMethod.POST)
-	public void lockPackage(@PathVariable("packageId") String packageId,@RequestBody String hostname, HttpServletRequest request) {
+	@RequestMapping(value = "/v1/packages/{packageId}/lock", method = RequestMethod.GET)
+	public @ResponseBody boolean lockPackage(@PathVariable("packageId") String packageId, @RequestBody String hostname, HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
 		String shibId = "";
 		if (session != null) {
@@ -174,6 +174,7 @@ public class PackageController {
 
 		String cleanHostName = hostname.replace("=", "");
 		packageService.sendStateChangeEvent(packageId, uploadLockedState, null, "Locked by ["+ shibId + "]", cleanHostName);
+		return true;
 	}
 
 	private boolean shouldAppend(int chunk) {
