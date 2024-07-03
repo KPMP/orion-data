@@ -164,7 +164,7 @@ public class PackageController {
 		return fileUploadResponse;
 	}
 
-	@RequestMapping(value = "/v1/packages/{packageId}/lock", method = RequestMethod.GET)
+	@RequestMapping(value = "/v1/packages/{packageId}/lock", method = RequestMethod.POST)
 	public @ResponseBody boolean lockPackage(@PathVariable("packageId") String packageId, @RequestBody String hostname, HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
 		String shibId = "";
