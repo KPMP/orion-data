@@ -177,7 +177,7 @@ public class PackageController {
 		return true;
 	}
 
-	@RequestMapping(value = "/v1/packages/{packageId}/files/delete/{fileId}", method = RequestMethod.POST)
+	@RequestMapping(value = "/v1/packages/{packageId}/files/delete/{fileId}", method = RequestMethod.GET)
 	public @ResponseBody boolean deletePackage(@PathVariable("packageId") String packageId, @PathVariable("fileId") String fileId, HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
 		String shibId = "";
