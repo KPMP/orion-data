@@ -124,12 +124,12 @@ public class PackageService {
 		packageFileHandler.saveMultipartFile(file, packageId, filename, study, shouldAppend);
 	}
 
-	public Boolean deleteFile(String packageId, String fileId){
+	public Boolean deleteFile(String packageId, String fileId, String shibId){
 		Boolean fileFound = false;
 		Package thePackage = findPackage(packageId);
 		List<Attachment> files = thePackage.getAttachments();
 		Attachment theFile = null;
-		// Because we have to modify it, use an iterator. 
+		// Because we have to modify it, use an iterator.
 		Iterator<Attachment> i = files.iterator();
 		while (i.hasNext()) {
 			Attachment file = i.next();
@@ -142,6 +142,7 @@ public class PackageService {
 		if (fileFound) {
 			packageRepository.updateField(packageId, "files", files);
 			packageRepository.updateField(packageId, "modifiedAt", new Date());
+			packageRepository.updateField(packageId, "modifiedBy", shibId);
 			String filePath = filePathHelper.getFilePath(packageId, thePackage.getStudy(), theFile.getFileName());
 			File file = new File(filePath);
 			file.delete();
