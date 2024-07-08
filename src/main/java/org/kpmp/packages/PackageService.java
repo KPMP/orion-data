@@ -128,15 +128,16 @@ public class PackageService {
 		Boolean fileFound = false;
 		Package thePackage = findPackage(packageId);
 		List<Attachment> files = thePackage.getAttachments();
-		int index = 0;
 		Attachment theFile = null;
-		for (Attachment file: files) {
+		// Because we have to modify it, use an iterator. 
+		Iterator<Attachment> i = files.iterator();
+		while (i.hasNext()) {
+			Attachment file = i.next();
 			if (file.getId().equals(fileId)) {
 				theFile = file;
-				files.remove(index);
+				i.remove();
 				fileFound = true;
 			}
-			index++;
 		}
 		if (fileFound) {
 			packageRepository.updateField(packageId, "files", files);
