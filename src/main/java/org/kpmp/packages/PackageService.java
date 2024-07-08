@@ -6,10 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -125,6 +122,30 @@ public class PackageService {
 			filename = filename.replace(".", "_user.");
 		}
 		packageFileHandler.saveMultipartFile(file, packageId, filename, study, shouldAppend);
+	}
+
+	public Boolean deleteFile(String packageId, String fileId){
+		Boolean fileFound = false;
+		Package thePackage = findPackage(packageId);
+		List<Attachment> files = thePackage.getAttachments();
+		int index = 0;
+		Attachment theFile = null;
+		for (Attachment file: files) {
+			if (file.getId().equals(fileId)) {
+				theFile = file;
+				files.remove(index);
+				fileFound = true;
+			}
+			index++;
+		}
+		if (fileFound) {
+			packageRepository.updateField(packageId, "files", files);
+			packageRepository.updateField(packageId, "modifiedAt", new Date());
+			String filePath = filePathHelper.getFilePath(packageId, thePackage.getStudy(), theFile.getFileName());
+			File file = new File(filePath);
+			file.delete();
+		}
+		return fileFound;
 	}
 
 	public boolean validatePackage(String packageId, User user) {

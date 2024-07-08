@@ -177,6 +177,11 @@ public class PackageController {
 		return true;
 	}
 
+	@RequestMapping(value = "/v1/packages/{packageId}/files/delete/{fileId}", method = RequestMethod.GET)
+	public @ResponseBody boolean deletePackage(@PathVariable("packageId") String packageId, @PathVariable("fileId") String fileId) {
+		return packageService.deleteFile(packageId, fileId);
+	}
+
 	private boolean shouldAppend(int chunk) {
 		return chunk != 0;
 	}
@@ -189,5 +194,7 @@ public class PackageController {
 		}
 		return null;
 	}
+
+
 
 }
