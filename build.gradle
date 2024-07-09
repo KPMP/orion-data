@@ -59,7 +59,7 @@ dependencies {
 }
 
 springBoot {
-    mainClass = "org.kpmp.Application"
+    mainClass = "org.miktmc.Application"
 }
 
 task unpack(type: Copy) {
