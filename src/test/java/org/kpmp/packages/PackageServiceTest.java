@@ -1,8 +1,6 @@
 package org.kpmp.packages;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
@@ -20,6 +18,7 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.kpmp.users.User;
 import org.kpmp.logging.LoggingService;
 
@@ -47,7 +46,6 @@ public class PackageServiceTest {
 	@Mock
 	private StateHandlerService stateHandlerService;
 	private AutoCloseable mocks;
-
 
 	@Before
 	public void setUp() throws Exception {
@@ -360,6 +358,33 @@ public class PackageServiceTest {
 				"packageId", user));
 		verify(logger, times(0)).logErrorMessage(PackageService.class, user, "packageId",
 				"PackageService.checkFilesExist", "ERROR|zip|File list in metadata does not match file list on disk");
+	}
+
+	@Test
+	public void testDelete() throws Exception {
+		Path packagePath = Files.createTempDirectory("data");
+		packagePath.toFile().deleteOnExit();
+		String file1Path = Paths.get(packagePath.toString(), "file1").toString();
+		File tempFile1 = new File(file1Path);
+		tempFile1.createNewFile();
+		tempFile1.deleteOnExit();
+		Package testPackage = new Package();
+		testPackage.setPackageId("testid");
+		testPackage.setStudy("Neptune");
+		ArrayList<Attachment> files = new ArrayList<>();
+		Attachment file1 = new Attachment();
+		file1.setFileName("file1");
+		file1.setId("id1");
+		Attachment file2 = new Attachment();
+		file2.setFileName("filename2.txt");
+		file2.setId("id2");
+		files.add(file1);
+		files.add(file2);
+		testPackage.setAttachments(files);
+		when(filePathHelper.getFilePath("testid", "Neptune", "file1")).thenReturn("/data/file1");
+		when(packageRepository.findByPackageId("testid")).thenReturn(testPackage);
+		Boolean result = service.deleteFile("testid", "id1", "shibid");
+		assertEquals(1, testPackage.getAttachments().size());
 	}
 
 	@Test

@@ -144,6 +144,7 @@ public class PackageService {
 			packageRepository.updateField(packageId, "modifiedAt", new Date());
 			packageRepository.updateField(packageId, "modifiedBy", shibId);
 			String filePath = filePathHelper.getFilePath(packageId, thePackage.getStudy(), theFile.getFileName());
+			System.out.println(filePath);
 			File file = new File(filePath);
 			file.delete();
 		}
