@@ -37,7 +37,7 @@ NOTE: You need to create a new credentials file if the permissions change
  3. Spring will generate a URL and print it to stdout (you may have to look in Kibana), grab it and open it in a browser.
  4. Authenticate.
  5. The redirect to localhost will probably fail, since you're not running the app locally. Copy this URL.
- 6. Go into the spring container and do a wget on the pasted URL. This will create the credentials file and the app will start running.
+ 6. Go into the spring container and do a wget on the pasted URL. This will create the credentials file and the app will start running. NOTE: if "localhost" doesn't work for this URL, try "127.0.0.1".
 
 # Build
 `./gradlew build docker`
