@@ -65,9 +65,9 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testSetSubjectId() throws Exception {
-		testPackage.setSubjectId("subjectId");
-		assertEquals("subjectId", testPackage.getSubjectId());
+	public void testSetBiopsyId() throws Exception {
+		testPackage.setBiopsyId("subjectId");
+		assertEquals("subjectId", testPackage.getBiopsyId());
 	}
 
 	@Test
@@ -107,7 +107,7 @@ public class PackageTest {
 		packageInfo.setPackageId("packageId");
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
-		packageInfo.setSubjectId("subjectId");
+		packageInfo.setBiopsyId("subjectId");
         packageInfo.setStudy("study");
 		User user = new User();
 		user.setId("1234");
