@@ -140,9 +140,13 @@ public class PackageService {
 			}
 		}
 		if (fileFound) {
+			Date rightNow = new Date();
+;			List<String> modifications = thePackage.getModifications();
+			modifications.add("DELETE " + theFile.getFileName() + " BY " + shibId + " ON " + rightNow);
 			packageRepository.updateField(packageId, "files", files);
-			packageRepository.updateField(packageId, "modifiedAt", new Date());
+			packageRepository.updateField(packageId, "modifiedAt", rightNow);
 			packageRepository.updateField(packageId, "modifiedBy", shibId);
+			packageRepository.updateField(packageId, "modifications", modifications);
 			String filePath = filePathHelper.getFilePath(packageId, thePackage.getStudy(), theFile.getFileName());
 			System.out.println(filePath);
 			File file = new File(filePath);

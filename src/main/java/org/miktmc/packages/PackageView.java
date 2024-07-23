@@ -2,6 +2,7 @@ package org.miktmc.packages;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONObject;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,7 +18,7 @@ class PackageView {
 
 	public PackageView(JSONObject packageJSON) throws IOException {
 		mapper = new ObjectMapper();
-		this.packageInfo = mapper.readTree(packageJSON.toString());
+		this.setPackageInfo(packageJSON);
 	}
 
 	public JsonNode getPackageInfo() {
@@ -25,6 +26,8 @@ class PackageView {
 	}
 
 	public void setPackageInfo(JSONObject packageJSON) throws IOException {
+		packageJSON.remove("modifications");
+		packageJSON.remove("modifiedBy");
 		this.packageInfo = mapper.readTree(packageJSON.toString());
 	}
 
