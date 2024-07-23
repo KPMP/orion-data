@@ -18,9 +18,7 @@ class PackageView {
 
 	public PackageView(JSONObject packageJSON) throws IOException {
 		mapper = new ObjectMapper();
-		packageJSON.remove("modifications");
-		packageJSON.remove("modifiedBy");
-		this.packageInfo = mapper.readTree(packageJSON.toString());
+		this.setPackageInfo(packageJSON);
 	}
 
 	public JsonNode getPackageInfo() {
@@ -28,6 +26,8 @@ class PackageView {
 	}
 
 	public void setPackageInfo(JSONObject packageJSON) throws IOException {
+		packageJSON.remove("modifications");
+		packageJSON.remove("modifiedBy");
 		this.packageInfo = mapper.readTree(packageJSON.toString());
 	}
 

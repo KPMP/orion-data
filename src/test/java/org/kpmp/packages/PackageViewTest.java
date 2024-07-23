@@ -1,6 +1,6 @@
 package org.kpmp.packages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
@@ -29,9 +29,14 @@ public class PackageViewTest {
 	@Test
 	public void testSetPackageJSON() throws IOException {
 		JSONObject packageInfo = new JSONObject();
+		packageInfo.put("modifications", "mods");
+		packageInfo.put("modifiedBy", "modified by");
 		ObjectMapper mapper = new ObjectMapper();
+		assertTrue(packageInfo.has("modifications"));
+		assertTrue(packageInfo.has("modifiedBy"));
 		packageView.setPackageInfo(packageInfo);
-
+		assertFalse(packageInfo.has("modifications"));
+		assertFalse(packageInfo.has("modifiedBy"));
 		assertEquals(mapper.readTree(packageInfo.toString()), packageView.getPackageInfo());
 	}
 
