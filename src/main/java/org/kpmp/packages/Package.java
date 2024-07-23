@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.kpmp.users.User;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -30,6 +31,7 @@ public class Package {
 	private String description;
     private String study;
 	
+	
     @DBRef(lazy = false)
 	private User submitter;
 	@Nullable
@@ -38,6 +40,7 @@ public class Package {
 	@Field("files")
 	private List<Attachment> attachments = new ArrayList<>();
 
+	@JsonIgnore
 	@Field("modifications")
 	private List<String> modifications = new ArrayList<>();
 
