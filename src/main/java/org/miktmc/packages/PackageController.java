@@ -98,6 +98,14 @@ public class PackageController {
 		return packageResponse;
 	}
 
+	@RequestMapping(value = "/v1/packages/{packageId}/files/add", method = RequestMethod.POST)
+	public @ResponseBody PackageResponse postNewFiles(@RequestBody String packageInfoString,
+																@RequestParam("hostname") String hostname, HttpServletRequest request) {
+		PackageResponse packageResponse = new PackageResponse();
+
+		return packageResponse;
+	}
+
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.POST, consumes = {
 			"multipart/form-data" })
 	public @ResponseBody FileUploadResponse postFilesToPackage(@PathVariable("packageId") String packageId,

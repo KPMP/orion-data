@@ -151,6 +151,16 @@ public class PackageService {
 		return fileFound;
 	}
 
+	public List<Attachment> addFiles(String packageId, List<Attachment> newFiles, String shibId){
+		Package thePackage = findPackage(packageId);
+		List<Attachment> files = thePackage.getAttachments();
+		files.addAll(newFiles);
+		packageRepository.updateField(packageId, "files", files);
+		packageRepository.updateField(packageId, "modifiedAt", new Date());
+		packageRepository.updateField(packageId, "modifiedBy", shibId);
+		return files;
+	}
+
 	public boolean validatePackage(String packageId, User user) {
 		Package packageInformation = findPackage(packageId);
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId(), packageInformation.getStudy());
