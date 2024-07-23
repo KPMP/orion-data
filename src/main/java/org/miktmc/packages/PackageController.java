@@ -111,8 +111,8 @@ public class PackageController {
 		}
 		try {
 			packageInfo = new JSONObject(packageInfoString);
-			JSONArray jsonFiles = packageInfo.getJSONArray(PackageKeys.FILES.getKey());
-			packageId = packageInfo.getString(PackageKeys.ID.getKey());
+			JSONArray jsonFiles = packageInfo.getJSONArray("files");
+			packageId = packageInfo.getString("packageId");
 			files = packageService.addFiles(packageId, jsonFiles, shibId);
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
