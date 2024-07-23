@@ -18,10 +18,9 @@ class PackageView {
 
 	public PackageView(JSONObject packageJSON) throws IOException {
 		mapper = new ObjectMapper();
+		packageJSON.remove("modifications");
+		packageJSON.remove("modifiedBy");
 		this.packageInfo = mapper.readTree(packageJSON.toString());
-		ObjectNode objectNode = (ObjectNode) this.packageInfo;
-		objectNode.remove("modifications");
-		objectNode.remove("modifiedBy");
 	}
 
 	public JsonNode getPackageInfo() {
