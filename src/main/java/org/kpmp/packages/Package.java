@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @Document(collection = "packages")
 @JsonPropertyOrder({ "packageId", "createdAt", "packageType", "submitter", "tisName", "protocol", "subjectId",
-		"experimentDate", "description", "attachments" })
+		"experimentDate", "description", "attachments", "modifications" })
 public class Package {
 
 	@Id
@@ -37,6 +37,9 @@ public class Package {
 
 	@Field("files")
 	private List<Attachment> attachments = new ArrayList<>();
+
+	@Field("modifications")
+	private List<String> modifications = new ArrayList<>();
 
 	public String getPackageId() {
 		return packageId;
@@ -144,6 +147,13 @@ public class Package {
 		this.submitter = submitter;
 	}
 
+	public List<String> getModifications() {
+		return modifications;
+	}
+
+	public void setModifications(List<String> modifications) {
+		this.modifications = modifications;
+	}
 
 	@Override
 	public String toString() {
@@ -151,7 +161,8 @@ public class Package {
 				+ ", submitterId: " + submitter.getId() + ", protocol: " + protocol + ", subjectId: " + subjectId
 				+ ", experimentDate: " + experimentDate + ", description: " + description + ", siteName: " + siteName
                 + ", study: " + study
-				+ ", number of attachments: " + attachments.size();
+				+ ", number of attachments: " + attachments.size()
+				+ ", modifications: [" + String.join("; ", modifications) + "]";
 	}
 
 }
