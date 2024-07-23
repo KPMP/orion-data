@@ -2,6 +2,7 @@ package org.kpmp.packages;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONObject;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,6 +19,9 @@ class PackageView {
 	public PackageView(JSONObject packageJSON) throws IOException {
 		mapper = new ObjectMapper();
 		this.packageInfo = mapper.readTree(packageJSON.toString());
+		ObjectNode objectNode = (ObjectNode) this.packageInfo;
+		objectNode.remove("modifications");
+		objectNode.remove("modifiedBy");
 	}
 
 	public JsonNode getPackageInfo() {

@@ -30,7 +30,7 @@ public class Package {
 	private Date experimentDate;
 	private String description;
     private String study;
-	
+
 	
     @DBRef(lazy = false)
 	private User submitter;
