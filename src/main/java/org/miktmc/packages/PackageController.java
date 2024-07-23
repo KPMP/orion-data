@@ -99,11 +99,26 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files/add", method = RequestMethod.POST)
-	public @ResponseBody PackageResponse postNewFiles(@RequestBody String packageInfoString,
-																@RequestParam("hostname") String hostname, HttpServletRequest request) {
-		PackageResponse packageResponse = new PackageResponse();
-
-		return packageResponse;
+	public @ResponseBody List<Attachment> postNewFiles(@RequestBody String packageInfoString,
+													   @RequestParam("hostname") String hostname, HttpServletRequest request) {
+		JSONObject packageInfo;
+		HttpSession session = request.getSession(false);
+		String shibId = "";
+		String packageId = "";
+		List<Attachment> files = null;
+		if (session != null) {
+			shibId = (String)session.getAttribute("shibid");
+		}
+		try {
+			packageInfo = new JSONObject(packageInfoString);
+			JSONArray jsonFiles = packageInfo.getJSONArray(PackageKeys.FILES.getKey());
+			packageId = packageInfo.getString(PackageKeys.ID.getKey());
+			files = packageService.addFiles(packageId, jsonFiles, shibId);
+		} catch (Exception e) {
+			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), hostname);
+		}
+		return files;
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.POST, consumes = {

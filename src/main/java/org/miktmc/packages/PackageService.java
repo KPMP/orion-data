@@ -10,6 +10,7 @@ import java.util.*;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.miktmc.logging.LoggingService;
@@ -151,10 +152,18 @@ public class PackageService {
 		return fileFound;
 	}
 
-	public List<Attachment> addFiles(String packageId, List<Attachment> newFiles, String shibId){
+	public List<Attachment> addFiles(String packageId, JSONArray newFiles, String shibId){
 		Package thePackage = findPackage(packageId);
 		List<Attachment> files = thePackage.getAttachments();
-		files.addAll(newFiles);
+		packageRepository.setRenamedFiles(newFiles, thePackage.getStudy(), thePackage.getBiopsyId());
+		for (int i=0; i < newFiles.length(); i++) {
+			JSONObject file = newFiles.getJSONObject(i);
+			Attachment newFile = new Attachment();
+			newFile.setFileName((String) file.get(PackageKeys.FILE_NAME.getKey()));
+			newFile.setOriginalFileName((String) file.get(PackageKeys.ORIGINAL_FILE_NAME.getKey()));
+			newFile.setId((String) file.get(PackageKeys.ID.getKey()));
+			files.add(newFile);
+		}
 		packageRepository.updateField(packageId, "files", files);
 		packageRepository.updateField(packageId, "modifiedAt", new Date());
 		packageRepository.updateField(packageId, "modifiedBy", shibId);

@@ -113,6 +113,25 @@ public class CustomPackageRepository {
 		return packageId;
 	}
 
+	public void setRenamedFiles(JSONArray files, String studyName, String biopsyId) {
+		StudyFileInfo studyFileInfo = studyFileInfoRepository.findByStudy(studyName);
+		for (int i = 0; i < files.length(); i++) {
+			JSONObject file = files.getJSONObject(i);
+			file.put(PackageKeys.ID.getKey(), universalIdGenerator.generateUniversalId());
+			if (studyFileInfo.getShouldRename()) {
+				String originalFileName = file.getString(PackageKeys.FILE_NAME.getKey());
+				String fileExtension = FilenameUtils.getExtension(originalFileName);
+				int studyFileCount = studyFileInfo.getFileCounter();
+				String fileRename = biopsyId+"_"+studyFileInfo.getUploadSourceLetter()+"_"+studyFileCount+"."+fileExtension;
+				file.put(PackageKeys.ORIGINAL_FILE_NAME.getKey(), originalFileName);
+				file.put(PackageKeys.FILE_NAME.getKey(), fileRename);
+				studyFileInfo.setFileCounter(++studyFileCount);
+			}
+		}
+		// need to update the file counter for next time
+		studyFileInfoRepository.save(studyFileInfo);
+	}
+
 	private void cleanUpObject(JSONObject packageMetadata) {
 		packageMetadata.remove(PackageKeys.SUBMITTER.getKey());
 		packageMetadata.remove(PackageKeys.SUBMITTER_EMAIL.getKey());
@@ -129,8 +148,8 @@ public class CustomPackageRepository {
 		return user;
 	}
 
-	public void updateField(String id, String fieldName, Object value) {
-		Query updateQuery = new Query(Criteria.where(PackageKeys.ID.getKey()).is(id));
+	public void updateField(String packageId, String fieldName, Object value) {
+		Query updateQuery = new Query(Criteria.where(PackageKeys.ID.getKey()).is(packageId));
 		Update fieldUpdate = new Update();
 		fieldUpdate.set(fieldName, value);
 		mongoTemplate.updateFirst(updateQuery, fieldUpdate, PACKAGES_COLLECTION);
