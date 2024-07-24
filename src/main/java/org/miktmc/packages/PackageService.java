@@ -246,7 +246,7 @@ public class PackageService {
 		if (!sameFiles) {
 			logger.logErrorMessage(this.getClass(), user, packageId,
 					this.getClass().getSimpleName() + ".checkFilesExist",
-					fileIssue.format(new Object[] { "File list in metadata does not match file list on disk" }));
+					fileIssue.format(new Object[] { "File list in metadata does not match file list on disk: " + String.join(",", filesInPackage) + " vs " +  String.join(",", filesOnDisk)}));
 		}
 		return sameFiles;
 	}
