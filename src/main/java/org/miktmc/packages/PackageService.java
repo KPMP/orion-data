@@ -84,7 +84,8 @@ public class PackageService {
     public int stripMetadata(Package packageInformation) {
         List<Attachment> files = packageInformation.getAttachments();
         int successCode = 0;
-        if (packageInformation != null && files != null && !files.isEmpty()){
+		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId(), packageInformation.getStudy());
+		if (packageInformation != null && files != null && !files.isEmpty()){
             for (Attachment file : files){
                 String ext = FilenameUtils.getExtension(file.toString());
                 if (ext != null){
@@ -94,6 +95,7 @@ public class PackageService {
                         Runtime runTime = Runtime.getRuntime();
                         runTime.exec(command);
                         successCode = 1;
+						file.setSize(new File(packagePath + file.getFileName()).length());
                         String successMessage = packageIssue.format(new Object[] {"Successfully stripped metadata from file " + path, packageInformation.getPackageId()});
                         logger.logInfoMessage(this.getClass(), null, packageInformation.getPackageId(), "/v1/packages/" + packageInformation.getPackageId() + "/files/finish", successMessage);
                     } catch (Exception e) {
@@ -104,7 +106,8 @@ public class PackageService {
                 }
             }
         }
-        return successCode;
+		packageRepository.updateField(packageInformation.getPackageId(), "files", files);
+		return successCode;
     }
 
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
@@ -141,8 +144,6 @@ public class PackageService {
 			}
 		}
 		if (fileFound) {
-			Date rightNow = new Date();
-			List<String> modifications = thePackage.getModifications();
 			packageRepository.updateField(packageId, "files", files);
 			packageRepository.addModification(packageId, shibId, "DELETE");
 			String filePath = filePathHelper.getFilePath(packageId, thePackage.getStudy(), theFile.getFileName());
