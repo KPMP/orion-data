@@ -175,10 +175,12 @@ public class PackageService {
 		Package packageInformation = findPackage(packageId);
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId(), packageInformation.getStudy());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
-		List<String> filesInPackage = getAttachmentFilenames(packageInformation);
+		List<String> filesInPackageChecksum = getAttachmentFilenames(packageInformation, true);
+		List<String> filesInPackageNoChecksum = getAttachmentFilenames(packageInformation, false);
+		filesOnDisk.removeAll(filesInPackageChecksum);
 		Collections.sort(filesOnDisk);
-		Collections.sort(filesInPackage);
-		return checkFilesExist(filesOnDisk, filesInPackage, packageId, user)
+		Collections.sort(filesInPackageNoChecksum);
+		return checkFilesExist(filesOnDisk, filesInPackageNoChecksum, packageId, user)
 				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
 	}
 
@@ -251,11 +253,14 @@ public class PackageService {
 		}
 		return sameFiles;
 	}
-	private List<String> getAttachmentFilenames(Package packageInformation) {
+	private List<String> getAttachmentFilenames(Package packageInformation, Boolean withChecksum) {
 		ArrayList<String> filenames = new ArrayList<>();
 		List<Attachment> attachments = packageInformation.getAttachments();
 		for (Attachment attachment : attachments) {
-			filenames.add(attachment.getFileName());
+			if (withChecksum && attachment.getMd5checksum() != null)
+				filenames.add(attachment.getFileName());
+			else
+				filenames.add(attachment.getFileName());
 		}
 		return filenames;
 	};
