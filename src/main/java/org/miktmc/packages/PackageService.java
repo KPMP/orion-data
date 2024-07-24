@@ -162,7 +162,7 @@ public class PackageService {
 			newFile.setFileName((String) file.get(PackageKeys.FILE_NAME.getKey()));
 			newFile.setOriginalFileName((String) file.get(PackageKeys.ORIGINAL_FILE_NAME.getKey()));
 			newFile.setId((String) file.get(PackageKeys.ID.getKey()));
-			newFile.setSize((Long) file.get(PackageKeys.SIZE.getKey()));
+			newFile.setSize((Integer) file.get(PackageKeys.SIZE.getKey()));
 			files.add(newFile);
 		}
 		packageRepository.updateField(packageId, "files", files);
