@@ -84,8 +84,7 @@ public class PackageService {
     public int stripMetadata(Package packageInformation) {
         List<Attachment> files = packageInformation.getAttachments();
         int successCode = 0;
-		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId(), packageInformation.getStudy());
-		if (packageInformation != null && files != null && !files.isEmpty()){
+        if (packageInformation != null && files != null && !files.isEmpty()){
             for (Attachment file : files){
                 String ext = FilenameUtils.getExtension(file.toString());
                 if (ext != null){
@@ -95,7 +94,6 @@ public class PackageService {
                         Runtime runTime = Runtime.getRuntime();
                         runTime.exec(command);
                         successCode = 1;
-						file.setSize(new File(packagePath + file.getFileName()).length());
                         String successMessage = packageIssue.format(new Object[] {"Successfully stripped metadata from file " + path, packageInformation.getPackageId()});
                         logger.logInfoMessage(this.getClass(), null, packageInformation.getPackageId(), "/v1/packages/" + packageInformation.getPackageId() + "/files/finish", successMessage);
                     } catch (Exception e) {
@@ -106,8 +104,7 @@ public class PackageService {
                 }
             }
         }
-		packageRepository.updateField(packageInformation.getPackageId(), "files", files);
-		return successCode;
+        return successCode;
     }
 
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
@@ -174,15 +171,26 @@ public class PackageService {
 
 	public boolean validatePackage(String packageId, User user) {
 		Package packageInformation = findPackage(packageId);
+		List<Attachment> filesNoChecksums = new ArrayList<>();
+		List<String> filesNamesNoChecksums = new ArrayList<>();
+		List<String> filesNamesChecksums = new ArrayList<>();
+
+		// We only want to check new files, i.e. those without checksums
+		for (Attachment file: packageInformation.getAttachments()) {
+			if (file.getMd5checksum() == null) {
+				filesNoChecksums.add(file);
+				filesNamesNoChecksums.add(file.getFileName());
+			} else {
+				filesNamesChecksums.add(file.getFileName());
+			}
+		}
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId(), packageInformation.getStudy());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
-		List<String> filesInPackageChecksum = getAttachmentFilenames(packageInformation, true);
-		List<String> filesInPackageNoChecksum = getAttachmentFilenames(packageInformation, false);
-		filesOnDisk.removeAll(filesInPackageChecksum);
+		filesOnDisk.removeAll(filesNamesChecksums);
 		Collections.sort(filesOnDisk);
-		Collections.sort(filesInPackageNoChecksum);
-		return checkFilesExist(filesOnDisk, filesInPackageNoChecksum, packageId, user)
-				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
+		Collections.sort(filesNamesNoChecksums);
+		return checkFilesExist(filesOnDisk, filesNamesNoChecksums, packageId, user)
+				&& validateFileLengthsMatch(filesNoChecksums, packagePath, packageId, user);
 	}
 
 	public void calculateAndSaveChecksums(String packageId) throws IOException {
@@ -254,16 +262,5 @@ public class PackageService {
 		}
 		return sameFiles;
 	}
-	private List<String> getAttachmentFilenames(Package packageInformation, Boolean withChecksum) {
-		ArrayList<String> filenames = new ArrayList<>();
-		List<Attachment> attachments = packageInformation.getAttachments();
-		for (Attachment attachment : attachments) {
-			if ((withChecksum && attachment.getMd5checksum() != null) ||
-					(!withChecksum && attachment.getMd5checksum() == null)) {
-				filenames.add(attachment.getFileName());
-			}
-		}
-		return filenames;
-	};
 
 }
