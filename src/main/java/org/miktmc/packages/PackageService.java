@@ -257,10 +257,10 @@ public class PackageService {
 		ArrayList<String> filenames = new ArrayList<>();
 		List<Attachment> attachments = packageInformation.getAttachments();
 		for (Attachment attachment : attachments) {
-			if (withChecksum && attachment.getMd5checksum() != null)
+			if ((withChecksum && attachment.getMd5checksum() != null) ||
+					(!withChecksum && attachment.getMd5checksum() == null)) {
 				filenames.add(attachment.getFileName());
-			else
-				filenames.add(attachment.getFileName());
+			}
 		}
 		return filenames;
 	};
