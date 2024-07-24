@@ -42,7 +42,6 @@ public class CustomPackageRepository {
 
 	private static final String PACKAGES_COLLECTION = "packages";
 	private static final String USERS_COLLECTION = "users";
-
 	private static final MessageFormat fileUploadStartTiming = new MessageFormat("Timing|start|{0}|{1}|{2}|{3} files");
 
 	private PackageRepository repo;
@@ -230,5 +229,15 @@ public class CustomPackageRepository {
 
 	public Package findByPackageId(String packageId) {
 		return repo.findByPackageId(packageId);
+	}
+
+	public void addModification(String packageId, String shibId, String action) {
+		Date rightNow = new Date();
+		Package thePackage = this.findByPackageId(packageId);
+		List<String> modifications = thePackage.getModifications();
+		modifications.add(action + " BY " + shibId + " ON " + rightNow);
+		updateField(packageId, "modifiedAt", rightNow);
+		updateField(packageId, "modifiedBy", shibId);
+		updateField(packageId, "modifications", modifications);
 	}
 }

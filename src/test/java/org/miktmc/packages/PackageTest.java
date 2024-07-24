@@ -112,11 +112,12 @@ public class PackageTest {
 		User user = new User();
 		user.setId("1234");
 		packageInfo.setSubmitter(user);
+		packageInfo.setModifications(Arrays.asList(new String[]{"DELETE 123 BY aDeleter"}));
 
 		assertEquals(
 				"packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", " + "submitterId: 1234, "
 						+ "protocol: protocol, biopsyId: subjectId, experimentDate: null, description: description, "
-						+ "siteName: siteName, study: study, number of attachments: 1",
+						+ "siteName: siteName, study: study, number of attachments: 1, modifications: [DELETE 123 BY aDeleter]",
 				packageInfo.toString());
 	}
 
