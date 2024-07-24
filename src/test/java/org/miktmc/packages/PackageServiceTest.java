@@ -393,7 +393,7 @@ public class PackageServiceTest {
 		assertEquals(false, service.checkFilesExist(Arrays.asList("file1", "file2"),
 				Arrays.asList("file1", "file2, file3"), "packageId", user));
 		verify(logger).logErrorMessage(PackageService.class, user, "packageId", "PackageService.checkFilesExist",
-				"ERROR|zip|File list in metadata does not match file list on disk");
+				"ERROR|zip|File list in metadata does not match file list on disk: file1,file2, file3 vs file1,file2");
 	}
 
     @Test 
