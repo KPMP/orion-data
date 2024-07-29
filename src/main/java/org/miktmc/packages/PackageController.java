@@ -147,7 +147,7 @@ public class PackageController {
 		try {
 			packageService.saveFile(file, packageId, fileRename, study, shouldAppend(chunk));
 		} catch (Exception e) {
-			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
+			logger.logErrorMessage(this.getClass(), packageId, "Unable to save file. " + e.getMessage(), request);
 			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), cleanHostName);
 			return new FileUploadResponse(false);
 		}

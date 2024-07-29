@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.IOUtils;
+import org.miktmc.logging.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class PackageFileHandler {
 
 	private FilePathHelper filePathHelper;
+	private LoggingService logger;
 
 	@Autowired
 	public PackageFileHandler(FilePathHelper filePathHelper) {
@@ -31,8 +33,10 @@ public class PackageFileHandler {
 			Files.createDirectories(Paths.get(packageDirectoryPath));
 		}
 
-		File fileToSave = new File(packageDirectoryPath + File.separator + filename);
+		String filePath = packageDirectoryPath + File.separator + filename;
+		File fileToSave = new File(filePath);
 		if (!shouldAppend && fileToSave.exists()) {
+			logger.logErrorMessage(PackageFileHandler.class, packageId, "File " + filePath + " already exists.");
 			throw new FileAlreadyExistsException(fileToSave.getPath());
 		} else {
 			InputStream inputStream = file.getInputStream();
