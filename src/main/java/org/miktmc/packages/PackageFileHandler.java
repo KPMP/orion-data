@@ -21,8 +21,9 @@ public class PackageFileHandler {
 	private LoggingService logger;
 
 	@Autowired
-	public PackageFileHandler(FilePathHelper filePathHelper) {
+	public PackageFileHandler(FilePathHelper filePathHelper, LoggingService logger) {
 		this.filePathHelper = filePathHelper;
+		this.logger = logger;
 	}
 
 	public void saveMultipartFile(MultipartFile file, String packageId, String filename, String study, boolean shouldAppend)
