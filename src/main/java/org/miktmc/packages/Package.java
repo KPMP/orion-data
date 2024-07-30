@@ -98,6 +98,14 @@ public class Package {
 		this.attachments = attachments;
 	}
 
+	public List<String> getOriginalFilenames() {
+		List<String> fileNames = new ArrayList<>();
+		for (Attachment file: this.attachments) {
+			fileNames.add(file.getOriginalFileName());
+		}
+		return fileNames;
+	}
+
 	@Nullable
 	public Boolean getLargeFilesChecked() {
 		return largeFilesChecked;

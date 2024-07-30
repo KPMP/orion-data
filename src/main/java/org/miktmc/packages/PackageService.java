@@ -154,6 +154,16 @@ public class PackageService {
 	public List<Attachment> addFiles(String packageId, JSONArray newFiles, String shibId){
 		Package thePackage = findPackage(packageId);
 		List<Attachment> files = thePackage.getAttachments();
+		List<String> filenames = thePackage.getOriginalFilenames();
+		// Remove any files that have already been uploaded.
+		for (int i=0; i < newFiles.length(); i++) {
+			JSONObject file = newFiles.getJSONObject(i);
+			String originalFileName = file.getString(PackageKeys.FILE_NAME.getKey());
+			if (filenames.contains(originalFileName)) {
+				newFiles.remove(i);
+			}
+
+		}
 		packageRepository.setRenamedFiles(newFiles, thePackage.getStudy(), thePackage.getBiopsyId());
 		for (int i=0; i < newFiles.length(); i++) {
 			JSONObject file = newFiles.getJSONObject(i);
