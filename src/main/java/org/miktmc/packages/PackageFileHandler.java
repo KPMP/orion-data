@@ -38,6 +38,7 @@ public class PackageFileHandler {
 		File fileToSave = new File(filePath);
 		if (!shouldAppend && fileToSave.exists()) {
 			logger.logErrorMessage(PackageFileHandler.class, packageId, "File " + filePath + " already exists.");
+			throw new FileAlreadyExistsException(fileToSave.getPath());
 		} else {
 			InputStream inputStream = file.getInputStream();
 			FileOutputStream fileOutputStream = new FileOutputStream(fileToSave, shouldAppend);
