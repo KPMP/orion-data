@@ -1,6 +1,7 @@
 package org.miktmc.packages;
 
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -147,8 +148,9 @@ public class PackageController {
 		try {
 			packageService.saveFile(file, packageId, fileRename, study, shouldAppend(chunk));
 		} catch (Exception e) {
+			if (e.getClass().getName() != FileAlreadyExistsException.class.getName())
+				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), cleanHostName);
 			logger.logErrorMessage(this.getClass(), packageId, "Unable to save file. " + e.getMessage(), request);
-			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), cleanHostName);
 			return new FileUploadResponse(false);
 		}
 
