@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
@@ -393,7 +394,7 @@ public class PackageServiceTest {
 		assertEquals(false, service.checkFilesExist(Arrays.asList("file1", "file2"),
 				Arrays.asList("file1", "file2, file3"), "packageId", user));
 		verify(logger).logErrorMessage(PackageService.class, user, "packageId", "PackageService.checkFilesExist",
-				"ERROR|zip|File list in metadata does not match file list on disk");
+				"ERROR|zip|File list in metadata does not match file list on disk: file1,file2, file3 vs file1,file2");
 	}
 
     @Test 
@@ -428,5 +429,41 @@ public class PackageServiceTest {
 
         assertEquals(1, testSuccessCode);
     }
+
+	@Test
+	public void testAddFiles() throws Exception {
+		JSONArray fileArray = new JSONArray();
+		JSONObject jFile1 = new JSONObject();
+		jFile1.put(PackageKeys.ID.getKey(), "awesomeNewId");
+		jFile1.put(PackageKeys.SIZE.getKey(), 123);
+		jFile1.put(PackageKeys.FILE_NAME.getKey(), "old_name_1");
+		jFile1.put(PackageKeys.ORIGINAL_FILE_NAME.getKey(), "old_name_1");
+		JSONObject jFile2 = new JSONObject();
+		jFile2.put(PackageKeys.ID.getKey(), "awesomeNewId");
+		jFile2.put(PackageKeys.SIZE.getKey(), 123);
+		jFile2.put(PackageKeys.FILE_NAME.getKey(), "old_name_2");
+		jFile2.put(PackageKeys.ORIGINAL_FILE_NAME.getKey(), "old_name_2");
+		fileArray.put(jFile1);
+		fileArray.put(jFile2);
+		Package myPackage = new Package();
+		myPackage.setPackageId("awesomeNewId");
+		List<Attachment> files = new ArrayList<>();
+		Attachment file1 = new Attachment();
+		file1.setOriginalFileName("old_name_1");
+		Attachment file2 = new Attachment();
+		file2.setOriginalFileName("old_name_3");
+		files.add(file1);
+		files.add(file2);
+		myPackage.setAttachments(files);
+		when(service.findPackage("awesomeNewId")).thenReturn(myPackage);
+		assertEquals(fileArray.length(), 2);
+		List<Attachment> resultFiles = service.addFiles("awesomeNewId", fileArray, "shibid");
+		assertEquals(fileArray.length(), 1);
+		verify(packageRepository).setRenamedFiles(fileArray, null, null);
+		assertEquals(3, resultFiles.size());
+		verify(packageRepository).updateField("awesomeNewId", "files", myPackage.getAttachments());
+		verify(packageRepository, times(1)).addModification("awesomeNewId", "shibid", "ADD");
+
+	}
 
 }

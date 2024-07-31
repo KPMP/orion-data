@@ -10,6 +10,7 @@ import java.util.*;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.miktmc.logging.LoggingService;
@@ -140,13 +141,8 @@ public class PackageService {
 			}
 		}
 		if (fileFound) {
-			Date rightNow = new Date();
-;			List<String> modifications = thePackage.getModifications();
-			modifications.add("DELETE " + theFile.getFileName() + " BY " + shibId + " ON " + rightNow);
 			packageRepository.updateField(packageId, "files", files);
-			packageRepository.updateField(packageId, "modifiedAt", rightNow);
-			packageRepository.updateField(packageId, "modifiedBy", shibId);
-			packageRepository.updateField(packageId, "modifications", modifications);
+			packageRepository.addModification(packageId, shibId, "DELETE");
 			String filePath = filePathHelper.getFilePath(packageId, thePackage.getStudy(), theFile.getFileName());
 			System.out.println(filePath);
 			File file = new File(filePath);
@@ -155,15 +151,55 @@ public class PackageService {
 		return fileFound;
 	}
 
+	public List<Attachment> addFiles(String packageId, JSONArray newFiles, String shibId){
+		Package thePackage = findPackage(packageId);
+		List<Attachment> files = thePackage.getAttachments();
+		List<String> filenames = thePackage.getOriginalFilenames();
+		// Remove any files that have already been uploaded.
+		for (int i=0; i < newFiles.length(); i++) {
+			JSONObject file = newFiles.getJSONObject(i);
+			String originalFileName = file.getString(PackageKeys.FILE_NAME.getKey());
+			if (filenames.contains(originalFileName)) {
+				newFiles.remove(i);
+			}
+		}
+		packageRepository.setRenamedFiles(newFiles, thePackage.getStudy(), thePackage.getBiopsyId());
+		for (int i=0; i < newFiles.length(); i++) {
+			JSONObject file = newFiles.getJSONObject(i);
+			Attachment newFile = new Attachment();
+			newFile.setFileName((String) file.get(PackageKeys.FILE_NAME.getKey()));
+			newFile.setOriginalFileName((String) file.get(PackageKeys.ORIGINAL_FILE_NAME.getKey()));
+			newFile.setId((String) file.get(PackageKeys.ID.getKey()));
+			newFile.setSize((Integer) file.get(PackageKeys.SIZE.getKey()));
+			files.add(newFile);
+		}
+		packageRepository.updateField(packageId, "files", files);
+		packageRepository.addModification(packageId, shibId, "ADD");
+		return files;
+	}
+
 	public boolean validatePackage(String packageId, User user) {
 		Package packageInformation = findPackage(packageId);
+		List<Attachment> filesNoChecksums = new ArrayList<>();
+		List<String> filesNamesNoChecksums = new ArrayList<>();
+		List<String> filesNamesChecksums = new ArrayList<>();
+
+		// We only want to check new files, i.e. those without checksums
+		for (Attachment file: packageInformation.getAttachments()) {
+			if (file.getMd5checksum() == null) {
+				filesNoChecksums.add(file);
+				filesNamesNoChecksums.add(file.getFileName());
+			} else {
+				filesNamesChecksums.add(file.getFileName());
+			}
+		}
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId(), packageInformation.getStudy());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
-		List<String> filesInPackage = getAttachmentFilenames(packageInformation);
+		filesOnDisk.removeAll(filesNamesChecksums);
 		Collections.sort(filesOnDisk);
-		Collections.sort(filesInPackage);
-		return checkFilesExist(filesOnDisk, filesInPackage, packageId, user)
-				&& validateFileLengthsMatch(packageInformation.getAttachments(), packagePath, packageId, user);
+		Collections.sort(filesNamesNoChecksums);
+		return checkFilesExist(filesOnDisk, filesNamesNoChecksums, packageId, user)
+				&& validateFileLengthsMatch(filesNoChecksums, packagePath, packageId, user);
 	}
 
 	public void calculateAndSaveChecksums(String packageId) throws IOException {
@@ -231,17 +267,9 @@ public class PackageService {
 		if (!sameFiles) {
 			logger.logErrorMessage(this.getClass(), user, packageId,
 					this.getClass().getSimpleName() + ".checkFilesExist",
-					fileIssue.format(new Object[] { "File list in metadata does not match file list on disk" }));
+					fileIssue.format(new Object[] { "File list in metadata does not match file list on disk: " + String.join(",", filesInPackage) + " vs " +  String.join(",", filesOnDisk)}));
 		}
 		return sameFiles;
 	}
-	private List<String> getAttachmentFilenames(Package packageInformation) {
-		ArrayList<String> filenames = new ArrayList<>();
-		List<Attachment> attachments = packageInformation.getAttachments();
-		for (Attachment attachment : attachments) {
-			filenames.add(attachment.getFileName());
-		}
-		return filenames;
-	};
 
 }

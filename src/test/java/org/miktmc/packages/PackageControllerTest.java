@@ -11,6 +11,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
@@ -187,7 +188,7 @@ public class PackageControllerTest {
 		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
 
 		assertEquals(false, response.isSuccess());
-		verify(logger).logErrorMessage(PackageController.class, "packageId", "NOPE", request);
+		verify(logger).logErrorMessage(PackageController.class, "packageId", "Unable to save file. NOPE", request);
 		verify(packageService).sendStateChangeEvent("packageId", "UPLOAD_FAILED", null, "NOPE", "hostname");
 	}
 
@@ -256,6 +257,23 @@ public class PackageControllerTest {
 		controller.lockPackage("12345", "myHost", request);
 
 		verify(packageService).sendStateChangeEvent("12345", "UPLOAD_LOCKED", null, "Locked by [shibId111]", "myHost");
+	}
+
+	@Test
+	public void testAddFiles() throws Exception {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		HttpSession session = mock(HttpSession.class);
+		when(session.getAttribute("shibid")).thenReturn("shibid");
+		when(request.getSession(false)).thenReturn(session);
+		JSONArray array = new JSONArray("[{\"fileName\":\"filename\"},{\"fileName2\":\"filename2\"}]");
+		controller.postNewFiles("packageId", "{\"files\":" + array + "}", "host", request);
+		ArgumentCaptor<JSONArray> jsonCaptor = ArgumentCaptor.forClass(JSONArray.class);
+		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> shibCaptor = ArgumentCaptor.forClass(String.class);
+		verify(packageService).addFiles(packageIdCaptor.capture(), jsonCaptor.capture(),shibCaptor.capture());
+		assertEquals(jsonCaptor.getValue().toString(), array.toString());
+		assertEquals("packageId", packageIdCaptor.getValue());
+		assertEquals("shibid", shibCaptor.getValue());
 	}
 
 }

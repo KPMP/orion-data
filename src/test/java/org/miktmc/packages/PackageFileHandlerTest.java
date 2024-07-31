@@ -18,6 +18,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.miktmc.logging.LoggingService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,11 +28,13 @@ public class PackageFileHandlerTest {
 	@Mock
 	private FilePathHelper filePathHelper;
 	private PackageFileHandler fileHandler;
+	@Mock
+	private LoggingService logger;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.openMocks(this);
-		fileHandler = new PackageFileHandler(filePathHelper);
+		fileHandler = new PackageFileHandler(filePathHelper, logger);
 	}
 
 	@After

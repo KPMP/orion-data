@@ -1,6 +1,7 @@
 package org.miktmc.packages;
 
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -98,6 +99,27 @@ public class PackageController {
 		return packageResponse;
 	}
 
+	@RequestMapping(value = "/v1/packages/{packageId}/files/add", method = RequestMethod.POST)
+	public @ResponseBody List<Attachment> postNewFiles(@PathVariable("packageId") String packageId, @RequestBody String packageInfoString,
+													   @RequestParam("hostname") String hostname, HttpServletRequest request) {
+		JSONObject packageInfo;
+		HttpSession session = request.getSession(false);
+		String shibId = "";
+		List<Attachment> files = null;
+		if (session != null) {
+			shibId = (String)session.getAttribute("shibid");
+		}
+		try {
+			packageInfo = new JSONObject(packageInfoString);
+			JSONArray jsonFiles = packageInfo.getJSONArray("files");
+			files = packageService.addFiles(packageId, jsonFiles, shibId);
+		} catch (Exception e) {
+			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
+			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), hostname);
+		}
+		return files;
+	}
+
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.POST, consumes = {
 			"multipart/form-data" })
 	public @ResponseBody FileUploadResponse postFilesToPackage(@PathVariable("packageId") String packageId,
@@ -124,8 +146,10 @@ public class PackageController {
 		try {
 			packageService.saveFile(file, packageId, fileRename, study, shouldAppend(chunk));
 		} catch (Exception e) {
-			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), cleanHostName);
+			if (e.getClass().getName() != FileAlreadyExistsException.class.getName()) {
+				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), cleanHostName);
+			}
+			logger.logErrorMessage(this.getClass(), packageId, "Unable to save file. " + e.getMessage(), request);
 			return new FileUploadResponse(false);
 		}
 

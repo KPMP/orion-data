@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 public class LoggingService {
 
 	private static final String LOG_MESSAGE_FORMAT = "USER: {} | PKGID: {} | URI: {} | MSG: {} ";
+
+	private static final String LOG_MESSAGE_FORMAT_PLAIN = "PKGID: {} | MSG: {} ";
+
 	private ShibbolethUserService shibUserService;
 
 	@Autowired
@@ -50,6 +53,11 @@ public class LoggingService {
 		} else {
 			log.error(LOG_MESSAGE_FORMAT, user.toString(), packageId, request.getRequestURI(), message);
 		}
+	}
+
+	public void logErrorMessage(Class clazz, String packageId, String message) {
+		Logger log = LoggerFactory.getLogger(clazz);
+		log.error(LOG_MESSAGE_FORMAT_PLAIN, packageId, message);
 	}
 
 	@SuppressWarnings("rawtypes")

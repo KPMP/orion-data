@@ -15,7 +15,7 @@ import org.springframework.lang.Nullable;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @Document(collection = "packages")
-@JsonPropertyOrder({ "packageId", "createdAt", "packageType", "submitter", "tisName", "protocol", "subjectId",
+@JsonPropertyOrder({ "packageId", "createdAt", "packageType", "submitter", "tisName", "protocol", "biopsyId",
 		"experimentDate", "description", "attachments", "modifications" })
 public class Package {
 
@@ -25,7 +25,7 @@ public class Package {
 	private Date createdAt;
 	private String siteName;
 	private String protocol;
-	private String subjectId;
+	private String biopsyId;
 	private Date experimentDate;
 	private String description;
     private String study;
@@ -98,6 +98,14 @@ public class Package {
 		this.attachments = attachments;
 	}
 
+	public List<String> getOriginalFilenames() {
+		List<String> fileNames = new ArrayList<>();
+		for (Attachment file: this.attachments) {
+			fileNames.add(file.getOriginalFileName());
+		}
+		return fileNames;
+	}
+
 	@Nullable
 	public Boolean getLargeFilesChecked() {
 		return largeFilesChecked;
@@ -115,12 +123,12 @@ public class Package {
 		this.protocol = protocol;
 	}
 
-	public String getSubjectId() {
-		return subjectId;
+	public String getBiopsyId() {
+		return biopsyId;
 	}
 
-	public void setSubjectId(String subjectId) {
-		this.subjectId = subjectId;
+	public void setBiopsyId(String biopsyId) {
+		this.biopsyId = biopsyId;
 	}
 
 	@Nullable
@@ -159,7 +167,7 @@ public class Package {
 	@Override
 	public String toString() {
 		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
-				+ ", submitterId: " + submitter.getId() + ", protocol: " + protocol + ", subjectId: " + subjectId
+				+ ", submitterId: " + submitter.getId() + ", protocol: " + protocol + ", biopsyId: " + biopsyId
 				+ ", experimentDate: " + experimentDate + ", description: " + description + ", siteName: " + siteName
                 + ", study: " + study
 				+ ", number of attachments: " + attachments.size()

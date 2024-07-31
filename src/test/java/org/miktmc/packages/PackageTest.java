@@ -3,6 +3,7 @@ package org.miktmc.packages;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -65,9 +66,9 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testSetSubjectId() throws Exception {
-		testPackage.setSubjectId("subjectId");
-		assertEquals("subjectId", testPackage.getSubjectId());
+	public void testSetBiopsyId() throws Exception {
+		testPackage.setBiopsyId("subjectId");
+		assertEquals("subjectId", testPackage.getBiopsyId());
 	}
 
 	@Test
@@ -97,6 +98,19 @@ public class PackageTest {
     }
 
 	@Test
+	public void testGetOriginalFilenames() throws Exception {
+		List<Attachment> files = new ArrayList<>();
+		Attachment file1 = new Attachment();
+		file1.setOriginalFileName("file1");
+		Attachment file2 = new Attachment();
+		file2.setOriginalFileName("file2");
+		files.add(file1);
+		files.add(file2);
+		testPackage.setAttachments(files);
+		assertEquals("file1,file2", String.join(",", testPackage.getOriginalFilenames()));
+	}
+
+	@Test
 	public void testToString() throws Exception {
 		Date createdAt = new Date();
 		Package packageInfo = new Package();
@@ -107,7 +121,7 @@ public class PackageTest {
 		packageInfo.setPackageId("packageId");
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
-		packageInfo.setSubjectId("subjectId");
+		packageInfo.setBiopsyId("subjectId");
         packageInfo.setStudy("study");
 		User user = new User();
 		user.setId("1234");
@@ -116,7 +130,7 @@ public class PackageTest {
 
 		assertEquals(
 				"packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", " + "submitterId: 1234, "
-						+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
+						+ "protocol: protocol, biopsyId: subjectId, experimentDate: null, description: description, "
 						+ "siteName: siteName, study: study, number of attachments: 1, modifications: [DELETE 123 BY aDeleter]",
 				packageInfo.toString());
 	}
