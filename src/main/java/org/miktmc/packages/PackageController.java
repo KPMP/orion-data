@@ -100,12 +100,11 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files/add", method = RequestMethod.POST)
-	public @ResponseBody List<Attachment> postNewFiles(@RequestBody String packageInfoString,
+	public @ResponseBody List<Attachment> postNewFiles(@PathVariable("packageId") String packageId, @RequestBody String packageInfoString,
 													   @RequestParam("hostname") String hostname, HttpServletRequest request) {
 		JSONObject packageInfo;
 		HttpSession session = request.getSession(false);
 		String shibId = "";
-		String packageId = "";
 		List<Attachment> files = null;
 		if (session != null) {
 			shibId = (String)session.getAttribute("shibid");
@@ -113,7 +112,6 @@ public class PackageController {
 		try {
 			packageInfo = new JSONObject(packageInfoString);
 			JSONArray jsonFiles = packageInfo.getJSONArray("files");
-			packageId = packageInfo.getString("packageId");
 			files = packageService.addFiles(packageId, jsonFiles, shibId);
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
