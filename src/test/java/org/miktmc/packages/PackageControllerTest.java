@@ -187,7 +187,7 @@ public class PackageControllerTest {
 		FileUploadResponse response = controller.postFilesToPackage("packageId", file, "filename", 1234, 3, 0, request);
 
 		assertEquals(false, response.isSuccess());
-		verify(logger).logErrorMessage(PackageController.class, "packageId", "NOPE", request);
+		verify(logger).logErrorMessage(PackageController.class, "packageId", "Unable to save file. NOPE", request);
 		verify(packageService).sendStateChangeEvent("packageId", "UPLOAD_FAILED", null, "NOPE", "hostname");
 	}
 

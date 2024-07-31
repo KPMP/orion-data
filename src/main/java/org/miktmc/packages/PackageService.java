@@ -162,7 +162,6 @@ public class PackageService {
 			if (filenames.contains(originalFileName)) {
 				newFiles.remove(i);
 			}
-
 		}
 		packageRepository.setRenamedFiles(newFiles, thePackage.getStudy(), thePackage.getBiopsyId());
 		for (int i=0; i < newFiles.length(); i++) {

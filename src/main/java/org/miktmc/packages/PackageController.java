@@ -148,8 +148,9 @@ public class PackageController {
 		try {
 			packageService.saveFile(file, packageId, fileRename, study, shouldAppend(chunk));
 		} catch (Exception e) {
-			if (e.getClass().getName() != FileAlreadyExistsException.class.getName())
+			if (e.getClass().getName() != FileAlreadyExistsException.class.getName()) {
 				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), cleanHostName);
+			}
 			logger.logErrorMessage(this.getClass(), packageId, "Unable to save file. " + e.getMessage(), request);
 			return new FileUploadResponse(false);
 		}

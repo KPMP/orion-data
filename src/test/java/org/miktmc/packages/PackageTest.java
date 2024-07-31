@@ -3,6 +3,7 @@ package org.miktmc.packages;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -95,6 +96,19 @@ public class PackageTest {
         testPackage.setStudy("study");
         assertEquals("study", testPackage.getStudy());
     }
+
+	@Test
+	public void testGetOriginalFilenames() throws Exception {
+		List<Attachment> files = new ArrayList<>();
+		Attachment file1 = new Attachment();
+		file1.setOriginalFileName("file1");
+		Attachment file2 = new Attachment();
+		file2.setOriginalFileName("file2");
+		files.add(file1);
+		files.add(file2);
+		testPackage.setAttachments(files);
+		assertEquals("file1,file2", String.join(",", testPackage.getOriginalFilenames()));
+	}
 
 	@Test
 	public void testToString() throws Exception {

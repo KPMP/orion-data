@@ -28,6 +28,7 @@ public class PackageFileHandlerTest {
 	@Mock
 	private FilePathHelper filePathHelper;
 	private PackageFileHandler fileHandler;
+	@Mock
 	private LoggingService logger;
 
 	@Before
