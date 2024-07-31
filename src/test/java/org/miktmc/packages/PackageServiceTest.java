@@ -445,7 +445,6 @@ public class PackageServiceTest {
 		jFile2.put(PackageKeys.ORIGINAL_FILE_NAME.getKey(), "old_name_2");
 		fileArray.put(jFile1);
 		fileArray.put(jFile2);
-		System.out.println(fileArray.length());
 		Package myPackage = new Package();
 		myPackage.setPackageId("awesomeNewId");
 		List<Attachment> files = new ArrayList<>();
