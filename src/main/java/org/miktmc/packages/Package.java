@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @Document(collection = "packages")
 @JsonPropertyOrder({ "packageId", "createdAt", "packageType", "submitter", "tisName", "protocol", "biopsyId",
-		"experimentDate", "description", "attachments", "modifications" })
+		"experimentDate", "description", "attachments", "modifications", "studyId" })
 public class Package {
 
 	@Id
@@ -29,6 +29,7 @@ public class Package {
 	private Date experimentDate;
 	private String description;
     private String study;
+    private String studyId;
 
 	
     @DBRef(lazy = false)
@@ -68,6 +69,14 @@ public class Package {
             return study;
         }
         return getStudy();
+    }
+
+    public String getStudyId(){
+        return studyId;
+    }
+
+    public void setStudyId(String studyId) {
+        this.studyId = studyId;
     }
 
 	public void setPackageType(String packageType) {
@@ -169,7 +178,7 @@ public class Package {
 		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
 				+ ", submitterId: " + submitter.getId() + ", protocol: " + protocol + ", biopsyId: " + biopsyId
 				+ ", experimentDate: " + experimentDate + ", description: " + description + ", siteName: " + siteName
-                + ", study: " + study
+                + ", study: " + study + ", studyId: " + studyId
 				+ ", number of attachments: " + attachments.size()
 				+ ", modifications: [" + String.join("; ", modifications) + "]";
 	}

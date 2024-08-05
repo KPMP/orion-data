@@ -97,6 +97,12 @@ public class PackageTest {
         assertEquals("study", testPackage.getStudy());
     }
 
+    @Test
+    public void testSetStudyId() throws Exception {
+        testPackage.setStudyId("studyId");
+        assertEquals("studyId", testPackage.getStudyId());
+    }
+
 	@Test
 	public void testGetOriginalFilenames() throws Exception {
 		List<Attachment> files = new ArrayList<>();
@@ -123,6 +129,7 @@ public class PackageTest {
 		packageInfo.setProtocol("protocol");
 		packageInfo.setBiopsyId("subjectId");
         packageInfo.setStudy("study");
+        packageInfo.setStudyId("studyId");
 		User user = new User();
 		user.setId("1234");
 		packageInfo.setSubmitter(user);
@@ -131,7 +138,7 @@ public class PackageTest {
 		assertEquals(
 				"packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", " + "submitterId: 1234, "
 						+ "protocol: protocol, biopsyId: subjectId, experimentDate: null, description: description, "
-						+ "siteName: siteName, study: study, number of attachments: 1, modifications: [DELETE 123 BY aDeleter]",
+						+ "siteName: siteName, study: study, studyId: studyId, number of attachments: 1, modifications: [DELETE 123 BY aDeleter]",
 				packageInfo.toString());
 	}
 
