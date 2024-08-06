@@ -5,6 +5,8 @@ on:
 
 jobs:
   build-gradle-project:
+    env:
+        IMAGE_TAG: 1.1
     runs-on: ubuntu-latest
     steps:
       - name: Get branch names
@@ -36,4 +38,13 @@ jobs:
       - name: Run build with Gradle Wrapper
         run: |
           ./gradlew build docker
-          docker push "${{secrets.ENV_DOCKER_USER}}/miktmc-uploader-data:${{ steps.branch-names.outputs.current_branch }}"
+
+      - name: Push to Docker Hub if branch is develop
+        if: steps.branch-names.outputs.current_branch == 'develop'
+        run: |
+            docker push "kingstonduo/miktmc-uploader-data:${{env.IMAGE_TAG}}"
+        
+      - name: Push to Docker Hub if branch is not develop
+        if: steps.branch-names.outputs.current_branch != 'develop'
+        run: |
+            docker push "kingstonduo/miktmc-uploader-data:${{ steps.branch-names.outputs.current_branch }}"
