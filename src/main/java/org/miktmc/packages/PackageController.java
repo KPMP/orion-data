@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -121,29 +122,34 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files/replace/{fileId}", method = RequestMethod.POST)
-	public @ResponseBody List<Attachment> replaceFile(@PathVariable("packageId") String packageId, @PathVariable("fileId") String fileId, @RequestBody String packageInfoString,
+	public @ResponseBody FileUploadResponse replaceFile(@PathVariable("packageId") String packageId, @PathVariable("fileId") String fileId, @RequestBody String packageInfoString,
 													   @RequestParam("hostname") String hostname, HttpServletRequest request) {
 		JSONObject packageInfo;
 		HttpSession session = request.getSession(false);
 		String shibId = "";
-		List<Attachment> files = null;
 		if (session != null) {
 			shibId = (String)session.getAttribute("shibid");
 		}
-
-		Boolean didDelete = packageService.deleteFile(packageId, fileId, shibId);
+		FileUploadResponse response = new FileUploadResponse(true);
+		packageInfo = new JSONObject(packageInfoString);
+		JSONArray jsonFiles = packageInfo.getJSONArray("files");
+		JSONObject file = jsonFiles.getJSONObject(0);
+		String originalFileName = file.getString(PackageKeys.FILE_NAME.getKey());
+		boolean didDelete = false;
+		if (packageService.canReplaceFile(packageId, fileId, originalFileName)) {
+			didDelete = packageService.deleteFile(packageId, fileId, shibId);
+		} else {
+			response.setSuccess(false);
+		}
 		if (didDelete) {
 			try {
-				packageInfo = new JSONObject(packageInfoString);
-				JSONArray jsonFiles = packageInfo.getJSONArray("files");
-				files = packageService.addFiles(packageId, jsonFiles, shibId);
+				packageService.addFiles(packageId, jsonFiles, shibId);
 			} catch (Exception e) {
 				logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), hostname);
+				response.setSuccess(false);
 			}
 		}
-		
-		return files;
+		return response;
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.POST, consumes = {
