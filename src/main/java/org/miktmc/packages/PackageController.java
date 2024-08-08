@@ -120,6 +120,32 @@ public class PackageController {
 		return files;
 	}
 
+	@RequestMapping(value = "/v1/packages/{packageId}/files/replace/{fileId}", method = RequestMethod.POST)
+	public @ResponseBody List<Attachment> replaceFile(@PathVariable("packageId") String packageId, @PathVariable("fileId") String fileId, @RequestBody String packageInfoString,
+													   @RequestParam("hostname") String hostname, HttpServletRequest request) {
+		JSONObject packageInfo;
+		HttpSession session = request.getSession(false);
+		String shibId = "";
+		List<Attachment> files = null;
+		if (session != null) {
+			shibId = (String)session.getAttribute("shibid");
+		}
+
+		Boolean didDelete = packageService.deleteFile(packageId, fileId, shibId);
+		if (didDelete) {
+			try {
+				packageInfo = new JSONObject(packageInfoString);
+				JSONArray jsonFiles = packageInfo.getJSONArray("files");
+				files = packageService.addFiles(packageId, jsonFiles, shibId);
+			} catch (Exception e) {
+				logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
+				packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), hostname);
+			}
+		}
+		
+		return files;
+	}
+
 	@RequestMapping(value = "/v1/packages/{packageId}/files", method = RequestMethod.POST, consumes = {
 			"multipart/form-data" })
 	public @ResponseBody FileUploadResponse postFilesToPackage(@PathVariable("packageId") String packageId,
