@@ -277,7 +277,7 @@ public class PackageService {
 		boolean canReplace = true;
 		for (Attachment attachment : files) {
 			// It's okay to replace a file with the same name if it's the one being replaced.
-			if (attachment.getFileName().equals(originalFileName)) {
+			if (attachment.getOriginalFileName().equals(originalFileName)) {
 				canReplace = Objects.equals(attachment.getId(), fileId);
 			}
 		}
