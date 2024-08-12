@@ -276,4 +276,33 @@ public class PackageControllerTest {
 		assertEquals("shibid", shibCaptor.getValue());
 	}
 
+	@Test
+	public void testReplaceFiles() throws Exception {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		HttpSession session = mock(HttpSession.class);
+		when(session.getAttribute("shibid")).thenReturn("shibid");
+		when(request.getSession(false)).thenReturn(session);
+		when(packageService.canReplaceFile("packageId", "fileId", "filename")).thenReturn(true);
+		when(packageService.deleteFile("packageId", "fileId", "shibid")).thenReturn(true);
+		JSONArray array = new JSONArray("[{\"fileName\":\"filename\"}]");
+		controller.replaceFile("packageId", "fileId", "{\"files\":" + array + "}", "host", request);
+		ArgumentCaptor<JSONArray> jsonCaptor = ArgumentCaptor.forClass(JSONArray.class);
+		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> fileIdCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> shibCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> packageIdCaptor2 = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> fileIdCaptor2 = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> fileNameCaptor = ArgumentCaptor.forClass(String.class);
+		verify(packageService).canReplaceFile(packageIdCaptor2.capture(), fileIdCaptor2.capture(), fileNameCaptor.capture());
+		verify(packageService).deleteFile(packageIdCaptor.capture(), fileIdCaptor.capture(), shibCaptor.capture());
+		verify(packageService).addFiles(packageIdCaptor.capture(), jsonCaptor.capture(),shibCaptor.capture());
+		assertEquals(jsonCaptor.getValue().toString(), array.toString());
+		assertEquals("packageId", packageIdCaptor.getValue());
+		assertEquals("shibid", shibCaptor.getValue());
+		assertEquals("fileId", fileIdCaptor.getValue());
+		assertEquals("packageId", packageIdCaptor2.getValue());
+		assertEquals("filename", fileNameCaptor.getValue());
+		assertEquals("fileId", fileIdCaptor2.getValue());
+	}
+
 }

@@ -272,4 +272,16 @@ public class PackageService {
 		return sameFiles;
 	}
 
+	public Boolean canReplaceFile(String packageId, String fileId, String originalFileName) {
+		List<Attachment> files = findPackage(packageId).getAttachments();
+		boolean canReplace = true;
+		for (Attachment attachment : files) {
+			// It's okay to replace a file with the same name if it's the one being replaced.
+			if (attachment.getOriginalFileName().equals(originalFileName)) {
+				canReplace = Objects.equals(attachment.getId(), fileId);
+			}
+		}
+		return canReplace;
+	}
+
 }
