@@ -151,7 +151,7 @@ public class PackageService {
 		return fileFound;
 	}
 
-	public List<Attachment> addFiles(String packageId, JSONArray newFiles, String shibId){
+	public List<Attachment> addFiles(String packageId, JSONArray newFiles, String shibId, Boolean replaced){
 		Package thePackage = findPackage(packageId);
 		List<Attachment> files = thePackage.getAttachments();
 		List<String> filenames = thePackage.getOriginalFilenames();
@@ -171,6 +171,9 @@ public class PackageService {
 			newFile.setOriginalFileName((String) file.get(PackageKeys.ORIGINAL_FILE_NAME.getKey()));
 			newFile.setId((String) file.get(PackageKeys.ID.getKey()));
 			newFile.setSize((Integer) file.get(PackageKeys.SIZE.getKey()));
+			if (replaced) {
+				newFile.setReplacedOn(new Date());
+			}
 			files.add(newFile);
 		}
 		packageRepository.updateField(packageId, "files", files);

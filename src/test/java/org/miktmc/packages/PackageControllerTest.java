@@ -1,6 +1,6 @@
 package org.miktmc.packages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -270,10 +270,12 @@ public class PackageControllerTest {
 		ArgumentCaptor<JSONArray> jsonCaptor = ArgumentCaptor.forClass(JSONArray.class);
 		ArgumentCaptor<String> packageIdCaptor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<String> shibCaptor = ArgumentCaptor.forClass(String.class);
-		verify(packageService).addFiles(packageIdCaptor.capture(), jsonCaptor.capture(),shibCaptor.capture());
+		ArgumentCaptor<Boolean> replaceCaptor = ArgumentCaptor.forClass(Boolean.class);
+		verify(packageService).addFiles(packageIdCaptor.capture(), jsonCaptor.capture(),shibCaptor.capture(), replaceCaptor.capture());
 		assertEquals(jsonCaptor.getValue().toString(), array.toString());
 		assertEquals("packageId", packageIdCaptor.getValue());
 		assertEquals("shibid", shibCaptor.getValue());
+		assertFalse(replaceCaptor.getValue());
 	}
 
 	@Test
@@ -293,9 +295,10 @@ public class PackageControllerTest {
 		ArgumentCaptor<String> packageIdCaptor2 = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<String> fileIdCaptor2 = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<String> fileNameCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<Boolean> replaceCaptor = ArgumentCaptor.forClass(Boolean.class);
 		verify(packageService).canReplaceFile(packageIdCaptor2.capture(), fileIdCaptor2.capture(), fileNameCaptor.capture());
 		verify(packageService).deleteFile(packageIdCaptor.capture(), fileIdCaptor.capture(), shibCaptor.capture());
-		verify(packageService).addFiles(packageIdCaptor.capture(), jsonCaptor.capture(),shibCaptor.capture());
+		verify(packageService).addFiles(packageIdCaptor.capture(), jsonCaptor.capture(),shibCaptor.capture(), replaceCaptor.capture());
 		assertEquals(jsonCaptor.getValue().toString(), array.toString());
 		assertEquals("packageId", packageIdCaptor.getValue());
 		assertEquals("shibid", shibCaptor.getValue());
@@ -303,6 +306,7 @@ public class PackageControllerTest {
 		assertEquals("packageId", packageIdCaptor2.getValue());
 		assertEquals("filename", fileNameCaptor.getValue());
 		assertEquals("fileId", fileIdCaptor2.getValue());
+		assertTrue(replaceCaptor.getValue());
 	}
 
 }

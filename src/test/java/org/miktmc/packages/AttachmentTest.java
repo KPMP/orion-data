@@ -6,6 +6,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Date;
+
 public class AttachmentTest {
 
 	private Attachment attachment;
@@ -48,6 +50,13 @@ public class AttachmentTest {
 	public void testSetCheckum() {
 		attachment.setMd5checksum("123978476g8fkjfsd98");
 		assertEquals("123978476g8fkjfsd98", attachment.getMd5checksum());
+	}
+
+	@Test
+	public void testSetReplacedOn() {
+		Date now = new Date();
+		attachment.setReplacedOn(now);
+		assertEquals(now, attachment.getReplacedOn());
 	}
 
 }

@@ -457,7 +457,7 @@ public class PackageServiceTest {
 		myPackage.setAttachments(files);
 		when(service.findPackage("awesomeNewId")).thenReturn(myPackage);
 		assertEquals(fileArray.length(), 2);
-		List<Attachment> resultFiles = service.addFiles("awesomeNewId", fileArray, "shibid");
+		List<Attachment> resultFiles = service.addFiles("awesomeNewId", fileArray, "shibid", false);
 		assertEquals(fileArray.length(), 1);
 		verify(packageRepository).setRenamedFiles(fileArray, null, null);
 		assertEquals(3, resultFiles.size());
