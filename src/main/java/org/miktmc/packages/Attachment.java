@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.util.Date;
+
 @JsonPropertyOrder({ "originalFileName", "size", "id" })
 @Document(collection = "packages")
 public class Attachment {
@@ -17,6 +19,7 @@ public class Attachment {
 	private String originalFileName;
 	private String fileName;
 	private String md5checksum;
+	private Date replacedOn;
 
 	public String getFileName() {
 		return this.fileName;
@@ -56,5 +59,13 @@ public class Attachment {
 
 	public void setMd5checksum(String md5checksum) {
 		this.md5checksum = md5checksum;
+	}
+
+	public Date getReplacedOn() {
+		return replacedOn;
+	}
+
+	public void setReplacedOn(Date replacedOn) {
+		this.replacedOn = replacedOn;
 	}
 }
