@@ -143,9 +143,9 @@ public class PackageController {
 			if (didDelete) {
 				try {
 					packageService.addFiles(packageId, jsonFiles, shibId, true);
+					response.setSuccess(true);
 				} catch (Exception e) {
 					logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-					response.setSuccess(false);
 				}
 			}
         }
