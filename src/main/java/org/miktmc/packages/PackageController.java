@@ -130,25 +130,26 @@ public class PackageController {
 		if (session != null) {
 			shibId = (String)session.getAttribute("shibid");
 		}
-		FileUploadResponse response = new FileUploadResponse(true);
+		FileUploadResponse response = new FileUploadResponse(false);
 		packageInfo = new JSONObject(packageInfoString);
 		JSONArray jsonFiles = packageInfo.getJSONArray("files");
-		JSONObject file = jsonFiles.getJSONObject(0);
-		String originalFileName = file.getString(PackageKeys.FILE_NAME.getKey());
-		boolean didDelete = false;
-		if (packageService.canReplaceFile(packageId, fileId, originalFileName)) {
-			didDelete = packageService.deleteFile(packageId, fileId, shibId);
-		} else {
-			response.setSuccess(false);
-		}
-		if (didDelete) {
-			try {
-				packageService.addFiles(packageId, jsonFiles, shibId, true);
-			} catch (Exception e) {
-				logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
-				response.setSuccess(false);
+		if (!jsonFiles.isEmpty()) {
+            JSONObject file = jsonFiles.getJSONObject(0);
+			String originalFileName = file.getString(PackageKeys.FILE_NAME.getKey());
+			boolean didDelete = false;
+			if (packageService.canReplaceFile(packageId, fileId, originalFileName)) {
+				didDelete = packageService.deleteFile(packageId, fileId, shibId);
 			}
-		}
+			if (didDelete) {
+				try {
+					packageService.addFiles(packageId, jsonFiles, shibId, true);
+				} catch (Exception e) {
+					logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
+					response.setSuccess(false);
+				}
+			}
+        }
+
 		return response;
 	}
 
