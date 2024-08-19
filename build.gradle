@@ -20,7 +20,7 @@ apply plugin: 'com.palantir.docker'
 
 jar {
     baseName='miktmc-uploader-data'
-    version= '1.1'
+    version= '1.2'
 }
 
 group = 'kretzlerdevs'
