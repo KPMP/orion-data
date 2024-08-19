@@ -16,4 +16,4 @@ RUN apk add --no-cache tzdata
 ENV TZ=America/Detroit
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-ENTRYPOINT ["java", "-cp","app:app/lib/*","org.kpmp.Application"]
+ENTRYPOINT ["java", "-cp","app:app/lib/*","org.miktmc.Application"]
