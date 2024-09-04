@@ -63,6 +63,18 @@ public class PackageFilesValidationServiceTest {
 		assertEquals(expectedFilePaths, service.getGlobusFilePaths(globusFilesInDirectories, ""));
 	}
 
+	@Test
+	public void testGetGlobusFilePaths_multipleDirectories() {
+		Map<String, List<String>> globusFilesInDirectories = new HashMap<>();
+		globusFilesInDirectories.put("", Arrays.asList("file1", "file2"));
+		globusFilesInDirectories.put("directory1/directory2/directory3",Arrays.asList("file4"));
+
+
+		List<String> expectedFilePaths = Arrays.asList("file1", "file2", "directory1/directory2/directory3/file4");
+
+		assertEquals(expectedFilePaths, service.getGlobusFilePaths(globusFilesInDirectories, ""));
+	}
+
 
 	@Test
 	public void testProcessGlobusDirectory() throws JsonProcessingException, IOException {
@@ -222,7 +234,7 @@ public class PackageFilesValidationServiceTest {
 	}
 
 	@Test
-	public void testMatchFile_handlesDirectoriesCorrectly() throws JsonProcessingException, IOException {
+	public void testMatchFile_srtipsEmptyParentDirectory() throws JsonProcessingException, IOException {
 		
 		GlobusFileListing parent = new GlobusFileListing();
 		parent.setName("parent");

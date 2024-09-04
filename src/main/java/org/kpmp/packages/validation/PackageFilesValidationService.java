@@ -88,11 +88,11 @@ public class PackageFilesValidationService {
 		for (String directory : directories) {
 			List<String> filesInDirectory = filesInGlobusDirectories.get(directory);
 			if (filesInDirectory.size() == 0 && directory != baseDirectory) {
-				directory = directory.replace(baseDirectory + "/", "");
+				directory = directory.replaceAll(baseDirectory + "/$", "");
 				filePaths.add(directory);
 			}
 			for (String file : filesInDirectory) {
-				directory = directory.replace(baseDirectory + "/", "");
+				directory = directory.replaceAll(baseDirectory + "/$", "");
 				String fileWithPath = directory + "/" + file;
 				if (directory == "") {
 					fileWithPath = file;
