@@ -1,5 +1,6 @@
 package org.kpmp.packages.validation;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +62,7 @@ public class PackageFilesValidationService {
 			// put top level files in our map
 			
 			filesInGlobusDirectories.put("", globusFiles);
-			filesInGlobusDirectories = processGlobusDirectory(filesInGlobusDirectories, globusDirectories, request.getPackageId(), baseDirectory);
+			filesInGlobusDirectories = processGlobusDirectory(filesInGlobusDirectories, globusDirectories, request.getPackageId(), baseDirectory, baseDirectory);
 			List<String> filePathsInGlobus = getGlobusFilePaths(filesInGlobusDirectories, baseDirectory);
 
 			response.setFilesInGlobus(filePathsInGlobus);
@@ -128,21 +129,30 @@ public class PackageFilesValidationService {
 
 	// This is a side-effecty, recursive method. It fills in the filesInGlobusDirectories
 	protected Map<String, List<String>> processGlobusDirectory(Map<String, List<String>> globusListing,  
-		List<String> globusDirectories, String packageId, String initialDirectory) throws JsonProcessingException, IOException {
+		List<String> globusDirectories, String packageId, String directory, String initialDirectory) throws JsonProcessingException, IOException {
 
 		for (String globusDirectory : globusDirectories) {
 			String prefix = "";
 			if (initialDirectory != "") {
-				prefix = initialDirectory + "/";
+				prefix = initialDirectory + File.separator;
+			} 
+			if (directory != "" && directory != initialDirectory) {
+				prefix = prefix + directory + File.separator ;
 			}
 			String currentDirectory = prefix + globusDirectory;
 
 			List<GlobusFileListing> globusFilesInSubdirectory = globus.getFilesAndDirectoriesAtEndpoint(packageId + "/" + currentDirectory);
 			List<String> globusFiles = getGlobusFileNames(globusFilesInSubdirectory);
-			globusListing.put(currentDirectory, globusFiles);
+			if (initialDirectory != "") {
+				String removeDir = initialDirectory + File.separator;
+				globusListing.put(currentDirectory.replace(removeDir, ""), globusFiles);
+			} else {
+				globusListing.put(currentDirectory, globusFiles);
+			}
+			
 			List<String> globusSubDirectories = getGlobusDirectoryNames(globusFilesInSubdirectory);
 			if (globusSubDirectories.size() > 0) {
-				processGlobusDirectory(globusListing, globusSubDirectories, packageId, currentDirectory);
+				processGlobusDirectory(globusListing, globusSubDirectories, packageId, currentDirectory, initialDirectory);
 			}
 		}
 		return globusListing;
