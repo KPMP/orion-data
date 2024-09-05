@@ -63,6 +63,18 @@ public class PackageFilesValidationServiceTest {
 		assertEquals(expectedFilePaths, service.getGlobusFilePaths(globusFilesInDirectories, ""));
 	}
 
+	@Test
+	public void testGetGlobusFilePaths_multipleDirectories() {
+		Map<String, List<String>> globusFilesInDirectories = new HashMap<>();
+		globusFilesInDirectories.put("", Arrays.asList("file1", "file2"));
+		globusFilesInDirectories.put("directory1/directory2/directory3",Arrays.asList("file4"));
+
+
+		List<String> expectedFilePaths = Arrays.asList("file1", "file2", "directory1/directory2/directory3/file4");
+
+		assertEquals(expectedFilePaths, service.getGlobusFilePaths(globusFilesInDirectories, ""));
+	}
+
 
 	@Test
 	public void testProcessGlobusDirectory() throws JsonProcessingException, IOException {
@@ -85,7 +97,7 @@ public class PackageFilesValidationServiceTest {
 		expectedResults.put("directory1", Arrays.asList("file1", "file2"));
 		expectedResults.put("directory2", Arrays.asList("file3", "file4"));
 
-		actualListing = service.processGlobusDirectory(new HashMap<String, List<String>>(), Arrays.asList("directory1", "directory2"), "123", "");
+		actualListing = service.processGlobusDirectory(new HashMap<String, List<String>>(), Arrays.asList("directory1", "directory2"), "123", "", "");
 
 		assertEquals(expectedResults, actualListing);
 	}
@@ -115,13 +127,16 @@ public class PackageFilesValidationServiceTest {
 		expectedResults.put("directory1", Arrays.asList("file1", "file2"));
 		expectedResults.put("directory1/subdirectory", Arrays.asList("file3", "file4"));
 
-		actualListing = service.processGlobusDirectory(new HashMap<String, List<String>>(), Arrays.asList("directory1"), "123", "");
+		actualListing = service.processGlobusDirectory(new HashMap<String, List<String>>(), Arrays.asList("directory1"), "123", "", "");
 
 		assertEquals(expectedResults, actualListing);
 	}
 
 	@Test
 	public void testProcessGlobusDirectory_withEmptySubdirectories() throws JsonProcessingException, IOException {
+		// directory1/file1
+		// directory1/file2
+		// directory1/subdirectory
 		Map<String, List<String>> actualListing = new HashMap<String, List<String>>();
 		GlobusFileListing globusFile1 = new GlobusFileListing();
 		globusFile1.setName("file1");
@@ -132,13 +147,20 @@ public class PackageFilesValidationServiceTest {
 		GlobusFileListing globusSubdirectory = new GlobusFileListing();
 		globusSubdirectory.setName("subdirectory");
 		globusSubdirectory.setType("dir");
+		GlobusFileListing globusFile3 = new GlobusFileListing();
+		globusFile3.setName("metadata.xlsx");
+		globusFile3.setType("file");
+		GlobusFileListing globusDirectory = new GlobusFileListing();
+		globusDirectory.setName("directory1");
+		globusDirectory.setType("dir");
+		when(globus.getFilesAndDirectoriesAtEndpoint("123")).thenReturn(Arrays.asList(globusDirectory, globusFile3));
 		when(globus.getFilesAndDirectoriesAtEndpoint("123/directory1")).thenReturn(Arrays.asList(globusFile1, globusFile2, globusSubdirectory));
 		when(globus.getFilesAndDirectoriesAtEndpoint("123/directory1/subdirectory")).thenReturn(Arrays.asList());
 		Map<String, List<String>> expectedResults = new HashMap<>();
 		expectedResults.put("directory1", Arrays.asList("file1", "file2"));
 		expectedResults.put("directory1/subdirectory", Arrays.asList());
 
-		actualListing = service.processGlobusDirectory(new HashMap<String, List<String>>(), Arrays.asList("directory1"), "123", "");
+		actualListing = service.processGlobusDirectory(new HashMap<String, List<String>>(), Arrays.asList("directory1"), "123", "", "");
 
 		assertEquals(expectedResults.size(), actualListing.size());
 		Set<String> expectedKeys = expectedResults.keySet();
@@ -222,7 +244,7 @@ public class PackageFilesValidationServiceTest {
 	}
 
 	@Test
-	public void testMatchFile_handlesDirectoriesCorrectly() throws JsonProcessingException, IOException {
+	public void testMatchFile_srtipsEmptyParentDirectory() throws JsonProcessingException, IOException {
 		
 		GlobusFileListing parent = new GlobusFileListing();
 		parent.setName("parent");
@@ -317,15 +339,15 @@ public class PackageFilesValidationServiceTest {
 		GlobusFileListing globusFile1 = new GlobusFileListing();
 		globusFile1.setName("file1");
 		globusFile1.setType("file");
+		GlobusFileListing directory = new GlobusFileListing();
+		directory.setName("directory");
+		directory.setType("dir");
 		GlobusFileListing globusFile2 = new GlobusFileListing();
-		globusFile2.setName("directory");
-		globusFile2.setType("dir");
-		GlobusFileListing globusFile3 = new GlobusFileListing();
-		globusFile3.setName("file2");
-		globusFile3.setType("file");
-		List<GlobusFileListing> globusFileListing = Arrays.asList(globusFile1, globusFile2);
+		globusFile2.setName("file2");
+		globusFile2.setType("file");
+		List<GlobusFileListing> globusFileListing = Arrays.asList(globusFile1, directory);
 		when(globus.getFilesAndDirectoriesAtEndpoint("package123")).thenReturn(globusFileListing);
-		when(globus.getFilesAndDirectoriesAtEndpoint("package123/directory")).thenReturn(Arrays.asList(globusFile3));
+		when(globus.getFilesAndDirectoriesAtEndpoint("package123/directory")).thenReturn(Arrays.asList(globusFile2));
 		PackageFilesRequest request = new PackageFilesRequest();
 		request.setFilenames("file1\ndirectory/file2");
 		request.setPackageId("package123");
