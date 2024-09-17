@@ -2,7 +2,7 @@ package org.miktmc.packages;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.miktmc.logging.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;

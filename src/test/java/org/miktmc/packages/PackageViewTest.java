@@ -1,14 +1,14 @@
 package org.miktmc.packages;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,12 +16,12 @@ public class PackageViewTest {
 
 	private PackageView packageView;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		packageView = new PackageView(new JSONObject());
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		packageView = null;
 	}

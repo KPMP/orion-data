@@ -1,6 +1,6 @@
 package org.miktmc.error;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.miktmc.logging.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;

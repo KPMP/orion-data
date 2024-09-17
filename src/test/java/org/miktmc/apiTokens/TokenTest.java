@@ -1,23 +1,23 @@
 package org.miktmc.apiTokens;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TokenTest {
 
     private Token token;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         token = new Token();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         token = null;
     }

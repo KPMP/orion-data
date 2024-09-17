@@ -1,6 +1,6 @@
 package org.miktmc.apiTokens;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.miktmc.shibboleth.ShibbolethUserService;
 import org.springframework.beans.factory.annotation.Autowired;
