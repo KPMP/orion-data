@@ -96,7 +96,7 @@ def getCurrentGitBranch() {
 }
 
 docker {
-    name "kingstonduo/orion-data:" + getCurrentGitBranch()
+    name "kretzlerdevs/miktmc-uploader-data:" + getCurrentGitBranch()
     copySpec.from(tasks.unpack.outputs).into("dependency")
     buildArgs(['DEPENDENCY': "dependency"])
 }
