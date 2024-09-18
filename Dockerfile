@@ -1,9 +1,10 @@
-FROM alpine
+FROM alpine:3.20.0
 
 RUN apk update && \
     apk upgrade && \
     apk add imagemagick
-RUN apk add openjdk8
+
+RUN apk add openjdk21
 
 VOLUME /tmp
 ARG DEPENDENCY=target/dependency
