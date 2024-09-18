@@ -1,16 +1,16 @@
 package org.miktmc.apiTokens;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.miktmc.shibboleth.ShibbolethUserService;
 import org.miktmc.users.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,13 +23,13 @@ public class TokenControllerTest {
     private TokenController tokenController;
     private AutoCloseable mocks;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         mocks = MockitoAnnotations.openMocks(this);
         tokenController = new TokenController(userService, tokenService);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         mocks.close();
         tokenController = null;

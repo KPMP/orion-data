@@ -1,6 +1,6 @@
 package org.miktmc.packages;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
@@ -16,9 +16,9 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.miktmc.users.User;
 import org.miktmc.logging.LoggingService;
 
@@ -47,7 +47,7 @@ public class PackageServiceTest {
 	private StateHandlerService stateHandlerService;
 	private AutoCloseable mocks;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 		service = new PackageService(packageFileHandler, filePathHelper, packageRepository, stateHandlerService, logger);
@@ -56,7 +56,7 @@ public class PackageServiceTest {
         ReflectionTestUtils.setField(service, "basePath", "/data/dataLake");
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		mocks.close();
 		service = null;

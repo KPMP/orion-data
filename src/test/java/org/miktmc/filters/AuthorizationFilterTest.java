@@ -8,16 +8,16 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.miktmc.Notification.NotificationHandler;
 import org.miktmc.logging.LoggingService;
 import org.miktmc.shibboleth.ShibbolethUserService;
@@ -45,7 +45,7 @@ public class AuthorizationFilterTest {
     @Mock
     private NotificationHandler handler;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		MockitoAnnotations.openMocks(this);
 		filter = new AuthorizationFilter(logger, shibUserService, restTemplate, env, handler);
@@ -55,7 +55,7 @@ public class AuthorizationFilterTest {
 		ReflectionTestUtils.setField(filter, "allowedEndpoints", Arrays.asList("uri1"));
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		filter = null;
 	}

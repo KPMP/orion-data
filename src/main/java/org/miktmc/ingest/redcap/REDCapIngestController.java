@@ -2,7 +2,7 @@ package org.miktmc.ingest.redcap;
 
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
 import org.miktmc.apiTokens.Token;

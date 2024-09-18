@@ -1,6 +1,6 @@
 package org.miktmc.packages;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -18,9 +18,9 @@ import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.miktmc.logging.LoggingService;
 import org.miktmc.users.User;
 import org.miktmc.users.UserRepository;
@@ -56,14 +56,14 @@ public class CustomPackageRepositoryTest {
 	private CustomPackageRepository repo;
 	private AutoCloseable mocks;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 		repo = new CustomPackageRepository(packageRepository, mongoTemplate, universalIdGenerator, userRepo,
 				jsonWriterSettings, studyFileInfoRepository, logger);
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		mocks.close();
 		repo = null;

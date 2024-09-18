@@ -1,6 +1,6 @@
 package org.miktmc.logging;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.miktmc.shibboleth.ShibbolethUserService;
 import org.miktmc.users.User;

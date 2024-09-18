@@ -1,13 +1,13 @@
 package org.miktmc.Notification;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.miktmc.users.User;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -21,7 +21,7 @@ public class NotificationHandlerTest {
     private RestTemplate restTemplate;
     private NotificationHandler handler;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         handler = new NotificationHandler(restTemplate);
@@ -29,7 +29,7 @@ public class NotificationHandlerTest {
         ReflectionTestUtils.setField(handler, "notificationEndpoint", "/endpoint");
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         MockitoAnnotations.openMocks(this).close();
         handler = null;

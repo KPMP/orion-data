@@ -1,26 +1,26 @@
 package org.miktmc.forms;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FormTest extends Form {
 
 	private Form form;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		form = new Form();
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		form = null;
 	}

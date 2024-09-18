@@ -2,7 +2,7 @@ package org.miktmc.shibboleth;
 
 import java.io.UnsupportedEncodingException;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.miktmc.logging.LoggingService;
 import org.miktmc.users.User;
