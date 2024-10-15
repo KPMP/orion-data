@@ -2,6 +2,9 @@
 
 ## Release 4.1 [unreleased]
 Brief summary of what's in this release:
+- upgrade Java
+- address some vulnerabilities
+- allow application to understand folders in uploads
 
 
 ### Breaking changes
