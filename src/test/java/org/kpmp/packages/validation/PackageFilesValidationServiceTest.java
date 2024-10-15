@@ -102,6 +102,31 @@ public class PackageFilesValidationServiceTest {
 		assertEquals(expectedResults, actualListing);
 	}
 
+	@Test
+	public void testProcessGlobusDirectory_spacesInDirectoryNames() throws JsonProcessingException, IOException {
+		Map<String, List<String>> actualListing = new HashMap<String, List<String>>();
+		GlobusFileListing globusFile1 = new GlobusFileListing();
+		globusFile1.setName("file1");
+		globusFile1.setType("file");
+		GlobusFileListing globusFile2 = new GlobusFileListing();
+		globusFile2.setName("file2");
+		globusFile2.setType("file");
+		when(globus.getFilesAndDirectoriesAtEndpoint("123/directory 1")).thenReturn(Arrays.asList(globusFile1, globusFile2));
+		GlobusFileListing globusFile3 = new GlobusFileListing();
+		globusFile3.setName("file3");
+		globusFile3.setType("file");
+		GlobusFileListing globusFile4 = new GlobusFileListing();
+		globusFile4.setName("file4");
+		globusFile4.setType("file");
+		when(globus.getFilesAndDirectoriesAtEndpoint("123/directory2")).thenReturn(Arrays.asList(globusFile3, globusFile4));
+		Map<String, List<String>> expectedResults = new HashMap<>();
+		expectedResults.put("directory 1", Arrays.asList("file1", "file2"));
+		expectedResults.put("directory2", Arrays.asList("file3", "file4"));
+
+		actualListing = service.processGlobusDirectory(new HashMap<String, List<String>>(), Arrays.asList("directory 1", "directory2"), "123", "", "");
+
+		assertEquals(expectedResults, actualListing);
+	}
 
 	@Test
 	public void testProcessGlobusDirectory_withSubdirectories() throws JsonProcessingException, IOException {
