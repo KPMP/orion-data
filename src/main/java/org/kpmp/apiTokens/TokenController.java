@@ -1,6 +1,6 @@
 package org.kpmp.apiTokens;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.kpmp.shibboleth.ShibbolethUserService;
 import org.springframework.beans.factory.annotation.Autowired;

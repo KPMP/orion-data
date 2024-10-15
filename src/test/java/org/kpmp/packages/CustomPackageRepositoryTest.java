@@ -1,7 +1,7 @@
 package org.kpmp.packages;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -17,9 +17,9 @@ import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.kpmp.logging.LoggingService;
 import org.kpmp.users.User;
 import org.kpmp.users.UserRepository;
@@ -53,14 +53,14 @@ public class CustomPackageRepositoryTest {
 	private LoggingService logger;
 	private AutoCloseable mocks;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 		repo = new CustomPackageRepository(packageRepository, mongoTemplate, universalIdGenerator, userRepo,
 				jsonWriterSettings, logger);
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		mocks.close();
 		repo = null;

@@ -3,9 +3,9 @@ package org.kpmp.globus;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.env.Environment;
@@ -25,7 +25,7 @@ public class GlobusServiceTest {
 	private GlobusService globusService;
 	private AutoCloseable mocks;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 		globusService = new GlobusService(httpTransport, globusAuthService, env);
@@ -35,7 +35,7 @@ public class GlobusServiceTest {
 
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		mocks.close();
 		globusService = null;

@@ -1,28 +1,27 @@
 package org.kpmp.packages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PackageNotificationInfoTest {
 
 	private PackageNotificationInfo info;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		info = new PackageNotificationInfo();
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		info = null;
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testConstructor() {
 		Date datePackageSubmitted = new Date();
 		PackageNotificationInfo packageInfo = new PackageNotificationInfo("packageId", "packageType",
