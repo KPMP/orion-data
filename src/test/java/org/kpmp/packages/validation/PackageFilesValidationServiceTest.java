@@ -118,12 +118,20 @@ public class PackageFilesValidationServiceTest {
 		GlobusFileListing globusFile4 = new GlobusFileListing();
 		globusFile4.setName("file4");
 		globusFile4.setType("file");
-		when(globus.getFilesAndDirectoriesAtEndpoint("123/directory2")).thenReturn(Arrays.asList(globusFile3, globusFile4));
+		when(globus.getFilesAndDirectoriesAtEndpoint("123/directory 1/subfolder")).thenReturn(Arrays.asList(globusFile3, globusFile4));
+		GlobusFileListing globusFile5 = new GlobusFileListing();
+		globusFile5.setName("file5");
+		globusFile5.setType("file");
+		GlobusFileListing globusFile6 = new GlobusFileListing();
+		globusFile6.setName("file6");
+		globusFile6.setType("file");
+		when(globus.getFilesAndDirectoriesAtEndpoint("123/directory 1/subfolder")).thenReturn(Arrays.asList(globusFile5, globusFile6));
 		Map<String, List<String>> expectedResults = new HashMap<>();
 		expectedResults.put("directory 1", Arrays.asList("file1", "file2"));
 		expectedResults.put("directory2", Arrays.asList("file3", "file4"));
+		expectedResults.put("directory 1/subfolder", Arrays.asList("file5", "file6"));
 
-		actualListing = service.processGlobusDirectory(new HashMap<String, List<String>>(), Arrays.asList("directory 1", "directory2"), "123", "", "");
+		actualListing = service.processGlobusDirectory(new HashMap<String, List<String>>(), Arrays.asList("directory 1", "directory2", "directory 1/subfolder"), "123", "", "");
 
 		assertEquals(expectedResults, actualListing);
 	}
