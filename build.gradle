@@ -14,7 +14,7 @@ plugins {
 }
 
 group = 'kingstonduo'
-version = "4.1"
+version = "4.2"
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
