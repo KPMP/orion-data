@@ -27,7 +27,9 @@ public class FilePathHelper {
 		File packageDir = new File(path);
 		File[] listOfFiles = packageDir.listFiles();
 		for (File file : listOfFiles) {
-			filenames.add(file.getName());
+            if (!(file.getName().toLowerCase().startsWith(".nfs"))){
+                filenames.add(file.getName());
+            }
 		}
 		return filenames;
 	}
