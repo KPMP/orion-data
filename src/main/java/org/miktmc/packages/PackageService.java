@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -207,22 +207,50 @@ public class PackageService {
 
 	public void calculateAndSaveChecksums(String packageId) throws IOException {
 		Package myPackage = packageRepository.findByPackageId(packageId);
-		List<Attachment> updatedFiles = calculateChecksums(myPackage);
+		List<Attachment> updatedFiles = calculateChecksums(packageId);
 		myPackage.setAttachments(updatedFiles);
 		packageRepository.updateField(packageId, "files", updatedFiles);
 	}
 
-	public List<Attachment> calculateChecksums(Package myPackage) throws IOException {
+	public List<Attachment> calculateChecksums(String packageId) throws IOException {
+        Package myPackage = packageRepository.findByPackageId(packageId);
 		List<Attachment> files = myPackage.getAttachments();
 		String packageID = myPackage.getPackageId();
         String study = myPackage.getStudy();
+        InputStream is = null;
 		if (files.size() > 0) {
 			for (Attachment file : files) {
 				if (file.getMd5checksum() == null) {
-					String filePath = filePathHelper.getFilePath(packageID, study, file.getFileName());
-					InputStream is = Files.newInputStream(Paths.get(filePath));
-					String md5 = DigestUtils.md5Hex(is);
-					file.setMd5checksum(md5);
+                    try{
+                        String filePath = filePathHelper.getFilePath(packageID, study, file.getFileName());
+                        Path path = Path.of(filePath);
+                        if(path == null || !Files.exists(path)){
+                            logger.logErrorMessage(PackageService.class, null, packageID,
+                                PackageService.class.getSimpleName() + ".calculateChecksums", "Could not find file in " + filePath);
+                        }else{
+                            try {
+                                is = Files.newInputStream(Path.of(filePath));
+                                String md5 = DigestUtils.md5Hex(is);
+                                file.setMd5checksum(md5); 
+                            }catch(IOException e){
+                                logger.logErrorMessage(PackageService.class, null, packageID,
+                                    PackageService.class.getSimpleName() + ".calculateChecksums",
+                                    "Error processing file at " + filePath + ": " + e.getMessage());
+                            }
+                        }
+                    }
+                    finally{
+                        try {
+                            if(is != null){
+                                is.close();
+                            }
+                        }catch(IOException e){
+                            logger.logErrorMessage(PackageService.class, null, packageID,
+                                PackageService.class.getSimpleName() + ".calculateChecksums",
+                                "There was a problem closing the InputStream after calculating checksum for file "
+                                + file.getFileName() + ": " + e.getMessage());
+                        }
+                    }
 				} else {
 					logger.logInfoMessage(PackageService.class, null, packageID,
 							PackageService.class.getSimpleName() + ".calculateFileChecksums",

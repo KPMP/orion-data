@@ -283,7 +283,8 @@ public class PackageServiceTest {
         newPackage.setStudy(studyDir);
 		when(filePathHelper.getFilePath("1234", studyDir, "file1")).thenReturn(file1Path);
 		when(filePathHelper.getFilePath("1234", studyDir, "file2")).thenReturn(file2Path);
-		service.calculateChecksums(newPackage);
+        when(packageRepository.findByPackageId(newPackage.getPackageId())).thenReturn(newPackage);
+		service.calculateChecksums(newPackage.getPackageId());
 		List<Attachment> attachments1 = newPackage.getAttachments();
 		assertNotNull(attachments1.get(0).getMd5checksum());
 		assertNotNull(attachments1.get(1).getMd5checksum());
