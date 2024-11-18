@@ -1,7 +1,12 @@
 package org.kpmp.shibboleth;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +63,12 @@ public class ShibbolethUserService {
     }
 
 	public User getUser(HttpServletRequest request) {
+        List<String> roleList = new ArrayList<>();
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			JSONArray roles = (JSONArray)session.getAttribute("roles");
+			roleList = JSONArrayToList(roles);
+		}
 
 		String value = handleNull(request.getHeader("mail"));
 		String email = encoder.convertFromLatin1(value);
@@ -76,9 +87,23 @@ public class ShibbolethUserService {
 		user.setFirstName(firstName);
 		user.setEmail(email);
 		user.setShibId(shibId);
+        user.setRoles(roleList);
 
 		return user;
 
+	}
+
+    private List<String> JSONArrayToList(JSONArray array) {
+		List<String> roles = new ArrayList<>();
+		if (array == null) {
+			return roles;
+		}
+		for (int i = 0; i < array.length(); i++) {  
+			String role = array.optString(i);
+			roles.add(role);
+			System.err.println(role);
+		}
+		return roles;
 	}
 
 	private String handleNull(String value) {
