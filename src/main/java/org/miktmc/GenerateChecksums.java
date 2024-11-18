@@ -39,7 +39,7 @@ public class GenerateChecksums implements CommandLineRunner {
             for (Package myPackage : packages) {
                 String packageID = myPackage.getPackageId();
                 try {
-                    List<Attachment> files = packageService.calculateChecksums(myPackage);
+                    List<Attachment> files = packageService.calculateChecksums(packageID);
                     customPackageRepository.updateField(myPackage.getPackageId(), "files", files);
                 } catch (Exception e) {
                     logger.logErrorMessage(PackageService.class, null, packageID,
