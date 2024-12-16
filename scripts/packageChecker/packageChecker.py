@@ -106,7 +106,8 @@ class PackageChecker:
                                 [package_id, extra_files_list]
                             ]
                             extra_writer.writerows(data)
-                            self.move_file_to_derived(directory, file_name)
+                            if (move_derived):
+                                self.move_file_to_derived(directory, file_name)
 
                     except:
                         missing_package_list.append(package_id)
