@@ -70,7 +70,7 @@ class PackageChecker:
                         else:
                             for file in files:
                                 ext = os.path.splitext(file)
-                                if not ext[1] == ".bfmemo" and not "expression_matrix" in ext[0]:
+                                if not ext[1] == ".bfmemo" and not "derived" in ext[0]:
                                     actual_file_names.append(file)
 
                                 if file == "metadata.json" and len(files) == 1:
@@ -142,16 +142,16 @@ class PackageChecker:
         file_path = package_directory + "/" + file_name
         print(f"Moving file '{file_path}' to '{derived_dir}'.")
 
-        if not os.path.exists(derived_dir):
-            os.makedirs(derived_dir)
-
-        try:
-            shutil.move(file_path, derived_dir)
-            print(f"File '{file_path}' moved to '{derived_dir}' successfully.")
-        except FileNotFoundError:
-            print(f"Error: File '{source_file}' not found.")
-        except Exception as e:
-            print(f"An error occurred: {e}")
+        # if not os.path.exists(derived_dir):
+        #     os.makedirs(derived_dir)
+        #
+        # try:
+        #     shutil.move(file_path, derived_dir)
+        #     print(f"File '{file_path}' moved to '{derived_dir}' successfully.")
+        # except FileNotFoundError:
+        #     print(f"Error: File '{source_file}' not found.")
+        # except Exception as e:
+        #     print(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":
