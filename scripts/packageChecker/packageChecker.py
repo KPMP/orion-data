@@ -107,8 +107,10 @@ class PackageChecker:
                             ]
                             extra_writer.writerows(data)
                             if (move_derived):
-                                for file in extra_files_list.split(", "):
-                                    self.move_file_to_derived(directory, file)
+                                for file_name in str(extra_files_list).split(", "):
+                                    clean_file_name = file_name.replace("[", "").replace("]", "").replace(",", "").replace("'", "")
+                                    if clean_file_name != 'derived':
+                                        self.move_file_to_derived(directory, clean_file_name)
 
                     except:
                         missing_package_list.append(package_id)
