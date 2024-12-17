@@ -111,7 +111,7 @@ class PackageChecker:
                                     clean_file_name = file_name.replace("[", "").replace("]", "").replace(",", "").replace("'", "")
                                     if clean_file_name != 'derived' and 'svs' not in clean_file_name:
                                         self.move_file_to_derived(directory, clean_file_name)
-                                        os._exit(0)
+                                        # os._exit(0)
 
                     except:
                         missing_package_list.append(package_id)
