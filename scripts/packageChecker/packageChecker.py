@@ -109,7 +109,7 @@ class PackageChecker:
                             if (move_derived):
                                 for file_name in str(extra_files_list).split(", "):
                                     clean_file_name = file_name.replace("[", "").replace("]", "").replace(",", "").replace("'", "")
-                                    if clean_file_name != 'derived':
+                                    if clean_file_name != 'derived' and 'svs' not in clean_file_name:
                                         self.move_file_to_derived(directory, clean_file_name)
 
                     except:
