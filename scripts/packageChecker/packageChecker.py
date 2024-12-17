@@ -111,7 +111,6 @@ class PackageChecker:
                                     clean_file_name = file_name.replace("[", "").replace("]", "").replace(",", "").replace("'", "")
                                     if clean_file_name != 'derived' and 'svs' not in clean_file_name:
                                         self.move_file_to_derived(directory, clean_file_name)
-                                        # os._exit(0)
 
                     except:
                         missing_package_list.append(package_id)
@@ -142,16 +141,16 @@ class PackageChecker:
         file_path = package_directory + "/" + file_name
         if os.path.isfile(file_path):
             print(f"Moving file '{file_path}' to '{derived_dir}'.")
-            # if not os.path.exists(derived_dir):
-            #     os.makedirs(derived_dir)
-            #
-            # try:
-            #     shutil.move(file_path, derived_dir)
-            #     print(f"File '{file_path}' moved to '{derived_dir}' successfully.")
-            # except FileNotFoundError:
-            #     print(f"Error: File '{source_file}' not found.")
-            # except Exception as e:
-            #     print(f"An error occurred: {e}")
+            if not os.path.exists(derived_dir):
+                os.makedirs(derived_dir)
+
+            try:
+                shutil.move(file_path, derived_dir)
+                print(f"File '{file_path}' moved to '{derived_dir}' successfully.")
+            except FileNotFoundError:
+                print(f"Error: File '{source_file}' not found.")
+            except Exception as e:
+                print(f"An error occurred: {e}")
         else:
             print(f"'{file_path}' is not a file. Skipping.")
 
