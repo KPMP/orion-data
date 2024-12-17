@@ -61,8 +61,8 @@ class PackageChecker:
             for state in package_states:
                 if state['state'] == "UPLOAD_SUCCEEDED":
                     try:
-                        directory = data_directory + "/package_";
-                        files = os.listdir(directory + package_id)
+                        directory = data_directory + "/package_" + package_id;
+                        files = os.listdir(directory)
                         expected_file_names = self.get_expected_files(package)
                         actual_file_names = []
                         if len(files) == 0:
@@ -135,7 +135,7 @@ class PackageChecker:
 
     def move_file_to_derived(self, package_directory, file_name):
         derived_dir = package_directory + "/derived"
-        file_path = package_directory + file_name
+        file_path = package_directory + "/" + file_name
         print(f"Moving file '{file_path}' to '{derived_dir}'.")
 
         # if not os.path.exists(derived_dir):
