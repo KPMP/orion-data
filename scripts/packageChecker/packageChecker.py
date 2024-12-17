@@ -162,7 +162,8 @@ if __name__ == "__main__":
         "-m",
         "--move_derived",
         required=False,
-        action='store_true'
+        action='store_true',
+        help='move extra files to derived folder'
     )
     args = parser.parse_args()
     checker = PackageChecker()
