@@ -109,7 +109,7 @@ class PackageChecker:
                             if (move_derived):
                                 for row in data:
                                     for file in row[1]:
-                                        self.move_file_to_derived(directory, file_name)
+                                        self.move_file_to_derived(directory, file)
 
                     except:
                         missing_package_list.append(package_id)
