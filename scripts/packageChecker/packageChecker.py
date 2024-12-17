@@ -107,7 +107,7 @@ class PackageChecker:
                             ]
                             extra_writer.writerows(data)
                             if (move_derived):
-                                for file in extra_files_list:
+                                for file in extra_files_list.split(", "):
                                     self.move_file_to_derived(directory, file)
 
                     except:
