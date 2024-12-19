@@ -1,3 +1,4 @@
 pymongo
 slack_sdk
 numpy
+shutil
