@@ -131,7 +131,7 @@ public class PackageFilesValidationServiceTest {
 		expectedResults.put("directory2", Arrays.asList("file3", "file4"));
 		expectedResults.put("directory 1/subfolder", Arrays.asList("file5", "file6"));
 
-		actualListing = service.processGlobusDirectory(new HashMap<String, List<String>>(), Arrays.asList("directory 1", "directory2", "directory 1/subfolder"), "123", "", "");
+		actualListing = service.processGlobusDirectory(new HashMap<String, List<String>>(), Arrays.asList("directory 1", "directory2"), "123", "", "");
 
 		assertEquals(expectedResults, actualListing);
 	}
