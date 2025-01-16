@@ -36,6 +36,8 @@ public class AuthorizationFilter implements Filter {
 	private static final String FILE_PART_INDEX = "qqpartindex";
 	private static final String USER_NO_DLU_ACCESS = "User does not have access to DLU: ";
 	private static final String GROUPS_KEY = "groups";
+    private static final String FIRST_NAME_KEY = "first_name";
+    private static final String LAST_NAME_KEY = "last_name";
 	private static final String USER_DOES_NOT_EXIST = "User does not exist in User Portal: ";
 	private static final String CLIENT_ID_PROPERTY = "CLIENT_ID";
 	private static final int SECONDS_IN_MINUTE = 60;
@@ -98,12 +100,16 @@ public class AuthorizationFilter implements Filter {
 				try {
 					JSONObject userJson = new JSONObject(userInfo);
 					JSONArray userGroups = userJson.getJSONArray(GROUPS_KEY);
+                    String firstName = userJson.getString(FIRST_NAME_KEY);
+                    String lastName = userJson.getString(LAST_NAME_KEY);
 
 					if (isAllowed(userGroups) && userJson.getBoolean("active")) {
 						HttpSession session = request.getSession(true);
 						session.setMaxInactiveInterval(SESSION_TIMEOUT_SECONDS);
 						session.setAttribute("roles", userGroups);
 						session.setAttribute("shibid", shibId);
+                        session.setAttribute("lastName", lastName);
+                        session.setAttribute("firstName", firstName);
 						chain.doFilter(request, response);
 					} else {
 						handleError(USER_NO_DLU_ACCESS + userGroups, HttpStatus.NOT_FOUND, request, response);
