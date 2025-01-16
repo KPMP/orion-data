@@ -66,20 +66,20 @@ public class ShibbolethUserService {
 
 		List<String> roleList = new ArrayList<>();
 		HttpSession session = request.getSession(false);
+        String firstName = "";
+        String lastName = "";
 		if (session != null) {
 			JSONArray roles = (JSONArray)session.getAttribute("roles");
 			roleList = JSONArrayToList(roles);
+            firstName = (String)session.getAttribute("firstName");
+            lastName = (String)session.getAttribute("lastName");
 		}
 
 
 		String value = handleNull(request.getHeader("mail"));
 		String email = encoder.convertFromLatin1(value);
 		value = handleNull(request.getHeader("displayname"));
-		String displayName = encoder.convertFromLatin1(value);
-		value = handleNull(request.getHeader("givenname"));
-		String firstName = encoder.convertFromLatin1(value);
-		value = handleNull(request.getHeader("sn"));
-		String lastName = encoder.convertFromLatin1(value);
+		String displayName = firstName + " " + lastName;
 		value = handleNull(request.getHeader("eppn"));
 		String shibId = encoder.convertFromLatin1(value);
 
