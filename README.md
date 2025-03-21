@@ -1,5 +1,8 @@
 # The Service Layer for the MiKTMC Uploader
 
+# Requires
+* Java 21
+
 # Build
 `./gradlew build docker`
 The default tag is the github branch name if no verison is provided
