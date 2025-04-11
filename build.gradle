@@ -24,7 +24,12 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.palantir.docker'
 
-group = 'kingstonduo'
+jar {
+    baseName='miktmc-uploader-data'
+    version= '1.2'
+}
+
+group = 'kretzlerdevs'
 
 repositories {
     mavenCentral()
