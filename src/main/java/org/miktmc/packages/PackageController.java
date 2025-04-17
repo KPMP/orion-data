@@ -200,6 +200,7 @@ public class PackageController {
 		logger.logInfoMessage(this.getClass(), packageId, message, request);
 		if (packageService.validatePackage(packageId, shibUserService.getUser(request))) {
 			try {
+				packageService.setPackageValidated(packageId);
                 packageService.stripMetadata(packageService.findPackage(packageId));
 				// packageService.calculateAndSaveChecksums(packageId);
 				fileUploadResponse = new FileUploadResponse(true);

@@ -187,9 +187,9 @@ public class PackageService {
 		List<String> filesNamesNoChecksums = new ArrayList<>();
 		List<String> filesNamesChecksums = new ArrayList<>();
 
-		// We only want to check new files, i.e. those without checksums
+		// We only want to check unvalidated files
 		for (Attachment file: packageInformation.getAttachments()) {
-			if (file.getMd5checksum() == null) {
+			if (!file.getValidated()) {
 				filesNoChecksums.add(file);
 				filesNamesNoChecksums.add(file.getFileName());
 			} else {
@@ -203,6 +203,15 @@ public class PackageService {
 		Collections.sort(filesNamesNoChecksums);
 		return checkFilesExist(filesOnDisk, filesNamesNoChecksums, packageId, user)
 				&& validateFileLengthsMatch(filesNoChecksums, packagePath, packageId, user);
+	}
+
+	public void setPackageValidated(String packageId) {
+		Package packageInformation = findPackage(packageId);
+		List<Attachment> files = packageInformation.getAttachments();
+		for (Attachment file: files) {
+			file.setValidated(true);
+		}
+		packageRepository.updateField(packageId, "files", files);
 	}
 
 	public void calculateAndSaveChecksums(String packageId) throws IOException {

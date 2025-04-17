@@ -20,6 +20,15 @@ public class Attachment {
 	private String fileName;
 	private String md5checksum;
 	private Date replacedOn;
+	private Boolean validated = false;
+
+	public Boolean getValidated() {
+		return validated;
+	}
+
+	public void setValidated(Boolean validated) {
+		this.validated = validated;
+	}
 
 	public String getFileName() {
 		return this.fileName;
