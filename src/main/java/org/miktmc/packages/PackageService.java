@@ -183,87 +183,35 @@ public class PackageService {
 
 	public boolean validatePackage(String packageId, User user) {
 		Package packageInformation = findPackage(packageId);
-		List<Attachment> filesNoChecksums = new ArrayList<>();
-		List<String> filesNamesNoChecksums = new ArrayList<>();
-		List<String> filesNamesChecksums = new ArrayList<>();
+		List<Attachment> filesUnvalidated = new ArrayList<>();
+		List<String> fileNamesUnvalidated = new ArrayList<>();
+		List<String> filesValidated = new ArrayList<>();
 
-		// We only want to check new files, i.e. those without checksums
+		// We only want to check unvalidated files
 		for (Attachment file: packageInformation.getAttachments()) {
-			if (file.getMd5checksum() == null) {
-				filesNoChecksums.add(file);
-				filesNamesNoChecksums.add(file.getFileName());
+			if (!file.getValidated()) {
+				filesUnvalidated.add(file);
+				fileNamesUnvalidated.add(file.getFileName());
 			} else {
-				filesNamesChecksums.add(file.getFileName());
+				filesValidated.add(file.getFileName());
 			}
 		}
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId(), packageInformation.getStudy());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
-		filesOnDisk.removeAll(filesNamesChecksums);
+		filesOnDisk.removeAll(filesValidated);
 		Collections.sort(filesOnDisk);
-		Collections.sort(filesNamesNoChecksums);
-		return checkFilesExist(filesOnDisk, filesNamesNoChecksums, packageId, user)
-				&& validateFileLengthsMatch(filesNoChecksums, packagePath, packageId, user);
+		Collections.sort(fileNamesUnvalidated);
+		return checkFilesExist(filesOnDisk, fileNamesUnvalidated, packageId, user)
+				&& validateFileLengthsMatch(filesUnvalidated, packagePath, packageId, user);
 	}
 
-	public void calculateAndSaveChecksums(String packageId) throws IOException {
-		Package myPackage = packageRepository.findByPackageId(packageId);
-		List<Attachment> updatedFiles = calculateChecksums(packageId);
-		myPackage.setAttachments(updatedFiles);
-		packageRepository.updateField(packageId, "files", updatedFiles);
-	}
-
-	public List<Attachment> calculateChecksums(String packageId) throws IOException {
-        Package myPackage = packageRepository.findByPackageId(packageId);
-		List<Attachment> files = myPackage.getAttachments();
-		String packageID = myPackage.getPackageId();
-        String study = myPackage.getStudy();
-        InputStream is = null;
-		if (files.size() > 0) {
-			for (Attachment file : files) {
-				if (file.getMd5checksum() == null) {
-                    try{
-                        String filePath = filePathHelper.getFilePath(packageID, study, file.getFileName());
-                        Path path = Path.of(filePath);
-                        if(path == null || !Files.exists(path)){
-                            logger.logErrorMessage(PackageService.class, null, packageID,
-                                PackageService.class.getSimpleName() + ".calculateChecksums", "Could not find file in " + filePath);
-                        }else{
-                            try {
-                                is = Files.newInputStream(Path.of(filePath));
-                                String md5 = DigestUtils.md5Hex(is);
-                                file.setMd5checksum(md5); 
-                            }catch(IOException e){
-                                logger.logErrorMessage(PackageService.class, null, packageID,
-                                    PackageService.class.getSimpleName() + ".calculateChecksums",
-                                    "Error processing file at " + filePath + ": " + e.getMessage());
-                            }
-                        }
-                    }
-                    finally{
-                        try {
-                            if(is != null){
-                                is.close();
-                            }
-                        }catch(IOException e){
-                            logger.logErrorMessage(PackageService.class, null, packageID,
-                                PackageService.class.getSimpleName() + ".calculateChecksums",
-                                "There was a problem closing the InputStream after calculating checksum for file "
-                                + file.getFileName() + ": " + e.getMessage());
-                        }
-                    }
-				} else {
-					logger.logInfoMessage(PackageService.class, null, packageID,
-							PackageService.class.getSimpleName() + ".calculateFileChecksums",
-							packageIssue.format(new Object[] { "Checksum already exists for file " + file.getFileName(),
-									packageID }));
-				}
-			}
-		} else {
-			logger.logInfoMessage(PackageService.class, null, packageID,
-					PackageService.class.getSimpleName() + ".calculateFileChecksums",
-					packageIssue.format(new Object[] { "No files found in this package", packageID }));
+	public void setPackageValidated(String packageId) {
+		Package packageInformation = findPackage(packageId);
+		List<Attachment> files = packageInformation.getAttachments();
+		for (Attachment file: files) {
+			file.setValidated(true);
 		}
-		return files;
+		packageRepository.updateField(packageId, "files", files);
 	}
 
 	@CacheEvict(value = "packages", allEntries = true)

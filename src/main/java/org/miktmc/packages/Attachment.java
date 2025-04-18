@@ -18,8 +18,16 @@ public class Attachment {
 	private long size;
 	private String originalFileName;
 	private String fileName;
-	private String md5checksum;
 	private Date replacedOn;
+	private Boolean validated = false;
+
+	public Boolean getValidated() {
+		return validated;
+	}
+
+	public void setValidated(Boolean validated) {
+		this.validated = validated;
+	}
 
 	public String getFileName() {
 		return this.fileName;
@@ -51,14 +59,6 @@ public class Attachment {
 
 	public void setOriginalFileName(String filename) {
 		this.originalFileName = filename;
-	}
-
-	public String getMd5checksum() {
-		return md5checksum;
-	}
-
-	public void setMd5checksum(String md5checksum) {
-		this.md5checksum = md5checksum;
 	}
 
 	public Date getReplacedOn() {
