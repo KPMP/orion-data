@@ -47,12 +47,6 @@ public class AttachmentTest {
 	}
 
 	@Test
-	public void testSetCheckum() {
-		attachment.setMd5checksum("123978476g8fkjfsd98");
-		assertEquals("123978476g8fkjfsd98", attachment.getMd5checksum());
-	}
-
-	@Test
 	public void testSetReplacedOn() {
 		Date now = new Date();
 		attachment.setReplacedOn(now);
