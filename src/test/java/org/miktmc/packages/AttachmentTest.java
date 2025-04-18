@@ -1,12 +1,12 @@
 package org.miktmc.packages;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AttachmentTest {
 
@@ -57,6 +57,13 @@ public class AttachmentTest {
 		Date now = new Date();
 		attachment.setReplacedOn(now);
 		assertEquals(now, attachment.getReplacedOn());
+	}
+
+	@Test
+	public void testSetValidated() {
+		assertFalse(attachment.getValidated());
+		attachment.setValidated(true);
+		assertTrue(attachment.getValidated());
 	}
 
 }

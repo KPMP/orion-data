@@ -487,4 +487,28 @@ public class PackageServiceTest {
 		assertTrue(service.canReplaceFile("awesomePackageId","awesomeNewId2", "old_name_5"));
 	}
 
+	@Test
+	public void testSetPackageValidated() throws Exception {
+		Package myPackage = new Package();
+		myPackage.setPackageId("awesomePackageId");
+		List<Attachment> files = new ArrayList<>();
+		Attachment file1 = new Attachment();
+		file1.setOriginalFileName("old_name_1");
+		file1.setValidated(false);
+		file1.setId("awesomeNewId1");
+		Attachment file2 = new Attachment();
+		file2.setOriginalFileName("old_name_2");
+		file2.setId("awesomeNewId2");
+		file2.setValidated(false);
+		files.add(file1);
+		files.add(file2);
+		myPackage.setAttachments(files);
+		when(service.findPackage("awesomePackageId")).thenReturn(myPackage);
+		assertFalse(file1.getValidated());
+		assertFalse(file1.getValidated());
+		service.setPackageValidated("awesomePackageId");
+		assertTrue(file1.getValidated());
+		assertTrue(file2.getValidated());
+	}
+
 }
