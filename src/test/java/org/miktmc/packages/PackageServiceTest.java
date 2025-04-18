@@ -257,40 +257,6 @@ public class PackageServiceTest {
 //	}
 
 	@Test
-	public void testCalculateChecksums() throws Exception {
-		Path rootPath = Files.createTempDirectory("data");
-        Path packagePath = Files.createTempDirectory(rootPath, "study");
-        String studyDir = packagePath.getFileName().toString();
-		packagePath.toFile().deleteOnExit();
-		String file1Path = Paths.get(packagePath.toString(), "file1").toString();
-		String file2Path = Paths.get(packagePath.toString(), "file2").toString();
-		File file1 = new File(file1Path);
-		File file2 = new File(file2Path);
-		file1.createNewFile();
-		file1.deleteOnExit();
-		file2.createNewFile();
-		file2.deleteOnExit();
-		Attachment attachment1 = new Attachment();
-		attachment1.setFileName("file1");
-		attachment1.setSize(file1.length());
-		Attachment attachment2 = new Attachment();
-		attachment2.setFileName("file2");
-		attachment2.setSize(file2.length());
-		List<Attachment> attachments = Arrays.asList(attachment1, attachment2);
-		Package newPackage = new Package();
-		newPackage.setPackageId("1234");
-		newPackage.setAttachments(attachments);
-        newPackage.setStudy(studyDir);
-		when(filePathHelper.getFilePath("1234", studyDir, "file1")).thenReturn(file1Path);
-		when(filePathHelper.getFilePath("1234", studyDir, "file2")).thenReturn(file2Path);
-        when(packageRepository.findByPackageId(newPackage.getPackageId())).thenReturn(newPackage);
-		service.calculateChecksums(newPackage.getPackageId());
-		List<Attachment> attachments1 = newPackage.getAttachments();
-		assertNotNull(attachments1.get(0).getMd5checksum());
-		assertNotNull(attachments1.get(1).getMd5checksum());
-	}
-
-	@Test
 	public void testValidateFileLengthsMatch_whenMatch() throws Exception {
 		Logger testLogger = (Logger) LoggerFactory.getLogger(PackageService.class);
 		ListAppender<ILoggingEvent> listAppender = new ListAppender<>();

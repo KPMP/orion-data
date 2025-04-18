@@ -202,7 +202,6 @@ public class PackageController {
 			try {
 				packageService.setPackageValidated(packageId);
                 packageService.stripMetadata(packageService.findPackage(packageId));
-				// packageService.calculateAndSaveChecksums(packageId);
 				fileUploadResponse = new FileUploadResponse(true);
 				packageService.sendStateChangeEvent(packageId, uploadSucceededState, null, cleanHostName);
 			} catch (Exception e) {
