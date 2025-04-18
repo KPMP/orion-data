@@ -183,26 +183,26 @@ public class PackageService {
 
 	public boolean validatePackage(String packageId, User user) {
 		Package packageInformation = findPackage(packageId);
-		List<Attachment> filesNoChecksums = new ArrayList<>();
-		List<String> filesNamesNoChecksums = new ArrayList<>();
-		List<String> filesNamesChecksums = new ArrayList<>();
+		List<Attachment> filesUnvalidated = new ArrayList<>();
+		List<String> fileNamesUnvalidated = new ArrayList<>();
+		List<String> filesValidated = new ArrayList<>();
 
 		// We only want to check unvalidated files
 		for (Attachment file: packageInformation.getAttachments()) {
 			if (!file.getValidated()) {
-				filesNoChecksums.add(file);
-				filesNamesNoChecksums.add(file.getFileName());
+				filesUnvalidated.add(file);
+				fileNamesUnvalidated.add(file.getFileName());
 			} else {
-				filesNamesChecksums.add(file.getFileName());
+				filesValidated.add(file.getFileName());
 			}
 		}
 		String packagePath = filePathHelper.getPackagePath(packageInformation.getPackageId(), packageInformation.getStudy());
 		List<String> filesOnDisk = filePathHelper.getFilenames(packagePath);
-		filesOnDisk.removeAll(filesNamesChecksums);
+		filesOnDisk.removeAll(filesValidated);
 		Collections.sort(filesOnDisk);
-		Collections.sort(filesNamesNoChecksums);
-		return checkFilesExist(filesOnDisk, filesNamesNoChecksums, packageId, user)
-				&& validateFileLengthsMatch(filesNoChecksums, packagePath, packageId, user);
+		Collections.sort(fileNamesUnvalidated);
+		return checkFilesExist(filesOnDisk, fileNamesUnvalidated, packageId, user)
+				&& validateFileLengthsMatch(filesUnvalidated, packagePath, packageId, user);
 	}
 
 	public void setPackageValidated(String packageId) {
