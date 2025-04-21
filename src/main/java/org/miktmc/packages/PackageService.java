@@ -95,10 +95,10 @@ public class PackageService {
                         runTime.exec(command);
                         successCode = 1;
                         String successMessage = packageIssue.format(new Object[] {"Successfully stripped metadata from file " + path, packageInformation.getPackageId()});
-                        logger.logInfoMessage(this.getClass(), null, packageInformation.getPackageId(), "/v1/packages/" + packageInformation.getPackageId() + "/files/finish", successMessage);
+                        logger.logInfoMessage(this.getClass(), null, packageInformation.getPackageId(), "/v1/packages/" + packageInformation.getPackageId(), successMessage);
                     } catch (Exception e) {
                         String errorMessage = packageIssue.format(new Object[] {"There was a problem stripping the metadata from file " + file, packageInformation.getPackageId()});
-                        logger.logErrorMessage(this.getClass(), null, packageInformation.getPackageId(), "/v1/packages/" + packageInformation.getPackageId() + "/files/finish", errorMessage);
+                        logger.logErrorMessage(this.getClass(), null, packageInformation.getPackageId(), "/v1/packages/" + packageInformation.getPackageId(), errorMessage);
                         successCode = 0;
                     }
                 }

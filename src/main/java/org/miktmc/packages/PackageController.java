@@ -114,6 +114,7 @@ public class PackageController {
 			packageInfo = new JSONObject(packageInfoString);
 			JSONArray jsonFiles = packageInfo.getJSONArray("files");
 			files = packageService.addFiles(packageId, jsonFiles, shibId, false);
+            packageService.stripMetadata(packageService.findPackage(packageId));
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
 			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), hostname);
@@ -143,6 +144,7 @@ public class PackageController {
 			if (didDelete) {
 				try {
 					packageService.addFiles(packageId, jsonFiles, shibId, true);
+                    packageService.stripMetadata(packageService.findPackage(packageId));
 					response.setSuccess(true);
 				} catch (Exception e) {
 					logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
