@@ -7,6 +7,7 @@ import csv
 from dotenv import load_dotenv
 import numpy as np
 import argparse
+import mysql.connector
 
 load_dotenv()
 
@@ -23,6 +24,16 @@ class PackageChecker:
         try:
             mongo_client = pymongo.MongoClient("mongodb://localhost:27017/", serverSelectionTimeoutMS=5000)
             self.dataLake = mongo_client['dataLake']
+            dmd = mysql.connector.connect(
+                host=os.environ.get('dmd_host'),
+                user=os.environ.get('dmd_user'),
+                password=os.environ.get('dmd_pass'),
+                port=os.environ.get('dmd_port'),
+                database="data_management",
+                autocommit=True,
+                connect_timeout=5000
+            )
+            dmd_cursor = dmd.cursor(buffered=False)
         except:
             print("Unable to connect to database")
 
@@ -59,7 +70,9 @@ class PackageChecker:
             package_id = package["_id"]
             package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
             for state in package_states:
-                if state['state'] == "UPLOAD_SUCCEEDED":
+                dmd_package_archive_date = self.dmd_cursor.execute("SELECT archived_date FROM dlu_package_inventory WHERE dlu_package_id = %s", (package_id,))
+                print(dmd_package_archive_date)
+                if state['state'] == "UPLOAD_SUCCEEDED" and dmd_package_archive_date is None:
                     try:
                         directory = data_directory + "/package_" + package_id;
                         files = os.listdir(directory)
@@ -117,24 +130,24 @@ class PackageChecker:
 
         missing_files_csv.close()
         extra_files_csv.close()
-        if len(empty_package_list) > 0:
-            message = "Missing files in packages: " + ', '.join(empty_package_list)
-            requests.post(
-                slack_url,
-                headers={'Content-type': 'application/json', },
-                data='{"text":"' + message + '"}')
-        if len(missing_package_list) > 0:
-            message = "Missing package directories for packages: " + ', '.join(missing_package_list)
-            requests.post(
-                slack_url,
-                headers={'Content-type': 'application/json', },
-                data='{"text":"' + message + '"}')
-        if len(extra_package_list) > 0:
-            message = "Extra files for packages: " + ', '.join(extra_package_list)
-            requests.post(
-                slack_url,
-                headers={'Content-type': 'application/json', },
-                data='{"text":"' + message + '"}')
+        # if len(empty_package_list) > 0:
+        #     message = "Missing files in packages: " + ', '.join(empty_package_list)
+        #     requests.post(
+        #         slack_url,
+        #         headers={'Content-type': 'application/json', },
+        #         data='{"text":"' + message + '"}')
+        # if len(missing_package_list) > 0:
+        #     message = "Missing package directories for packages: " + ', '.join(missing_package_list)
+        #     requests.post(
+        #         slack_url,
+        #         headers={'Content-type': 'application/json', },
+        #         data='{"text":"' + message + '"}')
+        # if len(extra_package_list) > 0:
+        #     message = "Extra files for packages: " + ', '.join(extra_package_list)
+        #     requests.post(
+        #         slack_url,
+        #         headers={'Content-type': 'application/json', },
+        #         data='{"text":"' + message + '"}')
 
     def move_file_to_derived(self, package_directory, file_name):
         derived_dir = package_directory + "/derived"
