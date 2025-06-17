@@ -24,7 +24,7 @@ class PackageChecker:
         try:
             mongo_client = pymongo.MongoClient("mongodb://localhost:27017/", serverSelectionTimeoutMS=5000)
             self.dataLake = mongo_client['dataLake']
-            dmd = mysql.connector.connect(
+            self.dmd = mysql.connector.connect(
                 host=os.environ.get('dmd_host'),
                 user=os.environ.get('dmd_user'),
                 password=os.environ.get('dmd_pass'),
@@ -33,7 +33,6 @@ class PackageChecker:
                 autocommit=True,
                 connect_timeout=5000
             )
-            self.dmd_cursor = dmd.cursor(buffered=False)
         except:
             print("Unable to connect to database")
 
@@ -69,8 +68,9 @@ class PackageChecker:
         for package in packages:
             package_id = package["_id"]
             package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
+            dmd_cursor = self.dmd.cursor(buffered=False)
             for state in package_states:
-                dmd_package_archive_date = self.dmd_cursor.execute("SELECT archived_date FROM dlu_package_inventory WHERE dlu_package_id = %s", (package_id,))
+                dmd_package_archive_date = dmd_cursor.execute("SELECT archived_date FROM dlu_package_inventory WHERE dlu_package_id = %s", (package_id,))
                 print(dmd_package_archive_date)
                 if state['state'] == "UPLOAD_SUCCEEDED" and dmd_package_archive_date is None:
                     try:
