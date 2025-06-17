@@ -68,7 +68,7 @@ class PackageChecker:
         for package in packages:
             package_id = package["_id"]
             package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
-            dmd_cursor = self.dmd.cursor(buffered=False)
+            dmd_cursor = self.dmd.cursor(buffered=True)
             for state in package_states:
                 dmd_package_archive_date = dmd_cursor.execute("SELECT archived_date FROM dlu_package_inventory WHERE dlu_package_id = %s", (package_id,))
                 print(dmd_package_archive_date)
