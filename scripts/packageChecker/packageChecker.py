@@ -33,7 +33,7 @@ class PackageChecker:
                 autocommit=True,
                 connect_timeout=5000
             )
-            dmd_cursor = dmd.cursor(buffered=False)
+            self.dmd_cursor = dmd.cursor(buffered=False)
         except:
             print("Unable to connect to database")
 
