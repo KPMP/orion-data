@@ -70,9 +70,13 @@ class PackageChecker:
             package_states = self.dataLake.state.find({"packageId": package_id}).sort("stateChangeDate", -1).limit(1)
             dmd_cursor = self.dmd.cursor(buffered=True)
             for state in package_states:
-                dmd_package_archive_date = dmd_cursor.execute("SELECT archived_date FROM dlu_package_inventory WHERE dlu_package_id = %s", (package_id,))
-                print(package_id + ": " + dmd_package_archive_date)
-                if state['state'] == "UPLOAD_SUCCEEDED" and dmd_package_archive_date is None:
+                archived_date = None
+                dmd_cursor.execute("SELECT archived_date FROM dlu_package_inventory WHERE dlu_package_id = %s", (package_id,))
+                result = dmd_cursor.fetchone()
+                if result:
+                    archived_date = result[0]
+
+                if state['state'] == "UPLOAD_SUCCEEDED" and archived_date is None:
                     try:
                         directory = data_directory + "/package_" + package_id;
                         files = os.listdir(directory)
@@ -130,24 +134,25 @@ class PackageChecker:
 
         missing_files_csv.close()
         extra_files_csv.close()
-        # if len(empty_package_list) > 0:
-        #     message = "Missing files in packages: " + ', '.join(empty_package_list)
-        #     requests.post(
-        #         slack_url,
-        #         headers={'Content-type': 'application/json', },
-        #         data='{"text":"' + message + '"}')
-        # if len(missing_package_list) > 0:
-        #     message = "Missing package directories for packages: " + ', '.join(missing_package_list)
-        #     requests.post(
-        #         slack_url,
-        #         headers={'Content-type': 'application/json', },
-        #         data='{"text":"' + message + '"}')
-        # if len(extra_package_list) > 0:
-        #     message = "Extra files for packages: " + ', '.join(extra_package_list)
-        #     requests.post(
-        #         slack_url,
-        #         headers={'Content-type': 'application/json', },
-        #         data='{"text":"' + message + '"}')
+        dmd_cursor.close()
+        if len(empty_package_list) > 0:
+            message = "Missing files in packages: " + ', '.join(empty_package_list)
+            requests.post(
+                slack_url,
+                headers={'Content-type': 'application/json', },
+                data='{"text":"' + message + '"}')
+        if len(missing_package_list) > 0:
+            message = "Missing package directories for packages: " + ', '.join(missing_package_list)
+            requests.post(
+                slack_url,
+                headers={'Content-type': 'application/json', },
+                data='{"text":"' + message + '"}')
+        if len(extra_package_list) > 0:
+            message = "Extra files for packages: " + ', '.join(extra_package_list)
+            requests.post(
+                slack_url,
+                headers={'Content-type': 'application/json', },
+                data='{"text":"' + message + '"}')
 
     def move_file_to_derived(self, package_directory, file_name):
         derived_dir = package_directory + "/derived"
