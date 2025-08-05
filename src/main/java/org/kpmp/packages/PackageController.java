@@ -1,11 +1,7 @@
 package org.kpmp.packages;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-
 import java.io.IOException;
 import java.util.List;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +13,7 @@ import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class PackageController {
@@ -35,6 +34,8 @@ public class PackageController {
 	private String metadataReceivedState;
 	@Value("${package.state.upload.failed}")
 	private String uploadFailedState;
+	@Value("${package.state.upload.recalled}")
+	private String uploadRecalledState;
 	private LoggingService logger;
 	private PackageService packageService;
 	private ShibbolethUserService shibUserService;
@@ -95,6 +96,28 @@ public class PackageController {
 			packageService.sendStateChangeEvent(packageId, uploadFailedState, null, e.getMessage(), cleanHostName);
 		}
 		return packageResponse;
+	}
+
+	@RequestMapping(value = "/v1/packages/{packageId}/recall", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity recallPackage(@PathVariable String packageId,
+			@RequestParam("hostname") String hostname, HttpServletRequest request) {
+		String cleanHostName = hostname.replace("=", "");
+		ResponseEntity responseEntity;
+		PackageResponse packageResponse = new PackageResponse();
+		packageResponse.setPackageId(packageId);
+		try {
+			logger.logInfoMessage(this.getClass(), packageId, "Recalling package: " + packageId, request);
+			packageResponse.setGlobusURL(globusService.getTopDirectory(packageId));
+			dmdService.recallPackage(packageId, packageResponse.getGlobusURL());
+			packageService.sendStateChangeEvent(packageId, uploadRecalledState, "true", packageResponse.getGlobusURL(), cleanHostName);
+			String successMessage = "Sucessfully recalled package " + packageId;
+			logger.logInfoMessage(this.getClass(), packageId, successMessage, request);
+			responseEntity = ResponseEntity.ok().body(successMessage);
+		} catch (Exception e) {
+			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
+			responseEntity = ResponseEntity.status(INTERNAL_SERVER_ERROR).body("An error occurred while recalling the package.");
+		}
+		return responseEntity;
 	}
 
 	@SuppressWarnings("rawtypes")

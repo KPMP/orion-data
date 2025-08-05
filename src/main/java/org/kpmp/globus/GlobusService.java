@@ -58,6 +58,12 @@ public class GlobusService {
 		return getFileManagerUrl(fullDirName);
 	}
 
+	public String getTopDirectory(String dirName) {
+		String topDirectory = env.getProperty("GLOBUS_DIR");
+		String fullDirName = topDirectory + "/" + dirName;
+		return getFileManagerUrl(fullDirName);
+	}
+
 	protected String getFileManagerUrl(String fullDirName) {
 		return fileManagerUrl + "?origin_id=" + endpointID + "&origin_path=" + fullDirName;
 	}
