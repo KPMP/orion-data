@@ -99,9 +99,10 @@ public class PackageController {
 	}
 
 	@RequestMapping(value = "/v1/packages/{packageId}/recall", method = RequestMethod.POST)
-	public @ResponseBody PackageResponse recallPackage(@PathVariable String packageId,
+	public @ResponseBody ResponseEntity recallPackage(@PathVariable String packageId,
 			@RequestParam("hostname") String hostname, HttpServletRequest request) {
 		String cleanHostName = hostname.replace("=", "");
+		ResponseEntity responseEntity;
 		PackageResponse packageResponse = new PackageResponse();
 		packageResponse.setPackageId(packageId);
 		try {
@@ -109,10 +110,14 @@ public class PackageController {
 			packageResponse.setGlobusURL(globusService.getTopDirectory(packageId));
 			dmdService.recallPackage(packageId, packageResponse.getGlobusURL());
 			packageService.sendStateChangeEvent(packageId, uploadRecalledState, "true", packageResponse.getGlobusURL(), cleanHostName);
+			String successMessage = "Sucessfully recalled package " + packageId;
+			logger.logInfoMessage(this.getClass(), packageId, successMessage, request);
+			responseEntity = ResponseEntity.ok().body(successMessage);
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
+			responseEntity = ResponseEntity.status(INTERNAL_SERVER_ERROR).body("An error occurred while recalling the package.");
 		}
-		return packageResponse;
+		return responseEntity;
 	}
 
 	@SuppressWarnings("rawtypes")
