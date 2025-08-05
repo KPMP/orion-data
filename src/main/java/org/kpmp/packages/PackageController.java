@@ -106,8 +106,8 @@ public class PackageController {
 		packageResponse.setPackageId(packageId);
 		try {
 			logger.logInfoMessage(this.getClass(), packageId, "Recalling package: " + packageId, request);
-			dmdService.recallPackage(packageId);
 			packageResponse.setGlobusURL(globusService.getTopDirectory(packageId));
+			dmdService.recallPackage(packageId, packageResponse.getGlobusURL());
 			packageService.sendStateChangeEvent(packageId, uploadRecalledState, "true", packageResponse.getGlobusURL(), cleanHostName);
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
