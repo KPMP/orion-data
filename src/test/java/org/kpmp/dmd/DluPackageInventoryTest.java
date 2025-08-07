@@ -39,6 +39,7 @@ public class DluPackageInventoryTest {
         myPackage.setSubmitter(user);
         myPackage.setSubjectId("subjid");
         myPackage.setLargeFilesChecked(true);
+        myPackage.setUploadType("uploadType");
         DluPackageInventory dluPackageInventory = new DluPackageInventory(myPackage);
         assertEquals("123", dluPackageInventory.getDluPackageId());
         assertEquals("name", dluPackageInventory.getDluSubmitter());
@@ -46,6 +47,7 @@ public class DluPackageInventoryTest {
         assertEquals("tis", dluPackageInventory.getDluTis());
         assertEquals("name", dluPackageInventory.getDluSubmitter());
         assertEquals("subjid", dluPackageInventory.getDluSubjectId());
+        assertEquals("uploadType", dluPackageInventory.getDluUploadType());
         assertTrue(dluPackageInventory.getDluLfu());
         assertEquals("N", dluPackageInventory.getUserPackageReady());
     }
@@ -63,6 +65,7 @@ public class DluPackageInventoryTest {
         myPackage.setSubmitter(user);
         myPackage.setSubjectId("subjid");
         myPackage.setLargeFilesChecked(false);
+        myPackage.setUploadType("uploadType");
         DluPackageInventory dluPackageInventory = new DluPackageInventory(myPackage);
         assertEquals("123", dluPackageInventory.getDluPackageId());
         assertEquals("name", dluPackageInventory.getDluSubmitter());
@@ -70,6 +73,7 @@ public class DluPackageInventoryTest {
         assertEquals("tis", dluPackageInventory.getDluTis());
         assertEquals("name", dluPackageInventory.getDluSubmitter());
         assertEquals("subjid", dluPackageInventory.getDluSubjectId());
+        assertEquals("uploadType", dluPackageInventory.getDluUploadType());
         assertFalse(dluPackageInventory.getDluLfu());
         assertEquals("Y", dluPackageInventory.getUserPackageReady());
     }

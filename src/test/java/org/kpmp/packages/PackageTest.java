@@ -103,13 +103,14 @@ public class PackageTest {
 		packageInfo.setPackageType("packageType");
 		packageInfo.setProtocol("protocol");
 		packageInfo.setSubjectId("subjectId");
+        packageInfo.setUploadType("uploadType");
 		User user = new User();
 		user.setId("1234");
 		packageInfo.setSubmitter(user);
 
 		assertEquals(
 				"packageId: packageId, packageType: packageType, createdAt: " + createdAt + ", " + "submitterId: 1234, "
-						+ "protocol: protocol, subjectId: subjectId, experimentDate: null, description: description, "
+						+ "protocol: protocol, subjectId: subjectId, uploadType: uploadType, experimentDate: null, description: description, "
 						+ "tisName: TIS, number of attachments: 1",
 				packageInfo.toString());
 	}
