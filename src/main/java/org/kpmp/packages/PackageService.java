@@ -61,6 +61,7 @@ public class PackageService {
 
 	public String savePackageInformation(JSONObject packageMetadata, User user, String packageId) throws JSONException {
 		packageRepository.saveDynamicForm(packageMetadata, user, packageId);
+        System.out.println(packageMetadata.toString());
 		Package myPackage = packageRepository.findByPackageId(packageId);
 		dmdService.convertAndSendNewPackage(myPackage);
 		return packageId;

@@ -14,7 +14,7 @@ import org.springframework.lang.Nullable;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @Document(collection = "packages")
-@JsonPropertyOrder({ "packageId", "createdAt", "packageType", "submitter", "tisName", "protocol", "subjectId",
+@JsonPropertyOrder({ "packageId", "createdAt", "packageType", "submitter", "uploadType", "tisName", "protocol", "subjectId",
 		"experimentDate", "description", "attachments" })
 public class Package {
 
@@ -27,6 +27,7 @@ public class Package {
 	private String subjectId;
 	private Date experimentDate;
 	private String description;
+	private String uploadType;
 	@DBRef(lazy = false)
 	private User submitter;
 	@Nullable
@@ -73,6 +74,14 @@ public class Package {
 
 	public void setAttachments(List<Attachment> attachments) {
 		this.attachments = attachments;
+	}
+
+	public String getUploadType(){
+	    return uploadType;
+	}
+
+	public void setUploadType(String uploadType){
+	    this.uploadType = uploadType;
 	}
 
 	@Nullable
@@ -129,7 +138,7 @@ public class Package {
 	public String toString() {
 		return "packageId: " + packageId + ", packageType: " + packageType + ", createdAt: " + createdAt
 				+ ", submitterId: " + submitter.getId() + ", protocol: " + protocol + ", subjectId: " + subjectId
-				+ ", experimentDate: " + experimentDate + ", description: " + description + ", tisName: " + tisName
+				+ ", uploadType: " + uploadType + ", experimentDate: " + experimentDate + ", description: " + description + ", tisName: " + tisName
 				+ ", number of attachments: " + attachments.size();
 	}
 

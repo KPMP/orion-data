@@ -9,7 +9,7 @@ public class PackageKeysTest {
 
 	@Test
 	public void testLength() throws Exception {
-		assertEquals(26, PackageKeys.values().length);
+		assertEquals(27, PackageKeys.values().length);
 	}
 
 	@Test
@@ -17,6 +17,7 @@ public class PackageKeysTest {
 		assertEquals("_class", PackageKeys.CLASS.getKey());
 		assertEquals("createdAt", PackageKeys.CREATED_AT.getKey());
 		assertEquals("dataGenerators", PackageKeys.DATA_GENERATORS.getKey());
+		assertEquals("uploadType", PackageKeys.UPLOAD_TYPE.getKey());
 		assertEquals("description", PackageKeys.DESCRIPTION.getKey());
 		assertEquals("displayName", PackageKeys.DISPLAY_NAME.getKey());
 		assertEquals("email", PackageKeys.EMAIL.getKey());

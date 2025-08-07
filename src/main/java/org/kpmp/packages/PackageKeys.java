@@ -2,7 +2,7 @@ package org.kpmp.packages;
 
 public enum PackageKeys {
 
-	CLASS("_class"), CREATED_AT("createdAt"), DATA_GENERATORS("dataGenerators"), DESCRIPTION("description"),
+	CLASS("_class"), CREATED_AT("createdAt"), DATA_GENERATORS("dataGenerators"), DESCRIPTION("description"), UPLOAD_TYPE("uploadType"),
 	DISPLAY_NAME("displayName"), EMAIL("email"), FILES("files"), FILE_NAME("fileName"), FIRST_NAME("firstName"),
 	ID("_id"), LAST_NAME("lastName"), PACKAGE_TYPE("packageType"), PROTOCOL("protocol"),
 	SHIBID("shibId"), SIZE("size"), SUBJECT_ID("subjectId"), SUBMITTER("submitter"),
