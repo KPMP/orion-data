@@ -21,6 +21,7 @@ public class DluPackageInventory {
     private String globusDluStatus;
     private String removedFromGlobus;
     private String arPromotionStatus;
+    private String dluUploadType;
 
     private String svPromotionStatus;
     private String notes;
@@ -35,6 +36,7 @@ public class DluPackageInventory {
         setDluError(false);
         setUserPackageReady(!myPackage.getLargeFilesChecked());
         setDluLfu(myPackage.getLargeFilesChecked());
+        setDluUploadType(myPackage.getUploadType());
     }
 
     public DluPackageInventory() {
@@ -46,6 +48,14 @@ public class DluPackageInventory {
 
     public void setDluPackageId(String dluPackageId) {
         this.dluPackageId = dluPackageId;
+    }
+
+    public String getDluUploadType() {
+        return dluUploadType;
+    }
+
+    public void setDluUploadType(String dluUploadType){
+        this.dluUploadType = dluUploadType;
     }
 
     public Date getDluCreated() {

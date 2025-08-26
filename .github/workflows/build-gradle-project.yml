@@ -6,7 +6,7 @@ on:
 jobs:
   build-gradle-project:
     env:
-      IMAGE_TAG: 4.1
+      IMAGE_TAG: 4.2
     runs-on: ubuntu-latest
     steps:
       - name: Get branch names

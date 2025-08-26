@@ -1,7 +1,9 @@
 package org.kpmp.dmd;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.kpmp.logging.LoggingService;
 import org.kpmp.packages.Attachment;
 import org.kpmp.packages.Package;
@@ -11,9 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class DmdService {
@@ -86,6 +87,21 @@ public class DmdService {
         ObjectMapper objectMapper = new ObjectMapper();
         DmdResponse dmdResponse = objectMapper.readValue(response, DmdResponse.class);
         return dmdResponse;
+    }
+
+    public String recallPackage(String packageId, String globusUrl) throws Exception {
+        // type of map doesn't matter here, just specified one to stop warnings
+        HashMap<String, String> payload = new HashMap<>();
+        payload.put("codicil", globusUrl);
+        String response = restTemplate.postForObject(
+            dataManagerHost + dataManagerEndpoint + "/package/" + packageId + "/recall", payload, String.class);
+        if (response == null ? packageId != null : !response.equals(packageId)) {
+            logger.logErrorMessage(this.getClass(), null, packageId,
+                    this.getClass().getSimpleName() + ".recallPackage",
+                    "Error recalling package " + packageId);
+            throw new Exception(response);
+        }
+        return packageId;
     }
 
     public String getPackageStatus(String packageId) throws JsonProcessingException {
