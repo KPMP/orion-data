@@ -2,6 +2,9 @@
 
 ## Release 4.2 [Unreleased]
 Brief summary of what's in this release:
+- added upload type field
+- added recall package endpoint
+- package checker ignores derived files
 
 
 ### Breaking changes
