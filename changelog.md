@@ -9,7 +9,7 @@ Brief summary of what's in the release:
 
 ----
 
-## Release 4.2 [Released 8/2/2025]
+## Release 4.2 [Released 9/2/2025]
 Brief summary of what's in this release:
 - added upload type field
 - added recall package endpoint
