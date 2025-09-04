@@ -1,6 +1,15 @@
 # Changelog
 
-## Release 4.2 [Unreleased]
+## Release 4.3 [Unreleased]
+Brief summary of what's in the release:
+
+### Breaking changes
+
+### Non-breaking changes
+
+----
+
+## Release 4.2 [Released 9/2/2025]
 Brief summary of what's in this release:
 - added upload type field
 - added recall package endpoint
