@@ -5,7 +5,7 @@
   **Description**: Repo for the KPMP upload tool back-end
 
 ## Documentation
-Visit [kpmp.github.io/dlu](http://kpmp.io.github.io/dlu)
+Visit [kpmp.github.io/dlu](https://kpmp.github.io/dlu/index.html)
 
 ## Removing packages
 1. Connect to Mongo by opening ssh session to prod-upload
