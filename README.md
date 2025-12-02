@@ -39,6 +39,11 @@ NOTE: You need to create a new credentials file if the permissions change
  5. The redirect to localhost will probably fail, since you're not running the app locally. Copy this URL.
  6. Go into the spring container and do a wget on the pasted URL. This will create the credentials file and the app will start running. NOTE: if "localhost" doesn't work for this URL, try "127.0.0.1".
 
+## Using REDCap Endpoint
+1. Get your token: https://upload.kpmp.org/api/v1/token
+2. POST REDCap data (in JSON format) to https://upload.kpmp.org:3030/v1/redcap?token=[token string]
+3. Check for success response
+
 # Build
 `./gradlew build docker`
 The default tag is the github branch name if no verison is provided
