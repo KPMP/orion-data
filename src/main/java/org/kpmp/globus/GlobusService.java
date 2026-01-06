@@ -29,7 +29,6 @@ public class GlobusService {
 
 	private HttpRequestFactory requestFactory;
 
-	@Value("${globus.endpoint.ID}")
 	private String endpointID;
 
 	@Value("${globus.file.manager.url}")
@@ -41,6 +40,7 @@ public class GlobusService {
 			throws Exception {
 		Credential credential = globusAuthService.authorize(httpTransport);
 		requestFactory = httpTransport.createRequestFactory(credential);
+        this.endpointID = env.getProperty("GLOBUS_ENDPOINT_ID");
 		this.env = env;
 	}
 
