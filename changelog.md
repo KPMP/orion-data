@@ -4,6 +4,7 @@
 Brief summary of what's in the release:
 
 ### Breaking changes
+- You now need to add the ENV_GLOBUS_ENDPOINT_ID environment variable to the Docker (heavens-docker/orion) .env file. 
 
 ### Non-breaking changes
 
