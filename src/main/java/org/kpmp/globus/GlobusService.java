@@ -29,26 +29,22 @@ public class GlobusService {
 
 	private HttpRequestFactory requestFactory;
 
-	@Value("${globus.endpoint.ID}")
 	private String endpointID;
 
 	@Value("${globus.file.manager.url}")
 	private String fileManagerUrl;
 
-	private Environment env;
-
-	public GlobusService(HttpTransport httpTransport, GlobusAuthService globusAuthService, Environment env)
+    public GlobusService(HttpTransport httpTransport, GlobusAuthService globusAuthService, Environment env)
 			throws Exception {
 		Credential credential = globusAuthService.authorize(httpTransport);
 		requestFactory = httpTransport.createRequestFactory(credential);
-		this.env = env;
-	}
+        this.endpointID = env.getProperty("GLOBUS_ENDPOINT_ID");
+    }
 
 	public String createDirectory(String dirName) throws IOException {
-		String topDirectory = env.getProperty("GLOBUS_DIR");
 		ObjectMapper mapper = new ObjectMapper();
 		GenericUrl url = new GenericUrl(API_URL + "/operation/endpoint/" + endpointID + "/mkdir");
-		String fullDirName = topDirectory + "/" + dirName;
+		String fullDirName = "/" + dirName;
 		GlobusTransferRequest globusTransferRequest = new GlobusTransferRequest();
 		globusTransferRequest.setPath(fullDirName);
 		globusTransferRequest.setDataType("mkdir");
@@ -59,8 +55,7 @@ public class GlobusService {
 	}
 
 	public String getTopDirectory(String dirName) {
-		String topDirectory = env.getProperty("GLOBUS_DIR");
-		String fullDirName = topDirectory + "/" + dirName;
+		String fullDirName = "/" + dirName;
 		return getFileManagerUrl(fullDirName);
 	}
 
@@ -69,9 +64,8 @@ public class GlobusService {
 	}
 
 	public List<GlobusFileListing> getFilesAndDirectoriesAtEndpoint(String packageId) throws JsonProcessingException, IOException {
-		String topDirectory = env.getProperty("GLOBUS_DIR");
-		String fullDirName = topDirectory + "/" + packageId;
-		fullDirName.replace(" ", "+");
+		String fullDirName = "/" + packageId;
+        fullDirName = fullDirName.replace(" ", "+");
 		GenericUrl url = new GenericUrl(API_URL + "/operation/endpoint/" + endpointID + "/ls?path=" + fullDirName + "&type:dir");
 		
 		HttpRequest request = requestFactory.buildGetRequest(url);
