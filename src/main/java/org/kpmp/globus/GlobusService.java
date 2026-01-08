@@ -65,7 +65,7 @@ public class GlobusService {
 
 	public List<GlobusFileListing> getFilesAndDirectoriesAtEndpoint(String packageId) throws JsonProcessingException, IOException {
 		String fullDirName = "/" + packageId;
-		fullDirName.replace(" ", "+");
+        fullDirName = fullDirName.replace(" ", "+");
 		GenericUrl url = new GenericUrl(API_URL + "/operation/endpoint/" + endpointID + "/ls?path=" + fullDirName + "&type:dir");
 		
 		HttpRequest request = requestFactory.buildGetRequest(url);
