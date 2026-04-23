@@ -1,7 +1,9 @@
 # Changelog
 
-## Release 4.3 [Unreleased]
+## Release 4.3 
 Brief summary of what's in the release:
+- Edited README instructions
+- Switched globus endpoint ID
 
 ### Breaking changes
 - You now need to add the ENV_GLOBUS_ENDPOINT_ID environment variable to the Docker (heavens-docker/orion) .env file. 
