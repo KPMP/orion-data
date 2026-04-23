@@ -5,7 +5,7 @@
   **Description**: Repo for the KPMP upload tool back-end
 
 ## Documentation
-Visit [kpmp.github.io/dlu](http://kpmp.io.github.io/dlu)
+Visit [kpmp.github.io/dlu](https://kpmp.github.io/dlu/index.html)
 
 ## Removing packages
 1. Connect to Mongo by opening ssh session to prod-upload
@@ -17,19 +17,8 @@ Visit [kpmp.github.io/dlu](http://kpmp.io.github.io/dlu)
 - `https://upload.kpmp.org/api/v1/clearCache`
 6. Navigate to upload and confirm packages no longer exist
 
-## Getting and storing the credentials for Google Drive
- 1. Get the credentials.json file from kpmp-secure/orion-data and put it in the `src/main/resources` directory.
- 2. Get the StoredCredential file from kpmp-secure/orion-data and put it in the `tokens` directory (create if it doesn't  exist).
- 3. Restart the spring container.
-
-## Creating new credentials files for Google Drive
-NOTE: You need to create a new credentials file if the permissions change
- 1. Delete (if necessary) the old `tokens` directory.
- 2. Bring the application down and then back up.
- 3. Spring will generate a URL and print it to stdout, grab it and open it in a browser.
- 4. Authenticate as kpmp-datalake@umich.edu and grant the requested access.
- 5. The redirect to localhost will probably fail, since you're not running the app locally. Copy this URL.
- 6. Go into the spring container and do a wget on the pasted URL. This will create the credentials file and the app will start running.
+## Globus application registration
+This application is registered in Globus here -- https://app.globus.org/ -- in the "KPMP Data Lake" project as "KPMP Data Lake Uploader". The application has the roles of the users assigned to it under the "Roles" tab. 
 
 ## Creating new credentials files for Globus
  1. Delete (if necessary) the `StoredCredential` file in the `globus_tokens` directory.
@@ -38,6 +27,11 @@ NOTE: You need to create a new credentials file if the permissions change
  4. Authenticate.
  5. The redirect to localhost will probably fail, since you're not running the app locally. Copy this URL.
  6. Go into the spring container and do a wget on the pasted URL. This will create the credentials file and the app will start running. NOTE: if "localhost" doesn't work for this URL, try "127.0.0.1".
+
+## Using REDCap Endpoint
+1. Get your token: https://upload.kpmp.org/api/v1/token
+2. POST REDCap data (in JSON format) to https://upload.kpmp.org:3030/v1/redcap?token=[token string]
+3. Check for success response
 
 # Build
 `./gradlew build docker`

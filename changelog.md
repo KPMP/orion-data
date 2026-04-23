@@ -1,6 +1,18 @@
 # Changelog
 
-## Release 4.2 [Unreleased]
+## Release 4.3 
+Brief summary of what's in the release:
+- Edited README instructions
+- Switched globus endpoint ID
+
+### Breaking changes
+- You now need to add the ENV_GLOBUS_ENDPOINT_ID environment variable to the Docker (heavens-docker/orion) .env file. 
+
+### Non-breaking changes
+
+----
+
+## Release 4.2 [Released 9/2/2025]
 Brief summary of what's in this release:
 - added upload type field
 - added recall package endpoint
