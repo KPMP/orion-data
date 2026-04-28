@@ -29,7 +29,8 @@ public class GlobusService {
 
 	private HttpRequestFactory requestFactory;
 
-	private String endpointID;
+	private String apiEndpointID;
+    private String endpointID;
 
 	@Value("${globus.file.manager.url}")
 	private String fileManagerUrl;
@@ -38,12 +39,15 @@ public class GlobusService {
 			throws Exception {
 		Credential credential = globusAuthService.authorize(httpTransport);
 		requestFactory = httpTransport.createRequestFactory(credential);
-        this.endpointID = env.getProperty("GLOBUS_API_ENDPOINT_ID");
+        this.apiEndpointID = env.getProperty("GLOBUS_API_ENDPOINT_ID");
+        this.endpointID = env.getProperty("GLOBUS_ENDPOINT_ID");
+
+
     }
 
 	public String createDirectory(String dirName) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		GenericUrl url = new GenericUrl(API_URL + "/operation/endpoint/" + endpointID + "/mkdir");
+		GenericUrl url = new GenericUrl(API_URL + "/operation/endpoint/" + apiEndpointID + "/mkdir");
 		String fullDirName = "/" + dirName;
 		GlobusTransferRequest globusTransferRequest = new GlobusTransferRequest();
 		globusTransferRequest.setPath(fullDirName);
@@ -66,7 +70,7 @@ public class GlobusService {
 	public List<GlobusFileListing> getFilesAndDirectoriesAtEndpoint(String packageId) throws JsonProcessingException, IOException {
 		String fullDirName = "/" + packageId;
         fullDirName = fullDirName.replace(" ", "+");
-		GenericUrl url = new GenericUrl(API_URL + "/operation/endpoint/" + endpointID + "/ls?path=" + fullDirName + "&type:dir");
+		GenericUrl url = new GenericUrl(API_URL + "/operation/endpoint/" + apiEndpointID + "/ls?path=" + fullDirName + "&type:dir");
 		
 		HttpRequest request = requestFactory.buildGetRequest(url);
 		request.setParser(new JsonObjectParser(JSON_FACTORY));
