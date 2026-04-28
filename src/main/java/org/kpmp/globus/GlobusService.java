@@ -38,7 +38,7 @@ public class GlobusService {
 			throws Exception {
 		Credential credential = globusAuthService.authorize(httpTransport);
 		requestFactory = httpTransport.createRequestFactory(credential);
-        this.endpointID = env.getProperty("GLOBUS_ENDPOINT_ID");
+        this.endpointID = env.getProperty("GLOBUS_API_ENDPOINT_ID");
     }
 
 	public String createDirectory(String dirName) throws IOException {
