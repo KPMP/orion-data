@@ -18,7 +18,7 @@ Visit [kpmp.github.io/dlu](https://kpmp.github.io/dlu/index.html)
 6. Navigate to upload and confirm packages no longer exist
 
 ## Globus application registration
-This application is registered in Globus here -- https://app.globus.org/ -- in the "KPMP Data Lake" project as "KPMP Data Lake Uploader". The application has the roles of the users assigned to it under the "Roles" tab. 
+This application is registered in Globus here -- [https://app.globus.org/](https://app.globus.org/settings/developers) -- in the "KPMP Data Lake" project as "KPMP Data Lake Uploader". You need to grant the application's userID write access to the Guest Collection being used as the Data Lake INBOX. 
 
 ## Creating new credentials files for Globus
  1. Delete (if necessary) the `StoredCredential` file in the `globus_tokens` directory.
