@@ -49,14 +49,14 @@ public class GlobusService {
 	public String createDirectory(String dirName) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		GenericUrl url = new GenericUrl(API_URL + "/operation/endpoint/" + apiEndpointID + "/mkdir");
-		String fullDirName = apiTopDirectory + "/" + dirName;
+        String fullDirName = apiTopDirectory + "/" + dirName;
 		GlobusTransferRequest globusTransferRequest = new GlobusTransferRequest();
 		globusTransferRequest.setPath(fullDirName);
 		globusTransferRequest.setDataType("mkdir");
 		HttpRequest request = requestFactory.buildPostRequest(url,
 				ByteArrayContent.fromString("application/json", mapper.writeValueAsString(globusTransferRequest)));
 		request.execute();
-		return getFileManagerUrl(fullDirName);
+		return getFileManagerUrl("/" + dirName);
 	}
 
 	public String getTopDirectory(String dirName) {
