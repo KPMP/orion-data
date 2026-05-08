@@ -21,12 +21,15 @@ Visit [kpmp.github.io/dlu](https://kpmp.github.io/dlu/index.html)
 This application is registered in Globus here -- [https://app.globus.org/](https://app.globus.org/settings/developers) -- in the "KPMP Data Lake" project as "KPMP Data Lake Uploader". You need to grant the application's userID write access to the Guest Collection being used as the Data Lake INBOX. 
 
 ## Creating new credentials files for Globus
- 1. Delete (if necessary) the `StoredCredential` file in the `globus_tokens` directory.
+
+NOTE: You may have to do this when you deploy a newly-build image. 
+
+ 1. Go into the container and delete (if necessary) the `StoredCredential` file in the `globus_tokens` directory.
  2. Bring the application down and then back up.
- 3. Spring will generate a URL and print it to stdout (you may have to look in Kibana), grab it and open it in a browser.
+ 3. Spring will generate a URL and print it to stdout (follow the Docker logs), grab it and open it in a browser.
  4. Authenticate.
- 5. The redirect to localhost will probably fail, since you're not running the app locally. Copy this URL.
- 6. Go into the spring container and do a wget on the pasted URL. This will create the credentials file and the app will start running. NOTE: if "localhost" doesn't work for this URL, try "127.0.0.1".
+ 5. The redirect to localhost will fail and produce a broken URL (since you're not running the app locally). Copy this URL.
+ 6. Go into the orion-spring container and do a wget on the pasted URL. This will create the credentials file and the app will start running. NOTE: if "localhost" doesn't work for this URL, try "127.0.0.1".
 
 ## Using REDCap Endpoint
 1. Get your token: https://upload.kpmp.org/api/v1/token
