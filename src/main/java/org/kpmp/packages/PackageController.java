@@ -140,7 +140,6 @@ public class PackageController {
             String userInfo = userInfoResponse.getBody();
             JSONObject userJson = new JSONObject(userInfo);
             JSONArray userGroups = userJson.getJSONArray(GROUPS_KEY);
-
             if (isAllowed(userGroups) && userJson.getBoolean("active")) {
 
                 packageResponse.setPackageId(packageId);
