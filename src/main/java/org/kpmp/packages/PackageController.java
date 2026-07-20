@@ -3,6 +3,7 @@ package org.kpmp.packages;
 import java.io.IOException;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.kpmp.dmd.DmdResponse;
@@ -13,6 +14,8 @@ import org.kpmp.shibboleth.ShibbolethUserService;
 import org.kpmp.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,8 +25,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
+import org.kpmp.packages.Package;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class PackageController {
@@ -36,24 +43,36 @@ public class PackageController {
 	private String uploadFailedState;
 	@Value("${package.state.upload.recalled}")
 	private String uploadRecalledState;
+    @Value("${user.auth.host}")
+	private String userAuthHost;
+    @Value("${user.auth.endpoint}")
+	private String userAuthEndpoint;
+    @Value("#{'${user.auth.allowed.groups}'.split(',')}")
+	private List<String> allowedGroups;
+	@Value("${user.auth.kpmp.group}")
+	private String kpmpGroup;
+    private static final String CLIENT_ID_PROPERTY = "CLIENT_ID";
+    private static final String GROUPS_KEY = "groups";
 	private LoggingService logger;
 	private PackageService packageService;
 	private ShibbolethUserService shibUserService;
 	private UniversalIdGenerator universalIdGenerator;
 	private GlobusService globusService;
+    private Environment env;
 
 	private DmdService dmdService;
 
 	@Autowired
 	public PackageController(PackageService packageService, LoggingService logger,
 			ShibbolethUserService shibUserService, UniversalIdGenerator universalIdGenerator,
-			GlobusService globusService, DmdService dmdService) {
+			GlobusService globusService, DmdService dmdService, Environment env) {
 		this.packageService = packageService;
 		this.logger = logger;
 		this.shibUserService = shibUserService;
 		this.universalIdGenerator = universalIdGenerator;
 		this.globusService = globusService;
 		this.dmdService = dmdService;
+        this.env = env;
 	}
 
 	@RequestMapping(value = "/v1/packages", params="shouldExclude", method = RequestMethod.GET)
@@ -98,21 +117,50 @@ public class PackageController {
 		return packageResponse;
 	}
 
+    public boolean isAllowed(JSONArray userGroups) throws JSONException {
+		for (int i = 0; i < userGroups.length(); i++) {
+			String group = userGroups.getString(i);
+			if (allowedGroups.contains(group)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@RequestMapping(value = "/v1/packages/{packageId}/recall", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity recallPackage(@PathVariable String packageId,
-			@RequestParam("hostname") String hostname, HttpServletRequest request) {
+			@RequestParam("hostname") String hostname, @RequestParam("shibId") String shibId, HttpServletRequest request) {
+        RestTemplate restTemplate = new RestTemplate();
+        String clientId = env.getProperty(CLIENT_ID_PROPERTY);
+		String uri = userAuthHost + userAuthEndpoint + "/" + clientId + "/" + shibId;
 		String cleanHostName = hostname.replace("=", "");
+        String cleanShibId = shibId.replace("=", "");
 		ResponseEntity responseEntity;
 		PackageResponse packageResponse = new PackageResponse();
-		packageResponse.setPackageId(packageId);
 		try {
-			logger.logInfoMessage(this.getClass(), packageId, "Recalling package: " + packageId, request);
-			packageResponse.setGlobusURL(globusService.getTopDirectory(packageId));
-			dmdService.recallPackage(packageId, packageResponse.getGlobusURL());
-			packageService.sendStateChangeEvent(packageId, uploadRecalledState, "true", packageResponse.getGlobusURL(), cleanHostName);
-			String successMessage = "Sucessfully recalled package " + packageId;
-			logger.logInfoMessage(this.getClass(), packageId, successMessage, request);
-			responseEntity = ResponseEntity.ok().body(successMessage);
+            ResponseEntity<String> userInfoResponse = restTemplate.getForEntity(uri, String.class);
+            String userInfo = userInfoResponse.getBody();
+            JSONObject userJson = new JSONObject(userInfo);
+            JSONArray userGroups = userJson.getJSONArray(GROUPS_KEY);
+            String packageSubmitter = packageService.findPackage(packageId).getSubmitter().getShibId();
+            System.out.println("Package Submitter: " + packageSubmitter);
+
+            if (isAllowed(userGroups) && userJson.getBoolean("active") || cleanShibId.equals(packageSubmitter)) {
+
+                packageResponse.setPackageId(packageId);
+                logger.logInfoMessage(this.getClass(), packageId, "Recalling package: " + packageId, request);
+                packageResponse.setGlobusURL(globusService.getTopDirectory(packageId));
+                dmdService.recallPackage(packageId, packageResponse.getGlobusURL());
+                packageService.sendStateChangeEvent(packageId, uploadRecalledState, "true", packageResponse.getGlobusURL(), cleanHostName);
+                String successMessage = "Sucessfully recalled package " + packageId;
+                logger.logInfoMessage(this.getClass(), packageId, successMessage, request);
+                responseEntity = ResponseEntity.ok().body(successMessage);
+
+            }else {
+                String errorMessage = "User " + cleanShibId + " is not allowed to recall package " + packageId;
+                logger.logErrorMessage(this.getClass(), packageId, errorMessage, request);
+                responseEntity = ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorMessage);
+            }
 		} catch (Exception e) {
 			logger.logErrorMessage(this.getClass(), packageId, e.getMessage(), request);
 			responseEntity = ResponseEntity.status(INTERNAL_SERVER_ERROR).body("An error occurred while recalling the package.");
