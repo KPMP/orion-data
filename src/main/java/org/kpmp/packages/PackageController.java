@@ -130,9 +130,9 @@ public class PackageController {
 			@RequestParam("hostname") String hostname, @RequestParam("shibId") String shibId, HttpServletRequest request) {
         RestTemplate restTemplate = new RestTemplate();
         String clientId = env.getProperty(CLIENT_ID_PROPERTY);
-		String uri = userAuthHost + userAuthEndpoint + "/" + clientId + "/" + shibId;
 		String cleanHostName = hostname.replace("=", "");
         String cleanShibId = shibId.replace("=", "");
+		String uri = userAuthHost + userAuthEndpoint + "/" + clientId + "/" + cleanShibId;
 		ResponseEntity responseEntity;
 		PackageResponse packageResponse = new PackageResponse();
 		try {
@@ -147,7 +147,7 @@ public class PackageController {
                 packageResponse.setGlobusURL(globusService.getTopDirectory(packageId));
                 dmdService.recallPackage(packageId, packageResponse.getGlobusURL());
                 packageService.sendStateChangeEvent(packageId, uploadRecalledState, "true", packageResponse.getGlobusURL(), cleanHostName);
-                String successMessage = "Sucessfully recalled package " + packageId;
+                String successMessage = "Successfully recalled package " + packageId;
                 logger.logInfoMessage(this.getClass(), packageId, successMessage, request);
                 responseEntity = ResponseEntity.ok().body(successMessage);
 
