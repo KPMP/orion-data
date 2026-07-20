@@ -26,11 +26,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
-import org.kpmp.packages.Package;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
-import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class PackageController {
@@ -142,10 +140,8 @@ public class PackageController {
             String userInfo = userInfoResponse.getBody();
             JSONObject userJson = new JSONObject(userInfo);
             JSONArray userGroups = userJson.getJSONArray(GROUPS_KEY);
-            String packageSubmitter = packageService.findPackage(packageId).getSubmitter().getShibId();
-            System.out.println("Package Submitter: " + packageSubmitter);
 
-            if (isAllowed(userGroups) && userJson.getBoolean("active") || cleanShibId.equals(packageSubmitter)) {
+            if (isAllowed(userGroups) && userJson.getBoolean("active")) {
 
                 packageResponse.setPackageId(packageId);
                 logger.logInfoMessage(this.getClass(), packageId, "Recalling package: " + packageId, request);
