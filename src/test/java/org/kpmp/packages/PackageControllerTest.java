@@ -26,6 +26,7 @@ import org.kpmp.users.User;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class PackageControllerTest {
@@ -44,14 +45,17 @@ public class PackageControllerTest {
 
 	@Mock
 	private DmdService dmdService;
+    @Mock
+    private Environment env;
 	private AutoCloseable mocks;
+
 
 	@BeforeEach
 	public void setUp() throws Exception {
 		mocks = MockitoAnnotations.openMocks(this);
 
 		controller = new PackageController(packageService, logger, shibUserService, universalIdGenerator,
-				globusService, dmdService);
+				globusService, dmdService, env);
 		ReflectionTestUtils.setField(controller, "uploadStartedState", "UPLOAD_STARTED");
 		ReflectionTestUtils.setField(controller, "metadataReceivedState", "METADATA_RECEIVED");
 		ReflectionTestUtils.setField(controller, "uploadFailedState", "UPLOAD_FAILED");
