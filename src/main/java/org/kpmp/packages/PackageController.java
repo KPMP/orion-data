@@ -45,8 +45,8 @@ public class PackageController {
 	private String userAuthHost;
     @Value("${user.auth.endpoint}")
 	private String userAuthEndpoint;
-    @Value("#{'${user.auth.allowed.groups}'.split(',')}")
-	private List<String> allowedGroups;
+    @Value("#{'${user.auth.recall.group}'.split(',')}")
+	private List<String> recallGroup;
 	@Value("${user.auth.kpmp.group}")
 	private String kpmpGroup;
     private static final String CLIENT_ID_PROPERTY = "CLIENT_ID";
@@ -118,7 +118,7 @@ public class PackageController {
     public boolean isAllowed(JSONArray userGroups) throws JSONException {
 		for (int i = 0; i < userGroups.length(); i++) {
 			String group = userGroups.getString(i);
-			if (allowedGroups.contains(group)) {
+			if (recallGroup.contains(group)) {
 				return true;
 			}
 		}
